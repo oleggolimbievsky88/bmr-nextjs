@@ -1,0 +1,212 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[9].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[9].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[14].oneOf[9].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[14].oneOf[9].use[5]!./components/homes/home/VehicleSearch.module.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* 
+    18. Search filter css
+*/
+.VehicleSearch_search__filter--area__8yQwb {
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--secondary-color);
+  border-radius: 5px;
+  background: var(--body-background-color);
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--area__8yQwb {
+    padding: 2.5rem 1.8rem;
+  }
+}
+@media only screen and (min-width: 1366px) {
+  .VehicleSearch_search__filter--area__8yQwb {
+    padding: 3rem 1.8rem;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .VehicleSearch_search__filter--area__8yQwb {
+    margin-top: 5rem;
+  }
+}
+.VehicleSearch_search__filter--header__inNuE {
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--header__inNuE {
+    margin-bottom: 2rem;
+  }
+}
+@media only screen and (min-width: 1366px) {
+  .VehicleSearch_search__filter--header__inNuE {
+    margin-bottom: 2.5rem;
+  }
+}
+.VehicleSearch_search__filter--header__icon__imxq7 {
+  min-width: 2.4rem;
+}
+.VehicleSearch_search__filter--title__daYGv {
+  font-size: 1.8rem;
+  line-height: 2.2rem;
+  margin-bottom: 0.8rem;
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--title__daYGv {
+    font-size: 2rem;
+    line-height: 2.2rem;
+    margin-bottom: 1rem;
+  }
+}
+@media only screen and (min-width: 1366px) {
+  .VehicleSearch_search__filter--title__daYGv {
+    margin-bottom: 1.3rem;
+  }
+}
+.VehicleSearch_search__filter--desc__C8Mx7 {
+  font-size: 1.3rem;
+  line-height: 2.3rem;
+  color: var(--foreground-sub-color);
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--desc__C8Mx7 {
+    font-size: 1.4rem;
+    line-height: 2.5rem;
+  }
+}
+.VehicleSearch_search__filter--btn__HXvBK {
+  width: 100%;
+  height: 4rem;
+  line-height: 4rem;
+  border-radius: 5px;
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--btn__HXvBK {
+    height: 4.2rem;
+    line-height: 4.2rem;
+  }
+}
+@media only screen and (min-width: 1366px) {
+  .VehicleSearch_search__filter--btn__HXvBK {
+    height: 4.4rem;
+    line-height: 4.4rem;
+  }
+}
+
+.VehicleSearch_search__filter--select__O2S8F {
+  margin-bottom: 1.2rem;
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--select__O2S8F {
+    margin-bottom: 1.7rem;
+  }
+}
+@media only screen and (min-width: 1366px) {
+  .VehicleSearch_search__filter--select__O2S8F {
+    margin-bottom: 1.9rem;
+  }
+}
+.VehicleSearch_search__filter--select__O2S8F:last-child {
+  margin-bottom: 0;
+}
+.VehicleSearch_search__filter--select__field__eshfF {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  background: var(--body-background-color);
+  -webkit-appearance: none;
+  height: 4rem;
+  font-size: 1.4rem;
+  padding: 0 3.4rem 0 1.7rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--select__field__eshfF {
+    font-size: 1.5rem;
+    height: 4.2rem;
+  }
+}
+@media only screen and (min-width: 1366px) {
+  .VehicleSearch_search__filter--select__field__eshfF {
+    height: 4.4rem;
+  }
+}
+
+/*
+    home 3 search filter css
+*/
+.VehicleSearch_search__filter--inner__eZH8n {
+  background: linear-gradient(to right, #FAEEF2, #F1F3FB);
+  padding: 3rem 2rem;
+  border-radius: 5px;
+}
+@media only screen and (min-width: 576px) {
+  .VehicleSearch_search__filter--inner__eZH8n {
+    padding: 3rem 2.5rem;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--inner__eZH8n {
+    padding: 3.3rem;
+  }
+}
+
+.VehicleSearch_search__filter--form__style2__z8_zy {
+  gap: 2rem;
+}
+@media only screen and (min-width: 1200px) {
+  .VehicleSearch_search__filter--form__style2__z8_zy {
+    gap: 3rem;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .VehicleSearch_search__filter--form__style2__z8_zy {
+    flex-wrap: wrap;
+  }
+}
+
+.VehicleSearch_search__filter--width__0LLD3 {
+  width: 100%;
+  margin-bottom: 0;
+}
+@media only screen and (min-width: 400px) {
+  .VehicleSearch_search__filter--width__0LLD3 {
+    width: 46%;
+  }
+}
+@media only screen and (min-width: 576px) {
+  .VehicleSearch_search__filter--width__0LLD3 {
+    width: 30.2%;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .VehicleSearch_search__filter--width__0LLD3 {
+    width: 22.8%;
+  }
+}
+@media only screen and (min-width: 992px) {
+  .VehicleSearch_search__filter--width__0LLD3 {
+    width: 16.66%;
+  }
+}
+
+/*
+    home 5 search filter css
+*/
+.VehicleSearch_search__filter--style5__OltZx {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+@media only screen and (max-width: 991px) {
+  .VehicleSearch_search__filter--style5__OltZx {
+    position: inherit;
+    padding-top: 5rem;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .VehicleSearch_search__filter--style5__OltZx {
+    padding-top: 3.6rem;
+  }
+}
+
+.VehicleSearch_search__filter--inner__eZH8n.VehicleSearch_style5__kC3Um {
+  background: linear-gradient(to right, #fbd4df, #dee3f9);
+}

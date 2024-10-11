@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"app/layout.js -> bootstrap/dist/js/bootstrap.esm\":{\"id\":\"app/layout.js -> bootstrap/dist/js/bootstrap.esm\",\"files\":[]}}"
