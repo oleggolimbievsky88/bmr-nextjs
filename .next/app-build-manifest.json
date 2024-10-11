@@ -75,6 +75,21 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(shop)/shop-link/page.js"
+    ],
+    "/(otherPages)/about-us/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(otherPages)/about-us/page.js"
+    ],
+    "/(shop-details)/product-color-swatch/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-color-swatch/page.js"
+    ],
+    "/(shop)/shop-default/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop)/shop-default/page.js"
     ]
   }
 }

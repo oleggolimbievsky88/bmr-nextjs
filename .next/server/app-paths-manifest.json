@@ -1,7 +1,9 @@
 {
   "/page": "app/page.js",
-  "/(homes)/home-07/page": "app/(homes)/home-07/page.js",
-  "/(homes)/home-pod-store/page": "app/(homes)/home-pod-store/page.js",
-  "/(otherPages)/wishlist/page": "app/(otherPages)/wishlist/page.js",
-  "/(shop)/shop-link/page": "app/(shop)/shop-link/page.js"
+  "/(shop)/shop-link/page": "app/(shop)/shop-link/page.js",
+  "/(otherPages)/about-us/page": "app/(otherPages)/about-us/page.js",
+  "/(shop-details)/product-color-swatch/page": "app/(shop-details)/product-color-swatch/page.js",
+  "/(shop)/shop-default/page": "app/(shop)/shop-default/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }

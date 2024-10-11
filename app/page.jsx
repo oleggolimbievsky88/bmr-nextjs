@@ -26,8 +26,8 @@ export default function page() {
       <Header2 />
       <Hero />
       <VehicleSearch />
-      <Categories />
-      <Collections />
+      {/* <Categories /> */}
+      {/* <Collections /> */}
       <Products />
       <Collections2 />
       <div className="mt-5"></div>
