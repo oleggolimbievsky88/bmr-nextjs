@@ -30,6 +30,41 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(otherPages)/contact-1/page.js"
+    ],
+    "/(shop-details)/product-stacked/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-stacked/page.js"
+    ],
+    "/(shop-details)/product-right-thumbnails/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-right-thumbnails/page.js"
+    ],
+    "/(shop-details)/product-bottom-thumbnails/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-bottom-thumbnails/page.js"
+    ],
+    "/(shop-details)/product-3d/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-3d/page.js"
+    ],
+    "/(shop-details)/product-color-swatch/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-color-swatch/page.js"
+    ],
+    "/(shop)/product-style-list/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop)/product-style-list/page.js"
+    ],
+    "/(shop)/shop-link/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop)/shop-link/page.js"
     ]
   }
 }
