@@ -1,10 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/(otherPages)/contact-1/page": "app/(otherPages)/contact-1/page.js",
-  "/(shop-details)/product-3d/page": "app/(shop-details)/product-3d/page.js",
-  "/(shop-details)/product-color-swatch/page": "app/(shop-details)/product-color-swatch/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/(shop)/product-style-list/page": "app/(shop)/product-style-list/page.js",
-  "/(shop)/shop-link/page": "app/(shop)/shop-link/page.js"
+  "/page": "app/page.js"
 }

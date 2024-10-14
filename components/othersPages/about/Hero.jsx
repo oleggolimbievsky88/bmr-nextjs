@@ -14,9 +14,9 @@ export default function Hero() {
         />
         <div className="box-content text-center">
           <div className="container">
+            <h1 className="title text-black">BMR Suspension</h1>
             <div className="text text-white">
-              Empowering women to achieve <br className="d-xl-block d-none" />
-              fitness goals with style
+              We have the suspension and chassis components for your race car, hot rod, or truck.
             </div>
           </div>
         </div>

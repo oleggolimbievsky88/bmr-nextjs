@@ -29,7 +29,7 @@ export default function Header1() {
               </svg>
             </a>
           </div>
-          <div className="col-xl-3 col-md-4 col-6">
+          <div className="col-xl-2 col-md-4 col-6">
             <Link href={`/`} className="logo-header">
               <Image
                 alt="logo"
@@ -40,9 +40,9 @@ export default function Header1() {
               />
             </Link>
           </div>
-          <div className="col-xl-6 tf-md-hidden">
+          <div className="col-xl-8 tf-md-hidden">
             <nav className="box-navigation text-center">
-              <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-30">
+              <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-50">
                 <Nav />
                 <li className="menu-item">
                   <a
@@ -55,7 +55,7 @@ export default function Header1() {
               </ul>
             </nav>
           </div>
-          <div className="col-xl-3 col-md-4 col-3">
+          <div className="col-xl-2 col-md-4 col-3">
             <ul className="nav-icon d-flex justify-content-end align-items-center gap-20">
               <li className="nav-search">
                 <a

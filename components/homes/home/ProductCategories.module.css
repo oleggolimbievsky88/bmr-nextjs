@@ -1,0 +1,30 @@
+.cardLink {
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .cardHover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .cardHover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .cardHover .card-body {
+    transition: color 0.3s ease;
+  }
+  
+  .cardHover:hover .card-body {
+    color: var(--primary); /* Change color of text on hover, use primary color */
+  }
+  
+  .cardHover .card-img-top {
+    transition: opacity 0.3s ease;
+  }
+  
+  .cardHover:hover .card-img-top {
+    opacity: 0.9; /* Slight fade effect on the image */
+  }
+  

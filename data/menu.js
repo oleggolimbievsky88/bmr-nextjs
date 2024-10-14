@@ -20,40 +20,37 @@ export const demoItems = [
 
 export const productsPages = [
   {
-    heading: "Shop layouts",
+    heading: "2024 Mustang",
     links: [
-      { href: "/shop-default", text: "Default" },
-      { href: "/shop-left-sidebar", text: "Left sidebar" },
-      { href: "/shop-right-sidebar", text: "Right sidebar" },
-      { href: "/shop-fullwidth", text: "Fullwidth" },
-      { href: "/shop-collection-sub", text: "Sub collection" },
-      { href: "/shop-collection-list", text: "Collections list" },
+      { href: "/shop-default", text: "Suspension" },
+      { href: "/shop-left-sidebar", text: "Chassis" },
+      { href: "/shop-right-sidebar", text: "Bushing Kits" },
+      { href: "/shop-fullwidth", text: "Tshirts" },
+      { href: "/shop-collection-list", text: "Safety Equipment" },
+      { href: "/shop-collection-list", text: "Wheels" },
+      { href: "/shop-collection-list", text: "Miscellaneous" },
     ],
   },
   {
-    heading: "Features",
+    heading: "2015 - 2023 Mustang",
     links: [
-      { href: "/shop-link", text: "Pagination links" },
-      { href: "/shop-loadmore", text: "Pagination loadmore" },
-      {
-        href: "/shop-infinite-scrolling",
-        text: "Pagination infinite scrolling",
-      },
-      { href: "/shop-filter-sidebar", text: "Filter sidebar" },
-      { href: "/shop-filter-hidden", text: "Filter hidden" },
+      { href: "/shop-default", text: "Suspension" },
+      { href: "/shop-left-sidebar", text: "Chassis" },
+      { href: "/shop-right-sidebar", text: "Bushing Kits" },
+      { href: "/shop-fullwidth", text: "Tshirts" },
+      { href: "/shop-collection-list", text: "Safety Equipment" },
+      { href: "/shop-collection-list", text: "Wheels" },
+      { href: "/shop-collection-list", text: "Miscellaneous" },
     ],
   },
   {
-    heading: "Product styles",
+    heading: "2007 - 2014 Shelby GT500",
     links: [
-      { href: "/product-style-list", text: "Product style list" },
-      { href: "/product-style-01", text: "Product style 01" },
-      { href: "/product-style-02", text: "Product style 02" },
-      { href: "/product-style-03", text: "Product style 03" },
-      { href: "/product-style-04", text: "Product style 04" },
-      { href: "/product-style-05", text: "Product style 05" },
-      { href: "/product-style-06", text: "Product style 06" },
-      { href: "/product-style-07", text: "Product style 07" },
+      { href: "/shop-default", text: "Suspension" },
+      { href: "/shop-left-sidebar", text: "Chassis" },
+      { href: "/shop-fullwidth", text: "Tshirts" },
+      { href: "/shop-collection-list", text: "Safety Equipment" },
+      { href: "/shop-collection-list", text: "Wheels" },
     ],
   },
 ];
@@ -153,26 +150,16 @@ export const productDetailPages = [
 ];
 
 export const allPagesLinks = [
-  { href: "/about-us", text: "About us" },
   {
     href: "/brands",
     text: "Brands",
-    extra: (
-      <div className="demo-label">
-        <span className="demo-new">New</span>
-      </div>
-    ),
   },
-  { href: "/brands-v2", text: "Brand V2" },
-  { href: "/contact-1", text: "Contact 1" },
-  { href: "/contact-2", text: "Contact 2" },
-  { href: "/faq-1", text: "FAQ 01" },
-  { href: "/faq-2", text: "FAQ 02" },
+  { href: "/faq-1", text: "FAQ" },
   { href: "/our-store", text: "Our store" },
   { href: "/store-locations", text: "Store locator" },
   {
-    href: "/timeline",
-    text: "Timeline",
+    href: "/Blog",
+    text: "Blog",
     extra: (
       <div className="demo-label">
         <span className="demo-new">New</span>
@@ -376,10 +363,8 @@ export const navItems = [
       { href: "/about-us", label: "About us" },
       { href: "/brands", label: "Brands", demoLabel: true },
       { href: "/brands-v2", label: "Brands V2" },
-      { href: "/contact-1", label: "Contact 1" },
-      { href: "/contact-2", label: "Contact 2" },
+      { href: "/contact-1", label: "Contact" },
       { href: "/faq-1", label: "FAQ 01" },
-      { href: "/faq-2", label: "FAQ 02" },
       { href: "/our-store", label: "Our store" },
       { href: "/store-locations", label: "Store locator" },
       { href: "/timeline", label: "Timeline", demoLabel: true },

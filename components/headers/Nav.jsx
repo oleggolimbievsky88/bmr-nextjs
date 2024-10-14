@@ -176,7 +176,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
                         href={`/home-men`}
                         className="tf-btn hover-icon btn-xl collection-title fs-16"
                       >
-                        <span>Men</span>
+                        <span>New Products</span>
                         <i className="icon icon-arrow1-top-left" />
                       </Link>
                     </div>
@@ -187,7 +187,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
                 <div className="collection-item hover-img">
                   <div className="collection-inner">
                     <Link
-                      href={`/shop-women`}
+                      href={`/new-products-mustang`}
                       className="collection-image img-style"
                     >
                       <Image
@@ -201,10 +201,10 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
                     </Link>
                     <div className="collection-content">
                       <Link
-                        href={`/shop-women`}
+                        href={`/shop-mustang`}
                         className="tf-btn btn-xl collection-title fs-16 hover-icon"
                       >
-                        <span>Women</span>
+                        <span>Clearance</span>
                         <i className="icon icon-arrow1-top-left" />
                       </Link>
                     </div>
@@ -304,6 +304,45 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
                     linkItem.extra ? "position-relative" : ""
                   }  ${isMenuActive(linkItem) ? "activeMenu" : ""}`}
                 >
+                  Link
+                  {linkItem.extra}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </li>
+      
+      <li className="menu-item position-relative">
+        <a
+          href="/installation"
+          className={`item-link ${Linkfs} ${textColor}  ${
+            isMenuActive(blogLinks) ? "activeMenu" : ""
+          }`}
+        >
+          Installation
+        </a>
+      </li>
+      <li className="menu-item position-relative">
+        <a
+          href="#"
+          className={`item-link ${Linkfs} ${textColor}  ${
+            isMenuActive(blogLinks) ? "activeMenu" : ""
+          }`}
+        >
+          Pages
+          {isArrow ? <i className="icon icon-arrow-down" /> : ""}
+        </a>
+        <div className="sub-menu links-default">
+        <ul className="menu-list">
+            {allPagesLinks.map((linkItem, index) => (
+              <li key={index}>
+                <Link
+                  href={linkItem.href}
+                  className={`menu-link-text link text_black-2 ${
+                    linkItem.extra ? "position-relative" : ""
+                  }  ${isMenuActive(linkItem) ? "activeMenu" : ""}`}
+                >
                   {linkItem.text}
                   {linkItem.extra}
                 </Link>
@@ -314,33 +353,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
       </li>
       <li className="menu-item position-relative">
         <a
-          href="#"
-          className={`item-link ${Linkfs} ${textColor}  ${
-            isMenuActive(blogLinks) ? "activeMenu" : ""
-          }`}
-        >
-          Installation
-        </a>
-        {/* <div className="sub-menu links-default">
-          <ul className="menu-list">
-            {blogLinks.map((linkItem, index) => (
-              <li key={index}>
-                <Link
-                  href={linkItem.href}
-                  className={`menu-link-text link text_black-2  ${
-                    isMenuActive(linkItem) ? "activeMenu" : ""
-                  }`}
-                >
-                  {linkItem.text}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div> */}
-      </li>
-      <li className="menu-item position-relative">
-        <a
-          href="#"
+          href="/about-us"
           className={`item-link ${Linkfs} ${textColor}  ${
             isMenuActive(blogLinks) ? "activeMenu" : ""
           }`}
@@ -350,7 +363,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
       </li>
       <li className="menu-item position-relative">
         <a
-          href="#"
+          href="/contact"
           className={`item-link ${Linkfs} ${textColor}  ${
             isMenuActive(blogLinks) ? "activeMenu" : ""
           }`}
@@ -358,6 +371,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
           Contact
         </a>
       </li>
+      
     </>
   );
 }
