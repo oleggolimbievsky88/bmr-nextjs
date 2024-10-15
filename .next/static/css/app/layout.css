@@ -7173,11 +7173,13 @@ header.header-bg {
   margin-bottom: 7px;
   font-size: 18px;
   line-height: 21.6px;
+  color: white;
 }
 .collection-item-v2 .collection-content .subheading {
   font-size: 16px;
   line-height: 19.2px;
   margin-bottom: 7px;
+  color: red;
 }
 .collection-item-v2.type-small .collection-content .heading {
   font-size: 18px;

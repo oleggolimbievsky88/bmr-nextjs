@@ -28,21 +28,21 @@ export const collections = [
 
 export const slidesData = [
   {
-    imgSrc: "/images/collections/collection-27.jpg",
-    alt: "collection-img",
-    title: "Modern Backpack",
+    imgSrc: "/images/shop-categories/NewProductsGradient.jpg",
+    alt: "New Products",
+    title: "New Products",
     price: "$199",
   },
   {
-    imgSrc: "/images/collections/collection-28.jpg",
-    alt: "collection-img",
-    title: "Season Collection",
+    imgSrc: "/images/shop-categories/MerchGradient.jpg",
+    alt: "BMR Merchandise",
+    title: "BMR Merchandise",
     price: "$199",
   },
   {
-    imgSrc: "/images/collections/collection-26.jpg",
-    alt: "collection-img",
-    title: "Stradivarius top trainers",
+    imgSrc: "/images/shop-categories/GiftCardsGradient.jpg",
+    alt: "Gift Cards",
+    title: "BMR Gift Cards",
     price: "$199",
   },
 ];
