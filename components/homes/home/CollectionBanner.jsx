@@ -12,7 +12,7 @@ export default function CollectionBanner() {
                 2024
                 Mustang
               </h2>
-              <p
+              <div
                 className="description text_black-2 wow fadeInUp"
                 data-wow-delay="0s"
                 
@@ -21,7 +21,7 @@ export default function CollectionBanner() {
                 <p>Upgrading your 2024 Mustang with BMR Suspension aftermarket products delivers a significant boost in performance, handling, and overall driving experience.</p><br /> 
                 <p>Designed specifically for high-performance applications, BMR Suspension components enhance cornering, stability, and ride comfort, making them ideal for both daily driving and track use.</p><br />
                 <p>Engineered for strength and precision, these suspension upgrades help you maximize the full potential of your Mustang, offering improved traction, reduced body roll, and greater control.</p>
-              </p>
+              </div>
               <Link
                 href={`/shop-collection-list`}
                 className="tf-btn btn-outline-dark radius-3 link justify-content-center wow fadeInUp"

@@ -1713,7 +1713,7 @@ label {
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   transition: all 0.3s ease;
   position: relative;
 }
@@ -18222,6 +18222,44 @@ blockquote .text {
     justify-content: flex-start;
   }
 }
+/* CSS for ThreeColumnLayout */
+.custom-card {
+  overflow: hidden;
+  border-radius: 0.5rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.custom-card:hover {
+  transform: scale(1.05); /* Scale the card on hover */
+}
+
+.custom-card .card-img-overlay {
+  background: rgba(0, 0, 0, 0.5); /* Darker overlay on hover */
+  transition: background 0.3s ease-in-out;
+}
+
+.custom-card:hover .card-img-overlay {
+  background: rgba(0, 0, 0, 0); /* Overlay on image */
+}
+
+.shop-now {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 0.1rem;
+  transition: color 0.3s ease;
+  color: var(--primary); /* Primary color for shop now */
+}
+
+.custom-card:hover .shop-now {
+  color: var(--primary); /* Ensure red stays on hover */
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
 /* CSS for circular zoom pane */
 .zoom-magnifier-containing .drift-zoom-pane {
   border-radius: 50%;
