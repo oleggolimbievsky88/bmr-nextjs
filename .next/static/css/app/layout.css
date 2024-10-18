@@ -8992,7 +8992,7 @@ header.header-bg {
   justify-content: center;
 }
 .card-product .card-product-info {
-  padding-top: 10px;
+  padding: 10px;
   grid-gap: 8px;
   gap: 8px;
   display: grid;
@@ -9009,6 +9009,7 @@ header.header-bg {
   font-size: 14px;
   line-height: 14px;
   font-weight: 600;
+  color: var(--primary);
 }
 .card-product .card-product-info .old-price {
   text-decoration: line-through;

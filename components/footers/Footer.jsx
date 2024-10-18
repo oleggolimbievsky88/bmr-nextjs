@@ -506,13 +506,7 @@ export default function Footer() {
           <div className="footer__bottom--inenr d-flex justify-content-between align-items-center">
             <div className="footer__logo">
               <a className="footer__logo--link" href="index.html">
-                <Image
-                  src="/assets/img/logo/bmr-logo-white.webp"
-                  alt="BMR Logo"
-                  width={175}
-                  height={40}
-                  style={{ fill: false, width: 165, height: 40 }}
-                />
+                asdf
               </a>
             </div>
             <p className="copyright__content">

@@ -507,11 +507,11 @@ export default function Footer() {
             <div className="footer__logo">
               <a className="footer__logo--link" href="index.html">
                 <Image
-                  src="/assets/img/logo/bmr-logo-white.webp"
+                  src="/images/logo/bmr-logo-white.webp"
                   alt="BMR Logo"
-                  width={175}
-                  height={40}
-                  style={{ fill: false, width: 165, height: 40 }}
+                  width={165}
+                  height={35}
+                  style={{ fill: false, width: 165, height: 35 }}
                 />
               </a>
             </div>
