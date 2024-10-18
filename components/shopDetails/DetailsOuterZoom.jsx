@@ -51,10 +51,10 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
                     <h5>
-                      {product.title ? product.title : "Cotton jersey top"}
+                      {product.ProductName ? product.ProductName : "BMR Product"}
                     </h5>
                   </div>
-                  <div className="tf-product-info-badges">
+                  {/* <div className="tf-product-info-badges">
                     <div className="badges">Best seller</div>
                     <div className="product-status-content">
                       <i className="icon-lightning" />
@@ -62,25 +62,25 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                         Selling fast! 56 people have this in their carts.
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="tf-product-info-price">
                     <div className="price-on-sale">
-                      ${product.price.toFixed(2)}
+                      ${product.Price}
                     </div>
-                    {product.oldPrice && (
+                    {/* {product.oldPrice && (
                       <div className="compare-at-price">
                         ${product.oldPrice}
                       </div>
                     )}
                     <div className="badges-on-sale">
                       <span>20</span>% OFF
-                    </div>
+                    </div> */}
                   </div>
-                  <div className="tf-product-info-liveview">
+                  {/* <div className="tf-product-info-liveview">
                     <div className="liveview-count">20</div>
                     <p className="fw-6">People are viewing this right now</p>
-                  </div>
-                  <div className="tf-product-info-countdown">
+                  </div> */}
+                  {/* <div className="tf-product-info-countdown">
                     <div className="countdown-wrap">
                       <div className="countdown-title">
                         <i className="icon-time tf-ani-tada" />
@@ -95,7 +95,7 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="tf-product-info-variant-picker">
                     <div className="variant-picker-item">
                       <div className="variant-picker-label">
@@ -129,7 +129,7 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                         ))}
                       </form>
                     </div>
-                    <div className="variant-picker-item">
+                    {/* <div className="variant-picker-item">
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="variant-picker-label">
                           Size:
@@ -166,7 +166,7 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                           </React.Fragment>
                         ))}
                       </form>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="tf-product-info-quantity">
                     <div className="quantity-title fw-6">Quantity</div>
@@ -185,7 +185,7 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                           -
                         </span>
                         <span className="tf-qty-price">
-                          ${product.price.toFixed(2)}
+                          ${product.Price}
                         </span>
                       </a>
                       <a

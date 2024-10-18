@@ -1,23 +1,13 @@
 export const colors = [
   {
-    id: "values-beige",
-    value: "Beige",
-    className: "bg-color-beige",
-  },
-  {
     id: "values-black",
-    value: "Black",
+    value: "Black Hammertone",
     className: "bg-color-black",
   },
   {
-    id: "values-blue",
-    value: "Blue",
-    className: "bg-color-blue",
-  },
-  {
-    id: "values-white",
-    value: "White",
-    className: "bg-color-white",
+    id: "values-red",
+    value: "Red",
+    className: "bg-color-red",
   },
 ];
 

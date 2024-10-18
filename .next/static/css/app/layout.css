@@ -5923,6 +5923,10 @@ header.header-bg {
   color: var(--text-3);
 }
 
+.bg-color-red {
+  background: conic-gradient(var(--primary) 0deg 360deg);
+}
+
 .bg-color-beige {
   background: conic-gradient(#c8ad7f 0deg 360deg);
 }
@@ -18222,6 +18226,13 @@ blockquote .text {
     justify-content: flex-start;
   }
 }
+/* New Product Card */
+.NewProductPartNumber {
+  font-size: 1rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
 /* CSS for ThreeColumnLayout */
 .custom-card {
   overflow: hidden;

@@ -6,7 +6,7 @@ import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
 import emailjs from "@emailjs/browser";
 import { aboutLinks, footerLinks, paymentImages } from "@/data/footerLinks";
-export default function Footer1({ bgColor = "" }) {
+export default function Footer1({ bgColor = "background-black" }) {
   useEffect(() => {
     const headings = document.querySelectorAll(".footer-heading-moblie");
 
@@ -68,9 +68,9 @@ export default function Footer1({ bgColor = "" }) {
                     <Link href={`/`}>
                       <Image
                         alt=""
-                        src="/images/logo/bmr-nav-logo.png"
-                        width="136"
-                        height="21"
+                        src="/images/logo/bmr-logo-white.webp"
+                        width={255}
+                        height={45}
                       />
                     </Link>
                   </div>
@@ -237,14 +237,6 @@ export default function Footer1({ bgColor = "" }) {
                       </div>
                       <div className="subscribe-msg" />
                     </form>
-                    <div className="tf-cur">
-                      <div className="tf-currencies">
-                        <CurrencySelect />
-                      </div>
-                      <div className="tf-languages">
-                        <LanguageSelect />
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
