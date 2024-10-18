@@ -35,7 +35,8 @@ export default function page() {
       <ThreeColumnLayout /><br />
       {/* <Categories /> */}
       {/* <Products /><br /><br /> */}
-      <NewProductsPage />
+      <NewProductsPage scrachDent="0"/>
+      <NewProductsPage scrachDent="1"/>
       {/* <ProductsPage /> */}
       <CollectionBanner />
       {/* <Collections /> */}

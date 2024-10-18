@@ -1384,7 +1384,7 @@
     @include flex(center, center);
   }
   .card-product-info {
-    padding-top: 10px;
+    padding: 10px;
     gap: 8px;
     display: grid;
     .title {
@@ -1399,6 +1399,7 @@
       font-size: 14px;
       line-height: 14px;
       font-weight: 600;
+      color: var(--primary);
     }
     .old-price {
       text-decoration: line-through;

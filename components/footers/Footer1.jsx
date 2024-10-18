@@ -67,10 +67,11 @@ export default function Footer1({ bgColor = "background-black" }) {
                   <div className="footer-logo">
                     <Link href={`/`}>
                       <Image
-                        alt=""
                         src="/images/logo/bmr-logo-white.webp"
-                        width={255}
-                        height={45}
+                        alt="BMR Logo"
+                        width={165}
+                        height={35}
+                        style={{ fill: false, width: 165, height: 35 }}
                       />
                     </Link>
                   </div>
