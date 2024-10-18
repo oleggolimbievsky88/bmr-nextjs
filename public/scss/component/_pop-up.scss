@@ -574,6 +574,10 @@
   }
 }
 
+
+.bg-color-red {
+  background: conic-gradient(var(--primary) 0deg 360deg);
+}
 .bg-color-beige {
   background: conic-gradient(#c8ad7f 0deg 360deg);
 }

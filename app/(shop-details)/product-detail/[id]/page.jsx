@@ -1,20 +1,32 @@
+// app/products/[id]/page.js
+
 import Footer1 from "@/components/footers/Footer1";
 import Header2 from "@/components/headers/Header2";
 import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
 import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
-import React from "react";
-import Link from "next/link";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
-import { allProducts } from "@/data/products";
+import Link from "next/link";
+
 export const metadata = {
   title: "Shop Details || Ecomus - Ultimate Nextjs Ecommerce Template",
   description: "Ecomus - Ultimate Nextjs Ecommerce Template",
 };
-export default function page({ params }) {
-  const product =
-    allProducts.filter((elm) => elm.id == params.id)[0] || allProducts[0];
+
+export default async function ProductPage({ params }) {
+  const { id } = params;
+
+  // Fetch product data from API
+  const res = await fetch(`http://localhost:3000/api/products/${id}`);
+
+  if (!res.ok) {
+    // Handle product not found or server error
+    return <p>Product not found.</p>;
+  }
+
+  const product = await res.json();
+
   return (
     <>
       <Header2 />
@@ -27,25 +39,22 @@ export default function page({ params }) {
               </Link>
               <i className="icon icon-arrow-right" />
               <a href="#" className="text">
-                Women
+                2024 Mustang
               </a>
               <i className="icon icon-arrow-right" />
               <span className="text">
-                {product.title ? product.product : "Cotton jersey top"}
+                {product.ProductName ? product.ProductName : "Product Title"}
               </span>
             </div>
             <div className="tf-breadcrumb-prev-next">
               <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
                 <i className="icon icon-arrow-left" />
-                {/* <span className="tooltip">Cotton jersey top</span> */}
               </a>
               <a href="#" className="tf-breadcrumb-back hover-tooltip center">
                 <i className="icon icon-shop" />
-                {/* <span className="tooltip">Back to Women</span> */}
               </a>
               <a href="#" className="tf-breadcrumb-next hover-tooltip center">
                 <i className="icon icon-arrow-right" />
-                {/* <span className="tooltip">Cotton jersey top</span> */}
               </a>
             </div>
           </div>
