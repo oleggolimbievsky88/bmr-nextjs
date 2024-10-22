@@ -1,6 +1,6 @@
 import Features from "@/components/common/Features2";
 import Footer2 from "@/components/footers/Footer2";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import Topbar2 from "@/components/headers/Topbar2";
 import Categories from "@/components/homes/home-setup-gear/Categories";
 import Collections from "@/components/homes/home-setup-gear/Collections";

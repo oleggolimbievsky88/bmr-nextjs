@@ -12,7 +12,7 @@ import React from "react";
 import Footer1 from "@/components/footers/Footer1";
 import Header15 from "@/components/headers/Header15";
 import Topbar1 from "@/components/headers/Topbar1";
-import Header2 from "@/components/headers/Header2";
+import Header from "@/components/headers/Header";
 import VehicleSearch from "@/components/common/VehicleSearch";
 import ShopCategories from "@/components/homes/home/ShopCategories";
 import CollectionBanner from "@/components/homes/home/CollectionBanner";
@@ -28,7 +28,7 @@ export default function page() {
   return (
     <>
       {/* <Topbar1 /> */}
-      <Header2 />
+      <Header />
       <Hero /> <br />
       <VehicleSearch /> <br />
       {/* <ShopCategories /> <br /> <br /> */}

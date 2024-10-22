@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import Banner from "@/components/homes/home-sock/Banner";
 import Collections from "@/components/homes/home-sock/Collections";
 import CollectionsBanner2 from "@/components/homes/home-sock/CollectionsBanner2";

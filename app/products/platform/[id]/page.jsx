@@ -1,39 +1,40 @@
-'use client';
-
-// app/products/platform/[id]/page.js
-
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
-export default function PlatformProductsPage() {
-  const [products, setProducts] = useState([]);
+// Example: Mock product data (replace with actual API call or fetch from database)
+const mockProducts = [
+  { id: 1, name: 'Suspension Kit', platform: '2024-mustang' },
+  { id: 2, name: 'Chassis Reinforcement', platform: '2024-mustang' },
+  { id: 3, name: 'Bushing Kit', platform: '2005-2014-mustang' },
+];
+
+const PlatformPage = () => {
   const router = useRouter();
-  const { id } = router.query; // Get platform ID from the URL
+  const { platform } = router.query;
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
-    if (!id) return; // Wait until the platform ID is available
-
-    async function fetchProductsByPlatform() {
-      const response = await fetch(`/api/products/platform/${id}`);
-      const data = await response.json();
-      setProducts(data);
+    // Filter products based on the platform from the query
+    if (platform) {
+      const filtered = mockProducts.filter(
+        (product) => product.platform === platform
+      );
+      setFilteredProducts(filtered);
     }
+  }, [platform]);
 
-    fetchProductsByPlatform();
-  }, [id]);
+  if (!platform) return <p>Loading...</p>;
 
   return (
     <div>
-      <h1>Products for Platform {id}</h1>
+      <h1>Products for {platform.replace('-', ' ')}</h1>
       <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            <h2>{product.name}</h2>
-            <p>Price: ${product.price}</p>
-            <p>{product.description}</p>
-          </li>
+        {filteredProducts.map((product) => (
+          <li key={product.id}>{product.name}</li>
         ))}
       </ul>
     </div>
   );
-}
+};
+
+export default PlatformPage;

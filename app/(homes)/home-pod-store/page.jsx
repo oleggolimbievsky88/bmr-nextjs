@@ -1,5 +1,5 @@
 import Features from "@/components/common/Features";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import Topbar1 from "@/components/headers/Topbar1";
 import Categories from "@/components/homes/home/Categories";
 import Collections from "@/components/homes/home/Collections";
