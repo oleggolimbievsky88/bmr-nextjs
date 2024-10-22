@@ -1,6 +1,6 @@
 import Features from "@/components/common/Features2";
 import Footer5 from "@/components/footers/Footer5";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import Banner from "@/components/homes/home-tee/Banner";
 import Categories from "@/components/homes/home-tee/Categories";
 import Hero from "@/components/homes/home-tee/Hero";

@@ -1,5 +1,5 @@
 import React from "react";
-import Nav from "./Nav";
+import Nav from "./Navbar.jsx";
 import Link from "next/link";
 import Image from "next/image";
 import CartLength from "../common/CartLength";

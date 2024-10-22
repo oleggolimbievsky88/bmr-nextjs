@@ -1,6 +1,6 @@
 import BlogList from "@/components/blogs/BlogList";
 import Footer1 from "@/components/footers/Footer1";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import React from "react";
 import Link from "next/link";
 export const metadata = {

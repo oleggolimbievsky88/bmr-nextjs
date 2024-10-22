@@ -1,7 +1,7 @@
 import BlogDetails from "@/components/blogs/BlogDetails";
 import RelatedBlogs from "@/components/blogs/RelatedBlogs";
 import Footer1 from "@/components/footers/Footer1";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import { allBlogs } from "@/data/blogs";
 import Link from "next/link";
 import React from "react";

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import "../public/scss/main.scss";
 import "photoswipe/dist/photoswipe.css";
 import "rc-slider/assets/index.css";
-import HomesModal from "@/components/modals/HomesModal";
 import Context from "@/context/Context";
 import QuickView from "@/components/modals/QuickView";
 import ProductSidebar from "@/components/modals/ProductSidebar";
@@ -133,7 +132,7 @@ export default function RootLayout({ children }) {
       <body className="preload-wrapper popup-loader">
         <Context>
           <div id="wrapper">{children}</div>
-          <HomesModal /> <QuickView />
+          <QuickView />
           <QuickAdd />
           <ProductSidebar />
           <Compare />

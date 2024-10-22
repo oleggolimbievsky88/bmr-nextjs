@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import Topbar1 from "@/components/headers/Topbar1";
 import Collections from "@/components/homes/home-furniture-02/Collections";
 import Collections2 from "@/components/homes/home-furniture-02/Collections2";

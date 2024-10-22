@@ -9001,6 +9001,7 @@ header.header-bg {
   font-size: 16px;
   line-height: 19.2px;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   display: -webkit-box;
   overflow: hidden;
@@ -9699,6 +9700,10 @@ header.header-bg {
 .list-product-btn.style-blue .box-icon:hover {
   background-color: var(--white) !important;
   color: #1c355e;
+}
+
+[data-grid=grid-list] .card-product {
+  font-size: 1em;
 }
 
 [data-grid=grid-6] .card-product .countdown-box {

@@ -14,9 +14,9 @@ export default function Hero() {
         />
         <div className="box-content text-center">
           <div className="container">
-            <h1 className="title text-black">BMR Suspension</h1>
-            <div className="text text-white">
-              We have the suspension and chassis components for your race car, hot rod, or truck.
+            <h1 className="title text-danger">BMR Suspension</h1>
+            <div className="text-black">
+              <h5>We have the suspension and chassis components for your race car, hot rod, or truck.</h5>
             </div>
           </div>
         </div>

@@ -5,12 +5,12 @@ export default function FlatTitle() {
     <section className="flat-spacing-9">
       <div className="container">
         <div className="flat-title my-0">
-          <span className="title">We are BMR Suspension</span>
+          <span className="title text-center">We are <h4>BMR SUSPENSION</h4></span>
           <h6>
             <span>
-              Since 1998
+              
               <p>
-                When BMR Suspension began back in 1998, it was difficult for
+                <b>Since 1998</b> when BMR Suspension began back in 1998, it was difficult for
                 performance automotive enthusiasts to find suspension products
                 that had an innovative design and quality construction at an
                 affordable price. BMR turned this market void into a business

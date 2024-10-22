@@ -7,6 +7,8 @@ import Quantity from "@/components/shopDetails/Quantity";
 import { Gallery, Item } from "react-photoswipe-gallery";
 import { productBestcell } from "@/data/products";
 import { useContextElement } from "@/context/Context";
+import paymentImages from "@/data/paymentImages";
+
 const priceOptions = [
   { id: "values-1", price: "$268.00", checked: true },
   { id: "values-2", price: "$333.00", checked: false },
@@ -349,6 +351,7 @@ export default function BestSell() {
                           <div className="text fw-6">Share</div>
                         </a>
                       </div>
+                      
                       <div className="tf-product-info-trust-seal">
                         <div className="tf-product-trust-mess">
                           <i className="icon-safe" />
@@ -358,37 +361,16 @@ export default function BestSell() {
                           </p>
                         </div>
                         <div className="tf-payment">
+                        {paymentImages.map((image, index) => (
                           <Image
-                            alt=""
-                            src="/images/payments/visa.png"
-                            width={48}
-                            height={30}
+                            key={index}
+                            src={image.src}
+                            width={image.width}
+                            height={image.height}
+                            alt={image.alt}
                           />
-                          <Image
-                            alt=""
-                            src="/images/payments/img-1.png"
-                            width={49}
-                            height={30}
-                          />
-                          <Image
-                            alt=""
-                            src="/images/payments/img-2.png"
-                            width={48}
-                            height={30}
-                          />
-                          <Image
-                            alt=""
-                            src="/images/payments/img-3.png"
-                            width={57}
-                            height={30}
-                          />
-                          <Image
-                            alt=""
-                            src="/images/payments/img-4.png"
-                            width={49}
-                            height={30}
-                          />
-                        </div>
+                        ))}
+                      </div>
                       </div>
                       <div>
                         <Link

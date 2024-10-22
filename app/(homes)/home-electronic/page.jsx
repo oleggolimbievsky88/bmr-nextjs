@@ -1,6 +1,6 @@
 import Features from "@/components/common/Features2";
 import Footer2 from "@/components/footers/Footer2";
-import Header2 from "@/components/headers/Header2";
+import Header2 from "@/components/headers/Header";
 import Blogs from "@/components/homes/home-electronic/Blogs";
 import Categories from "@/components/homes/home-electronic/Categories";
 import CollectionBanner from "@/components/homes/home-electronic/CollectionBanner";
