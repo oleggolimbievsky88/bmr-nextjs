@@ -1,6 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/(otherPages)/contact/page": "app/(otherPages)/contact/page.js",
-  "/(otherPages)/about-us/page": "app/(otherPages)/about-us/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
+  "/(otherPages)/contact/page": "app/(otherPages)/contact/page.js"
 }
