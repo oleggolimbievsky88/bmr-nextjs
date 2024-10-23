@@ -7,7 +7,7 @@ import Quantity from "@/components/shopDetails/Quantity";
 import { Gallery, Item } from "react-photoswipe-gallery";
 import { productBestcell } from "@/data/products";
 import { useContextElement } from "@/context/Context";
-import paymentImages from "@/data/footerLinks";
+import { paymentImages } from "@/data/footerLinks";
 
 const priceOptions = [
   { id: "values-1", price: "$268.00", checked: true },
