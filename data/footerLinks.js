@@ -14,6 +14,7 @@ export const aboutLinks = [
   { href: "/about-us", text: "About Us" },
   { href: "/login", text: "Account" },
 ];
+
 export const paymentImages = [
   { src: "/images/payments/visa.png", width: 48, height: 30, alt: "" },
   { src: "/images/payments/paypal.png", width: 49, height: 30, alt: "" },
