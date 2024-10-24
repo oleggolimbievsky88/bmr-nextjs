@@ -7,7 +7,7 @@ export default function page() {
         <div className="flat-title my-0">
           <h6>
             <span>
-              Platform
+              Platform Categories
             </span>
           </h6>
         </div>
