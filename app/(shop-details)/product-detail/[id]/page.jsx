@@ -44,7 +44,7 @@ export default async function ProductPage({ params }) {
               </a>
               <i className="icon icon-arrow-right" />
               <span className="text">
-                {product.ProductName ? product.ProductName : "Product Title"}
+                {product?.ProductName ? product?.ProductName : "Product Title"}
               </span>
             </div>
             <div className="tf-breadcrumb-prev-next">

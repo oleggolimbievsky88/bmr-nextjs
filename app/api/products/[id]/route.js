@@ -22,7 +22,7 @@ export async function GET(request, { params }) {
         .filter((imgSrc) => imgSrc !== "" && imgSrc !== "0") // Filter out invalid entries
         .map((imgSrc, index) => ({
           imgSrc: `https://bmrsuspension.com/siteart/products/${imgSrc}`,
-          alt: `Image ${index + 1} for ${product.ProductName}`,
+          alt: `Image ${index + 1} for ${product?.ProductName}`,
           width: 770,
           height: 1075,
         }));
@@ -32,14 +32,14 @@ export async function GET(request, { params }) {
     const mainImage = product.ImageLarge && product.ImageLarge.trim() !== "0"
       ? {
           imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
-          alt: `Main image for ${product.ProductName}`,
+          alt: `Main image for ${product?.ProductName}`,
           width: 770,
           height: 1075,
         }
       : null;
 
     // Parse other images from the Images field
-    const otherImages = parseImages(product.Images);
+    const otherImages = parseImages(product?.Images);
 
     // Combine the main image with other images (if mainImage exists)
     const images = mainImage ? [mainImage, ...otherImages] : otherImages;
