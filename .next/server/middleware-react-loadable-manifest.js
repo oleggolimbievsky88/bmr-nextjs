@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"app/layout.js -> bootstrap/dist/js/bootstrap.esm\":{\"id\":\"app/layout.js -> bootstrap/dist/js/bootstrap.esm\",\"files\":[]}}"
+self.__REACT_LOADABLE_MANIFEST='{"app/layout.js -> bootstrap/dist/js/bootstrap.esm":{"id":65471,"files":[]},"components/shopDetails/sliders/Slider5.jsx -> @google/model-viewer":{"id":55331,"files":["static/chunks/b536a0f1.d1a8fc636673b082.js","static/chunks/5331.828c70cfd89de000.js"]}}';
