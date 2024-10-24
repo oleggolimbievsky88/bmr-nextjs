@@ -15,11 +15,14 @@ export const metadata = {
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
+const API_URL = process.env.API_URL || "http://localhost:3000";
+
+
 export default async function ProductPage({ params }) {
   const { id } = params;
 
   // Fetch product data from API
-  const res = await fetch(`http://localhost:3000/api/products/${id}`);
+  const res = await fetch(`${API_URL}/api/products/${id}`);
 
   if (!res.ok) {
     // Handle product not found or server error
