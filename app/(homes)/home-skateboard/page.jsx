@@ -13,8 +13,8 @@ import Testimonials from "@/components/homes/home-skateboard/Testimonials";
 import React from "react";
 
 export const metadata = {
-  title: "Home Skateboard || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Skateboard | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

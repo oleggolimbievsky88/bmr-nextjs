@@ -1,5 +1,5 @@
 import Features from "@/components/common/Features";
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header11 from "@/components/headers/Header11";
 
 import Topbar1 from "@/components/headers/Topbar1";
@@ -13,8 +13,8 @@ import Products from "@/components/homes/home-dog-accessories/Products";
 import React from "react";
 
 export const metadata = {
-  title: "Home Dog Accessories || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Dog Accessories | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

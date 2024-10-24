@@ -83,6 +83,11 @@ export const sizeOptions = [
   { id: "values-xl", value: "XL", defaultChecked: false },
 ];
 
+export const greaseOptions = [
+  { id: "No", value: "No Thanks", defaultChecked: false },
+  { id: "SUL-41150", value: "SUL-41150 - 14oz Super Lube (+$18.95", defaultChecked: true },
+];
+
 export const paymentImages = [
   { src: "/images/payments/visa.png", width: 48, height: 30, alt: "" },
   { src: "/images/payments/paypal.png", width: 49, height: 30, alt: "" },

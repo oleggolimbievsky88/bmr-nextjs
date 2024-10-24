@@ -4,16 +4,18 @@ import Slider2 from "./sliders/Slider2";
 import Slider3 from "./sliders/Slider3";
 import Image from "next/image";
 import CountdownComponent from "../common/Countdown";
+import BoughtTogether from "./BoughtTogether";
 import {
   colors,
   paymentImages,
   sizeOptions,
+  greaseOptions,
 } from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
-export default function Details6() {
+export default function Details6({product}) {
   const [currentColor, setCurrentColor] = useState(colors[0]);
-  const [currentSize, setCurrentSize] = useState(sizeOptions[0]);
+  const [currentGrease, setCurrentGrease] = useState(greaseOptions[0]);
   return (
     <section
       className="flat-spacing-4 pt_0"
@@ -25,7 +27,7 @@ export default function Details6() {
             <div className="col-md-6">
               <div className="tf-product-media-wrap thumbs-bottom sticky-top">
                 <div className="thumbs-slider">
-                  <Slider3 />
+                  <Slider3 productId={product.ProductID} />
                 </div>
               </div>
             </div>
@@ -34,29 +36,21 @@ export default function Details6() {
                 <div className="tf-zoom-main" />
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
-                    <h5>Cotton jersey top</h5>
+                    <h5>{product.ProductName}</h5>
                   </div>
-                  <div className="tf-product-info-badges">
-                    <div className="badges">Best seller</div>
-                    <div className="product-status-content">
-                      <i className="icon-lightning" />
-                      <p className="fw-6">
-                        Selling fast! 56 people have this in their carts.
-                      </p>
-                    </div>
-                  </div>
+                  
                   <div className="tf-product-info-price">
                     <div className="price-on-sale">$8.00</div>
-                    <div className="compare-at-price">$10.00</div>
+                    {/* <div className="compare-at-price">$10.00</div>
                     <div className="badges-on-sale">
                       <span>20</span>% OFF
-                    </div>
+                    </div> */}
                   </div>
-                  <div className="tf-product-info-liveview">
-                    <div className="liveview-count">20</div>
+                  {/* <div className="tf-product-info-liveview">
+                    <div className="liveview-count">6</div>
                     <p className="fw-6">People are viewing this right now</p>
-                  </div>
-                  <div className="tf-product-info-countdown">
+                  </div> */}
+                  {/* <div className="tf-product-info-countdown">
                     <div className="countdown-wrap">
                       <div className="countdown-title">
                         <i className="icon-time tf-ani-tada" />
@@ -71,7 +65,7 @@ export default function Details6() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="tf-product-info-variant-picker">
                     <div className="variant-picker-item">
                       <div className="variant-picker-label">
@@ -108,9 +102,9 @@ export default function Details6() {
                     <div className="variant-picker-item">
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="variant-picker-label">
-                          Size:{" "}
+                          Grease:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentSize.value}
+                            {currentGrease.value}
                           </span>
                         </div>
                         <a
@@ -118,26 +112,26 @@ export default function Details6() {
                           data-bs-toggle="modal"
                           className="find-size fw-6"
                         >
-                          Find your size
+                          Product Fitment Guide
                         </a>
                       </div>
                       <form className="variant-picker-values">
-                        {sizeOptions.map((size) => (
-                          <React.Fragment key={size.id}>
+                        {greaseOptions.map((grease) => (
+                          <React.Fragment key={grease.id}>
                             <input
                               type="radio"
-                              name="size1"
-                              id={size.id}
+                              name="grease1"
+                              id={grease.id}
                               readOnly
-                              checked={currentSize == size}
+                              checked={currentGrease == grease}
                             />
                             <label
-                              onClick={() => setCurrentSize(size)}
+                              onClick={() => setCurrentGrease(grease)}
                               className="style-text"
-                              htmlFor={size.id}
-                              data-value={size.value}
+                              htmlFor={grease.id}
+                              data-value={grease.value}
                             >
-                              <p>{size.value}</p>
+                              <p>{grease.value}</p>
                             </label>
                           </React.Fragment>
                         ))}
@@ -294,6 +288,10 @@ export default function Details6() {
                         />
                       ))}
                     </div>
+                  </div>
+                  <div className="tf-product-bundle-wrap">
+                    <div className="title">Frequently Bought Together</div>
+                    <BoughtTogether product={product}/>
                   </div>
                 </div>
               </div>

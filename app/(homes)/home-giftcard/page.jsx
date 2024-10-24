@@ -1,4 +1,4 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header5 from "@/components/headers/Header5";
 import BestSell from "@/components/homes/home-giftcard/BestSell";
 import Blog from "@/components/homes/home-giftcard/Blog";
@@ -13,8 +13,8 @@ import Testimonials from "@/components/homes/home-giftcard/Testimonials";
 import React from "react";
 
 export const metadata = {
-  title: "Home Giftcard || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Giftcard | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

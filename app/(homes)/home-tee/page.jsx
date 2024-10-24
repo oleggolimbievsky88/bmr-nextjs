@@ -11,8 +11,8 @@ import Testimonials from "@/components/homes/home-tee/Testimonials";
 import React from "react";
 
 export const metadata = {
-  title: "Home Tee || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Tee | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

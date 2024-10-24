@@ -356,7 +356,7 @@ export default function BestSell() {
                         <div className="tf-product-trust-mess">
                           <i className="icon-safe" />
                           <p className="fw-6">
-                            Guarantee Safe <br />
+                            Guarantee Safe asdf<br />
                             Checkout
                           </p>
                         </div>

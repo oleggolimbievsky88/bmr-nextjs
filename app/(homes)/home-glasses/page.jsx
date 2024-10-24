@@ -12,8 +12,8 @@ import ShopGram from "@/components/homes/home-glasses/ShopGram";
 import React from "react";
 
 export const metadata = {
-  title: "Home Glasses || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Glasses | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

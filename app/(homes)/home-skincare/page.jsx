@@ -13,11 +13,11 @@ import Videobox from "@/components/homes/home-skincare/Videobox";
 import React from "react";
 import ShopGram from "@/components/homes/home-skincare/ShopGram";
 import Features from "@/components/homes/home-6/Features";
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 
 export const metadata = {
-  title: "Home Skincare || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Skincare | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

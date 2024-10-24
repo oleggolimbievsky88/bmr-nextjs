@@ -1,12 +1,12 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import Topbar1 from "@/components/headers/Topbar1";
 import ShopSidebarRight from "@/components/shop/ShopSidebarRight";
 import React from "react";
 
 export const metadata = {
-  title: "Shop Right Sidebar || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Shop Right Sidebar | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

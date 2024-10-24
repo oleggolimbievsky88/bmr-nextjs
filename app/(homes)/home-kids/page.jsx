@@ -1,4 +1,4 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header17 from "@/components/headers/Header17";
 import CollectionBanner from "@/components/homes/home-kids/CollectionBanner";
 import Collections from "@/components/homes/home-kids/Collections";
@@ -13,8 +13,8 @@ import Announcment from "@/components/homes/multi-brand/Announcment";
 import React from "react";
 
 export const metadata = {
-  title: "Home Kids || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Kids | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

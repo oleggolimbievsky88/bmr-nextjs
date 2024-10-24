@@ -4,193 +4,30 @@ import { useEffect, useState } from "react";
 import { Navigation, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Drift from "drift-zoom";
-const swiperSlidesThumbs = [
-  {
-    imgSrc: "/images/shop/products/hmgoepprod31.jpg",
-    alt: "",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod.jpg",
-    alt: "img-compare",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod2.jpg",
-    alt: "img-compare",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod3.jpg",
-    alt: "img-compare",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod4.jpg",
-    alt: "img-compare",
-    width: 768,
-    height: 1152,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod5.jpg",
-    alt: "img-compare",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod6.jpg",
-    alt: "img-compare",
-    width: 768,
-    height: 1152,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod7.jpg",
-    alt: "img-compare",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod8.jpg",
-    alt: "img-compare",
-    width: 713,
-    height: 1070,
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod9.jpg",
-    alt: "img-compare",
-    width: 768,
-    height: 1152,
-  },
-];
 
-const swiperSlides = [
-  {
-    imgSrc: "/images/shop/products/hmgoepprod31.jpg",
-    href: "/images/shop/products/p-d1.png",
-    width: 770,
-    height: 1075,
-    dataZoom: "/images/shop/products/hmgoepprod31.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod.jpg",
-    href: "/images/shop/products/hmgoepprod.jpg",
-    width: 713,
-    height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod2.jpg",
-    href: "/images/shop/products/hmgoepprod2.jpg",
-    width: 713,
-    height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod2.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod3.jpg",
-    href: "/images/shop/products/hmgoepprod3.jpg",
-    width: 713,
-    height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod3.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod4.jpg",
-    href: "/images/shop/products/hmgoepprod4.jpg",
-    width: 768,
-    height: 1152,
-    dataZoom: "/images/shop/products/hmgoepprod4.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod5.jpg",
-    href: "/images/shop/products/hmgoepprod5.jpg",
-    width: 713,
-    height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod5.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod6.jpg",
-    href: "/images/shop/products/hmgoepprod6.jpg",
-    width: 768,
-    height: 1152,
-    dataZoom: "/images/shop/products/hmgoepprod6.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod7.jpg",
-    href: "/images/shop/products/hmgoepprod7.jpg",
-    width: 713,
-    height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod7.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod8.jpg",
-    href: "/images/shop/products/hmgoepprod8.jpg",
-    width: 713,
-    height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod8.jpg",
-  },
-  {
-    imgSrc: "/images/shop/products/hmgoepprod9.jpg",
-    href: "/images/shop/products/hmgoepprod9.jpg",
-    width: 768,
-    height: 1152,
-    dataZoom: "/images/shop/products/hmgoepprod9.jpg",
-  },
-];
-
-export default function Slider3() {
+export default function Slider3({ productId }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [product, setProduct] = useState(null);
+
+  // Fetch product data from the API
   useEffect(() => {
-    // Function to initialize Drift
-    const imageZoom = () => {
-      const driftAll = document.querySelectorAll(".tf-image-zoom");
-      const pane = document.querySelector(".tf-zoom-main");
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        if (!response.ok) throw new Error("Failed to fetch product");
 
-      driftAll.forEach((el) => {
-        new Drift(el, {
-          zoomFactor: 2,
-          paneContainer: pane,
-          inlinePane: false,
-          handleTouch: false,
-          hoverBoundingBox: true,
-          containInline: true,
-        });
-      });
-    };
-
-    // Call the function
-    imageZoom();
-    const zoomElements = document.querySelectorAll(".tf-image-zoom");
-
-    const handleMouseOver = (event) => {
-      const parent = event.target.closest(".section-image-zoom");
-      if (parent) {
-        parent.classList.add("zoom-active");
+        const data = await response.json();
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
       }
     };
 
-    const handleMouseLeave = (event) => {
-      const parent = event.target.closest(".section-image-zoom");
-      if (parent) {
-        parent.classList.remove("zoom-active");
-      }
-    };
+    fetchProduct();
+  }, [productId]);
 
-    zoomElements.forEach((element) => {
-      element.addEventListener("mouseover", handleMouseOver);
-      element.addEventListener("mouseleave", handleMouseLeave);
-    });
+  if (!product) return <p>Loading...</p>; // Show loading state until data is fetched
 
-    // Cleanup event listeners on component unmount
-    return () => {
-      zoomElements.forEach((element) => {
-        element.removeEventListener("mouseover", handleMouseOver);
-        element.removeEventListener("mouseleave", handleMouseLeave);
-      });
-    };
-  }, []);
   return (
     <>
       <Swiper
@@ -201,11 +38,10 @@ export default function Slider3() {
           prevEl: ".swiper-button-prev",
         }}
         className="tf-product-media-main"
-        id="gallery-swiper-started"
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs, Navigation]}
       >
-        {swiperSlides.map((slide, index) => (
+        {product.images.map((slide, index) => (
           <SwiperSlide key={index}>
             <a
               className="item"
@@ -214,21 +50,18 @@ export default function Slider3() {
             >
               <Image
                 className="tf-image-zoom lazyload"
-                data-zoom={slide.dataZoom}
-                data-src={slide.imgSrc}
-                alt=""
-                src={slide.imgSrc} // Optional fallback for non-lazy loading
+                data-zoom={slide.imgSrc}
+                src={slide.imgSrc}
+                alt={slide.alt}
                 width={slide.width}
                 height={slide.height}
               />
             </a>
           </SwiperSlide>
         ))}
-
-        {/* Navigation buttons */}
         <div className="swiper-button-next button-style-arrow thumbs-next"></div>
         <div className="swiper-button-prev button-style-arrow thumbs-prev"></div>
-      </Swiper>{" "}
+      </Swiper>
       <Swiper
         direction="horizontal"
         spaceBetween={10}
@@ -237,14 +70,13 @@ export default function Slider3() {
         onSwiper={setThumbsSwiper}
         modules={[Thumbs]}
       >
-        {swiperSlidesThumbs.map((slide, index) => (
+        {product.images.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">
             <div className="item">
               <Image
                 className="lazyload"
-                data-src={slide.imgSrc}
+                src={slide.imgSrc}
                 alt={slide.alt}
-                src={slide.imgSrc} // Optional fallback for non-lazy loading
                 width={slide.width}
                 height={slide.height}
               />

@@ -11,8 +11,8 @@ import Products from "@/components/homes/home-7/Products";
 import React from "react";
 
 export const metadata = {
-  title: "Home 7 || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home 7 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

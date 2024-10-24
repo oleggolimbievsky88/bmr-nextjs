@@ -1,4 +1,4 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
@@ -6,8 +6,8 @@ import React from "react";
 
 export const metadata = {
   title:
-    "Shop Infinite Scrolling  || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+    "Shop Infinite Scrolling  | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

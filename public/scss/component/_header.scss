@@ -1,8 +1,8 @@
 // top bar
 .tf-top-bar {
-  // .swiper-wrapper {
-  //     transition-timing-function: linear;
-  // }
+  .swiper-wrapper {
+      transition-timing-function: linear;
+  }
 }
 .tf-top-bar_wrap {
   padding: 10px 0px;
@@ -368,7 +368,7 @@
   .mega-menu {
     padding-top: 37px;
     padding-bottom: 42px;
-    border: none;
+    border-top: 1px solid var(--primary);
     max-height: calc(100vh - 74px);
     overflow: auto;
     left: 0;
@@ -384,16 +384,16 @@
     }
   }
   .menu-heading {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 22px;
-    font-weight: 700;
-    color: var(--main);
+    font-weight: 800;
+    color: var(--primary);
     text-transform: uppercase;
     margin-bottom: 17px;
   }
   .menu-list {
     .menu-link-text {
-      // line-height: 12px;
+      line-height: 12px;
     }
     li {
       &:not(:last-child) {
@@ -484,9 +484,6 @@
   .demo-hot {
     background-color: rgb(252 87 50);
   }
-}
-
-.nav-mb-item {
 }
 
 .canvas-mb {

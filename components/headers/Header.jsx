@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength";
 import WishlistLength from "../common/WishlistLength";
+import Menu from "../menu/Menu.js";
 export default function Header({
   textClass,
   bgColor = "",
@@ -54,6 +55,7 @@ export default function Header({
               <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-30">
                 
                 <Nav isArrow={isArrow} Linkfs={Linkfs} />
+                {/* <Menu /> */}
                 
               </ul>
             </nav>

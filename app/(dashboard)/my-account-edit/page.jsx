@@ -1,11 +1,11 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import AccountEdit from "@/components/othersPages/dashboard/AccountEdit";
 import DashboardNav from "@/components/othersPages/dashboard/DashboardNav";
 import React from "react";
 
 export const metadata = {
-  title: "My Account Edit || Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "My Account Edit | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "Ecomus - Ultimate React Nextjs Ecommerce Template",
 };
 export default function page() {

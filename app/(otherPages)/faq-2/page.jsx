@@ -1,4 +1,4 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import Faq1 from "@/components/othersPages/faq/Faq1";
 import Faq2 from "@/components/othersPages/faq/Faq2";
@@ -6,8 +6,8 @@ import Faq3 from "@/components/othersPages/faq/Faq3";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title: "Faq 2 || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Faq 2 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

@@ -15,8 +15,8 @@ import React from "react";
 import Footer2 from "@/components/footers/Footer2";
 
 export const metadata = {
-  title: "Home Paddle Boards || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Paddle Boards | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

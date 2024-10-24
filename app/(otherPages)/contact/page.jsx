@@ -1,4 +1,4 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import ContactForm2 from "@/components/othersPages/contact/ContactForm2";
 import Map2 from "@/components/othersPages/contact/Map2";

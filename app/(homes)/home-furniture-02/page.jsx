@@ -1,4 +1,4 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import Topbar1 from "@/components/headers/Topbar1";
 import Collections from "@/components/homes/home-furniture-02/Collections";
@@ -10,8 +10,8 @@ import Testimonials from "@/components/homes/home-furniture-02/Testimonials";
 import React from "react";
 
 export const metadata = {
-  title: "Home Furniture 2 || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Furniture 2 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (
