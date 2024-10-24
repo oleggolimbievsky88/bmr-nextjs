@@ -35,10 +35,10 @@ export default function ProductsPage() {
       <ul>
         {products.map((product) => (
           <li key={product.ProductID}>
-            <h2>{product.ProductName}</h2>
-            <p>Price: ${product.price}</p>
-            <p>{product.PartNumber}</p>
-            <p>{product.description}</p>
+            <h2>{product?.ProductName}</h2>
+            <p>Price: ${product?.Price}</p>
+            <p>{product?.PartNumber}</p>
+            <p>{product?.Description}</p>
           </li>
         ))}
       </ul>

@@ -51,7 +51,7 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
                     <h5>
-                      {product.ProductName ? product.ProductName : "BMR Product"}
+                      {product?.ProductName ? product.ProductName : "BMR Product"}
                     </h5>
                   </div>
                   {/* <div className="tf-product-info-badges">
@@ -65,7 +65,7 @@ export default function DetailsOuterZoom({ product = allProducts[0] }) {
                   </div> */}
                   <div className="tf-product-info-price">
                     <div className="price-on-sale">
-                      ${product.Price}
+                      ${product?.Price}
                     </div>
                     {/* {product.oldPrice && (
                       <div className="compare-at-price">

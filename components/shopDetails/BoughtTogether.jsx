@@ -29,7 +29,7 @@ export default function BoughtTogether({product}) {
           </div>
           <div className="tf-product-bundle-infos">
             <span className="tf-product-bundle-title">
-              <strong>This item: {product.ProductName}</strong> 
+              <strong>This item: {product?.ProductName}</strong> 
             </span>
             <div className="tf-product-bundle-variant position-relative">
               <select className="tf-select">
