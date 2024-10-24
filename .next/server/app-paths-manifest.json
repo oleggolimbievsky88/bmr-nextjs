@@ -1,10 +1,7 @@
 {
   "/(shop-details)/product-detail/[id]/page": "app/(shop-details)/product-detail/[id]/page.js",
-  "/(shop-details)/product-giftcard/page": "app/(shop-details)/product-giftcard/page.js",
   "/(shop-details)/product-giftcard/[id]/page": "app/(shop-details)/product-giftcard/[id]/page.js",
   "/(shop-details)/product-bottom-thumbnails/page": "app/(shop-details)/product-bottom-thumbnails/page.js",
   "/(shop-details)/product-frequently-bought-together/page": "app/(shop-details)/product-frequently-bought-together/page.js",
-  "/api/products/[id]/route": "app/api/products/[id]/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/menu/route": "app/api/menu/route.js"
+  "/page": "app/page.js"
 }
