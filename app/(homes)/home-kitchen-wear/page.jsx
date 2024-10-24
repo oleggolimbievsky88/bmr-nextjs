@@ -1,7 +1,7 @@
 import Announcmentbar from "@/components/common/Announcmentbar";
 import Features from "@/components/common/Features2";
 
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header4 from "@/components/headers/Header4";
 import Banner from "@/components/homes/home-kitchen-wear/Banner";
 import Categories from "@/components/homes/home-kitchen-wear/Categories";
@@ -14,8 +14,8 @@ import Testimonials from "@/components/homes/home-kitchen-wear/Testimonials";
 import React from "react";
 
 export const metadata = {
-  title: "Home Kitchen Wear || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Kitchen Wear | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

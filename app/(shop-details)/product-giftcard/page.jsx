@@ -1,5 +1,5 @@
-import Footer1 from "@/components/footers/Footer1";
-import Header2 from "@/components/headers/Header";
+import Footer1 from "@/components/footers/Footer";
+import Header from "@/components/headers/Header";
 import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
 import Details12 from "@/components/shopDetails/Details12";
 import Products from "@/components/shopDetails/Products";
@@ -9,13 +9,13 @@ import Tabs5 from "@/components/shopDetails/Tabs5";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title: "Shop Gift Card || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Shop Gift Card | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (
     <>
-      <Header2 />
+      <Header />
       <div className="tf-breadcrumb">
         <div className="container">
           <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
@@ -24,24 +24,20 @@ export default function page() {
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <a href="#" className="text">
-                Women
-              </a>
-              <i className="icon icon-arrow-right" />
-              <span className="text">Cotton jersey top</span>
+              <span className="text">BMR Gift Card</span>
             </div>
             <div className="tf-breadcrumb-prev-next">
               <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
                 <i className="icon icon-arrow-left" />
-                {/* <span className="tooltip">Cotton jersey top</span> */}
+                <span className="tooltip">BMR Gift Card $10</span>
               </a>
               <a href="#" className="tf-breadcrumb-back hover-tooltip center">
                 <i className="icon icon-shop" />
-                {/* <span className="tooltip">Back to Women</span> */}
+                <span className="tooltip">Back to Gift Cards</span>
               </a>
               <a href="#" className="tf-breadcrumb-next hover-tooltip center">
                 <i className="icon icon-arrow-right" />
-                {/* <span className="tooltip">Cotton jersey top</span> */}
+                <span className="tooltip">BMR Gift Card $50</span>
               </a>
             </div>
           </div>

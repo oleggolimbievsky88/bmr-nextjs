@@ -1,5 +1,5 @@
 import Topbar4 from "@/components/headers/Topbar4";
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 
 import Hero from "@/components/homes/home-grocery/Hero";
 
@@ -12,8 +12,8 @@ import Features from "@/components/homes/home-grocery/Features";
 import Banner from "@/components/homes/home-grocery/Banner";
 
 export const metadata = {
-  title: "Home Grocery || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Grocery | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

@@ -25,6 +25,7 @@ import {
 } from "@/data/menu";
 import { usePathname } from "next/navigation";
 import { homedir } from "os";
+import Menu from "../menu/Menu";
 
 export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
   const pathname = usePathname();
@@ -70,6 +71,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
   };
   return (
     <>
+      <Menu />
       {" "}
       <li className={`menu-item`}>
         <a href="/" className={`item-link  ${Linkfs}`}>

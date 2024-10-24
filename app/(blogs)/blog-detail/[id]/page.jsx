@@ -1,14 +1,14 @@
 import BlogDetails from "@/components/blogs/BlogDetails";
 import RelatedBlogs from "@/components/blogs/RelatedBlogs";
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import { allBlogs } from "@/data/blogs";
 import Link from "next/link";
 import React from "react";
 
 export const metadata = {
-  title: "Blog Details || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Blog Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page({ params }) {
   const blog = allBlogs.filter((elm) => elm.id == params.id)[0] || allBlogs[0];

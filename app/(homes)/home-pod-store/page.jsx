@@ -11,11 +11,11 @@ import Products2 from "@/components/homes/home/Products2";
 import Testimonials from "@/components/homes/home/Testimonials";
 import Brands from "@/components/homes/home/Brands";
 import React from "react";
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 
 export const metadata = {
-  title: "Home Pod Store || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Pod Store | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (

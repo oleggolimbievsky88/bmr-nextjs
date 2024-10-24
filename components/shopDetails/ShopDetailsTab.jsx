@@ -9,7 +9,7 @@ const tabs = [
   { title: "Return Polocies", active: false },
 ];
 
-export default function ShopDetailsTab() {
+export default function ShopDetailsTab({product}) {
   const [currentTab, setCurrentTab] = useState(1);
 
   return (
@@ -42,11 +42,7 @@ export default function ShopDetailsTab() {
                 >
                   <div className="">
                     <p className="mb_30">
-                      Button-up shirt sleeves and a relaxed silhouette. It’s
-                      tailored with drapey, crinkle-texture fabric that’s made
-                      from LENZING™ ECOVERO™ Viscose — responsibly sourced
-                      wood-based fibres produced through a process that reduces
-                      impact on forests, biodiversity and water supply.
+                      {product.Description ? product.Description : "Product Description"}
                     </p>
                     <div className="tf-product-des-demo">
                       <div className="right">

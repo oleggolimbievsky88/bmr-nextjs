@@ -1,6 +1,6 @@
 // app/products/[id]/page.js
 
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header2 from "@/components/headers/Header";
 import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
 import Products from "@/components/shopDetails/Products";
@@ -8,10 +8,11 @@ import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
+import Details6 from "@/components/shopDetails/Details6";
 
 export const metadata = {
-  title: "Shop Details || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
 export default async function ProductPage({ params }) {
@@ -60,8 +61,10 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       </div>
-      <DetailsOuterZoom product={product} />
-      <ShopDetailsTab />
+      <Details6 product={product} />
+
+      {/* <DetailsOuterZoom product={product} />  */}
+      <ShopDetailsTab product={product}/>
       <Products />
       <RecentProducts />
       <Footer1 />

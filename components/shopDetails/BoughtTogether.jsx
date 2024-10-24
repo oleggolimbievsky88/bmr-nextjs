@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React from "react";
 
-export default function BoughtTogether() {
+export default function BoughtTogether({product}) {
   return (
     <form
       onSubmit={(e) => e.preventDefault()}
@@ -29,26 +29,12 @@ export default function BoughtTogether() {
           </div>
           <div className="tf-product-bundle-infos">
             <span className="tf-product-bundle-title">
-              <strong>This item:</strong> Cotton jersey top
+              <strong>This item: {product.ProductName}</strong> 
             </span>
             <div className="tf-product-bundle-variant position-relative">
               <select className="tf-select">
-                <option>Beige / S</option>
-                <option>Beige / M</option>
-                <option>Beige / L</option>
-                <option>Beige / XL</option>
-                <option>Black / S</option>
-                <option>Black / M</option>
-                <option>Black / L</option>
-                <option>Black / XL</option>
-                <option>Blue / S</option>
-                <option>Blue / M</option>
-                <option>Blue / L</option>
-                <option>Blue / XL</option>
-                <option>White / S</option>
-                <option>White / M</option>
-                <option>White / L</option>
-                <option>White / XL</option>
+                <option>Red</option>
+                <option>Black Hammertone</option>
               </select>
             </div>
             <div className="tf-product-bundle-price">
@@ -76,7 +62,7 @@ export default function BoughtTogether() {
           </div>
           <div className="tf-product-bundle-infos">
             <a href="#" className="tf-product-bundle-title">
-              Oversized Motif T-shirt
+              Hardware Packet - HW0256
             </a>
             <div className="tf-product-bundle-price">
               <div className="price">$25.00</div>
@@ -102,7 +88,7 @@ export default function BoughtTogether() {
           </div>
           <div className="tf-product-bundle-infos">
             <a href="#" className="tf-product-bundle-title">
-              Oversized Printed T-shirt
+              BMR Printed T-shirt
             </a>
             <div className="tf-product-bundle-variant position-relative">
               <select className="tf-select">

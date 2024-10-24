@@ -11,20 +11,23 @@ export default function ThreeColumnLayout() {
           {
             img: "/images/shop-categories/NewProductsGradient.jpg",
             title: "NEW PRODUCTS",
+            link: "/products/new",
           },
           {
             img: "/images/shop-categories/MerchGradient.jpg",
             title: "BMR MERCHANDISE",
+            link: "/products/apparel",
           },
           {
             img: "/images/shop-categories/GiftCardsGradient.jpg",
             title: "BMR GIFT CARDS",
+            link: "product-giftcard",
           },
         ].map((item, index) => (
           <div key={index} className="col-lg-4 col-md-6 col-sm-12 mb-4">
             <Link
               key={index}
-              href={`/${item.title.toLowerCase().replace(" ", "-")}`}
+              href={`/${item.link.toLowerCase().replace(" ", "-")}`}
             >
               <div className="card bg-dark text-white border-0 custom-card">
                 <img src={item.img} className="card-img" alt={item.title} />

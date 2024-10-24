@@ -1,10 +1,10 @@
-import Footer1 from "@/components/footers/Footer1";
+import Footer1 from "@/components/footers/Footer";
 import Header from "@/components/headers/Header";
 import Link from "next/link";
 import React from "react";
 export const metadata = {
-  title: "Page Not Found || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Page Not Found | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function notFound() {
   return (

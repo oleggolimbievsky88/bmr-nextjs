@@ -13,8 +13,8 @@ import Testimonials from "@/components/homes/home-stroller/Testimonials";
 import React from "react";
 
 export const metadata = {
-  title: "Home Stroller || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "Home Stroller | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (
