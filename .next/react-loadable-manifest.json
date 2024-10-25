@@ -1,6 +1,13 @@
 {
   "app/layout.js -> bootstrap/dist/js/bootstrap.esm": {
-    "id": "app/layout.js -> bootstrap/dist/js/bootstrap.esm",
+    "id": 5471,
     "files": []
+  },
+  "components/shopDetails/sliders/Slider5.jsx -> @google/model-viewer": {
+    "id": 5331,
+    "files": [
+      "static/chunks/b536a0f1.54e057c09f162956.js",
+      "static/chunks/5331.d2ac027a82d98b97.js"
+    ]
   }
 }
