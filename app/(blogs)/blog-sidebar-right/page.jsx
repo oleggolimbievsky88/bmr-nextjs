@@ -1,6 +1,6 @@
 import BlogLeftRightbar from "@/components/blogs/BlogLeftRightbar";
-import Footer1 from "@/components/footers/Footer";
-import Header2 from "@/components/headers/Header";
+import Footer1 from "@/components/footer/Footer";
+import Header2 from "@/components/header/Header";
 import React from "react";
 import Link from "next/link";
 export const metadata = {

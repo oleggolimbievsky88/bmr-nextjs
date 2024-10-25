@@ -1,5 +1,5 @@
-import Footer1 from "@/components/footers/Footer";
-import Header2 from "@/components/headers/Header";
+import Footer1 from "@/components/footer/Footer";
+import Header2 from "@/components/header/Header";
 import Faq1 from "@/components/othersPages/faq/Faq1";
 import Faq2 from "@/components/othersPages/faq/Faq2";
 import Faq3 from "@/components/othersPages/faq/Faq3";

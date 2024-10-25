@@ -1,5 +1,5 @@
-import Footer1 from "@/components/footers/Footer";
-import Header2 from "@/components/headers/Header";
+import Footer1 from "@/components/footer/Footer";
+import Header2 from "@/components/header/Header";
 import Timelines from "@/components/othersPages/Timelines";
 import React from "react";
 
