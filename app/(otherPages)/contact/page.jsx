@@ -1,5 +1,5 @@
-import Footer1 from "@/components/footers/Footer";
-import Header2 from "@/components/headers/Header";
+import Footer1 from "@/components/footer/Footer";
+import Header2 from "@/components/header/Header";
 import ContactForm2 from "@/components/othersPages/contact/ContactForm2";
 import Map2 from "@/components/othersPages/contact/Map2";
 import React from "react";

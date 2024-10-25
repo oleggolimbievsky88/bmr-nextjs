@@ -1,11 +1,11 @@
 export const colors = [
   {
-    id: "values-black",
+    id: "blackHammertone",
     value: "Black Hammertone",
     className: "bg-color-black",
   },
   {
-    id: "values-red",
+    id: "redPowdercoat",
     value: "Red",
     className: "bg-color-red",
   },
@@ -85,7 +85,7 @@ export const sizeOptions = [
 
 export const greaseOptions = [
   { id: "No", value: "No Thanks", defaultChecked: false },
-  { id: "SUL-41150", value: "SUL-41150 - 14oz Super Lube (+$18.95", defaultChecked: true },
+  { id: "SUL-41150", value: "14oz Super Lube (+$18.95)", defaultChecked: true },
 ];
 
 export const paymentImages = [

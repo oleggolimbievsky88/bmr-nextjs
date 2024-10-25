@@ -1,6 +1,6 @@
-import Footer1 from "@/components/footers/Footer";
-import Header2 from "@/components/headers/Header";
-import Topbar1 from "@/components/headers/Topbar1";
+import Footer1 from "@/components/footer/Footer";
+import Header2 from "@/components/header/Header";
+import Topbar1 from "@/components/header/Topbar1";
 
 import Wishlist from "@/components/othersPages/Wishlist";
 import React from "react";

@@ -78,9 +78,9 @@ export default function Details6({product}) {
                         {colors.map((color) => (
                           <React.Fragment key={color.id}>
                             <input
-                              id={color.id}
+                              
                               type="radio"
-                              name="color1"
+                              name={color.id}
                               readOnly
                               checked={currentColor == color}
                             />

@@ -1,7 +1,7 @@
 {
+  "/(shop-details)/product-detail/[id]/page": "app/(shop-details)/product-detail/[id]/page.js",
   "/page": "app/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/api/products/new/route": "app/api/products/new/route.js",
-  "/(shop-details)/product-detail/[id]/page": "app/(shop-details)/product-detail/[id]/page.js",
   "/api/products/[id]/route": "app/api/products/[id]/route.js"
 }

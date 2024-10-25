@@ -1,5 +1,5 @@
-import Footer1 from "@/components/footers/Footer";
-import Header from "@/components/headers/Header";
+import Footer1 from "@/components/footer/Footer";
+import Header from "@/components/header/Header";
 import Link from "next/link";
 import React from "react";
 export const metadata = {
