@@ -177,6 +177,7 @@ export default function Details6({product}) {
                             src="/images/payments/paypal.png"
                             width={64}
                             height={18}
+                            style="{{width: '64px', height: 'auto'}}"
                           />
                         </a>
                         <a href="#" className="payment-more-option">
