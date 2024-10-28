@@ -99,7 +99,7 @@ export default function Footer({ bgColor = "background-black" }) {
                     Get direction
                     <i className="icon icon-arrow1-top-left" />
                   </Link>
-                  <ul className="tf-social-icon d-flex gap-10">
+                  <ul className="tf-social-icon d-flex gap-10 style-white">
                     <li>
                       <a
                         href="#"
