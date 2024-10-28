@@ -17,6 +17,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
+    "/(shop-details)/product-detail/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-detail/[id]/page.js"
+    ],
     "/platform/[platformName]/[platformCategory]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
