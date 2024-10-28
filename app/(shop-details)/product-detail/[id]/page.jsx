@@ -42,24 +42,24 @@ export default async function ProductPage({ params }) {
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <a href="#" className="text">
+                <Link href={`/platforms/2024-mustang`} className="text">
                 2024 Mustang
-              </a>
+                </Link>
               <i className="icon icon-arrow-right" />
               <span className="text">
                 {product?.ProductName ? product?.ProductName : "Product Title"}
               </span>
             </div>
             <div className="tf-breadcrumb-prev-next">
-              <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
+              <Link href={`/`} className="tf-breadcrumb-prev hover-tooltip center">
                 <i className="icon icon-arrow-left" />
-              </a>
-              <a href="#" className="tf-breadcrumb-back hover-tooltip center">
+                </Link>
+              <Link href={`/`} className="tf-breadcrumb-back hover-tooltip center">
                 <i className="icon icon-shop" />
-              </a>
-              <a href="#" className="tf-breadcrumb-next hover-tooltip center">
+              </Link>
+              <Link href={`/`} className="tf-breadcrumb-next hover-tooltip center">
                 <i className="icon icon-arrow-right" />
-              </a>
+                </Link>
             </div>
           </div>
         </div>

@@ -1,4 +1,7 @@
 {
   "/page": "app/page.js",
-  "/platform/[platformName]/[platformCategory]/page": "app/platform/[platformName]/[platformCategory]/page.js"
+  "/(shop-details)/product-detail/[id]/page": "app/(shop-details)/product-detail/[id]/page.js",
+  "/platform/[platformName]/[platformCategory]/page": "app/platform/[platformName]/[platformCategory]/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/products/[id]/route": "app/api/products/[id]/route.js"
 }

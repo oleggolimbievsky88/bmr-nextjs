@@ -3,7 +3,7 @@ import React from "react";
 export default function page() {
   return (
     <section>
-      <div className="container">
+      <div>
         <div>
           <h6>
             <span>
