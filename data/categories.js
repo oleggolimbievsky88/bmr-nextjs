@@ -1263,32 +1263,37 @@ export const collectionSlides2 = [
   {
     imgSrc: "/images/collections/collection-14.jpg",
     alt: "collection-img",
-    title: "Accessories",
+    title: "Suspension",
   },
   {
     imgSrc: "/images/collections/collection-15.jpg",
     alt: "collection-img",
-    title: "Men",
+    title: "Chassis",
   },
   {
     imgSrc: "/images/collections/collection-16.jpg",
     alt: "collection-demo-1",
-    title: "Shoes",
+    title: "Bushing Kits",
   },
   {
     imgSrc: "/images/collections/collection-17.jpg",
     alt: "collection-demo-1",
-    title: "New Arrival",
+    title: "T-Shirts",
   },
   {
     imgSrc: "/images/collections/collection-18.jpg",
     alt: "collection-demo-1",
-    title: "Handbag",
+    title: "Safety Equipment",
   },
   {
     imgSrc: "/images/collections/collection-19.jpg",
     alt: "collection-demo-1",
-    title: "Women",
+    title: "Wheels",
+  },
+  {
+    imgSrc: "/images/collections/collection-19.jpg",
+    alt: "collection-demo-1",
+    title: "Miscellaneous",
   },
 ];
 
