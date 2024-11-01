@@ -9,7 +9,9 @@ import { useContextElement } from "@/context/Context";
 export default function StickyItem({ product, soldOut = false }) {
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
 
-  console.log(product);
+  const productImageSrc = product?.ImageLarge
+    ? `https://bmrsuspension.com/siteart/products/${product.ImageLarge}`
+    : "/default-product-image.jpg"; // Default image path in /public folder
   return (
     <div className="tf-sticky-btn-atc">
       <div className="container">
@@ -18,15 +20,14 @@ export default function StickyItem({ product, soldOut = false }) {
             <div className="tf-sticky-atc-img">
               <Image
                 className="lazyloaded"
-                data-src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
-                alt=""
-                src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
+                alt={product?.ProductName || "Product image"} // Use product name as alt text or a default value
+                src={productImageSrc} // Use fallback if ImageLarge is undefined
                 width={770}
                 height={1075}
               />
             </div>
             <div className="tf-sticky-atc-title fw-5 d-xl-block d-none">
-              {product.ProductName}
+              {product?.ProductName || "Product Name"}
             </div>
           </div>
           <div className="tf-sticky-atc-infos">
