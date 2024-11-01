@@ -45,7 +45,7 @@ export default function Details6({product}) {
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
                     <h5>{product?.ProductName}</h5>
-                    <h7 className="text-danger">Part Number: {product?.PartNumber}</h7>
+                    <p className="text-danger">Part Number: {product?.PartNumber}</p>
                   </div>
                   
                   <div className="tf-product-info-price">

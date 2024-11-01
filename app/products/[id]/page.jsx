@@ -22,6 +22,8 @@ const API_URL = process.env.API_URL || "http://localhost:3000";
 export default async function ProductPage({ params }) {
   const { id } = params;
 
+  
+
   // Fetch product data from API
   const res = await fetch(`${API_URL}/api/products/${id}`);
 

@@ -115,7 +115,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                   </div>
                   <div className="card-product-info mt-2">
                     <div className="NewProductPartNumber">{product.PartNumber}</div>
-                    <Link href={`/product-detail/${product.ProductID}`} className="title link">
+                    <Link href={`/product/${product.ProductID}`} className="title link">
                       {product?.ProductName}
                     </Link>
                     <span className="price"> ${product?.Price} </span>
