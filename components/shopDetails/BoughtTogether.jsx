@@ -21,7 +21,7 @@ export default function BoughtTogether({product}) {
             <a href="#">
               <Image
                 alt=""
-                src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`}
+                src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge.trim()}`}
                 width={770}
                 height={1075}
               />

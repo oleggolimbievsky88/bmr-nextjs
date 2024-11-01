@@ -48,14 +48,14 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                   >
                     <Image
                       className="lazyload img-product mb-2"
-                      src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
+                      src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
                       alt="image-product"
                       width={1200}
                       height={1200}
                     />
                     <Image
                       className="lazyload img-hover"
-                      src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
+                      src={`https://bmrsuspension.com/siteart/products/${product?.ImageSmall}`}
                       alt="image-product"
                       width={360}
                       height={360}
