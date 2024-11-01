@@ -28,9 +28,23 @@ import { usePathname } from "next/navigation";
 import NewsletterModal from "@/components/modals/NewsletterModal";
 import ShareModal from "@/components/modals/ShareModal";
 import ScrollTop from "@/components/common/ScrollTop";
+import AOS from "aos";
+import "aos/dist/aos.css"; // Import AOS styles
+
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,   // Animation duration in milliseconds
+      offset: 200,      // Offset from the original trigger point
+      easing: 'ease-in-out', // Easing function for animations
+      once: true,       // Whether animation should happen only once
+      mirror: false,    // Whether elements should animate out while scrolling past them
+    });
+  }, [pathname]); // Run only once on mount
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Import the script only on the client side
@@ -119,19 +133,13 @@ export default function RootLayout({ children }) {
       header.style.top = "-185px";
     }
   }, [scrollDirection]);
-  useEffect(() => {
-    const { WOW } = require("wowjs");
-    const wow = new WOW({
-      mobile: false,
-      live: false,
-    });
-    wow.init();
-  }, [pathname]);
+
+
   return (
     <html lang="en">
       <body className="preload-wrapper popup-loader">
         <Context>
-          <div id="wrapper">{children}</div>
+          <div id="wrapper" >{children}</div>
           <QuickView />
           <QuickAdd />
           <ProductSidebar />

@@ -8,11 +8,8 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import React from "react";
 import Link from "next/link";
 import Details19 from "@/components/shopDetails/Details19";
-export const metadata = {
-  title: "Shop Bottom Thumbnail | BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-};
-export default function page() {
+
+export default function ProductBottomThumbnails() {
   return (
     <>
       <Header2 />

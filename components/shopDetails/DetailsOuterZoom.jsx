@@ -15,7 +15,7 @@ import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
 import { allProducts } from "@/data/products";
 import { useContextElement } from "@/context/Context";
 
-export default function DetailsOuterZoom({ product = allProducts[0] }) {
+export default function DetailsOuterZoom({ product }) {
   const [currentColor, setCurrentColor] = useState(colors[1]);
   const [currentSize, setCurrentSize] = useState(sizeOptions[1]);
 

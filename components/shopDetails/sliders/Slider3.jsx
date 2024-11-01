@@ -5,15 +5,27 @@ import { Navigation, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Drift from "drift-zoom";
 
+// Retrieve the base URL for the API from environment variables
+// This allows for different configurations in development, staging, and production environments
+
+
+// Construct the full API endpoint URL using the base URL and the specific product ID
+// Fetch data from the API endpoint for a specific product
+
+
+
 export default function Slider3({ productId }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [product, setProduct] = useState(null);
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
 
   // Fetch product data from the API
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/products/${productId}`);
+        const response = await fetch(`${baseUrl}/api/products/${productId}`);
         if (!response.ok) throw new Error("Failed to fetch product");
 
         const data = await response.json();

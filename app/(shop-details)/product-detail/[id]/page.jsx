@@ -9,6 +9,7 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+import Slider1ZoomMagnifier from "@/components/shopDetails/sliders/Slider1ZoomMagnifier";
 
 export const metadata = {
   title:
@@ -18,7 +19,7 @@ export const metadata = {
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
-export default async function ProductPage({ params }) {
+export default async function ProductDetailPage({ params }) {
   const { id } = params;
 
   // Fetch product data from API
@@ -33,6 +34,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <>
+      <h1>DO NOT USE</h1>
       <Header2 />
       <div className="tf-breadcrumb">
         <div className="container">
@@ -73,7 +75,8 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       </div>
-      {/* <Details6 product={product} /> */}
+      <Details6 product={product} />
+      
 
       {/* <DetailsOuterZoom product={product} />  */}
       <ShopDetailsTab product={product} />

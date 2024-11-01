@@ -8,16 +8,19 @@ import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
+import Details6 from "@/components/shopDetails/Details6";
+import Slider1ZoomMagnifier from "@/components/shopDetails/sliders/Slider1ZoomMagnifier";
 
 export const metadata = {
-  title: "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
+const API_URL = process.env.API_URL || "http://localhost:3000";
+
 export default async function ProductPage({ params }) {
   const { id } = params;
-
-  const API_URL = process.env.API_URL || "http://localhost:3000";
 
   // Fetch product data from API
   const res = await fetch(`${API_URL}/api/products/${id}`);
@@ -40,30 +43,42 @@ export default async function ProductPage({ params }) {
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <a href="#" className="text">
+              <Link href={`/platforms/2024-mustang`} className="text">
                 2024 Mustang
-              </a>
+              </Link>
               <i className="icon icon-arrow-right" />
               <span className="text">
-                {product.title ? product.title : "Product Title"}
+                {product?.ProductName ? product?.ProductName : "Product Title"}
               </span>
             </div>
             <div className="tf-breadcrumb-prev-next">
-              <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
+              <Link
+                href={`/`}
+                className="tf-breadcrumb-prev hover-tooltip center"
+              >
                 <i className="icon icon-arrow-left" />
-              </a>
-              <a href="#" className="tf-breadcrumb-back hover-tooltip center">
+              </Link>
+              <Link
+                href={`/`}
+                className="tf-breadcrumb-back hover-tooltip center"
+              >
                 <i className="icon icon-shop" />
-              </a>
-              <a href="#" className="tf-breadcrumb-next hover-tooltip center">
+              </Link>
+              <Link
+                href={`/`}
+                className="tf-breadcrumb-next hover-tooltip center"
+              >
                 <i className="icon icon-arrow-right" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </div>
-      <DetailsOuterZoom product={product} />
-      <ShopDetailsTab />
+      <Details6 product={product} />
+      
+
+      {/* <DetailsOuterZoom product={product} />  */}
+      <ShopDetailsTab product={product} />
       <Products />
       <RecentProducts />
       <Footer1 />

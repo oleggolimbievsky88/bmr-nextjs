@@ -5,6 +5,7 @@ import Slider3 from "./sliders/Slider3";
 import Image from "next/image";
 import CountdownComponent from "../common/Countdown";
 import BoughtTogether from "./BoughtTogether";
+
 import {
   colors,
   paymentImages,
@@ -13,9 +14,15 @@ import {
 } from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
+import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
 export default function Details6({product}) {
   const [currentColor, setCurrentColor] = useState(colors[0]);
   const [currentGrease, setCurrentGrease] = useState(greaseOptions[0]);
+
+  if (!product) {
+    return <p>Product not found or unavailable.</p>;
+  }
+
   return (
     <section
       className="flat-spacing-4 pt_0"
@@ -28,6 +35,7 @@ export default function Details6({product}) {
               <div className="tf-product-media-wrap thumbs-bottom sticky-top">
                 <div className="thumbs-slider">
                   <Slider3 productId={product.ProductID} />
+                  {/* <Slider1ZoomOuter product={product} /> */}
                 </div>
               </div>
             </div>
@@ -37,10 +45,11 @@ export default function Details6({product}) {
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
                     <h5>{product?.ProductName}</h5>
+                    <h7 className="text-danger">Part Number: {product?.PartNumber}</h7>
                   </div>
                   
                   <div className="tf-product-info-price">
-                    <div className="price-on-sale">$8.00</div>
+                    <div className="price-on-sale">${product?.Price}</div>
                     {/* <div className="compare-at-price">$10.00</div>
                     <div className="badges-on-sale">
                       <span>20</span>% OFF
@@ -169,7 +178,7 @@ export default function Details6({product}) {
                         <span className="tooltip">Add to Compare</span>
                         <span className="icon icon-check" />
                       </a>
-                      <div className="w-100">
+                      {/* <div className="w-100">
                         <a href="#" className="btns-full">
                           Buy with{" "}
                           <Image
@@ -177,13 +186,12 @@ export default function Details6({product}) {
                             src="/images/payments/paypal.png"
                             width={64}
                             height={18}
-                            style="{{width: '64px', height: 'auto'}}"
                           />
                         </a>
                         <a href="#" className="payment-more-option">
                           More payment options
                         </a>
-                      </div>
+                      </div> */}
                     </form>
                   </div>
                   <div className="tf-product-info-extra-link">
@@ -300,7 +308,7 @@ export default function Details6({product}) {
           </div>
         </div>
       </div>
-      <StickyItem />
+      <StickyItem product={product}/>
     </section>
   );
 }

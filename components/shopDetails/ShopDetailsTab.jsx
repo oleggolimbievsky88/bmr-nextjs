@@ -4,14 +4,42 @@ import { useEffect, useState } from "react";
 
 const tabs = [
   { title: "Description", active: true },
-  { title: "Review", active: false },
-  { title: "Shiping", active: false },
-  { title: "Return Polocies", active: false },
+  { title: "Product Specifications", active: false },
+  { title: "Vehicle Compatibility", active: false },
+  { title: "Installation", active: false },
+  // { title: "Reviews", active: false },
 ];
 
-export default function ShopDetailsTab({product}) {
+export default function ShopDetailsTab({ product }) {
   const [currentTab, setCurrentTab] = useState(1);
-  const Description = product?.Description || "No description available";
+  console.log("Product:", product);
+  const description = product?.Description || "No description available";
+  const [vehicleCompatibility, setVehicleCompatibility] = useState([]);
+
+  // Construct the installation PDF URL only if Instructions are available
+  const installSrc = product?.Instructions
+    ? `https://bmrsuspension.com/siteart/install/${product.Instructions}`
+    : null;
+
+  // Fetch vehicle compatibility data for the product's platform
+  useEffect(() => {
+    async function fetchVehicleCompatibility() {
+      try {
+        const res = await fetch(`/api/platform/${product.BodyID}/vehicles`);
+        if (!res.ok) throw new Error("Failed to fetch vehicle compatibility");
+
+        const data = await res.json();
+        setVehicleCompatibility(data); // Store the vehicle compatibility data
+      } catch (error) {
+        console.error("Error fetching vehicle compatibility:", error);
+      }
+    }
+
+    // Only fetch if product.PlatformID is defined
+    if (product.BodyID) {
+      fetchVehicleCompatibility();
+    }
+  }, [product.BodyID]);
   return (
     <section
       className="flat-spacing-17 pt_0"
@@ -42,24 +70,20 @@ export default function ShopDetailsTab({product}) {
                 >
                   <div className="">
                     <p className="mb_30">
-                      {Description ? Description : "Product Description"}
+                      {description ? description : "Product Description"}
                     </p>
                     <div className="tf-product-des-demo">
                       <div className="right">
                         <h3 className="fs-16 fw-5">Features</h3>
                         <ul>
-                          <li>Front button placket</li>
-                          <li>Adjustable sleeve tabs</li>
-                          <li>Babaton embroidered crest at placket and hem</li>
-                        </ul>
-                        <h3 className="fs-16 fw-5">Materials Care</h3>
-                        <ul className="mb-0">
-                          <li>Content: 100% LENZING™ ECOVERO™ Viscose</li>
-                          <li>Care: Hand wash</li>
-                          <li>Imported</li>
+                          <li>Strengthens steering components</li>
+                          <li>Adjustable</li>
+                          <li>Manufactured from heavy-duty, lightweight 6061 aluminum</li>
+                          <li>Strengthens steering components</li>
+                          <li>Adjustable</li>
                         </ul>
                       </div>
-                      <div className="left">
+                      {/* <div className="left">
                         <h3 className="fs-16 fw-5">Materials Care</h3>
                         <div className="d-flex gap-10 mb_15 align-items-center">
                           <div className="icon">
@@ -91,7 +115,7 @@ export default function ShopDetailsTab({product}) {
                           </div>
                           <span>Tumble dry, medium hear.</span>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -103,15 +127,45 @@ export default function ShopDetailsTab({product}) {
                   <table className="tf-pr-attrs">
                     <tbody>
                       <tr className="tf-attr-pa-color">
-                        <th className="tf-attr-label">Color</th>
+                        <th className="tf-attr-label">Available Colors</th>
                         <td className="tf-attr-value">
-                          <p>White, Pink, Black</p>
+                          <p>Red, Black Hammertone</p>
                         </td>
                       </tr>
                       <tr className="tf-attr-pa-size">
-                        <th className="tf-attr-label">Size</th>
+                        <th className="tf-attr-label">Bushing Included</th>
                         <td className="tf-attr-value">
-                          <p>S, M, L, XL</p>
+                          <p>Yes</p>
+                        </td>
+                      </tr>
+                      <tr className="tf-attr-pa-size">
+                        <th className="tf-attr-label">Control Arm Style</th>
+                        <td className="tf-attr-value">
+                          <p>Tubular</p>
+                        </td>
+                      </tr>
+                      <tr className="tf-attr-pa-size">
+                        <th className="tf-attr-label">Control Arm Material</th>
+                        <td className="tf-attr-value">
+                          <p>DOM chromoly steel</p>
+                        </td>
+                      </tr>
+                      <tr className="tf-attr-pa-size">
+                        <th className="tf-attr-label">Adjustable</th>
+                        <td className="tf-attr-value">
+                          <p>No</p>
+                        </td>
+                      </tr>
+                      <tr className="tf-attr-pa-size">
+                        <th className="tf-attr-label">Bushing Material</th>
+                        <td className="tf-attr-value">
+                          <p>Polyurethane</p>
+                        </td>
+                      </tr>
+                      <tr className="tf-attr-pa-size">
+                        <th className="tf-attr-label">Quantity</th>
+                        <td className="tf-attr-value">
+                          <p>Sold as a pair</p>
                         </td>
                       </tr>
                     </tbody>
@@ -122,64 +176,69 @@ export default function ShopDetailsTab({product}) {
                     currentTab == 3 ? "active" : ""
                   } `}
                 >
-                  <div className="tf-page-privacy-policy">
-                    <div className="title">
-                      The Company Private Limited Policy
-                    </div>
-                    <p>
-                      The Company Private Limited and each of their respective
-                      subsidiary, parent and affiliated companies is deemed to
-                      operate this Website (“we” or “us”) recognizes that you
-                      care how information about you is used and shared. We have
-                      created this Privacy Policy to inform you what information
-                      we collect on the Website, how we use your information and
-                      the choices you have about the way your information is
-                      collected and used. Please read this Privacy Policy
-                      carefully. Your use of the Website indicates that you have
-                      read and accepted our privacy practices, as outlined in
-                      this Privacy Policy.
-                    </p>
-                    <p>
-                      Please be advised that the practices described in this
-                      Privacy Policy apply to information gathered by us or our
-                      subsidiaries, affiliates or agents: (i) through this
-                      Website, (ii) where applicable, through our Customer
-                      Service Department in connection with this Website, (iii)
-                      through information provided to us in our free standing
-                      retail stores, and (iv) through information provided to us
-                      in conjunction with marketing promotions and sweepstakes.
-                    </p>
-                    <p>
-                      We are not responsible for the content or privacy
-                      practices on any websites.
-                    </p>
-                    <p>
-                      We reserve the right, in our sole discretion, to modify,
-                      update, add to, discontinue, remove or otherwise change
-                      any portion of this Privacy Policy, in whole or in part,
-                      at any time. When we amend this Privacy Policy, we will
-                      revise the “last updated” date located at the top of this
-                      Privacy Policy.
-                    </p>
-                    <p>
-                      If you provide information to us or access or use the
-                      Website in any way after this Privacy Policy has been
-                      changed, you will be deemed to have unconditionally
-                      consented and agreed to such changes. The most current
-                      version of this Privacy Policy will be available on the
-                      Website and will supersede all previous versions of this
-                      Privacy Policy.
-                    </p>
-                    <p>
-                      If you have any questions regarding this Privacy Policy,
-                      you should contact our Customer Service Department by
-                      email at marketing@company.com
-                    </p>
+                  <table className="tf-pr-attrs">
+                    <thead>
+                      <tr>
+                        <th>Year Range</th>
+                        <th>Make</th>
+                        <th>Model</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {vehicleCompatibility.length > 0 ? (
+                        vehicleCompatibility.map((vehicle) => (
+                          <tr key={vehicle.VehicleID}>
+                            <td>{`${vehicle.StartYear} - ${vehicle.EndYear}`}</td>
+                            <td>{vehicle.Make}</td>
+                            <td>{vehicle.Model}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="3">
+                            No vehicle compatibility information available
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Installation Tab */}
+                <div className={`widget-content-inner ${currentTab === 4 ? "active" : ""}`}>
+                  <div className="installation-section">
+                    {installSrc ? (
+                      <>
+                        {/* Thumbnail for PDF */}
+                        <div className="installation-thumbnail">
+                          <a href={installSrc} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}` || "/default-thumbnail.jpg"}
+                              alt="Installation Manual Thumbnail"
+                            />
+                          </a>
+                        </div>
+
+                        {/* Download Link for PDF */}
+                        <div className="installation-download">
+                          <a
+                            href={installSrc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="download-btn"
+                          >
+                            View Installation Manual (PDF)
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <p>No installation instructions available</p>
+                    )}
                   </div>
                 </div>
-                <div
+
+                {/* <div
                   className={`widget-content-inner ${
-                    currentTab == 4 ? "active" : ""
+                    currentTab == 5 ? "active" : ""
                   } `}
                 >
                   <ul className="d-flex justify-content-center mb_18">
@@ -286,7 +345,7 @@ export default function ShopDetailsTab({product}) {
                     LT01: 70% wool, 15% polyester, 10% polyamide, 5% acrylic 900
                     Grms/mt
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

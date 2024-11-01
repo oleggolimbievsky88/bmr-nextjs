@@ -21,7 +21,7 @@ export default function BoughtTogether({product}) {
             <a href="#">
               <Image
                 alt=""
-                src="/images/shop/products/p-d1.png"
+                src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`}
                 width={770}
                 height={1075}
               />
@@ -38,8 +38,7 @@ export default function BoughtTogether({product}) {
               </select>
             </div>
             <div className="tf-product-bundle-price">
-              <div className="compare-at-price">$10.00</div>
-              <div className="price-on-sale">$8.00</div>
+              <div className="price">${product?.Price}</div>
             </div>
           </div>
         </div>
@@ -54,7 +53,7 @@ export default function BoughtTogether({product}) {
             <a href="#">
               <Image
                 alt=""
-                src="/images/shop/products/hmgoepprod.jpg"
+                src="https://bmrsuspension.com/siteart/products/RH001_large.jpg"
                 width={713}
                 height={1070}
               />
@@ -62,10 +61,10 @@ export default function BoughtTogether({product}) {
           </div>
           <div className="tf-product-bundle-infos">
             <a href="#" className="tf-product-bundle-title">
-              Hardware Packet - HW0256
+              Hardware Packet - RH001
             </a>
             <div className="tf-product-bundle-price">
-              <div className="price">$25.00</div>
+              <div className="price">$39.95</div>
             </div>
           </div>
         </div>
@@ -80,7 +79,7 @@ export default function BoughtTogether({product}) {
             <a href="#">
               <Image
                 alt=""
-                src="/images/shop/products/hmgoepprod2.jpg"
+                src="https://bmrsuspension.com/siteart/products/TS0012xl_large.jpg"
                 width={713}
                 height={1070}
               />
@@ -118,8 +117,8 @@ export default function BoughtTogether({product}) {
       </div>
       <div className="tf-product-bundle-total-submit">
         <span className="text">Total price:</span>
-        <div className="compare-at-price">$51.00 USD</div>
-        <div className="price-on-sale">$53.00 USD</div>
+        <div className="compare-at-price">$249.95 USD</div>
+        <div className="price-on-sale">$233.95 USD</div>
       </div>
       <a
         href="#"

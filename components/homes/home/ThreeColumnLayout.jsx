@@ -11,12 +11,12 @@ export default function ThreeColumnLayout() {
           {
             img: "/images/shop-categories/NewProductsGradient.jpg",
             title: "NEW PRODUCTS",
-            link: "/products/new",
+            link: "products/new",
           },
           {
             img: "/images/shop-categories/MerchGradient.jpg",
             title: "BMR MERCHANDISE",
-            link: "/products/apparel",
+            link: "products/apparel",
           },
           {
             img: "/images/shop-categories/GiftCardsGradient.jpg",

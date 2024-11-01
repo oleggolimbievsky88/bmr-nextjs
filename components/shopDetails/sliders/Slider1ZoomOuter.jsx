@@ -8,31 +8,31 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 const swiperSlidesThumbs = [
   {
-    imgSrc: "/images/shop/products/hmgoepprod31.jpg",
+    imgSrc: "/images/products/AAL401_large.jpg",
     alt: "",
     width: 713,
     height: 1070,
   },
   {
-    imgSrc: "/images/shop/products/hmgoepprod.jpg",
+    imgSrc: "/images/products/BK007_large.jpg",
     alt: "img-compare",
     width: 713,
     height: 1070,
   },
   {
-    imgSrc: "/images/shop/products/hmgoepprod2.jpg",
+    imgSrc: "/images/products/AAL401_large.jpg",
     alt: "img-compare",
     width: 713,
     height: 1070,
   },
   {
-    imgSrc: "/images/shop/products/hmgoepprod3.jpg",
+    imgSrc: "/images/products/AAL401_large.jpg",
     alt: "img-compare",
     width: 713,
     height: 1070,
   },
   {
-    imgSrc: "/images/shop/products/hmgoepprod4.jpg",
+    imgSrc: "/images/products/BK007_large.jpg",
     alt: "img-compare",
     width: 768,
     height: 1152,
@@ -71,18 +71,18 @@ const swiperSlidesThumbs = [
 
 const swiperSlides = [
   {
-    imgSrc: "/images/shop/products/hmgoepprod31.jpg",
-    href: "/images/shop/products/p-d1.png",
+    imgSrc: "/images/products/BK007_large.jpg",
+    href: "/images/products/BK007_large.jpg",
     width: 770,
     height: 1075,
-    dataZoom: "/images/shop/products/hmgoepprod31.jpg",
+    dataZoom: "/images/products/BK007_large.jpg",
   },
   {
-    imgSrc: "/images/shop/products/hmgoepprod.jpg",
-    href: "/images/shop/products/hmgoepprod.jpg",
+    imgSrc: "/images/products/AAL401_large.jpg",
+    href: "/images/products/AAL401_large.jpg",
     width: 713,
     height: 1070,
-    dataZoom: "/images/shop/products/hmgoepprod.jpg",
+    dataZoom: "/images/products/AAL401_large.jpg",
   },
   {
     imgSrc: "/images/shop/products/hmgoepprod2.jpg",
