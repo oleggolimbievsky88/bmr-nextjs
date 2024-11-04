@@ -18,7 +18,7 @@ const PlatformPage = () => {
     // Filter products based on the platform from the query
     if (platform) {
       const filtered = mockProducts.filter(
-        (product) => product.platform === platform
+        (product) => product?.platform === platform
       );
       setFilteredProducts(filtered);
     }
@@ -31,7 +31,7 @@ const PlatformPage = () => {
       <h1>Products for {platform.replace('-', ' ')}</h1>
       <ul>
         {filteredProducts.map((product) => (
-          <li key={product.id}>{product.name}</li>
+          <li key={product?.id}>{product?.ProductName}</li>
         ))}
       </ul>
     </div>

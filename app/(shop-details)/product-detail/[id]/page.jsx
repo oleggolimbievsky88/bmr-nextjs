@@ -17,7 +17,7 @@ export const metadata = {
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
-const API_URL = process.env.API_URL || "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default async function ProductDetailPage({ params }) {
   const { id } = params;

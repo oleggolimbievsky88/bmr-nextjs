@@ -52,7 +52,7 @@ export default function Products() {
                 <div className="card-product bg_white radius-20">
                   <div className="card-product-wrapper border-line">
                     <Link
-                      href={`/product-detail/${product.id}`}
+                      href={`/product-detail/${product?.id}`}
                       className="product-img"
                     >
                       <Image

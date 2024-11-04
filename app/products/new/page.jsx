@@ -39,11 +39,11 @@ export default function NewProductsPage({ scrachDent = "0" }) {
 
         <div className="row">
           {newProducts.map((product) => (
-            <div key={product.ProductID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div key={product?.ProductID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
               <div className="card-product bg_white radius-20 h-100">
                 <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                   <Link
-                    href={`/products/${product.ProductID}`}
+                    href={`/products/${product?.ProductID}`}
                     className="product-img"
                   >
                     <Image
@@ -64,7 +64,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                   <div className="list-product-btn mt-auto">
                     <a
                       href="#quick_add"
-                      onClick={() => setQuickAddItem(product.ProductID)}
+                      onClick={() => setQuickAddItem(product?.ProductID)}
                       data-bs-toggle="modal"
                       className="box-icon bg_white quick-add tf-btn-loading"
                     >
@@ -72,16 +72,16 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                       <span className="tooltip">Quick Add</span>
                     </a>
                     <a
-                      onClick={() => addToWishlist(product.ProductID)}
+                      onClick={() => addToWishlist(product?.ProductID)}
                       className="box-icon bg_white wishlist btn-icon-action"
                     >
                       <span
                         className={`icon icon-heart ${
-                          isAddedtoWishlist(product.ProductID) ? "added" : ""
+                          isAddedtoWishlist(product?.ProductID) ? "added" : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoWishlist(product.ProductID)
+                        {isAddedtoWishlist(product?.ProductID)
                           ? "Already Wishlisted"
                           : "Add to Wishlist"}
                       </span>

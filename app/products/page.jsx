@@ -34,7 +34,7 @@ export default function ProductsPage() {
       <h1>Products</h1>
       <ul>
         {products.map((product) => (
-          <li key={product.ProductID}>
+          <li key={product?.ProductID}>
             <h2>{product?.ProductName}</h2>
             <p>Price: ${product?.Price}</p>
             <p>{product?.PartNumber}</p>

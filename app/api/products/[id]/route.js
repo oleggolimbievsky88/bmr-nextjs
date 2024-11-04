@@ -4,15 +4,16 @@ import { NextResponse } from 'next/server';
 import { getProductById } from '@/lib/queries';
 
 export async function GET(request, { params }) {
-  try {
-    const product = await getProductById(params.id);
+  const { id } = params;
 
-    if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
-    }
+  try {
+    const product = await getProductById(id);
+    
+    const response = NextResponse.json(product);
+    response.headers.set('Access-Control-Allow-Origin', 'http://ogwebserver.ddns.net');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
+    
 
     // Helper function to parse the Images field and exclude '_small' images
     const parseImages = (imagesString) => {

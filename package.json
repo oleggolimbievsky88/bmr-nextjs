@@ -13,6 +13,7 @@
     "@google/model-viewer": "^3.5.0",
     "aos": "^2.3.4",
     "bootstrap": "^5.3.2",
+    "cors": "^2.8.5",
     "drift-zoom": "^1.5.1",
     "mysql2": "^3.11.3",
     "next": "14.2.15",

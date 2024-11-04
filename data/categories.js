@@ -1261,32 +1261,32 @@ export const collections8 = [
 
 export const collectionSlides2 = [
   {
-    imgSrc: "/images/collections/collection-14.jpg",
+    imgSrc: "https://bmrsuspension.com/siteart/categories/UCA762_600.jpg",
     alt: "collection-img",
     title: "Suspension",
   },
   {
-    imgSrc: "/images/collections/collection-15.jpg",
+    imgSrc: "https://bmrsuspension.com/siteart/categories/KM761R_600.jpg",
     alt: "collection-img",
     title: "Chassis",
   },
   {
-    imgSrc: "/images/collections/collection-16.jpg",
+    imgSrc: "https://bmrsuspension.com/siteart/categories/CBK774_300dpi.jpg",
     alt: "collection-demo-1",
     title: "Bushing Kits",
   },
   {
-    imgSrc: "/images/collections/collection-17.jpg",
+    imgSrc: "https://bmrsuspension.com/siteart/categories/BMR-TSHIRT-S650.jpg",
     alt: "collection-demo-1",
     title: "T-Shirts",
   },
   {
-    imgSrc: "/images/collections/collection-18.jpg",
+    imgSrc: "https://bmrsuspension.com/siteart/categories/PM760R_600.jpg",
     alt: "collection-demo-1",
     title: "Safety Equipment",
   },
   {
-    imgSrc: "/images/collections/collection-19.jpg",
+    imgSrc: "https://bmrsuspension.com/siteart/categories/Screen%20Shot%202023-09-29%20at%209.42.35%20AM.png",
     alt: "collection-demo-1",
     title: "Wheels",
   },
