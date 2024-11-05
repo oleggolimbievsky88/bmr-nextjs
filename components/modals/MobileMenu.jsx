@@ -147,14 +147,16 @@ export default function MobileMenu() {
             </div>
             <ul className="mb-info">
               <li>
-                Address: 1234 Fashion Street, Suite 567, <br />
-                New York, NY 10001
+              Address:<br />
+              BMR Suspension <br />
+              1033 Pine Chase Ave <br />
+              Lakeland, FL 33815
               </li>
               <li>
-                Email: <b>info@fashionshop.com</b>
+              Email: <b><a href="#">info@bmrsuspension.com</a></b>
               </li>
               <li>
-                Phone: <b>(212) 555-1234</b>
+                Phone: <b>(813) 986-9302</b>
               </li>
             </ul>
           </div>

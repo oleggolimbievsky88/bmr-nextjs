@@ -142,11 +142,8 @@ const swiperSlides = [
   },
 ];
 
-export default function Slider1ZoomOuter({product}) {
+export default function Slider1ZoomOuter() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-
-
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   useEffect(() => {
     // Function to initialize Drift
     const imageZoom = () => {
@@ -213,7 +210,7 @@ export default function Slider1ZoomOuter({product}) {
           },
         }}
       >
-        {product.images.map((slide, index) => (
+        {swiperSlidesThumbs.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">
             <div className="item">
               <Image
@@ -242,7 +239,7 @@ export default function Slider1ZoomOuter({product}) {
           thumbs={{ swiper: thumbsSwiper }}
           modules={[Thumbs, Navigation]}
         >
-          {product.images.map((slide, index) => (
+          {swiperSlides.map((slide, index) => (
             <SwiperSlide key={index}>
               <Item
                 original={slide.imgSrc}

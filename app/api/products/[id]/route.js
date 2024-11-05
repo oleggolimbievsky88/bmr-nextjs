@@ -28,17 +28,19 @@ export async function GET(request, { params }) {
           width: 770,
           height: 770,
           dataZoom: `https://bmrsuspension.com/siteart/products/${imgSrc}`,
+          currentColor: 'red',
         }));
     };
 
     // Create the main image object using ImageLarge if valid
     const mainImage = product.ImageLarge && product.ImageLarge.trim() !== "0"
       ? {
-          imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
+          imgSrc: `https://bmrsuspension.com/siteart/products/${product?.ImageLarge.trim()}`,
           alt: `Main image for ${product?.ProductName}`,
           width: 770,
           height: 770,
-          dataZoom: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
+          dataZoom: `https://bmrsuspension.com/siteart/products/${product?.ImageLarge.trim()}`,
+          currentColor: 'red',
         }
       : null;
 
@@ -56,6 +58,7 @@ export async function GET(request, { params }) {
     // Add the unique images array to the product object
     product.images = uniqueImages;
 
+      console.log('product:', product);
     return NextResponse.json(product); // Return the modified product object
   } catch (error) {
     console.error(`Failed to fetch product with id ${params.id}:`, error);
