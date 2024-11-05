@@ -21,6 +21,16 @@
       "static/chunks/main-app.js",
       "static/css/app/page.css",
       "static/chunks/app/page.js"
+    ],
+    "/platform/[platformName]/[platformCategory]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/platform/[platformName]/[platformCategory]/page.js"
+    ],
+    "/platform/[platformName]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/platform/[platformName]/page.js"
     ]
   }
 }

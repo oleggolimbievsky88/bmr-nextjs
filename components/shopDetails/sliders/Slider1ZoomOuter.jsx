@@ -142,8 +142,11 @@ const swiperSlides = [
   },
 ];
 
-export default function Slider1ZoomOuter() {
+export default function Slider1ZoomOuter({product}) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   useEffect(() => {
     // Function to initialize Drift
     const imageZoom = () => {
@@ -195,7 +198,7 @@ export default function Slider1ZoomOuter() {
   return (
     <>
       <Swiper
-        direction="vertical"
+        direction="horizontal"
         spaceBetween={10}
         slidesPerView={6}
         className="tf-product-media-thumbs other-image-zoom"
@@ -205,12 +208,12 @@ export default function Slider1ZoomOuter() {
           0: {
             direction: "horizontal",
           },
-          1150: {
-            direction: "vertical",
+          800: {
+            direction: "horizontal",
           },
         }}
       >
-        {swiperSlidesThumbs.map((slide, index) => (
+        {product.images.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">
             <div className="item">
               <Image
@@ -239,7 +242,7 @@ export default function Slider1ZoomOuter() {
           thumbs={{ swiper: thumbsSwiper }}
           modules={[Thumbs, Navigation]}
         >
-          {swiperSlides.map((slide, index) => (
+          {product.images.map((slide, index) => (
             <SwiperSlide key={index}>
               <Item
                 original={slide.imgSrc}

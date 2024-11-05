@@ -14,29 +14,28 @@ import Drift from "drift-zoom";
 
 
 
-export default function Slider3({ productId }) {
+export default function Slider3({ product }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [product, setProduct] = useState(null);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 
-  // Fetch product data from the API
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/api/products/${productId}`);
-        if (!response.ok) throw new Error("Failed to fetch product");
+  // // Fetch product data from the API
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     try {
+  //       const response = await fetch(`${baseUrl}/api/products/${product.productId}`);
+  //       if (!response.ok) throw new Error("Failed to fetch product");
 
-        const data = await response.json();
-        setProduct(data);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
-    };
+  //       const data = await response.json();
+  //       setProduct(data);
+  //     } catch (error) {
+  //       console.error("Error fetching product:", error);
+  //     }
+  //   };
 
-    fetchProduct();
-  }, [productId]);
+  //   fetchProduct();
+  // }, [productId]);
 
   if (!product) return <p>Loading...</p>; // Show loading state until data is fetched
 

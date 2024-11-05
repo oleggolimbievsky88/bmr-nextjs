@@ -26,7 +26,8 @@ export async function GET(request, { params }) {
           imgSrc: `https://bmrsuspension.com/siteart/products/${imgSrc}`,
           alt: `Image ${index + 1} for ${product?.ProductName}`,
           width: 770,
-          height: 1075,
+          height: 770,
+          dataZoom: `https://bmrsuspension.com/siteart/products/${imgSrc}`,
         }));
     };
 
@@ -36,7 +37,8 @@ export async function GET(request, { params }) {
           imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
           alt: `Main image for ${product?.ProductName}`,
           width: 770,
-          height: 1075,
+          height: 770,
+          dataZoom: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
         }
       : null;
 
