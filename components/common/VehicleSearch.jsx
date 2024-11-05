@@ -9,6 +9,7 @@ const VehicleSearch = () => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMake, setSelectedMake] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedSubModel, setSelectedSubModel] = useState(null);
 
   // Function to populate the years dropdown
   useEffect(() => {
@@ -116,19 +117,19 @@ const VehicleSearch = () => {
             </select>
           </div>
           <div className="col-md-3 mb-3">
-            <label htmlFor="model" className="form-label">
-              Model
+            <label htmlFor="subModel" className="form-label">
+              Sub-Model
             </label>
             <select
-              id="model"
+              id="subModel"
               className="form-control"
               onChange={handleModelChange}
               disabled={!selectedMake}
             >
-              <option value="">Select Model</option>
-              {models.map((model) => (
-                <option key={model} value={model}>
-                  {model}
+              <option value="">Select Sub-Model</option>
+              {models.map((subModel) => (
+                <option key={subModel} value={subModel}>
+                  {subModel}
                 </option>
               ))}
             </select>

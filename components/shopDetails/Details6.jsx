@@ -34,8 +34,8 @@ export default function Details6({product}) {
             <div className="col-md-6">
               <div className="tf-product-media-wrap thumbs-bottom sticky-top">
                 <div className="thumbs-slider">
-                  <Slider3 productId={product.ProductID} />
-                  {/* <Slider1ZoomOuter product={product} /> */}
+                  {/* <Slider3 productId={product.ProductID} /> */}
+                  <Slider1ZoomOuter product={product} />
                 </div>
               </div>
             </div>
