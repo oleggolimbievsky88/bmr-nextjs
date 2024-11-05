@@ -10,11 +10,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true, // Ignore TypeScript errors during build
   },
-  // Other config options...
-  watchOptions: {
-    poll: 1000, // Check for changes every second
-    aggregateTimeout: 300, // Delay the rebuild after the first change
-  },
+  // // Other config options...
+  // watchOptions: {
+  //   poll: 1000, // Check for changes every second
+  //   aggregateTimeout: 300, // Delay the rebuild after the first change
+  // },
   async headers() {
     return [
       {

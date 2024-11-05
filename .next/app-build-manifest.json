@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/products/[id]/page": [
+    "/(shop)/product-style-01/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/products/[id]/page.js"
+      "static/chunks/app/(shop)/product-style-01/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -22,35 +22,15 @@
       "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
-    "/platform/[platformName]/[platformCategory]/page": [
+    "/(shop-details)/product-giftcard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/platform/[platformName]/[platformCategory]/page.js"
+      "static/chunks/app/(shop-details)/product-giftcard/page.js"
     ],
-    "/platform/[platformName]/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/platform/[platformName]/page.js"
-    ],
-    "/(shop)/product-style-01/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(shop)/product-style-01/page.js"
-    ],
-    "/(shop)/product-style-list/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(shop)/product-style-list/page.js"
-    ],
-    "/(shop)/shop-link/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(shop)/shop-link/page.js"
-    ],
-    "/(shop)/shop-default/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(shop)/shop-default/page.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

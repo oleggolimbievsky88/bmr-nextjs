@@ -10,7 +10,7 @@ export default function StickyItem({ product, soldOut = false }) {
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
 
   const productImageSrc = product?.ImageLarge
-    ? `https://bmrsuspension.com/siteart/products/${product.ImageLarge}`
+    ? `https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`
     : "/default-product-image.jpg"; // Default image path in /public folder
   return (
     <div className="tf-sticky-btn-atc">
@@ -51,11 +51,11 @@ export default function StickyItem({ product, soldOut = false }) {
                   </a>
                 ) : (
                   <a
-                    onClick={() => addProductToCart(product.id)}
+                    onClick={() => addProductToCart(product?.ProductID)}
                     className="tf-btn btn-fill radius-3 justify-content-center fw-6 fs-14 flex-grow-1 animate-hover-btn"
                   >
                     <span>
-                      {isAddedToCartProducts(product.id)
+                      {isAddedToCartProducts(product?.ProductID)
                         ? "Already Added"
                         : "Add to cart"}
                     </span>
