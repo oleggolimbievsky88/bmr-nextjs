@@ -9,6 +9,8 @@ export async function GET(request, { params }) {
   try {
     const product = await getProductById(id);
     
+    // Add the id property to the product object
+    product.id = id;
     const response = NextResponse.json(product);
     response.headers.set('Access-Control-Allow-Origin', 'http://ogwebserver.ddns.net');
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

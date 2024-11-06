@@ -1,1 +1,4 @@
-{}
+{
+  "/platform/[platformName]/page": "app/platform/[platformName]/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
+}
