@@ -1,20 +1,26 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'bmrsuspension.com',
+        pathname: '/siteart/**',
+      },
+    ],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        net: false,
+        dns: false,
+        tls: false,
+        fs: false,
+      };
+    }
+    return config;
   },
 };
-
-// // next.config.js
-// module.exports = {
-//   // Disable static generation errors temporarily
-//   productionBrowserSourceMaps: true,
-//   eslint: {
-//     ignoreDuringBuilds: true, // Skip ESLint during production build
-//   },
-//   typescript: {
-//     ignoreBuildErrors: true, // Ignore TypeScript errors during build
-//   },
-// };
 
 export default nextConfig;

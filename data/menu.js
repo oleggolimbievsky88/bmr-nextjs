@@ -12,6 +12,7 @@ export const homePage = [
 export const fordLinks = [
   {
     heading: "2024 Mustang",
+    href: "/platform/2024-mustang",
     links: [
       { href: "/platform/2024-mustang/suspension", text: "Suspension" },
       { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
@@ -24,8 +25,9 @@ export const fordLinks = [
   },
   {
     heading: "2015 - 2023 Mustang",
+    href: "/platform/2015-2023-mustang",
     links: [
-      { href: "/platform/2024-mustang/suspension", text: "Suspension" },
+      { href: "/platform/2015-2023-mustang/suspension", text: "Suspension" },
       { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
       { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
       { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
@@ -36,13 +38,14 @@ export const fordLinks = [
   },
   {
     heading: "2007 - 2014 Shelby GT500",
+    href: "/platform/2007-2014-shelby-gt500",
     links: [
-      { href: "/platform/2024-mustang/suspension", text: "Suspension" },
-      { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
-      { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
-      { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
-      { href: "/platform/2024-mustang/Safety-Equipment", text: "Safety Equipment" },
-      { href: "/platform/2024-mustang/Wheels", text: "Wheels" },
+      { href: "/platform/2007-2014-shelby-gt500/suspension", text: "Suspension" },
+      { href: "/platform/2007-2014-shelby-gt500/Chassis", text: "Chassis" }, 
+      { href: "/platform/2007-2014-shelby-gt500/Bushing-Kits", text: "Bushing Kits" },
+      { href: "/platform/2007-2014-shelby-gt500/Tshirts", text: "Tshirts" },
+      { href: "/platform/2007-2014-shelby-gt500/Safety-Equipment", text: "Safety Equipment" },
+      { href: "/platform/2007-2014-shelby-gt500/Wheels", text: "Wheels" },
       { href: "/platform/2024-mustang/Miscellaneous", text: "Miscellaneous" },
     ],
   },
