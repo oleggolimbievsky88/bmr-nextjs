@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/platform/[platformName]/[platformCategory]/page": [
+    "/platform/[platformName]/[categorySlug]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/platform/[platformName]/[platformCategory]/page.js"
+      "static/chunks/app/platform/[platformName]/[categorySlug]/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -16,26 +16,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/platform/[platformName]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/platform/[platformName]/page.js"
-    ],
-    "/platform/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/platform/page.js"
-    ],
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/page.css",
       "static/chunks/app/page.js"
-    ],
-    "/(shop-details)/product-detail/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(shop-details)/product-detail/[id]/page.js"
     ]
   }
 }
