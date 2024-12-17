@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength.jsx";
 import WishlistLength from "../common/WishlistLength.jsx";
+import MainMenu from "./MainMenu.jsx";
 
 export default function Header({
   textClass,
@@ -53,9 +54,8 @@ export default function Header({
           <div className="col-xl-6 tf-md-hidden">
             <nav className="box-navigation text-center">
               <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-30">
-                
-                <Nav isArrow={isArrow} Linkfs={Linkfs} />
-                
+                {/* <Nav isArrow={isArrow} Linkfs={Linkfs} /> */}
+                <MainMenu />
               </ul>
             </nav>
           </div>

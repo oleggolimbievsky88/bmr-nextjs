@@ -1,8 +1,8 @@
 {
-  "/platform/[platformName]/[platformCategory]/page": "app/platform/[platformName]/[platformCategory]/page.js",
-  "/platform/page": "app/platform/page.js",
   "/page": "app/page.js",
-  "/(shop-details)/product-detail/[id]/page": "app/(shop-details)/product-detail/[id]/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/products/new/route": "app/api/products/new/route.js"
+  "/api/menu/route": "app/api/menu/route.js",
+  "/(otherPages)/contact/page": "app/(otherPages)/contact/page.js",
+  "/(otherPages)/about-us/page": "app/(otherPages)/about-us/page.js",
+  "/api/products/new/route": "app/api/products/new/route.js",
+  "/platform/[platformName]/[platformCategory]/page": "app/platform/[platformName]/[platformCategory]/page.js"
 }
