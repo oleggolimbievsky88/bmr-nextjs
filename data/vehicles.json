@@ -1,0 +1,402 @@
+[
+  {
+    "VehicleID": 19,
+    "StartYear": "1967",
+    "EndYear": "1969",
+    "BodyID": "3",
+    "Make": "Chevrolet",
+    "Model": "Camaro"
+  },
+  {
+    "VehicleID": 20,
+    "StartYear": "1967",
+    "EndYear": "1969",
+    "BodyID": "3",
+    "Make": "Pontiac",
+    "Model": "Firebird"
+  },
+  {
+    "VehicleID": 21,
+    "StartYear": "1970",
+    "EndYear": "1981",
+    "BodyID": "4",
+    "Make": "Pontiac",
+    "Model": "Firebird"
+  },
+  {
+    "VehicleID": 22,
+    "StartYear": "1970",
+    "EndYear": "1981",
+    "BodyID": "4",
+    "Make": "Chevrolet",
+    "Model": "Camaro"
+  },
+  {
+    "VehicleID": 23,
+    "StartYear": "1982",
+    "EndYear": "1992",
+    "BodyID": "5",
+    "Make": "Chevrolet",
+    "Model": "Camaro"
+  },
+  {
+    "VehicleID": 24,
+    "StartYear": "1982",
+    "EndYear": "1992",
+    "BodyID": "5",
+    "Make": "Pontiac",
+    "Model": "Firebird"
+  },
+  {
+    "VehicleID": 25,
+    "StartYear": "1993",
+    "EndYear": "2002",
+    "BodyID": "6",
+    "Make": "Pontiac",
+    "Model": "Firebird"
+  },
+  {
+    "VehicleID": 26,
+    "StartYear": "1993",
+    "EndYear": "2002",
+    "BodyID": "6",
+    "Make": "Chevrolet",
+    "Model": "Camaro"
+  },
+  {
+    "VehicleID": 27,
+    "StartYear": "1968",
+    "EndYear": "1974",
+    "BodyID": "9",
+    "Make": "Chevrolet",
+    "Model": "Nova"
+  },
+  {
+    "VehicleID": 30,
+    "StartYear": "1996",
+    "EndYear": "2006",
+    "BodyID": "13",
+    "Make": "Chevrolet",
+    "Model": "Monte Carlo"
+  },
+  {
+    "VehicleID": 31,
+    "StartYear": "1996",
+    "EndYear": "2006",
+    "BodyID": "13",
+    "Make": "Oldsmobile",
+    "Model": "Intrigue"
+  },
+  {
+    "VehicleID": 32,
+    "StartYear": "1996",
+    "EndYear": "2006",
+    "BodyID": "13",
+    "Make": "Pontiac",
+    "Model": "Grand Prix"
+  },
+  {
+    "VehicleID": 33,
+    "StartYear": "1996",
+    "EndYear": "2006",
+    "BodyID": "13",
+    "Make": "Buick",
+    "Model": "Regal"
+  },
+  {
+    "VehicleID": 34,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Oldsmobile",
+    "Model": "Cutlass"
+  },
+  {
+    "VehicleID": 36,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Buick",
+    "Model": "Grand Sport"
+  },
+  {
+    "VehicleID": 37,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Chevy",
+    "Model": "El Camino"
+  },
+  {
+    "VehicleID": 38,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Pontiac",
+    "Model": "LeMans"
+  },
+  {
+    "VehicleID": 39,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Chevy",
+    "Model": "Chevelle"
+  },
+  {
+    "VehicleID": 41,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Chevy",
+    "Model": "Malibu"
+  },
+  {
+    "VehicleID": 42,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Pontiac",
+    "Model": "GTO"
+  },
+  {
+    "VehicleID": 45,
+    "StartYear": "1978",
+    "EndYear": "1987",
+    "BodyID": "15",
+    "Make": "Oldsmobile",
+    "Model": "Cutlass"
+  },
+  {
+    "VehicleID": 48,
+    "StartYear": "1978",
+    "EndYear": "1987",
+    "BodyID": "15",
+    "Make": "Pontiac",
+    "Model": "Grand Prix"
+  },
+  {
+    "VehicleID": 50,
+    "StartYear": "1978",
+    "EndYear": "1987",
+    "BodyID": "15",
+    "Make": "Buick",
+    "Model": "Grand National"
+  },
+  {
+    "VehicleID": 51,
+    "StartYear": "1978",
+    "EndYear": "1987",
+    "BodyID": "15",
+    "Make": "Buick",
+    "Model": "Regal"
+  },
+  {
+    "VehicleID": 52,
+    "StartYear": "1991",
+    "EndYear": "1996",
+    "BodyID": "16",
+    "Make": "Chevy",
+    "Model": "Impala SS"
+  },
+  {
+    "VehicleID": 55,
+    "StartYear": "2008",
+    "EndYear": "2009",
+    "BodyID": "19",
+    "Make": "Pontiac",
+    "Model": "G8"
+  },
+  {
+    "VehicleID": 56,
+    "StartYear": "2004",
+    "EndYear": "2006",
+    "BodyID": "7",
+    "Make": "Pontiac",
+    "Model": "GTO"
+  },
+  {
+    "VehicleID": 60,
+    "StartYear": "1991",
+    "EndYear": "1996",
+    "BodyID": "16",
+    "Make": "Chevy",
+    "Model": "Caprice"
+  },
+  {
+    "VehicleID": 61,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Buick ",
+    "Model": "Skylark"
+  },
+  {
+    "VehicleID": 62,
+    "StartYear": "1964",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Oldsmobile",
+    "Model": "442"
+  },
+  {
+    "VehicleID": 63,
+    "StartYear": "1970",
+    "EndYear": "1972",
+    "BodyID": "14",
+    "Make": "Chevy",
+    "Model": "Monte Carlo"
+  },
+  {
+    "VehicleID": 66,
+    "StartYear": "1979",
+    "EndYear": "2004",
+    "BodyID": "2",
+    "Make": "Ford",
+    "Model": "Mustang"
+  },
+  {
+    "VehicleID": 67,
+    "StartYear": "2004",
+    "EndYear": "2007",
+    "BodyID": "8",
+    "Make": "Cadillac",
+    "Model": "CTS-V"
+  },
+  {
+    "VehicleID": 69,
+    "StartYear": "2007",
+    "EndYear": "2014",
+    "BodyID": "20",
+    "Make": "Ford",
+    "Model": "Shelby GT500"
+  },
+  {
+    "VehicleID": 75,
+    "StartYear": "2010",
+    "EndYear": "2015",
+    "BodyID": "17",
+    "Make": "Chevy",
+    "Model": "Camaro"
+  },
+  {
+    "VehicleID": 77,
+    "StartYear": "2005",
+    "EndYear": "2014",
+    "BodyID": "1",
+    "Make": "Ford",
+    "Model": "Mustang"
+  },
+  {
+    "VehicleID": 78,
+    "StartYear": "1975",
+    "EndYear": "1979",
+    "BodyID": "25",
+    "Make": "Chevy",
+    "Model": "Nova"
+  },
+  {
+    "VehicleID": 80,
+    "StartYear": "2016",
+    "EndYear": "2017",
+    "BodyID": "26",
+    "Make": "Chevy",
+    "Model": "Camaro"
+  },
+  {
+    "VehicleID": 82,
+    "StartYear": "2008",
+    "EndYear": "2017",
+    "BodyID": "21",
+    "Make": "Dodge",
+    "Model": "Challenger"
+  },
+  {
+    "VehicleID": 83,
+    "StartYear": "2014",
+    "EndYear": "2017",
+    "BodyID": "22",
+    "Make": "Chevy",
+    "Model": "SS"
+  },
+  {
+    "VehicleID": 84,
+    "StartYear": "1978",
+    "EndYear": "1987",
+    "BodyID": "15",
+    "Make": "Chevrolet",
+    "Model": "Monte Carlo"
+  },
+  {
+    "VehicleID": 86,
+    "StartYear": "1978",
+    "EndYear": "1987",
+    "BodyID": "15",
+    "Make": "Chevrolet",
+    "Model": "El Camino"
+  },
+  {
+    "VehicleID": 87,
+    "StartYear": "1978",
+    "EndYear": "1983",
+    "BodyID": "15",
+    "Make": "Chevrolet",
+    "Model": "Malibu"
+  },
+  {
+    "VehicleID": 88,
+    "StartYear": "2003 ",
+    "EndYear": "2006",
+    "BodyID": "31",
+    "Make": "Chevrolet",
+    "Model": "SSR"
+  },
+  {
+    "VehicleID": 89,
+    "StartYear": "2001",
+    "EndYear": "2009",
+    "BodyID": "12",
+    "Make": "Chevrolet",
+    "Model": "Trailblazer"
+  },
+  {
+    "VehicleID": 91,
+    "StartYear": "2001",
+    "EndYear": "2009",
+    "BodyID": "12",
+    "Make": "Oldsmobile ",
+    "Model": "Bravada"
+  },
+  {
+    "VehicleID": 92,
+    "StartYear": "2001",
+    "EndYear": "2009",
+    "BodyID": "12",
+    "Make": "Saab",
+    "Model": "9-7X"
+  },
+  {
+    "VehicleID": 93,
+    "StartYear": "2001",
+    "EndYear": "2009",
+    "BodyID": "12",
+    "Make": "GMC",
+    "Model": "Envoy"
+  },
+  {
+    "VehicleID": 94,
+    "StartYear": "2006",
+    "EndYear": "2020",
+    "BodyID": "30",
+    "Make": "Dodge ",
+    "Model": "Charger"
+  },
+  {
+    "VehicleID": 95,
+    "StartYear": "2014",
+    "EndYear": "2019",
+    "BodyID": "32",
+    "Make": "Chevrolet ",
+    "Model": "Corvette "
+  }
+]
