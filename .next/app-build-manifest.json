@@ -17,25 +17,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/_not-found/page": [
+    "/(shop-details)/product-detail/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
-    ],
-    "/(otherPages)/contact/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(otherPages)/contact/page.js"
-    ],
-    "/(otherPages)/about-us/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(otherPages)/about-us/page.js"
+      "static/chunks/app/(shop-details)/product-detail/[id]/page.js"
     ],
     "/platform/[platformName]/[platformCategory]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/platform/[platformName]/[platformCategory]/page.js"
+    ],
+    "/(shop-details)/product-giftcard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(shop-details)/product-giftcard/page.js"
     ]
   }
 }
