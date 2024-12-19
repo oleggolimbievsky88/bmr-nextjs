@@ -3,16 +3,16 @@
 }
 
 .dropdown-menu.mega-menu {
-  width: 100%;
-  max-width: 1400px;
+  width: 90vw;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  padding: 20px 40px;
+  padding: 15px 50px;
   border-radius: 0;
   margin-top: 0;
   background: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: visible;
 }
 
 .nav-item.dropdown:hover > .dropdown-menu.mega-menu {
@@ -27,32 +27,72 @@
 }
 
 .platform-section {
-  flex: 1;
-  min-width: 200px;
+  flex: 0 0 auto;
+  width: 120px;
+  white-space: nowrap;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .platform-section h3 {
   font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
+  margin: 0;
+  padding: 0 0 2px 0;
+  color: var(--primary);
+  text-align: center;
+  width: 100%;
 }
 
 .platform-section ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
+  text-align: start !important;
+}
+
+.platform-section li {
+  margin-bottom: 0;
+  padding: 0;
+  text-align: start !important;
+  line-height: 1.4;
 }
 
 .platform-section li a {
   color: #666;
-  text-decoration: none;
+  text-decoration: none !important;
   display: block;
-  padding: 0.25rem 0;
+  padding: 1px 0;
+  text-align: left;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.3s ease;
+
+  &::after {
+    content: none !important;
+  }
 }
 
 .platform-section li a:hover {
   color: #ff0000;
+  text-decoration: none !important;
+}
+
+.platform-section li {
+  a,
+  a:link,
+  a:visited,
+  a:active {
+    text-decoration: none !important;
+    &::after {
+      content: none !important;
+    }
+  }
 }
 
 .category-list {
@@ -282,10 +322,13 @@
 
 .mega-menu-section {
   display: flex;
-  flex-direction: row;
   justify-content: flex-start;
-  gap: 40px;
-  width: 100%;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 120px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 20px;
 }
 
 .navbar {
@@ -300,7 +343,7 @@
 }
 
 .nav-item {
-  position: static; /* This is important for mega menu positioning */
+  position: static;
 }
 
 /* Regular nav links styling */
@@ -310,8 +353,114 @@
   text-decoration: none;
   font-weight: 600;
   font-size: 1rem;
+  transition: color 0.3s ease;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0.8rem;
+    left: 1rem;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+  }
+
+  &.active {
+    color: #333;
+  }
 }
 
 .nav-link:hover {
-  color: #ff0000;
+  color: var(--primary);
+
+  &::after {
+    width: calc(100% - 2rem);
+  }
+}
+
+// Reset all dropdown link styles
+.dropdown-menu {
+  .nav-link,
+  a {
+    border-bottom: none !important;
+    text-decoration: none !important;
+
+    &::after,
+    &::before {
+      display: none !important;
+      content: none !important;
+    }
+  }
+}
+
+// Reset platform section links specifically
+.platform-section {
+  li a {
+    border-bottom: none !important;
+    text-decoration: none !important;
+
+    &::after,
+    &::before {
+      display: none !important;
+      content: none !important;
+    }
+  }
+}
+
+// Ensure no borders or lines on any state
+.platform-section li {
+  a,
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    border-bottom: none !important;
+    text-decoration: none !important;
+
+    &::after,
+    &::before {
+      display: none !important;
+      content: none !important;
+    }
+  }
+}
+
+// Global reset for all navigation links
+.nav-item a,
+.dropdown-menu a,
+.platform-section a,
+[class*="nav"] a {
+  border-bottom: none !important;
+  text-decoration: none !important;
+  position: relative;
+
+  &::before,
+  &::after {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+    text-decoration: none !important;
+    background: none !important;
+  }
+}
+
+// Only allow underline effect on main navigation items
+.navbar-nav > .nav-item > .nav-link {
+  &::after {
+    display: block !important;
+    content: "" !important;
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0.8rem;
+    left: 1rem;
+    background-color: #ff0000 !important;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: calc(100% - 2rem);
+  }
 }
