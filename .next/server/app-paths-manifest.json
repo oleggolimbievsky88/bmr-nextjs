@@ -1,7 +1,7 @@
 {
-  "/page": "app/page.js",
-  "/(shop-details)/product-detail/[id]/page": "app/(shop-details)/product-detail/[id]/page.js",
   "/platform/[platformName]/[platformCategory]/page": "app/platform/[platformName]/[platformCategory]/page.js",
-  "/(shop-details)/product-giftcard/page": "app/(shop-details)/product-giftcard/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/menu/route": "app/api/menu/route.js",
+  "/api/product-types/route": "app/api/product-types/route.js",
+  "/platform/[platformName]/page": "app/platform/[platformName]/page.js"
 }
