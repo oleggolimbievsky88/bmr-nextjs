@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 
 // Provide a default structure to show immediately
@@ -14,46 +14,54 @@ const defaultMenuData = {
 export default function MainMenu({ initialMenuData }) {
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
+  const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
 
+  // Fetch data immediately when component mounts
   useEffect(() => {
-    // Only fetch if no initial data was provided
-    if (!initialMenuData) {
+    if (!initialMenuData && !isDataFetched) {
       const fetchMenuData = async () => {
         try {
           const response = await fetch("/api/menu");
           if (!response.ok) throw new Error("Failed to fetch menu");
           const data = await response.json();
           setMenuData(data);
-          setIsLoading(false);
+          setIsDataFetched(true);
         } catch (err) {
           console.error("Error fetching menu:", err);
+        } finally {
           setIsLoading(false);
         }
       };
 
       fetchMenuData();
     }
-  }, [initialMenuData]);
+  }, [initialMenuData, isDataFetched]);
 
-  // Render function for menu sections
-  const renderMenuSection = (links, baseLink) => (
-    <div className="dropdown-menu mega-menu">
-      <div className="mega-menu-section">
-        {links.map((section, idx) => (
-          <div key={idx} className="platform-section">
-            <h3>{section.heading}</h3>
-            <ul>
-              {section.links.map((link, linkIdx) => (
-                <li key={linkIdx}>
-                  <Link href={link.href}>{link.text}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+  // Render function for menu sections with conditional rendering
+  const renderMenuSection = (links, baseLink) => {
+    if (links.length === 0 && isLoading) {
+      return <div className="dropdown-menu mega-menu loading">Loading...</div>;
+    }
+
+    return (
+      <div className="dropdown-menu mega-menu">
+        <div className="mega-menu-section">
+          {links.map((section, idx) => (
+            <div key={idx} className="platform-section">
+              <h3>{section.heading}</h3>
+              <ul>
+                {section.links.map((link, linkIdx) => (
+                  <li key={linkIdx}>
+                    <Link href={link.href}>{link.text}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <nav className="navbar navbar-expand-lg">

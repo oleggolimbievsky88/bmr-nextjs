@@ -1,6 +1,4 @@
-// app/api/products/route.js
-
-import { getFilteredProducts } from "@/lib/queries";
+import { getProductTypes } from "@/lib/queries";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
@@ -9,12 +7,12 @@ export async function GET(request) {
   const category = searchParams.get("category");
 
   try {
-    const products = await getFilteredProducts(platform, category);
-    return NextResponse.json(products);
+    const productTypes = await getProductTypes(platform, category);
+    return NextResponse.json(productTypes);
   } catch (error) {
-    console.error("Failed to fetch products:", error);
+    console.error("Failed to fetch product types:", error);
     return NextResponse.json(
-      { error: "Failed to fetch products" },
+      { error: "Failed to fetch product types" },
       { status: 500 }
     );
   }
