@@ -43,7 +43,11 @@ export default function MegaMenu() {
                       {group.platforms.map((platform) => (
                         <div key={platform.id} className="space-y-4">
                           <h3 className="text-lg font-medium text-gray-900">
-                            {platform.name}
+                            <Link
+                              href={`/platform/${platform.name.toLowerCase()}`}
+                            >
+                              <a>{platform.name}</a>
+                            </Link>
                           </h3>
                           <Link
                             href={`/platform/${platform.name.toLowerCase()}`}

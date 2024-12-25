@@ -1,13 +1,30 @@
 // /pages/api/categories/route.js
 
-import { getMainCategories } from '../../../lib/queries'; // Import your query function
+import { getCategoriesByPlatform, getMainCategories } from "@/lib/queries";
+import { NextResponse } from "next/server";
 
-export default async function handler(req, res) {
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const platform = searchParams.get("platform");
+  const mainCategoryId = searchParams.get("mainCategory");
+
   try {
-    const categories = await getMainCategories(); // Call the query function
-    res.status(200).json(categories); // Return the categories as JSON
+    const [categories, mainCategories] = await Promise.all([
+      getCategoriesByPlatform(platform, mainCategoryId),
+      getMainCategories(platform)
+    ]);
+
+    console.log('API Response:', { categories, mainCategories }); // Debug log
+
+    return NextResponse.json({
+      categories: categories || [],
+      mainCategories: mainCategories || []
+    });
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).json({ message: 'Failed to load categories.' });
+    console.error("Failed to fetch categories:", error);
+    return NextResponse.json({ 
+      error: "Failed to fetch categories",
+      details: error.message 
+    }, { status: 500 });
   }
 }

@@ -1,12 +1,12 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // Example: Mock product data (replace with actual API call or fetch from database)
 const mockProducts = [
-  { id: 1, name: 'Suspension Kit', platform: '2024-mustang' },
-  { id: 2, name: 'Chassis Reinforcement', platform: '2024-mustang' },
-  { id: 3, name: 'Bushing Kit', platform: '2005-2014-mustang' },
+  { id: 1, name: "Suspension Kit", platform: "2024-mustang" },
+  { id: 2, name: "Chassis Reinforcement", platform: "2024-mustang" },
+  { id: 3, name: "Bushing Kit", platform: "2005-2014-mustang" },
 ];
 
 const PlatformPage = () => {
@@ -28,7 +28,7 @@ const PlatformPage = () => {
 
   return (
     <div>
-      <h1>Products for {platform.replace('-', ' ')}</h1>
+      <h1>Products for {platform.replace("-", " ")}</h1>
       <ul>
         {filteredProducts.map((product) => (
           <li key={product.id}>{product.name}</li>
