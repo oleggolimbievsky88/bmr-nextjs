@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/platform/[platformName]/[platformCategory]/page": [
+    "/platform/[platformSlug]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/platform/[platformName]/[platformCategory]/page.js"
+      "static/chunks/app/platform/[platformSlug]/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -16,10 +16,26 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/platform/[platformName]/page": [
+    "/platform/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/platform/[platformName]/page.js"
+      "static/chunks/app/platform/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
+    ],
+    "/platform/[platformSlug]/[platformName]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/platform/[platformSlug]/[platformName]/page.js"
+    ],
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
     ]
   }
 }

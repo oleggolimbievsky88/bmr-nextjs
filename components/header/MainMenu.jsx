@@ -48,7 +48,11 @@ export default function MainMenu({ initialMenuData }) {
         <div className="mega-menu-section">
           {links.map((section, idx) => (
             <div key={idx} className="platform-section">
-              <h3>{section.heading}</h3>
+              <h3>
+                <Link href={`/platform/${section.slug}`}>
+                  {section.heading}
+                </Link>
+              </h3>
               <ul>
                 {section.links.map((link, linkIdx) => (
                   <li key={linkIdx}>

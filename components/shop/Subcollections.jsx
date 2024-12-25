@@ -1,11 +1,30 @@
 "use client";
 
-import { collectionSlides2 } from "@/data/categories";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
+import { useEffect, useState } from "react";
+
 export default function Subcollections() {
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await fetch("/api/collections");
+        if (!response.ok) throw new Error("Failed to fetch collections");
+
+        const data = await response.json();
+        setCollections(data);
+      } catch (err) {
+        console.error("Error fetching collections:", err);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
   return (
     <section className="flat-spacing-3 pb_0">
       <div className="container">
@@ -28,7 +47,7 @@ export default function Subcollections() {
             }}
             pagination={{ clickable: true, el: ".spd306" }}
           >
-            {collectionSlides2.map((slide, index) => (
+            {collections.map((slide, index) => (
               <SwiperSlide key={index}>
                 <div className="collection-item style-2 hover-img">
                   <div className="collection-inner">

@@ -1,7 +1,11 @@
 {
-  "/platform/[platformName]/[platformCategory]/page": "app/platform/[platformName]/[platformCategory]/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/platform/[platformSlug]/page": "app/platform/[platformSlug]/page.js",
+  "/platform/page": "app/platform/page.js",
   "/api/menu/route": "app/api/menu/route.js",
-  "/api/product-types/route": "app/api/product-types/route.js",
-  "/platform/[platformName]/page": "app/platform/[platformName]/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/categories/route": "app/api/categories/route.js",
+  "/platform/[platformSlug]/[platformName]/page": "app/platform/[platformSlug]/[platformName]/page.js",
+  "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/products/new/route": "app/api/products/new/route.js"
 }
