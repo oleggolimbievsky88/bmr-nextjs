@@ -30,7 +30,7 @@ export default async function ProductPage({ params }) {
   }
 
   const product = await res.json();
-
+  console.log(product);
   return (
     <>
       <Header2 />
@@ -75,7 +75,7 @@ export default async function ProductPage({ params }) {
       </div>
       {/* <Details6 product={product} /> */}
 
-      {/* <DetailsOuterZoom product={product} />  */}
+      <DetailsOuterZoom product={product} />
       <ShopDetailsTab product={product} />
       <Products />
       <RecentProducts />
