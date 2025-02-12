@@ -19,7 +19,7 @@ export default function page() {
         <div className="container-full">
           <div className="heading text-center">2024 Mustang</div>
           <p className="text-center text-2 text_black-2 mt_5">
-            Shop through our latest selection of Suspension & Chassis Parts
+            Shop through our latest selection of Suspension & Chassis Parts!
           </p>
         </div>
       </div>

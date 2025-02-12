@@ -84,7 +84,7 @@ export default function CategoryGrid({ platformSlug }) {
               <div className="collection-item style-2 hover-img">
                 <div className="collection-inner">
                   <Link
-                    href={`/shop/${category.name
+                    href={`/platform/${platformSlug}/${category.name
                       .toLowerCase()
                       .replace(/\s+/g, "-")}`}
                     className="collection-image img-style"
