@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 import Link from "next/link";
+import Subcollections from "./Subcollections";
 
 export default function CategoryGrid({ platformSlug }) {
   const [categories, setCategories] = useState([]);
@@ -49,82 +52,77 @@ export default function CategoryGrid({ platformSlug }) {
 
   if (loading) return <div>Loading...</div>;
 
+  const shouldShowArrows =
+    mainCategories.length > 5 || window.innerWidth < 1400;
+
   return (
-    <div className="container-fluid">
-      {/* setVehicle("2024 Mustang"); */}
-      {/* Vehicle Information */}
-      {vehicle && (
-        <div className="vehicle-info text-center mb-4">
-          <h4>{vehicle.name}</h4>
-          <p>{vehicle.description}</p>
-        </div>
-      )}
+    <section className="flat-spacing-3 pb_0">
+      <div className="container position-relative">
+        <Subcollections />
 
-      {/* Main Categories */}
-      <div className="filter-buttons d-flex justify-content-center gap-3 mb-4">
-        {mainCategories.map((category) => (
-          <div key={category.id}>
-            <button
-              className={`btn btn-lg ${
-                selectedMainCategory === category.id
-                  ? "btn-primary active"
-                  : "btn-outline-primary"
-              } shadow-sm rounded-pill px-4 py-2`}
-              onClick={() =>
-                setSelectedMainCategory(
-                  selectedMainCategory === category.id ? null : category.id
-                )
-              }
-            >
-              {category.name}
-            </button>
-            <img
-              src={`https://www.bmrsuspension.com/siteart/categories/${mainCatecatgoryImage}`}
-              alt={category.name}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Banner with Platform Image */}
-      {platformImage && (
-        <div
-          className="banner mb-4"
-          style={{
-            backgroundImage: `url(${platformImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            height: "200px",
+        <Swiper
+          slidesPerView={5}
+          spaceBetween={30}
+          breakpoints={{
+            1400: { slidesPerView: 5, spaceBetween: 30 },
+            1024: { slidesPerView: 4, spaceBetween: 30 },
+            768: { slidesPerView: 3, spaceBetween: 30 },
+            576: { slidesPerView: 2, spaceBetween: 30 },
+            0: { slidesPerView: 1, spaceBetween: 30 },
           }}
-        />
-      )}
-
-      {/* Categories (Product Types) */}
-      <div className="row g-4 justify-content-center mt-4">
-        {categories.map((category) => (
-          <div key={category.id} className="col-md-3">
-            <Link
-              href={`/platform/${platformSlug}/${category.name
-                .toLowerCase()
-                .replace(/\s+/g, "-")}`}
-              className="text-decoration-none"
-            >
-              <div className="card category-card h-100">
-                {1 && (
-                  <img
-                    src={`https://www.bmrsuspension.com/siteart/categories/${category.image}`}
-                    alt={category.name}
-                    className="card-img-top"
-                  />
-                )}
-                <div className="card-body">
-                  <h5 className="card-title">{category.name}</h5>
+          loop={false}
+          autoplay={false}
+          modules={[Navigation, Pagination]}
+          navigation={{
+            prevEl: ".snbp306",
+            nextEl: ".snbn306",
+          }}
+          pagination={{ clickable: true, el: ".spd306" }}
+        >
+          {mainCategories.map((category) => (
+            <SwiperSlide key={category.id}>
+              <div className="collection-item style-2 hover-img">
+                <div className="collection-inner">
+                  <Link
+                    href={`/shop/${category.name
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                    className="collection-image img-style"
+                  >
+                    <img
+                      src={`https://www.bmrsuspension.com/siteart/categories/${category.image}`}
+                      alt={category.name}
+                      className="card-img-top"
+                    />
+                  </Link>
+                  <div className="text-center mt-2">
+                    <Link
+                      href={`/shop/${category.name
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`}
+                      className="tf-btn collection-title hover-icon fs-15"
+                    >
+                      <i className="icon icon-arrow1-top-left" />
+                      {category.name}
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </Link>
-          </div>
-        ))}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        {shouldShowArrows && (
+          <>
+            <div className="nav-sw nav-next-slider nav-next-collection box-icon w_46 round snbp306 position-absolute top-50 start-0 translate-middle-y">
+              <span className="icon icon-arrow-left" />
+            </div>
+            <div className="nav-sw nav-prev-slider nav-prev-collection box-icon w_46 round snbn306 position-absolute top-50 end-0 translate-middle-y">
+              <span className="icon icon-arrow-right" />
+            </div>
+          </>
+        )}
+        <div className="sw-dots style-2 sw-pagination-collection justify-content-center spd306" />
       </div>
-    </div>
+    </section>
   );
 }
