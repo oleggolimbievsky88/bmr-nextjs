@@ -19,7 +19,7 @@ export default function CategoryGrid({ categories, platformName }) {
             >
               <div className="card h-100">
                 <div className="card-body text-center">
-                  <h5>{category.name}</h5>
+                  <h5>{category.name}as</h5>
                 </div>
               </div>
             </Link>
