@@ -1,8 +1,6 @@
 {
-  "/platform/[platformSlug]/page": "app/platform/[platformSlug]/page.js",
   "/page": "app/page.js",
   "/api/menu/route": "app/api/menu/route.js",
-  "/api/categories/route": "app/api/categories/route.js",
-  "/platform/[platformSlug]/[platformName]/[platformCategory]/page": "app/platform/[platformSlug]/[platformName]/[platformCategory]/page.js",
-  "/platform/[platformSlug]/[platformName]/page": "app/platform/[platformSlug]/[platformName]/page.js"
+  "/api/products/new/route": "app/api/products/new/route.js",
+  "/(shop-details)/product-giftcard/page": "app/(shop-details)/product-giftcard/page.js"
 }
