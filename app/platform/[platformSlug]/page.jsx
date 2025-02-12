@@ -34,7 +34,8 @@ export default async function PlatformPage({ params }) {
         <div className="container-full">
           <div className="heading text-center">{displayName}</div>
           <p className="text-center text-2 text_black-2 mt_5">
-            Shop through our latest selection of Suspension & Chassis Parts
+            Select a category to shop through our latest selection of Suspension
+            & Chassis Parts
           </p>
         </div>
       </div>

@@ -1,1 +1,8 @@
-{}
+{
+  "/platform/page": "app/platform/page.js",
+  "/platform/[platformSlug]/[platformName]/page": "app/platform/[platformSlug]/[platformName]/page.js",
+  "/platform/[platformSlug]/page": "app/platform/[platformSlug]/page.js",
+  "/api/categories/route": "app/api/categories/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/menu/route": "app/api/menu/route.js"
+}
