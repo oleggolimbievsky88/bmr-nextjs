@@ -40,7 +40,7 @@ export default async function PlatformPage({ params }) {
         </div>
       </div>
       <CategoryGrid platformSlug={platformSlug} />
-      <ProductGrid platformSlug={platformSlug} />
+      {/* <ProductGrid platformSlug={platformSlug} /> */}
       <Footer1 />
     </>
   );
