@@ -88,7 +88,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* GM Late Model Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="/gm-late-model" className="nav-link dropdown-toggle">
+              <Link href="#" className="nav-link dropdown-toggle">
                 GM Late Model Cars
               </Link>
               {renderMenuSection(menuData.gmLateModelLinks, "/gm-late-model")}
@@ -96,7 +96,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* GM Mid Muscle Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="/gm-mid-muscle" className="nav-link dropdown-toggle">
+              <Link href="#" className="nav-link dropdown-toggle">
                 GM Mid Muscle Cars
               </Link>
               {renderMenuSection(menuData.gmMidMuscleLinks, "/gm-mid-muscle")}
@@ -104,7 +104,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* GM Classic Muscle Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="/gm-classic" className="nav-link dropdown-toggle">
+              <Link href="#" className="nav-link dropdown-toggle">
                 GM Classic Muscle Cars
               </Link>
               {renderMenuSection(menuData.gmClassicMuscleLinks, "/gm-classic")}
@@ -112,7 +112,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* Mopar Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="/mopar" className="nav-link dropdown-toggle">
+              <Link href="#" className="nav-link dropdown-toggle">
                 Mopar
               </Link>
               {renderMenuSection(menuData.moparLinks, "/mopar")}

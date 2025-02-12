@@ -1,12 +1,12 @@
 // /app/api/categories/[catId]/route.js
 
-import { getCategoriesByCatId } from '../../../../lib/queries'; // Import your query function
+import { getCategoryById } from "../../../../lib/queries"; // Import your query function
 
 export async function GET(req, { params }) {
   const { catId } = params; // Extract catId from the dynamic route
 
   try {
-    const categories = await getCategoriesByCatId(catId); // Fetch categories based on catId
+    const categories = await getCategoryById(catId); // Fetch categories based on catId
     if (!categories.length) {
       return new Response(
         JSON.stringify({ message: `No categories found for CatID ${catId}` }),
@@ -17,7 +17,7 @@ export async function GET(req, { params }) {
   } catch (error) {
     console.error(`Error fetching categories for CatID ${catId}:`, error);
     return new Response(
-      JSON.stringify({ message: 'Failed to load categories.' }),
+      JSON.stringify({ message: "Failed to load categories." }),
       { status: 500 }
     );
   }

@@ -35,6 +35,7 @@ export default function ProductGrid({ platformName }) {
         setError(err.message);
       } finally {
         setLoading(false);
+        console.log("selectedMainCategory", selectedMainCategory);
       }
     };
 
@@ -94,9 +95,9 @@ export default function ProductGrid({ platformName }) {
                 className="text-decoration-none"
               >
                 <div className="card category-card h-100">
-                  {category.image && (
+                  {category.CatImage && (
                     <img
-                      src={category.image}
+                      src={`https://www.bmrsuspension.com/siteart/categories/LLK1861R_1024.jpg`}
                       alt={category.name}
                       className="card-img-top"
                     />
