@@ -18,7 +18,7 @@ export default function Details12() {
               <div className="tf-product-media-wrap sticky-top">
                 <div className="other-image-zoom" id="gallery-swiper-started">
                   <a
-                    href="/images/shop/products/gift-card-1.png"
+                    href="https://bmrsuspension.com/siteart/products/GC050_large.jpg"
                     target="_blank"
                     className="item"
                     data-pswp-width="770px"
@@ -26,10 +26,10 @@ export default function Details12() {
                   >
                     <Image
                       className="tf-image-zoom lazyload"
-                      data-zoom="/images/shop/products/gift-card-1.png"
-                      data-src="/images/shop/products/gift-card-1.png"
+                      data-zoom="https://bmrsuspension.com/siteart/products/GC050_large.jpg"
+                      data-src="https://bmrsuspension.com/siteart/products/GC050_large.jpg"
                       alt=""
-                      src="/images/shop/products/gift-card-1.png"
+                      src="https://bmrsuspension.com/siteart/products/GC050_large.jpg"
                       width={713}
                       height={713}
                     />
