@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Container, Row, Col } from "react-bootstrap";
 import Link from "next/link";
 import Subcollections from "./Subcollections";
 
@@ -36,6 +35,7 @@ export default function CategoryGrid({ platformSlug }) {
 
         setCategories(data.categories || []);
         setMainCategories(data.mainCategories || []);
+        setMainCategoryId(data.MainCatID || []);
         setMainCategoryImage(data.image || []);
         setVehicle(data.vehicle || null);
         setPlatformImage(data.platformImage || null);
@@ -50,37 +50,16 @@ export default function CategoryGrid({ platformSlug }) {
     fetchData();
   }, [platformSlug]);
 
-  if (loading) return <div>Loading...</div>;
-
-  const shouldShowArrows =
-    mainCategories.length > 5 || window.innerWidth < 1400;
+  if (loading) return <div className="text-center mt-5 mb-5">Loading...</div>;
 
   return (
-    <section className="flat-spacing-3 pb_0">
-      <div className="container position-relative">
+    <section className="flat-spacing-3 pb_0 mb_10">
+      <Container className="position-relative">
         <Subcollections />
 
-        <Swiper
-          slidesPerView={5}
-          spaceBetween={30}
-          breakpoints={{
-            1400: { slidesPerView: 5, spaceBetween: 30 },
-            1024: { slidesPerView: 4, spaceBetween: 30 },
-            768: { slidesPerView: 3, spaceBetween: 30 },
-            576: { slidesPerView: 2, spaceBetween: 30 },
-            0: { slidesPerView: 1, spaceBetween: 30 },
-          }}
-          loop={false}
-          autoplay={false}
-          modules={[Navigation, Pagination]}
-          navigation={{
-            prevEl: ".snbp306",
-            nextEl: ".snbn306",
-          }}
-          pagination={{ clickable: true, el: ".spd306" }}
-        >
+        <Row>
           {mainCategories.map((category) => (
-            <SwiperSlide key={category.id}>
+            <Col key={category.id} className="mb-4 custom-col">
               <div className="collection-item style-2 hover-img">
                 <div className="collection-inner">
                   <Link
@@ -97,32 +76,21 @@ export default function CategoryGrid({ platformSlug }) {
                   </Link>
                   <div className="text-center mt-2">
                     <Link
-                      href={`/shop/${category.name
+                      href={`/platform/${platformSlug}/${category.name
                         .toLowerCase()
                         .replace(/\s+/g, "-")}`}
                       className="tf-btn collection-title hover-icon fs-15"
                     >
-                      <i className="icon icon-arrow1-top-left" />
                       {category.name}
+                      <i className="icon icon-arrow1-top-left mr-20" />
                     </Link>
                   </div>
                 </div>
               </div>
-            </SwiperSlide>
+            </Col>
           ))}
-        </Swiper>
-        {shouldShowArrows && (
-          <>
-            <div className="nav-sw nav-next-slider nav-next-collection box-icon w_46 round snbp306 position-absolute top-50 start-0 translate-middle-y">
-              <span className="icon icon-arrow-left" />
-            </div>
-            <div className="nav-sw nav-prev-slider nav-prev-collection box-icon w_46 round snbn306 position-absolute top-50 end-0 translate-middle-y">
-              <span className="icon icon-arrow-right" />
-            </div>
-          </>
-        )}
-        <div className="sw-dots style-2 sw-pagination-collection justify-content-center spd306" />
-      </div>
+        </Row>
+      </Container>
     </section>
   );
 }

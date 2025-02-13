@@ -1,7 +1,7 @@
 // app/products/new/page.js
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,7 +11,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
 
   useEffect(() => {
     async function fetchNewProducts() {
-      const response = await fetch('/api/products/new');
+      const response = await fetch("/api/products/new");
       const data = await response.json();
       setNewProducts(data);
     }
@@ -39,11 +39,14 @@ export default function NewProductsPage({ scrachDent = "0" }) {
 
         <div className="row">
           {newProducts.map((product) => (
-            <div key={product.ProductID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div
+              key={product.ProductID}
+              className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
+            >
               <div className="card-product bg_white radius-20 h-100">
                 <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                   <Link
-                    href={`/product-detail/${product.ProductID}`}
+                    href={`/products/${product.ProductID}`}
                     className="product-img"
                   >
                     <Image
@@ -114,8 +117,13 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                     </a>
                   </div>
                   <div className="card-product-info mt-2">
-                    <div className="NewProductPartNumber">{product.PartNumber}</div>
-                    <Link href={`/product-detail/${product.ProductID}`} className="title link">
+                    <div className="NewProductPartNumber">
+                      {product.PartNumber}
+                    </div>
+                    <Link
+                      href={`/products/${product.ProductID}`}
+                      className="title link"
+                    >
                       {product?.ProductName}
                     </Link>
                     <span className="price"> ${product?.Price} </span>

@@ -53,12 +53,11 @@ export default function Hero() {
         </Swiper> */}
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={1}
+          spaceBetween={0}
           slidesPerView={1}
           navigation
           pagination={{ clickable: true }}
           autoplay={{ delay: 5000 }}
-          // Loop through slides
           speed={3000}
           style={{ backgroundColor: "black" }}
         >
@@ -75,6 +74,8 @@ export default function Hero() {
                       alt={`Slide ${index + 1}`}
                       width={1920}
                       height={550}
+                      layout="responsive"
+                      objectFit="cover"
                       priority
                     />
                   </Link>
