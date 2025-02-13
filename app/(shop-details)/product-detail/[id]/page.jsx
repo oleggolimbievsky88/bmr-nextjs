@@ -30,7 +30,21 @@ export default async function ProductPage({ params }) {
   }
 
   const product = await res.json();
-  console.log(product);
+  console.log("product=%o", product);
+  const { bodyid } = product;
+
+  // Fetch vehicle data using bodyid
+  const vehicleRes = await fetch(`${API_URL}/api/platforms/${bodyid}`);
+
+  console.log(vehicleRes);
+
+  if (!vehicleRes.ok) {
+    // Handle vehicle not found or server error
+    return <p>Vehicle information not found.</p>;
+  }
+
+  const vehicle = await vehicleRes.json();
+
   return (
     <>
       <Header2 />
@@ -42,8 +56,13 @@ export default async function ProductPage({ params }) {
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <Link href={`/platforms/2024-mustang`} className="text">
-                2024 Mustang
+              <Link
+                href={`/platforms/${vehicle.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+                className="text"
+              >
+                {vehicle.name}
               </Link>
               <i className="icon icon-arrow-right" />
               <span className="text">

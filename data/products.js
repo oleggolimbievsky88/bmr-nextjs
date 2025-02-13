@@ -485,7 +485,7 @@ export const products3 = [
 
     imgSrc: "/images/products/beige-2.jpg",
     imgHoverSrc: "/images/products/beige-3.jpg",
-    title: "Cotton jersey top",
+    title: "AA001 - BMR A-arms",
     price: 7.95,
     colors: [
       {
@@ -2333,7 +2333,8 @@ export const products20 = [
     id: 135,
     imgSrc: "/images/products/SB763_large.jpg",
     imgHoverSrc: "/images/products/SB763_large.jpg",
-    title: "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
+    title:
+      "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
     price: 299.95,
   },
   {
@@ -2354,7 +2355,8 @@ export const products20 = [
     id: 138,
     imgSrc: "/images/products/SB763_large.jpg",
     imgHoverSrc: "/images/products/SB763_large.jpg",
-    title: "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
+    title:
+      "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
     price: 299.95,
   },
   {
@@ -4834,7 +4836,7 @@ export const tfLoopItems = [
     imgAlt: "",
     imgWidth: 720,
     imgHeight: 1005,
-    title: "Cotton jersey top",
+    title: "BMR A-arms",
     compareAtPrice: 10.0,
     price: 8.0,
     salePrice: 8.0,

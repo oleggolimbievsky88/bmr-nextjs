@@ -10,7 +10,8 @@ import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
@@ -22,12 +23,17 @@ export default async function ProductPage({ params }) {
   // Fetch product data from API
   const res = await fetch(`${API_URL}/api/products/${id}`);
 
+  //console.log("Fetching product data from:", `${API_URL}/api/products/${id}`);
+  //console.log("API response status:", res.status);
+
   if (!res.ok) {
     // Handle product not found or server error
+    console.error("Failed to fetch product data:", res.statusText);
     return <p>Product not found.</p>;
   }
 
   const product = await res.json();
+  console.log("product=%o", product);
 
   return (
     <>

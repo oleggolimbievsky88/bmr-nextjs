@@ -17,6 +17,7 @@ export default async function PlatformPage({ params }) {
   if (!platform) {
     return <div>Platform not found</div>;
   }
+  console.log("platform=%o", platform);
 
   // Format the display name based on the platform data
   const displayName =
@@ -32,8 +33,24 @@ export default async function PlatformPage({ params }) {
       <Header2 />
       <div className="tf-page-title">
         <div className="container-full">
-          <div className="heading text-center">{displayName}</div>
-          <p className="text-center text-2 text_black-2 mt_5">
+          <div
+            className="heading text-center"
+            style={{
+              backgroundColor: "white",
+              margin: "0px",
+              padding: "0px",
+              width: "100%",
+            }}
+          >
+            <img
+              src={`https://bmrsuspension.com/siteart/cars/${platform.image}`}
+              alt={platform.name}
+              style={{ width: "175px", height: "100px" }}
+            />{" "}
+            {displayName}
+          </div>
+          <p className="text-center text-2 mt_15 pt_15">
+            <br></br>
             Select a category to shop through our latest selection of Suspension
             & Chassis Parts
           </p>

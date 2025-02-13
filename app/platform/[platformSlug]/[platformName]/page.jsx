@@ -6,18 +6,20 @@ import CategoryGrid from "@/components/shop/CategoryGrid";
 import ProductGrid from "@/components/shop/ProductGrid";
 
 export default async function PlatformPage({ params }) {
-  const { platformName } = params;
+  const { platformSlug, platformName } = params;
   const categories = await getPlatformCategories(platformName);
 
-  // Format the platform name for display
-  const formattedName = platformName
+  // Format the platform slug for vehicle display
+  const formattedVehicleName = platformSlug
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-  // If the name includes a year range (e.g., "2015-2023-mustang")
-  // Format it nicely (e.g., "2015-2023 Mustang")
-  const displayName = formattedName.replace(/(\d{4}-\d{4})\s/, "$1 ");
+  // Format the platform name for category display
+  const formattedCategoryName = platformName
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
   return (
     <>
@@ -25,14 +27,18 @@ export default async function PlatformPage({ params }) {
       <Header2 />
       <div className="tf-page-title">
         <div className="container-full">
-          <div className="heading text-center">{displayName}</div>
+          <div className="heading text-center">
+            {formattedVehicleName}
+            <br />
+            <span className="category-name">{formattedCategoryName}</span>
+          </div>
           <p className="text-center text-2 text_black-2 mt_5">
-            Shop through our latest selection of Suspension & Chassis Parts
+            Check out our latest selection of Suspension & Chassis Parts!
           </p>
         </div>
       </div>
       <CategoryGrid categories={categories} platformName={platformName} />
-      <ProductGrid platformName={platformName} />
+      {/* <ProductGrid platformName={platformName} /> */}
       <Footer1 />
     </>
   );

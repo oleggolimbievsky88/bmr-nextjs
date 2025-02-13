@@ -552,3 +552,71 @@
     font-size: 12px;
   }
 }
+
+.custom-col {
+  @media (min-width: 1200px) {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  margin-bottom: 30px;
+}
+
+.Row {
+  margin-left: -10px;
+  margin-right: -10px;
+  margin-bottom: 40px;
+}
+
+.collection-image {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f8f8f8;
+}
+
+.collection-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.collection-title {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.category-name {
+  color: var(--primary);
+}
+
+// public/scss/custom.scss
+
+.tf-slideshow {
+  .wrap-slider {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .collection-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .collection-inner {
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
