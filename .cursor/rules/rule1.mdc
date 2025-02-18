@@ -1,0 +1,20 @@
+---
+description: JSX Files
+globs: .jsx
+---
+
+# Your rule content
+
+- You can @ files here
+@*.jsx
+@*.js
+@*.ts
+@*.tsx
+@*.css
+@*.html
+
+# Exclude specific files or directories
+!node_modules/
+!dist/
+!*.test.js
+!.next/

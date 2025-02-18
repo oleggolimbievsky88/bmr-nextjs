@@ -11,6 +11,7 @@ export const metadata = {
 };
 
 export default async function PlatformPage({ params }) {
+  console.log("params=%o", params);
   const { platformSlug } = params;
   const platform = await getPlatformBySlug(platformSlug);
 

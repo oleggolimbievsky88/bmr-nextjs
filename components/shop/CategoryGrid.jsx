@@ -4,7 +4,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import Link from "next/link";
 import Subcollections from "./Subcollections";
 
-export default function CategoryGrid({ platformSlug }) {
+export default function CategoryGrid({ categoriesSlug, platformSlug }) {
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
@@ -13,6 +13,9 @@ export default function CategoryGrid({ platformSlug }) {
   const [vehicle, setVehicle] = useState(null);
   const [platformImage, setPlatformImage] = useState(null);
   const [mainCategoryImage, setMainCategoryImage] = useState(null);
+
+  console.log("categoriesSlug=%o", categoriesSlug);
+  console.log("platformSlug=%o", platformSlug);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +38,6 @@ export default function CategoryGrid({ platformSlug }) {
 
         setCategories(data.categories || []);
         setMainCategories(data.mainCategories || []);
-        setMainCategoryId(data.MainCatID || []);
         setMainCategoryImage(data.image || []);
         setVehicle(data.vehicle || null);
         setPlatformImage(data.platformImage || null);

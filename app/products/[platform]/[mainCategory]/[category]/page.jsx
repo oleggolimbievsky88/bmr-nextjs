@@ -7,7 +7,6 @@ import ProductGrid from "@/components/shop/ProductGrid";
 
 export default async function PlatformPage({ params }) {
   const { platformSlug, platformName } = params;
-  const categories = await getPlatformCategories(platformName);
 
   // Format the platform slug for vehicle display
   const formattedVehicleName = platformSlug
@@ -21,6 +20,9 @@ export default async function PlatformPage({ params }) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
+  const categories = await getPlatformCategories(platformSlug);
+  console.log("categories=%o", categories);
+
   return (
     <>
       <Topbar1 />
@@ -28,6 +30,11 @@ export default async function PlatformPage({ params }) {
       <div className="tf-page-title">
         <div className="container-full">
           <div className="heading text-center">
+            <img
+              src={`https://bmrsuspension.com/siteart/cars/${categories.image}`}
+              alt={categories.name}
+              style={{ width: "175px", height: "100px" }}
+            />{" "}
             {formattedVehicleName}
             <br />
             <span className="category-name">{formattedCategoryName}</span>
@@ -37,7 +44,10 @@ export default async function PlatformPage({ params }) {
           </p>
         </div>
       </div>
-      <CategoryGrid categories={categories} platformName={platformName} />
+      <CategoryGrid
+        categoriesSlug={categories.slug}
+        platformSlug={platformSlug}
+      />
       {/* <ProductGrid platformName={platformName} /> */}
       <Footer1 />
     </>
