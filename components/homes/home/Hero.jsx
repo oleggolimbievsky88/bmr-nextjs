@@ -74,7 +74,7 @@ export default function Hero() {
                       alt={`Slide ${index + 1}`}
                       width={1920}
                       height={550}
-                      layout="responsive"
+                      style={{ width: '100%', height: 'auto' }}
                       objectFit="cover"
                       priority
                     />

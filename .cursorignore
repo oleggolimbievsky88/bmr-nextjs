@@ -2,4 +2,6 @@
 .cursorignore,
 .next,
 .node_modules,
-.vscode
+.vscode,
+.env,
+.cursor

@@ -3,11 +3,12 @@ import pool from '@/lib/db';
 
 export async function GET(request, { params }) {
   const { platformName } = params;
+  console.log("platformName=%o", platformName);
 
   try {
     const query = `
-      SELECT * FROM platforms
-      WHERE name = ?
+      SELECT * FROM bodies
+      WHERE slug = ?
     `;
     const [rows] = await pool.query(query, [platformName]);
 
