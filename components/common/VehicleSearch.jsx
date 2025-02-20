@@ -61,7 +61,7 @@ const VehicleSearch = () => {
       );
       if (selectedVehicle && selectedVehicle.platform) {
         // Redirect to the platform page
-        window.location.href = `/pages/platform/${selectedVehicle.platform}`;
+        window.location.href = `/products/${selectedVehicle.platform}`;
       }
     }
   };
@@ -78,7 +78,7 @@ const VehicleSearch = () => {
         </div>
       </div>
 
-      <form className="container mt-3 p-3 border rounded-3 bg-dark text-white">
+      <form className="container mt-3 p-3 border rounded-3 bg-dark text-white" onSubmit={handleSubmit}>
         <div className="row">
           <div className="col-md-3 mb-3">
             <label htmlFor="year" className="form-label">
@@ -142,6 +142,7 @@ const VehicleSearch = () => {
                 borderColor: "var(--primary)",
                 color: "white",
               }}
+              onClick={handleSubmit}
             >
               Search
             </button>

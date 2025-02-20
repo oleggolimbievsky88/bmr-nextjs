@@ -300,7 +300,7 @@ export default function Details6({product}) {
           </div>
         </div>
       </div>
-      <StickyItem />
+      <StickyItem  product={product}/>
     </section>
   );
 }

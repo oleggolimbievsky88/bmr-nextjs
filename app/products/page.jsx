@@ -39,6 +39,7 @@ export default function ProductsPage() {
             <p>Price: ${product?.Price}</p>
             <p>{product?.PartNumber}</p>
             <p>{product?.Description}</p>
+            <p>{product?.PlatformName}</p>
           </li>
         ))}
       </ul>

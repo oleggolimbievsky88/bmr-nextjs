@@ -28,7 +28,7 @@ export default function page() {
                 Women
               </a>
               <i className="icon icon-arrow-right" />
-              <span className="text">Cotton jersey top</span>
+              <span className="text">BMR Control Arms</span>
             </div>
             <div className="tf-breadcrumb-prev-next">
               <a href="#" className="tf-breadcrumb-prev hover-tooltip center">

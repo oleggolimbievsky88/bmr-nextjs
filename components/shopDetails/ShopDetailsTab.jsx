@@ -48,7 +48,7 @@ export default function ShopDetailsTab({product}) {
                       <div className="right">
                         <h3 className="fs-16 fw-5">Features</h3>
                         <ul>
-                          <li>Front button placket</li>
+                          <li>Front button placket sadfs</li>
                           <li>Adjustable sleeve tabs</li>
                           <li>Babaton embroidered crest at placket and hem</li>
                         </ul>

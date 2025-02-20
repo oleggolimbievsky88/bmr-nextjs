@@ -97,41 +97,13 @@ export const paymentImages = [
 ];
 
 export const options = [
-  { value: "Beige / S", label: "Beige / S" },
-  { value: "Beige / M", label: "Beige / M" },
-  { value: "Beige / L", label: "Beige / L" },
-  { value: "Beige / XL", label: "Beige / XL" },
-  { value: "Black / S", label: "Black / S" },
-  { value: "Black / M", label: "Black / M" },
-  { value: "Black / L", label: "Black / L" },
-  { value: "Black / XL", label: "Black / XL" },
-  { value: "Blue / S", label: "Blue / S" },
-  { value: "Blue / M", label: "Blue / M" },
-  { value: "Blue / L", label: "Blue / L" },
-  { value: "Blue / XL", label: "Blue / XL" },
-  { value: "White / S", label: "White / S" },
-  { value: "White / M", label: "White / M" },
-  { value: "White / L", label: "White / L" },
-  { value: "White / XL", label: "White / XL" },
-];
+  { value: "Red", label: "Red" },
+  { value: "Black Hammertone", label: "Black Hammertone" },
+]
 
 export const options2 = [
-  "Beige / S",
-  "Beige / M",
-  "Beige / L",
-  "Beige / XL",
-  "Black / S",
-  "Black / M",
-  "Black / L",
-  "Black / XL",
-  "Blue / S",
-  "Blue / M",
-  "Blue / L",
-  "Blue / XL",
-  "White / S",
-  "White / M",
-  "White / L",
-  "White / XL",
+  { value: "Red1", label: "Red" },
+  { value: "Black1 Hammertone", label: "Black Hammertone" }
 ];
 
 export const imageOptions = [

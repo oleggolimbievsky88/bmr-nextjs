@@ -1,8 +1,11 @@
 {
-  "/platform/page": "app/platform/page.js",
-  "/platform/[platformSlug]/[platformName]/page": "app/platform/[platformSlug]/[platformName]/page.js",
-  "/platform/[platformSlug]/page": "app/platform/[platformSlug]/page.js",
-  "/api/categories/route": "app/api/categories/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/menu/route": "app/api/menu/route.js"
+  "/page": "app/page.js",
+  "/api/menu/route": "app/api/menu/route.js",
+  "/api/platforms/[platform]/route": "app/api/platforms/[platform]/route.js",
+  "/api/maincategories/[platform]/route": "app/api/maincategories/[platform]/route.js",
+  "/api/products/new/route": "app/api/products/new/route.js",
+  "/product/[id]/page": "app/product/[id]/page.js",
+  "/api/products/[id]/route": "app/api/products/[id]/route.js",
+  "/products/[platform]/page": "app/products/[platform]/page.js",
+  "/products/[platform]/[mainCategory]/page": "app/products/[platform]/[mainCategory]/page.js"
 }

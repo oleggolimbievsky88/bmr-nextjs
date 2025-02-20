@@ -49,7 +49,7 @@ export default function MainMenu({ initialMenuData }) {
           {links.map((section, idx) => (
             <div key={idx} className="platform-section">
               <h3>
-                <Link href={`/platform/${section.slug}`}>
+                <Link href={`/products/${section.slug}`}>
                   {section.heading}
                 </Link>
               </h3>

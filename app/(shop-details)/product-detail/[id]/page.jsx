@@ -42,7 +42,7 @@ export default async function ProductPage({ params }) {
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <Link href={`/platforms/2024-mustang`} className="text">
+              <Link href={`/products/2024-mustang`} className="text">
                 2024 Mustang
               </Link>
               <i className="icon icon-arrow-right" />

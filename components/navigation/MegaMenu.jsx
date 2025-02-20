@@ -44,20 +44,20 @@ export default function MegaMenu() {
                         <div key={platform.id} className="space-y-4">
                           <h3 className="text-lg font-medium text-gray-900">
                             <Link
-                              href={`/platform/${platform.name.toLowerCase()}`}
+                              href={`/products/${platform.name.toLowerCase()}`}
                             >
                               <a>{platform.name}</a>
                             </Link>
                           </h3>
                           <Link
-                            href={`/platform/${platform.name.toLowerCase()}`}
+                            href={`/products/${platform.name.toLowerCase()}`}
                             className="block text-sm text-gray-500 hover:text-gray-900"
                           >
                             View All {platform.name} Products
                           </Link>
                           {platform.category && (
                             <Link
-                              href={`/platform/${platform.name.toLowerCase()}/${platform.category.name.toLowerCase()}`}
+                              href={`/products/${platform.name.toLowerCase()}/${platform.category.name.toLowerCase()}`}
                               className="block text-sm text-gray-500 hover:text-gray-900"
                             >
                               {platform.category.name}

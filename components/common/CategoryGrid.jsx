@@ -12,14 +12,14 @@ export default function CategoryGrid({ categories, platformName }) {
         {categories.map((category) => (
           <div key={category.id} className="col-auto">
             <Link
-              href={`/platform/${platformName}?category=${category.id}`}
+              href={`/products/${platformName}?category=${category.id}`}
               className={`category-card ${
                 activeCategory === category.id ? "active" : ""
               }`}
             >
               <div className="card h-100">
                 <div className="card-body text-center">
-                  <h5>{category.name}as</h5>
+                  <h5>{category.name}</h5>
                 </div>
               </div>
             </Link>

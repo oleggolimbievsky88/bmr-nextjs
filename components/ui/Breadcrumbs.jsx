@@ -1,0 +1,39 @@
+"use client"; // This tells Next.js this is a Client Component
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+export default function Breadcrumbs({ params }) {
+    const pathname = usePathname();
+    const parts = pathname.split("/").filter(Boolean);
+
+    return (
+        <div className="tf-breadcrumb">
+            <div className="container">
+                <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
+                    <div className="tf-breadcrumb-list">
+                        <Link href="/" className="text">
+                            Home
+                        </Link>
+                        {parts.map((part, index) => {
+                            const url = `/${parts.slice(0, index + 1).join("/")}`;
+                            const isLast = index === parts.length - 1;
+                            return (
+                                <span key={url} className="d-inline-flex align-items-center">
+                                    <i className="icon icon-arrow-right mx-2" />
+                                    {isLast ? (
+                                        <span className="text">{decodeURIComponent(part)}</span>
+                                    ) : (
+                                        <Link href={url} className="text">
+                                            {decodeURIComponent(part).replace(/-/g, " ")}
+                                        </Link>
+                                    )}
+                                </span>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

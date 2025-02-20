@@ -8,7 +8,7 @@ import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
-
+import Details6 from "@/components/shopDetails/Details6";
 export const metadata = {
   title: "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
@@ -29,6 +29,8 @@ export default async function ProductPage({ params }) {
 
   const product = await res.json();
 
+  console.log("Product:", product);
+
   return (
     <>
       <Header2 />
@@ -45,7 +47,7 @@ export default async function ProductPage({ params }) {
               </a>
               <i className="icon icon-arrow-right" />
               <span className="text">
-                {product.title ? product.title : "Product Title"}
+                {product.ProductName ? product.ProductName : "Product Title"}
               </span>
             </div>
             <div className="tf-breadcrumb-prev-next">
@@ -62,7 +64,8 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       </div>
-      <DetailsOuterZoom product={product} />
+      {/* <DetailsOuterZoom product={product} /> */}
+      <Details6 product={product} />
       <ShopDetailsTab />
       <Products />
       <RecentProducts />
