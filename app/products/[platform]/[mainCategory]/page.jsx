@@ -1,39 +1,60 @@
-import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
-import Topbar1 from "@/components/header/Topbar1";
-import { getPlatformCategories } from "@/lib/queries";
 import CategoryGrid from "@/components/shop/CategoryGrid";
-import ProductGrid from "@/components/shop/ProductGrid";
+import { getPlatformCategories } from "@/lib/queries";
 
-export default async function PlatformPage({ params }) {
-  const { platformName } = params;
-  const categories = await getPlatformCategories(platformName);
+export const metadata = {
+  title: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
+};
 
-  // Format the platform name for display
-  const formattedName = platformName
+export default async function PlatformCategoryPage({ params }) {
+  console.log("🛠 Params received:", params);
+
+  const platformSlug = Array.isArray(params.platform) 
+    ? params.platform[0] 
+    : params.platform;
+
+  const mainCategory = params.mainCategory;
+  const categories = await getPlatformCategories(platformSlug);
+
+  // Safely format the platform slug
+  const formattedVehicleName = platformSlug 
+    ? platformSlug
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    : "Unknown Platform";
+
+  // Format the main category name for display
+  const formattedCategoryName = mainCategory
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-  // If the name includes a year range (e.g., "2015-2023-mustang")
-  // Format it nicely (e.g., "2015-2023 Mustang")
-  const displayName = formattedName.replace(/(\d{4}-\d{4})\s/, "$1 ");
+  // Fetch subcategories under the main category
+  if (!categories || categories.length === 0) {
+    console.warn(`⚠️ No categories found for ${mainCategory}`);
+    return <div>No categories available</div>;
+  }
 
   return (
     <>
-      <Topbar1 />
-      <Header2 />
       <div className="tf-page-title">
         <div className="container-full">
-          <div className="heading text-center">{displayName}</div>
+          <div className="heading text-center">
+            {formattedVehicleName}
+            <br />
+            <span className="category-name">{formattedCategoryName}</span>
+          </div>
           <p className="text-center text-2 text_black-2 mt_5">
-            Shop through our latest selection of Suspension & Chassis Parts
+            Check out our latest selection of Suspension & Chassis Parts!
           </p>
         </div>
       </div>
-      <CategoryGrid categories={categories} platformName={platformName} />
-      <ProductGrid platformName={platformName} />
-      <Footer1 />
+      <CategoryGrid 
+        categories={categories} 
+        platform={platformSlug} 
+        isSubCategory={true} 
+      />
     </>
   );
 }

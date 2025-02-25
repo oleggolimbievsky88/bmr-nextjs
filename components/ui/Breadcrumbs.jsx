@@ -12,7 +12,7 @@ export default function Breadcrumbs({ params }) {
             <div className="container">
                 <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
                     <div className="tf-breadcrumb-list">
-                        <Link href="/" className="text">
+                        <Link href="/" className="text breadcrumb-item">
                             Home
                         </Link>
                         {parts.map((part, index) => {
@@ -22,9 +22,11 @@ export default function Breadcrumbs({ params }) {
                                 <span key={url} className="d-inline-flex align-items-center">
                                     <i className="icon icon-arrow-right mx-2" />
                                     {isLast ? (
-                                        <span className="text">{decodeURIComponent(part)}</span>
+                                        <span className="text breadcrumb-item active">
+                                            {decodeURIComponent(part).replace(/-/g, " ")}
+                                        </span>
                                     ) : (
-                                        <Link href={url} className="text">
+                                        <Link href={url} className="text breadcrumb-item">
                                             {decodeURIComponent(part).replace(/-/g, " ")}
                                         </Link>
                                     )}

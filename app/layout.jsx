@@ -33,9 +33,8 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Import the script only on the client side
-      import("bootstrap/dist/js/bootstrap.esm").then(() => {
-        // Module is imported, you can access any exported functionality if
+      import("bootstrap/dist/js/bootstrap.esm").then((bootstrap) => {
+        // Optional: You can add any initialization logic here if needed
       });
     }
   }, []);
@@ -92,23 +91,24 @@ export default function RootLayout({ children }) {
   }, [pathname]);
   useEffect(() => {
     // Close any open modal
-    const bootstrap = require("bootstrap"); // dynamically import bootstrap
-    const modalElements = document.querySelectorAll(".modal.show");
-    modalElements.forEach((modal) => {
-      const modalInstance = bootstrap.Modal.getInstance(modal);
-      if (modalInstance) {
-        modalInstance.hide();
-      }
-    });
+    if (typeof window !== "undefined" && window.bootstrap) {
+      const modalElements = document.querySelectorAll(".modal.show");
+      modalElements.forEach((modal) => {
+        const modalInstance = window.bootstrap.Modal.getInstance(modal);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      });
 
-    // Close any open offcanvas
-    const offcanvasElements = document.querySelectorAll(".offcanvas.show");
-    offcanvasElements.forEach((offcanvas) => {
-      const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvas);
-      if (offcanvasInstance) {
-        offcanvasInstance.hide();
-      }
-    });
+      // Close any open offcanvas
+      const offcanvasElements = document.querySelectorAll(".offcanvas.show");
+      offcanvasElements.forEach((offcanvas) => {
+        const offcanvasInstance = window.bootstrap.Offcanvas.getInstance(offcanvas);
+        if (offcanvasInstance) {
+          offcanvasInstance.hide();
+        }
+      });
+    }
   }, [pathname]); // Runs every time the route changes
 
   useEffect(() => {

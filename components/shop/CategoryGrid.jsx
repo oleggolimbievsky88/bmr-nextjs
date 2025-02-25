@@ -131,29 +131,54 @@
 
 import Link from "next/link";
 
-export default function CategoryGrid({ mainCategories, platform }) {
+export default function CategoryGrid({ 
+    categories = [], 
+    platform, 
+    isSubCategory = false, 
+    categoryImages = {} 
+}) {
+    console.log(categoryImages);
     return (
         <div className="container">
             <div className="row justify-content-center">
-                {mainCategories.map((category) => (
-                    <div 
-                        key={category.MainCatID} 
-                        className="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 mb-4 d-flex align-items-stretch"
-                    >
-                        <div className="category-item text-center">
-                            <Link href={`/products/${platform}/${category.MainCatName.toLowerCase().replace(/\s+/g, "-")}`}>
-                                <img
-                                    src={`https://www.bmrsuspension.com/siteart/categories/${category.MainCatImage}`}
-                                    alt={category.MainCatName}
-                                    className="category-img"
-                                />
-                            </Link>
-                            <div className="category-title-wrapper">
-                                <p className="category-title">{category.MainCatName}</p>
+                {categories.map((category, index) => {
+                    // Check for both MainCatName and name properties
+                    const categoryName = category.MainCatName || category.name;
+                    const categoryId = category.MainCatID || category.id;
+                    
+                    // Prioritize passed categoryImages, then fallback to category object
+                    const categoryImage = 
+                        categoryImages[categoryId] || 
+                        category.MainCatImage || 
+                        category.image;
+
+                    if (!categoryName) {
+                        console.warn(`⚠️ Skipping category at index ${index}:`, category);
+                        return null;
+                    }
+
+                    const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+
+                    return (
+                        <div 
+                            key={categoryId || index} 
+                            className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch"
+                        >
+                            <div className="category-item text-center w-100">
+                                <Link href={`/products/${platform}/${categorySlug}`}>
+                                    <img
+                                        src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
+                                        alt={categoryName}
+                                        className="category-img"
+                                    />
+                                </Link>
+                                <div className="category-title-wrapper">
+                                    <p className="category-title">{categoryName}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

@@ -1371,28 +1371,28 @@
     }
 }
 
-.tf-breadcrumb-wrap {
-    padding: 22.5px 0;
-    .tf-breadcrumb-list {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        justify-content: center;
-        .icon {
-            font-size: 8px;
-            font-weight: 700;
-        }
-        span {
-            color: var(--text);
-        }
-    }
-    .tf-breadcrumb-prev-next {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        font-size: 17px;
-    }
-}
+// .tf-breadcrumb-wrap {
+//     padding: 22.5px 0;
+//     .tf-breadcrumb-list {
+//         display: flex;
+//         gap: 6px;
+//         align-items: center;
+//         justify-content: center;
+//         .icon {
+//             font-size: 8px;
+//             font-weight: 700;
+//         }
+//         span {
+//             color: var(--text);
+//         }
+//     }
+//     .tf-breadcrumb-prev-next {
+//         display: flex;
+//         gap: 14px;
+//         align-items: center;
+//         font-size: 17px;
+//     }
+// }
 
 .tf-brands-filter {
     display: flex;

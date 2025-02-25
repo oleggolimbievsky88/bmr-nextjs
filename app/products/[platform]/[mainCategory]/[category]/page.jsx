@@ -2,7 +2,6 @@ import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
 import Topbar1 from "@/components/header/Topbar1";
 import CategoryGrid from "@/components/shop/CategoryGrid";
-import ProductGrid from "@/components/shop/ProductGrid";
 import { getPlatformCategories } from "@/lib/queries";
 
 export const metadata = {
@@ -11,25 +10,31 @@ export const metadata = {
 };
 
 export default async function PlatformCategoryPage({ params }) {
-  const { platformName, platformCategory } = params;
-  const categories = await getPlatformCategories(platformName);
+  console.log("🛠 Params received:", params);
 
-  // Parse the platform name to extract year range and name
-  const parts = platformName.split("-");
-  let displayName;
+  const { platform, mainCategory } = params;
 
-  if (parts.length >= 4) {
-    // Format: YYYY-YYYY-platform-name
-    const yearRange = `${parts[0]}-${parts[1]}`;
-    const name = parts.slice(2).join(" ");
-    displayName = `${yearRange} ${
-      name.charAt(0).toUpperCase() + name.slice(1)
-    }`;
-  } else {
-    displayName = platformName
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  // Ensure platform is defined before using it
+  if (!platform) {
+    console.error("⛔ Error: platform is undefined");
+    return <div>Error: Platform not found</div>;
+  }
+
+  // Format the platform slug for display
+  const formattedVehicleName = platform
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+  console.log("🔍 Platform:", platform);
+  console.log("📂 Main Category:", mainCategory);
+
+  // Fetch subcategories under the main category
+  const categories = await getPlatformCategories(platform, mainCategory);
+
+  if (!categories || categories.length === 0) {
+    console.warn(`⚠️ No categories found for ${mainCategory}`);
+    return <div>No categories available</div>;
   }
 
   return (
@@ -38,14 +43,13 @@ export default async function PlatformCategoryPage({ params }) {
       <Header2 />
       <div className="tf-page-title">
         <div className="container-full">
-          <div className="heading text-center">{displayName}</div>
-          <p className="text-center text-2 text_black-2 mt_5">
-            Shop through our latest selection of Suspension & Chassis Parts
+          <div className="heading text-center">{formattedVehicleName} - {mainCategory}</div>
+          <p className="text-center text-1 text_black-2 mt_5">
+            Select a category to shop through our latest selection of Suspension & Chassis Parts
           </p>
         </div>
       </div>
-      <CategoryGrid categories={categories} platformName={platformName} />
-      {/* <ProductGrid platformName={platformName} /> */}
+      <CategoryGrid categories={categories} platform={platform} />
       <Footer1 />
     </>
   );

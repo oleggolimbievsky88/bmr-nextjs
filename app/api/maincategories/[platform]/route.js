@@ -4,6 +4,7 @@ import pool from "@/lib/db"; // Ensure pool is imported correctly
 export async function GET(req, { params }) {
     try {
         const { platform } = params;
+        console.log("🔍 Platform:", platform);
 
         // Step 1: Get BodyID from `bodies` table using slug
         const [bodyData] = await pool.query(
