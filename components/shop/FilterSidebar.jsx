@@ -1,17 +1,42 @@
 "use client";
 import { layouts } from "@/data/shop";
 import ProductGrid from "./ProductGrid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import SidebarFilter from "./SidebarFilter";
 
 import Pagination from "../common/Pagination";
 import Sorting from "./Sorting";
 
-export default function FilterSidebar() {
+export default function FilterSidebar({ categories = [] }) {
   const [gridItems, setGridItems] = useState(3);
   const [products, setProducts] = useState([]);
   const [finalSorted, setFinalSorted] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+
+  const handleCategorySelect = async (category) => {
+    setSelectedCategory(category);
+    setSelectedSubCategory(null);
+    
+    try {
+      const response = await fetch(`/api/subcategories?mainCategoryId=${category.MainCatID}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch sub-categories');
+      }
+      const fetchedSubCategories = await response.json();
+      setSubCategories(fetchedSubCategories);
+    } catch (error) {
+      console.error('Error fetching sub-categories:', error);
+      setSubCategories([]);
+    }
+  };
+
+  const handleSubCategorySelect = (subCategory) => {
+    setSelectedSubCategory(subCategory);
+  };
+
   return (
     <>
       <section className="flat-spacing-1">
@@ -40,9 +65,63 @@ export default function FilterSidebar() {
             </div>
           </div>
           <div className="tf-row-flex">
-            <SidebarFilter setProducts={setProducts} />
+            <div className="tf-sidebar-shop">
+              <div className="tf-sidebar-widget">
+                <h3 className="title-widget">Main Categories</h3>
+                <div className="list-categories">
+                  {categories.map((category) => (
+                    <div 
+                      key={category.MainCatID} 
+                      className={`category-item ${selectedCategory?.MainCatID === category.MainCatID ? 'active' : ''}`}
+                      onClick={() => handleCategorySelect(category)}
+                    >
+                      {category.MainCatName}
+                      {category.PlatformName && (
+                        <span className="platform-name">
+                          ({category.PlatformName})
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {subCategories.length > 0 && (
+                <div className="tf-sidebar-widget">
+                  <h3 className="title-widget">Sub Categories</h3>
+                  <div className="list-categories">
+                    {subCategories.map((subCategory) => (
+                      <div 
+                        key={subCategory.CatID} 
+                        className={`category-item ${selectedSubCategory?.CatID === subCategory.CatID ? 'active' : ''}`}
+                        onClick={() => handleSubCategorySelect(subCategory)}
+                      >
+                        {subCategory.CatName}
+                        <span className="product-count">
+                          ({subCategory.ProductCount} products)
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <SidebarFilter 
+                setProducts={setProducts} 
+                selectedCategory={selectedCategory}
+                selectedSubCategory={selectedSubCategory}
+              />
+            </div>
             <div className="tf-shop-content wrapper-control-shop">
-              <div className="meta-filter-shop" />
+              <div className="meta-filter-shop">
+                {selectedCategory && (
+                  <h2>
+                    {selectedCategory.MainCatName} 
+                    {selectedCategory.PlatformName && ` - ${selectedCategory.PlatformName}`}
+                    {selectedSubCategory && ` > ${selectedSubCategory.CatName}`}
+                  </h2>
+                )}
+              </div>
               <ProductGrid allproducts={finalSorted} gridItems={gridItems} />
               {/* pagination */}{" "}
               {finalSorted.length ? (

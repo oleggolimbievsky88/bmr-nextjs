@@ -5,6 +5,7 @@ import { getProductsByPlatformId } from '@/lib/queries';
 
 export async function GET(request, { params }) {
   const { id } = params; // Get platform ID from the route parameters
+  console.log("🔍 Platform ID:", id);
 
   try {
     const products = await getProductsByPlatformId(id);

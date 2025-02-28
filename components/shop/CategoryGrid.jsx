@@ -137,7 +137,7 @@ export default function CategoryGrid({
     isSubCategory = false, 
     categoryImages = {} 
 }) {
-    console.log(categoryImages);
+    console.log("categoryImages", categoryImages);
     return (
         <div className="container">
             <div className="row justify-content-center">

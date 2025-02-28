@@ -4,27 +4,22 @@ import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
 export default function Topbar4() {
   return (
-    <div className="tf-top-bar bg_grey-7">
+    <div className="tf-top-bar text-white bg_black">
       <div className="px_15 lg-px_40">
         <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
-          <div className="tf-top-bar_left">
-            <ul className="d-flex gap-20">
-              <li>
-                <Link href={`/contact-1`} className="fw-5">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link href={`/blog-grid`} className="fw-5">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href={`#`} className="fw-5">
-                  Order Tracking
-                </Link>
-              </li>
-            </ul>
+        <div className="tf-top-bar_left">
+            <div className="d-inline-block">
+              <span className="fw-7">
+                Call Us Today! 
+                <a
+                  href="tel:+18001090"
+                  style={{ textDecoration: "underline", marginLeft: "5px", color: "var(--white)" }}
+                  aria-describedby="external-message"
+                >
+                   (813) 986-9302
+                </a>
+              </span>
+            </div>
           </div>
           <div className="text-center overflow-hidden">
             <div
@@ -37,17 +32,9 @@ export default function Topbar4() {
             >
               <div className="swiper-wrapper">
                 <div className="swiper-slide">
-                  <p className="top-bar-text fw-5">
-                    Spring Sale: Sweet Crunchy Salad.
-                    <Link
-                      href={`/shop-default`}
-                      title="all collection"
-                      className="tf-btn btn-line"
-                    >
-                      {" "}
-                      Shop now
-                      <i className="icon icon-arrow1-top-left" />
-                    </Link>
+                  <p className="top-bar-text fw-5" style={{letterSpacing: "0px"}}>
+                   FREE SHIPPING THE THE 48 CONTIGUOUS US STATES FOR ALL BMR PRODUCTS!
+                    
                   </p>
                 </div>
                 <div className="swiper-slide">
@@ -59,31 +46,30 @@ export default function Topbar4() {
             </div>
           </div>
           <div className="top-bar-language tf-cur justify-content-end">
-            <div className="d-inline-block">
-              Need help?
-              <span className="fw-7">
-                Call Us:
-                <a
-                  href="tel:+18001090"
-                  style={{ textDecoration: "underline" }}
-                  aria-describedby="external-message"
-                >
-                  +18001090
-                </a>
-              </span>
-            </div>
-            <div className="tf-currencies">
-              <CurrencySelect topStart />
-            </div>
-            <div className="tf-languages">
-              <LanguageSelect
-                parentClassName={
-                  "image-select center style-default type-languages"
-                }
-                topStart
-              />
-            </div>
+            <ul className="d-flex gap-20">
+              <li>
+                <Link href={`/contact-1`} className="text-white">
+                  CONTACT US
+                </Link>
+              </li>
+              <li>
+                <Link href={`/blog-grid`} className="text-white">
+                  ABOUT US
+                </Link>
+              </li>
+              <li>
+                <Link href={`#`} className="text-white">
+                  MY ACCOUNT
+                </Link>
+              </li>
+              <li>
+                <Link href={`#`} className="text-white">
+                  DEALERS
+                </Link>
+              </li>
+            </ul>
           </div>
+          
         </div>
       </div>
     </div>

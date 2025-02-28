@@ -38,12 +38,12 @@ export default async function PlatformCategoryPage({ params }) {
 
   return (
     <>
-      <div className="tf-page-title">
+      <div className="tf-page-title platform-header">
         <div className="container-full">
           <div className="heading text-center">
             {formattedVehicleName}
             <br />
-            <span className="category-name">{formattedCategoryName}</span>
+            <span className="category-name">{formattedCategoryName} asdf</span>
           </div>
           <p className="text-center text-2 text_black-2 mt_5">
             Check out our latest selection of Suspension & Chassis Parts!

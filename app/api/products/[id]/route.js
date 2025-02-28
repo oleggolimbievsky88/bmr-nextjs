@@ -7,6 +7,7 @@ export async function GET(request, { params }) {
   try {
     const product = await getProductById(params.id); // Fetch product by ID
 
+    console.log("Product:", product);
     if (!product) {
       return NextResponse.json(
         { error: 'Product not found' },

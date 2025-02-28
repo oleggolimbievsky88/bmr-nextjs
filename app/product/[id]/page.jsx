@@ -20,8 +20,9 @@ export default async function ProductPage({ params }) {
   const API_URL = process.env.API_URL || "http://localhost:3000";
 
   // Fetch product data from API
-  const res = await fetch(`${API_URL}/api/products/${id}`);
+  const res = await fetch(`${API_URL}/api/product/${id}`);
 
+  console.log("Res:", res);
   if (!res.ok) {
     // Handle product not found or server error
     return <p>Product not found.</p>;

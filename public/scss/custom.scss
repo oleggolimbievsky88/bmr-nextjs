@@ -120,7 +120,7 @@
 }
 
 .category-name {
-  font-size: 80%;
+  font-size: 90%;
   font-weight: 600;
   color: var(--primary);
   text-transform: uppercase;
@@ -129,6 +129,18 @@
   letter-spacing: 1.9px;
 }
 
+.platform-header {
+  background-image: url('https://bmrsuspension.com/siteart/platformBanners/homebanner_1stfbody.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  max-height:350px;
+}
+
+.breadcrumbs-custom {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
 
 
 
@@ -718,7 +730,6 @@
       text-decoration: none;
       display: flex;
       align-items: center;
-      margin-right: 10px;
       font-weight: 500;
       text-transform: capitalize; /* Capitalize first letter of each word */
   }
@@ -751,4 +762,10 @@
       font-size: 18px;
       color: var(--primary); /* Use BMR Red */
   }
+}
+
+.bg_black {
+  background-color: #000000 !important;
+  color: var(--white) !important;
+  border-bottom:2px solid var(--primary) !important;
 }
