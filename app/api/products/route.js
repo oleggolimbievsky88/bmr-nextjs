@@ -1,5 +1,5 @@
 // app/api/products/route.js
-
+export const dynamic = 'force-dynamic'
 import pool from "@/lib/db";
 import { NextResponse } from 'next/server';
 import { getFilteredProducts } from "@/lib/queries";

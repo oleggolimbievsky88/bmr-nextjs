@@ -5,14 +5,14 @@ import Detaila20 from "@/components/shopDetails/Detaila20";
 import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
-import React from "react";
 import Link from "next/link";
+
 export const metadata = {
-  title:
-    "Shop Frequently Bought 2 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title: "Shop Frequently Bought 2 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
-export default function page() {
+
+export default function ProductFrequentlyBoughtTogether2() {
   return (
     <>
       <Header2 />
@@ -20,29 +20,26 @@ export default function page() {
         <div className="container">
           <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
             <div className="tf-breadcrumb-list">
-              <Link href={`/`} className="text">
+              <Link href="/" className="text">
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <a href="#" className="text">
-                Women
-              </a>
+              <Link href="/products" className="text">
+                Products
+              </Link>
               <i className="icon icon-arrow-right" />
-              <span className="text">Cotton jersey top</span>
+              <span className="text">Frequently Bought Together</span>
             </div>
             <div className="tf-breadcrumb-prev-next">
-              <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
+              <Link href="#" className="tf-breadcrumb-prev hover-tooltip center">
                 <i className="icon icon-arrow-left" />
-                {/* <span className="tooltip">Cotton jersey top</span> */}
-              </a>
-              <a href="#" className="tf-breadcrumb-back hover-tooltip center">
+              </Link>
+              <Link href="/products" className="tf-breadcrumb-back hover-tooltip center">
                 <i className="icon icon-shop" />
-                {/* <span className="tooltip">Back to Women</span> */}
-              </a>
-              <a href="#" className="tf-breadcrumb-next hover-tooltip center">
+              </Link>
+              <Link href="#" className="tf-breadcrumb-next hover-tooltip center">
                 <i className="icon icon-arrow-right" />
-                {/* <span className="tooltip">Cotton jersey top</span> */}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -1,19 +1,20 @@
 import { getCategoriesByMainCat } from "@/lib/queries";
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic'
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const mainCategoryId = searchParams.get('mainCategoryId');
+    const subCategoryId = searchParams.get('subCategoryId');
 
-    if (!mainCategoryId) {
+    if (!subCategoryId) {
       return NextResponse.json(
-        { error: 'Main Category ID is required' }, 
+        { error: 'Sub Category ID is required' }, 
         { status: 400 }
       );
     }
 
-    const subCategories = await getCategoriesByMainCat(mainCategoryId);
+    const subCategories = await getCategoriesByMainCat(subCategoryId);
 
     // Transform the result to match the previous implementation
     const transformedSubCategories = subCategories.map(category => ({

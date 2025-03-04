@@ -9,7 +9,7 @@ export const metadata = {
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
-export default async function PlatformCategoryPage({ params }) {
+export default async function CategoryPage({ params }) {
   console.log("🛠 Params received:", params);
 
   const { platform, mainCategory } = params;
