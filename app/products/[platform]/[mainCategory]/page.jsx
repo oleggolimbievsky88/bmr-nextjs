@@ -39,6 +39,16 @@ export default async function PlatformCategoryPage({ params }) {
     return <div>No categories available</div>;
   }
 
+  const formattedOptions = categories.map(option => ({
+    value: option.value || option,
+    label: option.label || option
+  }));
+
+  const formattedOptions2 = categories.map(option => ({
+    value: option,
+    label: option
+  }));
+
   return (
     <>
       <div className="tf-page-title platform-header">
@@ -58,6 +68,13 @@ export default async function PlatformCategoryPage({ params }) {
         platform={platformSlug} 
         isSubCategory={true} 
       />
+      <select className="tf-select">
+        {formattedOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </>
   );
 }

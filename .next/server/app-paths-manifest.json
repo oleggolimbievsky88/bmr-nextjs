@@ -1,10 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/menu/route": "app/api/menu/route.js",
-  "/api/products/new/route": "app/api/products/new/route.js",
-  "/api/platforms/[platform]/route": "app/api/platforms/[platform]/route.js",
-  "/api/maincategories/[platformSlug]/route": "app/api/maincategories/[platformSlug]/route.js",
-  "/products/[platform]/page": "app/products/[platform]/page.js",
-  "/products/[platform]/[mainCategory]/page": "app/products/[platform]/[mainCategory]/page.js"
-}
+{}

@@ -13,9 +13,22 @@ import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
 import DetailsOuterZoom from "./DetailsOuterZoom";
 import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
+
 export default function Detaila20() {
   const [currentColor, setCurrentColor] = useState(colors[0]);
   const [currentSize, setCurrentSize] = useState(sizeOptions[0]);
+
+  // Ensure options are properly formatted
+  const formattedOptions = options.map(option => ({
+    value: option.value || option,
+    label: option.label || option
+  }));
+
+  const formattedOptions2 = options2.map(option => ({
+    value: option,
+    label: option
+  }));
+
   return (
     <section
       className="flat-spacing-4 pt_0 "
@@ -375,7 +388,7 @@ export default function Detaila20() {
                   </span>
                   <div className="tf-product-bundle-variant position-relative">
                     <select className="tf-select">
-                      {options.map((option) => (
+                      {formattedOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -403,9 +416,9 @@ export default function Detaila20() {
                   </a>
                   <div className="tf-product-bundle-variant position-relative">
                     <select className="tf-select">
-                      {options2.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
+                      {formattedOptions2.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
                         </option>
                       ))}
                     </select>
@@ -448,9 +461,9 @@ export default function Detaila20() {
                   </a>
                   <div className="tf-product-bundle-variant position-relative">
                     <select className="tf-select">
-                      {options2.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
+                      {formattedOptions2.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
                         </option>
                       ))}
                     </select>
