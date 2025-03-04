@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Nav from "@/components/header/Navbar";
 
 const Header = () => {
   return (
@@ -31,7 +32,7 @@ const Header = () => {
       </header>
 
       {/* Navigation Links */}
-      <nav className="bg-secondary text-white p-2">
+      {/* <nav className="bg-secondary text-white p-2">
         <div className="container d-flex justify-content-center gap-3">
           <Link className="text-white text-decoration-none" href="#">Ford</Link>
           <Link className="text-white text-decoration-none" href="#">GM Late Model</Link>
@@ -42,7 +43,8 @@ const Header = () => {
           <Link className="text-white text-decoration-none" href="#">Installation</Link>
           <Link className="text-white text-decoration-none" href="#">Cart</Link>
         </div>
-      </nav>
+      </nav> */}
+      <Nav />
     </div>
   );
 };

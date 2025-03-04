@@ -2,7 +2,7 @@ import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
 import Topbar1 from "@/components/header/Topbar1";
 import CategoryGrid from "@/components/shop/CategoryGrid";
-import { getPlatformCategories } from "@/lib/queries";
+import { getSubCategories } from "@/lib/queries";
 
 export const metadata = {
   title: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
@@ -29,8 +29,8 @@ export default async function PlatformCategoryPage({ params }) {
   console.log("🔍 Platform:", platform);
   console.log("📂 Main Category:", mainCategory);
 
-  // Fetch subcategories under the main category
-  const categories = await getPlatformCategories(platform, mainCategory);
+  // Fetch subcategories under the SubCategory category
+    const categories = await getSubCategories(platform, mainCategory);
 
   if (!categories || categories.length === 0) {
     console.warn(`⚠️ No categories found for ${mainCategory}`);

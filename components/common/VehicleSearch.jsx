@@ -18,7 +18,7 @@ export default function VehicleSearch() {
 
   return (
     <div className={styles['vehicle-search-form']}>
-        <span className="fw-5" style={{fontSize: "20px", fontFamily:"Impact", textAlign:"center", display:"block", marginRight:"10px", color: "white"}}>SEARCH BY<br /> VEHICLE</span>
+        <span className="fw-5" style={{fontSize: "20px", fontFamily:"Impact", textAlign:"center", display:"block", marginRight:"15px", color: "white"}}>SEARCH BY<br /> VEHICLE</span>
       <form onSubmit={handleSubmit} className={styles['search-form']}>
         <input
           type="text"

@@ -13,7 +13,7 @@ export default function Topbar4() {
                 Call Us Today! 
                 <a
                   href="tel:+18001090"
-                  style={{ textDecoration: "underline", marginLeft: "5px", color: "var(--white)" }}
+                  style={{ textDecoration: "none", marginLeft: "8px", color: "var(--white)" }}
                   aria-describedby="external-message"
                 >
                    (813) 986-9302
@@ -48,23 +48,23 @@ export default function Topbar4() {
           <div className="top-bar-language tf-cur justify-content-end">
             <ul className="d-flex gap-20">
               <li>
-                <Link href={`/contact-1`} className="text-white">
-                  CONTACT US
+                <Link href={`/contact-1`} className="text-white nav-text">
+                  Contact Us
                 </Link>
               </li>
               <li>
-                <Link href={`/blog-grid`} className="text-white">
-                  ABOUT US
+                <Link href={`/about-us`} className="text-white nav-text">
+                  About Us
                 </Link>
               </li>
               <li>
-                <Link href={`#`} className="text-white">
-                  MY ACCOUNT
+                <Link href={`#`} className="text-white nav-text">
+                  My Account
                 </Link>
               </li>
               <li>
-                <Link href={`#`} className="text-white">
-                  DEALERS
+                <Link href={`#`} className="text-white nav-text">
+                  Dealers
                 </Link>
               </li>
             </ul>

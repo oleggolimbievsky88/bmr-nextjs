@@ -47,9 +47,10 @@ export default function PlatformPage({ params }) {
             />
             <Breadcrumbs params={params} className="mt-0 pt-0 breadcrumbs-custom" />
             <CategoryGrid 
-                categories={mainCategories} 
+                // mainCategories={mainCategories}
                 platform={platformSlug} 
                 isSubCategory={false} 
+                categories={mainCategories} 
             />
         </>
     );

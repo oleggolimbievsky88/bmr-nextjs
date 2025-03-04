@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "./Navbar";
+import MainMenu from "./MainMenu";
 import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength";
@@ -9,9 +9,9 @@ export default function Header18() {
   return (
     <header
       id="header"
-      className="header-default header-style-2 header-style-4"
+      className="header-default header-style-2"
     >
-      <div className="main-header line">
+      <div className="main-header">
         <div className="container">
           <div className="row wrapper-header align-items-center">
             <div className="col-md-4 col-3 tf-lg-hidden">
@@ -34,18 +34,18 @@ export default function Header18() {
                 </svg>
               </a>
             </div>
-            <div className="col-xl-3 col-md-3 col-3">
+            <div className="col-xl-2 col-md-4 col-12">
                 <Link href={`/`} className="logo-header">
                 <Image
                     alt="logo"
                     className="logo"
-                    src="/images/logo/bmr-nav-logo.png"
-                    width={275}
-                    height={55}
+                    src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
+                    width={230}
+                    height={50}
                 />
                 </Link>
             </div>
-            <div className="col-md-8 col-9 tf-md-hidden">
+            <div className="col-xl-10 col-md-8 col-12 my-10">
               <div className="tf-form-search">
                 <form
                   onSubmit={(e) => e.preventDefault()}
@@ -534,17 +534,10 @@ export default function Header18() {
                 </div>
               </div>
               <nav className="box-navigation text-center">
-                <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-30">
-                  <Navbar />
-                  <li className="menu-item">
-                    <a
-                      href="https://themeforest.net/item/ecomus-ultimate-html5-template/53417990?s_rank=3"
-                      className="item-link"
-                    >
-                      Buy now
-                    </a>
-                  </li>
-                </ul>
+                <div className="box-nav-ul d-flex align-items-center justify-content-center ">
+                  <MainMenu />
+                  
+                </div>
               </nav>
             </div>
             {/* <div className="box-right">
@@ -584,10 +577,11 @@ export default function Header18() {
               </div>
             </div> */}
           </div>
-          <div>
+          
+        </div>
+        <div>
             <VehicleSearch />
           </div>
-        </div>
       </div>
     </header>
   );

@@ -7,6 +7,9 @@ import { useContextElement } from "@/context/Context";
 
 export default function StickyItem({ soldOut = false, product }) {
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
+
+  if (!product) return null; 
+  
   return (
     <div className="tf-sticky-btn-atc">
       <div className="container">
@@ -15,15 +18,15 @@ export default function StickyItem({ soldOut = false, product }) {
             <div className="tf-sticky-atc-img">
               <Image
                 className="lazyloaded"
-                data-src={`https://bmrsuspension.com/siteart/products/${product.ProductID}/${product.ImageLarge}`}
+                data-src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
                 alt=""
-                src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
+                src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
                 width={770}
                 height={1075}
               />
             </div>
             <div className="tf-sticky-atc-title fw-5 d-xl-block d-none">
-              {product.ProductName}
+              {product?.ProductName}
             </div>
           </div>
           <div className="tf-sticky-atc-infos">
@@ -47,11 +50,11 @@ export default function StickyItem({ soldOut = false, product }) {
                   </a>
                 ) : (
                   <a
-                    onClick={() => addProductToCart(product.id)}
+                    onClick={() => addProductToCart(product.ProductID)}
                     className="tf-btn btn-fill radius-3 justify-content-center fw-6 fs-14 flex-grow-1 animate-hover-btn"
                   >
                     <span>
-                        {isAddedToCartProducts(product.id)
+                        {isAddedToCartProducts(product.ProductID)
                         ? "Already Added"
                         : "Add to cart"}
                     </span>

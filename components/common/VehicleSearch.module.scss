@@ -4,9 +4,8 @@
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    background-color: #242424 !important;
-    padding: 20px 0px 20px 0px;
-    border-radius: 10px;
+    background-color: #2c2c2c !important;
+    padding: 10px 0px 10px 0px;
   
     .search-form {
       display: flex;
@@ -25,20 +24,21 @@
       flex: 1;
       min-width: 150px;
       max-width: 100%;
+      max-height: 40px;
     }
   
     .search-button {
       padding: 10px 20px;
-      background-color: #f24c4c;
+      background-color: var(--primary);
       color: white;
       border: none;
       border-radius: 5px;
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s;
-  
+      max-height: 40px;
       &:hover {
-        background-color: #c33b3b;
+        background-color: #000000;
       }
     }
   

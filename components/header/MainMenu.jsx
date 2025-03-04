@@ -68,15 +68,15 @@ export default function MainMenu({ initialMenuData }) {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg">
+    <nav className="navbar navbar-expand-lg" style={{maxHeight: "20px", padding: "0px", margin: "0px"}}>
       <div className="container-fluid">
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav">
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <Link href="/" className="nav-link">
                 Home
               </Link>
-            </li>
+            </li> */}
 
             {/* Ford Dropdown */}
             <li className="nav-item dropdown">

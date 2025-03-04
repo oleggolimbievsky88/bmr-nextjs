@@ -361,143 +361,58 @@
   justify-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 120px;
+  gap: 100px;
   max-width: 1400px;
   margin: 0 auto;
   padding-left: 20px;
 }
 
 .navbar {
-  padding: 0;
-  background: #fff;
+  background-color: #000;
+  padding: 15px 0;
+  width: 100%;
 }
 
 .navbar-nav {
-  width: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-item {
   position: static;
+  margin: 0 15px;
 }
 
-/* Regular nav links styling */
 .nav-link {
-  padding: 1rem;
-  color: #333;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: color 0.3s ease;
-  position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0.8rem;
-    left: 1rem;
-    background-color: var(--primary);
-    transition: width 0.3s ease;
-  }
-
-  &.active {
-    color: #333;
+  color: #fff;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 14px;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: #ff0000;
   }
 }
 
-.nav-link:hover {
-  color: var(--primary);
-
-  &::after {
-    width: calc(100% - 2rem);
-  }
-}
-
-// Reset all dropdown link styles
+/* Dropdown styles */
 .dropdown-menu {
-  .nav-link,
-  a {
-    border-bottom: none !important;
-    text-decoration: none !important;
-
-    &::after,
-    &::before {
-      display: none !important;
-      content: none !important;
+  background-color: #000;
+  border: none;
+  margin-top: 0;
+  
+  .dropdown-item {
+    color: #fff;
+    
+    &:hover {
+      background-color: #333;
+      color: #ff0000;
     }
-  }
-}
-
-// Reset platform section links specifically
-.platform-section {
-  li a {
-    border-bottom: none !important;
-    text-decoration: none !important;
-
-    &::after,
-    &::before {
-      display: none !important;
-      content: none !important;
-    }
-  }
-}
-
-// Ensure no borders or lines on any state
-.platform-section li {
-  a,
-  a:link,
-  a:visited,
-  a:hover,
-  a:active {
-    border-bottom: none !important;
-    text-decoration: none !important;
-
-    &::after,
-    &::before {
-      display: none !important;
-      content: none !important;
-    }
-  }
-}
-
-// Global reset for all navigation links
-.nav-item a,
-.dropdown-menu a,
-.platform-section a,
-[class*="nav"] a {
-  border-bottom: none !important;
-  text-decoration: none !important;
-  position: relative;
-
-  &::before,
-  &::after {
-    display: none !important;
-    content: none !important;
-    border: none !important;
-    text-decoration: none !important;
-    background: none !important;
-  }
-}
-
-// Only allow underline effect on main navigation items
-.navbar-nav > .nav-item > .nav-link {
-  &::after {
-    display: block !important;
-    content: "" !important;
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0.8rem;
-    left: 1rem;
-    background-color: #ff0000 !important;
-    transition: width 0.3s ease;
-  }
-
-  &:hover::after {
-    width: calc(100% - 2rem);
   }
 }
 

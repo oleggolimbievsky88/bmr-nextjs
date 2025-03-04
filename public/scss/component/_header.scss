@@ -176,8 +176,10 @@
   }
 }
 .header-style-2 {
+  background-color: #000;
   .wrapper-header {
     min-height: 60px;
+    
   }
 }
 #header {
@@ -294,7 +296,8 @@
   z-index: 999;
 }
 .logo-header img {
-  width: 200px;
+  padding: 10px 0px;
+
 }
 .box-nav-ul {
   .menu-item {
@@ -880,7 +883,7 @@ header {
         left: 0;
         border-radius: 10px;
         position: absolute;
-        background-color: var(--white);
+        background-color: var(--red);
         min-width: 367px;
         z-index: 3;
         opacity: 0;

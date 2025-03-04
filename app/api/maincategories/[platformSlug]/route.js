@@ -5,6 +5,7 @@ export async function GET(request, { params }) {
     try {
         const platformSlug = params.platformSlug;
         const categories = await getMainCategories(platformSlug);
+        console.log("categories", categories);
 
         if (!categories || categories.length === 0) {
             return NextResponse.json({ error: 'No categories found' }, { status: 404 });

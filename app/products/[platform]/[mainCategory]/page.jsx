@@ -7,14 +7,16 @@ export const metadata = {
 };
 
 export default async function PlatformCategoryPage({ params }) {
+  
   console.log("🛠 Params received:", params);
+  
 
   const platformSlug = Array.isArray(params.platform) 
     ? params.platform[0] 
     : params.platform;
 
   const mainCategory = params.mainCategory;
-  const categories = await getPlatformCategories(platformSlug);
+  const categories = params.categories;
 
   // Safely format the platform slug
   const formattedVehicleName = platformSlug 
@@ -30,6 +32,7 @@ export default async function PlatformCategoryPage({ params }) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
+     
   // Fetch subcategories under the main category
   if (!categories || categories.length === 0) {
     console.warn(`⚠️ No categories found for ${mainCategory}`);
@@ -39,11 +42,11 @@ export default async function PlatformCategoryPage({ params }) {
   return (
     <>
       <div className="tf-page-title platform-header">
-        <div className="container-full">
-          <div className="heading text-center">
+        <div className="container-full bg-white ">
+          <div className="heading text-center text-black text-uppercase"  style={{padding:20, borderRadius:10}}>
             {formattedVehicleName}
             <br />
-            <span className="category-name">{formattedCategoryName} asdf</span>
+            <span className="category-name">{formattedCategoryName}</span>
           </div>
           <p className="text-center text-2 text_black-2 mt_5">
             Check out our latest selection of Suspension & Chassis Parts!
