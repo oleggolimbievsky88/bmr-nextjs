@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider1 from "./sliders/Slider1";
 import Image from "next/image";
 import {
@@ -15,19 +15,40 @@ import DetailsOuterZoom from "./DetailsOuterZoom";
 import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
 
 export default function Detaila20() {
-  const [currentColor, setCurrentColor] = useState(colors[0]);
-  const [currentSize, setCurrentSize] = useState(sizeOptions[0]);
+  const [currentColor, setCurrentColor] = useState(null);
+  const [currentSize, setCurrentSize] = useState(null);
+  const [formattedOptions, setFormattedOptions] = useState([]);
+  const [formattedOptions2, setFormattedOptions2] = useState([]);
 
-  // Ensure options are properly formatted
-  const formattedOptions = options.map(option => ({
-    value: option.value || option,
-    label: option.label || option
-  }));
+  useEffect(() => {
+    // Initialize state after component mounts
+    if (colors && colors.length > 0) {
+      setCurrentColor(colors[0]);
+    }
+    if (sizeOptions && sizeOptions.length > 0) {
+      setCurrentSize(sizeOptions[0]);
+    }
 
-  const formattedOptions2 = options2.map(option => ({
-    value: option,
-    label: option
-  }));
+    // Format options
+    if (Array.isArray(options)) {
+      setFormattedOptions(options.map(option => ({
+        value: typeof option === 'object' ? option.value : option,
+        label: typeof option === 'object' ? option.label : option
+      })));
+    }
+
+    if (Array.isArray(options2)) {
+      setFormattedOptions2(options2.map(option => ({
+        value: option,
+        label: option
+      })));
+    }
+  }, []);
+
+  // Early return if data is not ready
+  if (!currentColor || !currentSize) {
+    return null;
+  }
 
   return (
     <section
@@ -67,7 +88,7 @@ export default function Detaila20() {
                       <div className="variant-picker-label">
                         Color:{" "}
                         <span className="fw-6 variant-picker-label-value">
-                          {currentColor.value}
+                          {currentColor.value || ''}
                         </span>
                       </div>
                       <form className="variant-picker-values">
@@ -100,7 +121,7 @@ export default function Detaila20() {
                         <div className="variant-picker-label">
                           Size:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentSize.value}
+                            {currentSize.value || ''}
                           </span>
                         </div>
                         <a
