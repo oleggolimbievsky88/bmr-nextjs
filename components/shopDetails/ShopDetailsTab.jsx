@@ -11,7 +11,7 @@ const tabs = [
 
 export default function ShopDetailsTab({product}) {
   const [currentTab, setCurrentTab] = useState(1);
-  const Description = product?.Description || "No description available";
+  const description = typeof product?.Description === 'string' ? product.Description : "No description available";
   return (
     <section
       className="flat-spacing-17 pt_0"
@@ -42,7 +42,7 @@ export default function ShopDetailsTab({product}) {
                 >
                   <div className="">
                     <p className="mb_30">
-                      {Description ? Description : "Product Description"}
+                      {description}
                     </p>
                     <div className="tf-product-des-demo">
                       <div className="right">
