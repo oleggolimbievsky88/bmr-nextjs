@@ -35,15 +35,15 @@ export default function Header18() {
               </a>
             </div>
             <div className="col-xl-2 col-md-4 col-12">
-                <Link href={`/`}>
-                      <Image
-                        src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
-                        alt="BMR Logo"
-                        width={230}
-                        height={50}
-                        style={{ fill: false, width: 230, height: 50 }}
-                      />
-                    </Link>
+                <Link href={`/`} className="logo-header">
+                <Image
+                    alt="logo"
+                    className="logo"
+                    src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
+                    width={230}
+                    height={50}
+                />
+                </Link>
             </div>
             <div className="col-xl-10 col-md-8 col-12 my-10">
               <div className="tf-form-search">
@@ -53,7 +53,7 @@ export default function Header18() {
                 >
                   <input type="text" required placeholder="Search by part # or keyword" />
                   <button className="tf-btn">
-                    <i className="icon icon-search" />
+                    <i className="icon icon-search" /> aSD
                   </button>
                 </form>
                 <div className="search-suggests-results">

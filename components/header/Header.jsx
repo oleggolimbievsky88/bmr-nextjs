@@ -8,7 +8,7 @@ import MainMenu from "./MainMenu.jsx";
 
 export default function Header({
   textClass,
-  bgColor = "",
+  bgColor = "darkGray",
   uppercase = false,
   isArrow = true,
   Linkfs = "",
@@ -59,9 +59,9 @@ export default function Header({
               </ul>
             </nav>
           </div>
-          <div className="col-xl-3 col-md-4 col-3">
-            <ul className="nav-icon d-flex justify-content-end align-items-center gap-20">
-              <li className="nav-search">
+          <div className="col-xl-3 col-md-4 col-3 text-white">
+            <ul className="nav-icon d-flex justify-content-end align-items-center gap-20 text-white">
+              <li className="nav-search text-white">
                 <a
                   href="#canvasSearch"
                   data-bs-toggle="offcanvas"

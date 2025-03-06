@@ -1,21 +1,18 @@
 // VehicleSearch.js
 'use client'
-import { useState, useEffect } from "react"
-import styles from './VehicleSearch.module.scss'
-import vehicles from "../../data/vehicles"
+import { useState, useEffect } from "react";
+import vehicles from "../../data/vehicles"; // import your vehiclesObject.js
+import styles from "./VehicleSearch.module.scss";
 
 export default function VehicleSearch() {
-  // State for form inputs
-  const [year, setYear] = useState("")
-  const [make, setMake] = useState("")
-  const [model, setModel] = useState("")
+  const [years, setYears] = useState([]);
+  const [makes, setMakes] = useState([]);
+  const [models, setModels] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedMake, setSelectedMake] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
 
-  // State for dropdown options
-  const [years, setYears] = useState([])
-  const [makes, setMakes] = useState([])
-  const [models, setModels] = useState([])
-
-  // Populate years on component mount
+  // Function to populate the years dropdown
   useEffect(() => {
     const uniqueYears = Array.from(
       new Set(
@@ -25,110 +22,110 @@ export default function VehicleSearch() {
           )
         )
       )
-    ).sort((a, b) => b - a)
-    setYears(uniqueYears)
-  }, [])
+    ).sort((a, b) => b - a);
+    setYears(uniqueYears);
+  }, []);
 
-  // Handle year input change
   const handleYearChange = (e) => {
-    const yearValue = e.target.value
-    setYear(yearValue)
+    const year = parseInt(e.target.value);
+    setSelectedYear(year);
 
-    if (yearValue) {
-      const yearNum = parseInt(yearValue)
-      // Filter makes based on the selected year
-      const filteredMakes = Object.keys(vehicles).filter((make) =>
-        Object.keys(vehicles[make]).some((model) =>
-          vehicles[make][model].some((vehicle) => vehicle.year === yearNum)
-        )
+    // Filter makes based on the selected year
+    const filteredMakes = Object.keys(vehicles).filter((make) =>
+      Object.keys(vehicles[make]).some((model) =>
+        vehicles[make][model].some((vehicle) => vehicle.year === year)
       )
-      setMakes(filteredMakes)
-      setMake("") // Reset make
-      setModel("") // Reset model
-    }
-  }
+    );
+    setMakes(filteredMakes);
+    setModels([]); // Reset models when year changes
+  };
 
-  // Handle make input change
   const handleMakeChange = (e) => {
-    const makeValue = e.target.value
-    setMake(makeValue)
+    const make = e.target.value;
+    setSelectedMake(make);
 
-    if (makeValue && year) {
-      // Filter models based on selected year and make
-      const yearNum = parseInt(year)
-      const filteredModels = Object.keys(vehicles[makeValue]).filter((model) =>
-        vehicles[makeValue][model].some((vehicle) => vehicle.year === yearNum)
-      )
-      setModels(filteredModels)
-      setModel("") // Reset model
-    }
-  }
+    // Filter models based on selected year and make
+    const filteredModels = Object.keys(vehicles[make]).filter((model) =>
+      vehicles[make][model].some((vehicle) => vehicle.year === selectedYear)
+    );
+    setModels(filteredModels);
+  };
 
-  // Handle model input change
   const handleModelChange = (e) => {
-    setModel(e.target.value)
-  }
+    const model = e.target.value;
+    setSelectedModel(model);
+  };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (year && make && model) {
-      const yearNum = parseInt(year)
-      const selectedVehicle = vehicles[make][model].find(
-        (vehicle) => vehicle.year === yearNum
-      )
+  const handleSubmit = () => {
+    if (selectedYear && selectedMake && selectedModel) {
+      const selectedVehicle = vehicles[selectedMake][selectedModel].find(
+        (vehicle) => vehicle.year === selectedYear
+      );
       if (selectedVehicle && selectedVehicle.platform) {
-        window.location.href = `/products/${selectedVehicle.platform}`
+        // Redirect to the platform page
+        window.location.href = `/pages/platform/${selectedVehicle.platform}`;
       }
     }
-  }
+  };
 
   return (
-    <div className={styles['vehicle-search-form']}>
-      <span className="fw-5" style={{fontSize: "20px", fontFamily:"Impact", textAlign:"center", display:"block", marginRight:"15px", color: "white"}}>SEARCH BY<br /> VEHICLE</span>
-      <form onSubmit={handleSubmit} className={styles['search-form']}>
+    <div className={styles["vehicle-search-form"]}>
+      <span
+        className="fw-5"
+        style={{
+          fontSize: "20px",
+          fontFamily: "Impact",
+          textAlign: "center",
+          display: "block",
+          marginRight: "15px",
+          color: "white",
+        }}
+      >
+        SEARCH BY
+        <br /> VEHICLE
+        
+      </span>
+      <form className="container mt-3 p-3 border rounded-3 bg-dark text-white">
+      <select
+              id="year"
+              className={`${styles["search-input"]}`}
+              onChange={handleYearChange}
+            >
+              <option value="">Select Year</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
         <select
-          value={year}
-          onChange={handleYearChange}
-          className={styles['search-input']}
-        >
-          <option value="">Select Year</option>
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={make}
+          id="make"
+          className={`${styles["search-input"]}`}
           onChange={handleMakeChange}
-          className={styles['search-input']}
-          disabled={!year}
+          disabled={!selectedYear}
         >
           <option value="">Select Make</option>
-          {makes.map((m) => (
-            <option key={m} value={m}>
-              {m}
+          {makes.map((make) => (
+            <option key={make} value={make}>
+              {make}
             </option>
           ))}
         </select>
-
         <select
-          value={model}
-          onChange={handleModelChange}
-          className={styles['search-input']}
-          disabled={!make}
-        >
-          <option value="">Select Model</option>
-          {models.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-
-        <button type="submit" className={styles['search-button']}>
+              id="model"
+              className={styles["search-input"]}
+              onChange={handleModelChange}
+              disabled={!selectedMake}
+            >
+              <option value="">Select Model</option>
+              {models.map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
+        
+        <button type="submit" className={styles["search-button"]}>
           Search
         </button>
       </form>

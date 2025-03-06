@@ -9,31 +9,37 @@ export default function ThreeColumnLayout() {
       <div className="row">
         {[
           {
-            img: "/images/shop-categories/NewProductsGradient.jpg",
-            title: "NEW PRODUCTS",
+            img: "/images/logo/Ford_Logo.png",
+            title: "FORD",
             link: "/products/new",
           },
           {
-            img: "/images/shop-categories/MerchGradient.jpg",
-            title: "BMR MERCHANDISE",
+            img: "/images/logo/gm_logo.png",
+            title: "GM",
             link: "/products/apparel",
           },
           {
-            img: "/images/shop-categories/GiftCardsGradient.jpg",
-            title: "BMR GIFT CARDS",
+            img: "/images/logo/dodge_logo.png",
+            title: "Mopar",
             link: "product-giftcard",
           },
         ].map((item, index) => (
           <div key={index} className="col-lg-4 col-md-6 col-sm-12 mb-4">
             <Link
               key={index}
-              href={`/${item.link.toLowerCase().replace(" ", "-")}`}
+              href={`/${item.link}`}
             >
               <div className="card bg-dark text-white border-0 custom-card">
-                <img src={item.img} className="card-img" alt={item.title} />
+                <img 
+                  src={item.img} 
+                  className="card-img" 
+                  alt={item.title} 
+                  style={{ height: "200px", width: "400px" }}
+                />
                 <div className="card-img-overlay d-flex flex-column justify-content-end p-3">
+                  
+                  <h3 className="card-title mt-1 fw-bold">{item.title}</h3>
                   <span className="shop-now">SHOP NOW</span>
-                  <h5 className="card-title mt-1 fw-bold">{item.title}</h5>
                 </div>
               </div>
             </Link>

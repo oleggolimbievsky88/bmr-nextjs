@@ -68,7 +68,7 @@ export default function MainMenu({ initialMenuData }) {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg" style={{maxHeight: "20px", padding: "0px", margin: "0px"}}>
+    <nav className="navbar navbar-expand-xxl text-center" style={{maxHeight: "20px", padding: "0px", margin: "auto"}}>
       <div className="container-fluid">
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav">
