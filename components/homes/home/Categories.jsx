@@ -31,8 +31,9 @@ export default function Categories() {
                       data-src={slide.imgSrc}
                       alt={slide.alt}
                       src={slide.imgSrc}
-                      width={600}
-                      height={666}
+                      width={500}
+                      height={500}
+                      style={{ width: "100%", height: "100%", borderRadius: "10px" }}
                     />
                   </div>
                   <div className="collection-content">
