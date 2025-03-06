@@ -12,7 +12,6 @@ import React from "react";
 import Footer from "@/components/footer/Footer";
 import Topbar1 from "@/components/header/Topbar1";
 import Header from "@/components/header/Header";
-import VehicleSearch from "@/components/common/VehicleSearch1";
 import ShopCategories from "@/components/homes/home/ShopCategories";
 import CollectionBanner from "@/components/homes/home/CollectionBanner";
 import ThreeColumnLayout from "@/components/homes/home/ThreeColumnLayout";
@@ -30,10 +29,9 @@ export default function page() {
       <Topbar4 />
       <Header18 />
       <Hero /> <br />
-      <VehicleSearch /> <br />
       {/* <ShopCategories /> <br /> <br /> */}
       <ThreeColumnLayout /><br />
-      {/* <Categories /> */}
+      <Categories />
       {/* <Products /><br /><br /> */}
       <NewProductsPage scrachDent="0"/>
       <NewProductsPage scrachDent="1"/>

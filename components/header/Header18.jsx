@@ -35,15 +35,15 @@ export default function Header18() {
               </a>
             </div>
             <div className="col-xl-2 col-md-4 col-12">
-                <Link href={`/`} className="logo-header">
-                <Image
-                    alt="logo"
-                    className="logo"
-                    src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
-                    width={230}
-                    height={50}
-                />
-                </Link>
+                <Link href={`/`}>
+                      <Image
+                        src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
+                        alt="BMR Logo"
+                        width={230}
+                        height={50}
+                        style={{ fill: false, width: 230, height: 50 }}
+                      />
+                    </Link>
             </div>
             <div className="col-xl-10 col-md-8 col-12 my-10">
               <div className="tf-form-search">
