@@ -5,7 +5,42 @@ import Link from "next/link";
 import CartLength from "../common/CartLength";
 import { products44 } from "@/data/products";
 import VehicleSearch from "../common/VehicleSearch";
-export default function Header18() {
+import { useState, useEffect } from "react";
+
+// Add this default structure before your component
+const defaultMenuData = {
+  fordLinks: [],
+  moparLinks: [],
+  gmLateModelLinks: [],
+  gmMidMuscleLinks: [],
+  gmClassicMuscleLinks: [],
+};
+
+export default function Header18({ initialMenuData }) {
+  console.log("initialMenuData", initialMenuData);
+  const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
+  const [isLoading, setIsLoading] = useState(!initialMenuData);
+  const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
+  useEffect(() => {
+    if (!initialMenuData && !isDataFetched) {
+      const fetchMenuData = async () => {
+        try {
+          const response = await fetch("/api/menu");
+          if (!response.ok) throw new Error("Failed to fetch menu");
+          const data = await response.json();
+          setMenuData(data);
+          setIsDataFetched(true);
+          console.log("menuData", menuData);
+        } catch (err) {
+          console.error("Error fetching menu:", err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchMenuData();
+    }
+  }, [initialMenuData, isDataFetched]);
   return (
     <header
       id="header"

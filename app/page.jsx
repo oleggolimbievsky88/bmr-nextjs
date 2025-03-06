@@ -31,12 +31,12 @@ export default function page() {
       <Hero /> <br />
       {/* <ShopCategories /> <br /> <br /> */}
       <ThreeColumnLayout /><br />
-      <Categories />
+      {/* <Categories /> */}
       {/* <Products /><br /><br /> */}
       <NewProductsPage scrachDent="0"/>
       <NewProductsPage scrachDent="1"/>
       {/* <ProductsPage /> */}
-      <CollectionBanner />
+      {/* <CollectionBanner /> */}
       {/* <Collections /> */}
       
       {/* <Collections2 /> */}

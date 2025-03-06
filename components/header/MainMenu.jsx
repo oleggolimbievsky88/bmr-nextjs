@@ -12,6 +12,7 @@ const defaultMenuData = {
 };
 
 export default function MainMenu({ initialMenuData }) {
+
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);

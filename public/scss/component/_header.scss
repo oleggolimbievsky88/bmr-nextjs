@@ -685,7 +685,7 @@
   align-items: center;
   gap: 4px;
   .categories-item {
-    min-height: 68px;
+    min-height: 45px;
     position: relative;
     display: flex;
     align-items: center;
@@ -728,7 +728,7 @@
 .header-style-2 {
   .header-bottom {
     .wrapper-header {
-      min-height: 60px;
+      height: 20px !important;
     }
   }
 
@@ -741,10 +741,10 @@
 }
 
 .header-bottom .box-nav-ul .menu-item {
-  padding: 20px 0px;
+  padding: 0px;
 }
 .header-bottom .header-list-categories .categories-item {
-  min-height: auto;
+  height: 20px;
   a {
     &::after {
       content: none;
@@ -793,7 +793,7 @@
   }
 }
 
-header {
+.header {
   position: sticky;
   position: -webkit-sticky;
   top: 0;

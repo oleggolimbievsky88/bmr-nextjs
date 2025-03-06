@@ -32,9 +32,12 @@ export default function NewProductsPage({ scrachDent = "0" }) {
     <section className="flat-spacing-1 pt_0">
       <div className="container">
         <div className="flat-title">
-          <span className="title wow fadeInUp" data-wow-delay="0s">
+          <span className="title wow fadeInUp home-title" data-wow-delay="0s">
             {scrachDent === "1" ? "Scratch & Dent" : "New Products"}
           </span>
+          <h6 className="home-title-description text-center text-muted">
+            {scrachDent === "1" ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price." : "Check out the latest and greatest from BMR Suspension! We have the suspension parts to be a winner!"}
+          </h6>
         </div>
 
         <div className="row">

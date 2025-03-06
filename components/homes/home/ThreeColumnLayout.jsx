@@ -24,7 +24,7 @@ export default function ThreeColumnLayout() {
             link: "product-giftcard",
           },
         ].map((item, index) => (
-          <div key={index} className="col-lg-4 col-md-6 col-sm-12 mb-4">
+          <div key={index} className="col-lg-4 col-md-6 col-sm-12 mb-5 pb-5">
             <Link
               key={index}
               href={`/${item.link}`}
@@ -34,7 +34,7 @@ export default function ThreeColumnLayout() {
                   src={item.img} 
                   className="card-img" 
                   alt={item.title} 
-                  style={{ height: "200px", width: "400px" }}
+                  style={{ height: "225px", width: "450px", borderRadius: "20px" }}
                 />
                 <div className="card-img-overlay d-flex flex-column justify-content-end p-3">
                   
