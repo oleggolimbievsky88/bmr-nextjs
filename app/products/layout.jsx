@@ -8,7 +8,7 @@ export default function PlatformLayout({ children, params }) {
         <div>
             <Topbar4 />
             <Header18 />
-            <main className="my-4">{children}</main>
+            <main className="my-4">{children}</main><br />
             <Footer1 />
         </div>
     );
