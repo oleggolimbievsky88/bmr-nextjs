@@ -5,7 +5,7 @@ import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function SocialMediaPage() {
+export default function SocialMediaPage({ type = 'video' }) {
   const [socialMediaPosts, setSocialMediaPosts] = useState([
     { PostID: 1, Title: 'Post 1', Thumbnail: 'https://via.placeholder.com/360', Description: 'Description for Post 1' },
     { PostID: 2, Title: 'Post 2', Thumbnail: 'https://via.placeholder.com/360', Description: 'Description for Post 2' },
@@ -21,12 +21,14 @@ export default function SocialMediaPage() {
     isAddedtoCompareItem,
   } = useContextElement();
 
+  const headerTitle = type === 'social' ? 'Social Media' : 'Videos';
+
   return (
     <section className="flat-spacing-1 pt_0">
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            Social Media
+            {headerTitle}
           </span>
           <h6 className="home-title-description text-center text-muted">
             Explore our latest social media posts and updates.
