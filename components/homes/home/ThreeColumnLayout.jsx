@@ -29,16 +29,16 @@ export default function ThreeColumnLayout() {
               key={index}
               href={`/${item.link}`}
             >
-              <div className="card bg-dark text-white border-0 custom-card">
+              <div className="card text-white border-0 custom-card">
                 <img 
                   src={item.img} 
                   className="card-img" 
                   alt={item.title} 
-                  style={{ height: "225px", width: "450px", borderRadius: "20px" }}
+                  style={{ height: "210px", width: "450px", borderRadius: "20px", padding: "20px" }}
                 />
-                <div className="card-img-overlay d-flex flex-column justify-content-end p-3">
+                <div className="card-img-overlay d-flex flex-column justify-content-end p-3 image-responsive">
                   
-                  <h3 className="card-title mt-1 fw-bold">{item.title}</h3>
+                  <h2 className="card-title mt-0 pt-0 fw-bolder letter-spacing-1 text-white">{item.title}</h2>
                   <span className="shop-now">SHOP NOW</span>
                 </div>
               </div>

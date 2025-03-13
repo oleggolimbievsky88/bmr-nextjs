@@ -1773,11 +1773,11 @@
   .tf-lg-hidden {
     display: none;
   }
-  .header-default {
-    .wrapper-header {
-      min-height: 94px;
-    }
-  }
+  // .header-default {
+  //   .wrapper-header {
+  //     width: 100%;
+  //   }
+  // }
   .header-style-2 {
     .wrapper-header {
       min-height: 68px;
@@ -2963,9 +2963,6 @@
     }
   }
 
-  .mega-menu .row-demo {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 @media only screen and (max-width: 1149px) {
   .card-product {
@@ -3026,9 +3023,6 @@
     justify-content: center;
   }
 
-  .mega-menu .row-demo {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .header-style-3 .wrap-header-left {
     justify-content: center;
   }
@@ -4447,9 +4441,6 @@
         display: none;
       }
     }
-  }
-  .mega-menu .row-demo {
-    grid-template-columns: 1fr;
   }
   .box-sw-announcement-bar {
     animation: slide-har 4s linear infinite;

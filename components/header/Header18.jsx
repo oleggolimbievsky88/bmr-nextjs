@@ -88,7 +88,7 @@ export default function Header18({ initialMenuData }) {
                 >
                   <input type="text" required placeholder="Search by part # or keyword" />
                   <button className="tf-btn">
-                    <i className="icon icon-search" /> aSD
+                    <i className="icon icon-search" />
                   </button>
                 </form>
                 <div className="search-suggests-results">
@@ -192,8 +192,8 @@ export default function Header18({ initialMenuData }) {
       </div>
       <div className="header-bottom line tf-md-hidden">
         <div className="container">
-          <div className="wrapper-header d-flex justify-content-between align-items-center">
-            <div className="box-left">
+          <div className="justify-content-between align-items-center" style={{marginTop: "0px", paddingTop: "0px"}}>
+            <div>
               <div className="tf-list-categories">
                 {/* <a href="#" className="categories-title">
                   <svg

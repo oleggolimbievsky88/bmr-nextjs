@@ -1,4 +1,3 @@
-// app/products/new/page.js
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -6,23 +5,12 @@ import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function NewProductsPage({ scrachDent = "0" }) {
-  const [newProducts, setNewProducts] = useState([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(`/api/products/new-products?scrachDent=${scrachDent}`);
-        const data = await response.json();
-        setNewProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
-    fetchProducts();
-    console.log('NEW PRODUCTS', newProducts);
-  }, [scrachDent]);
+export default function SocialMediaPage() {
+  const [socialMediaPosts, setSocialMediaPosts] = useState([
+    { PostID: 1, Title: 'Post 1', Thumbnail: 'https://via.placeholder.com/360', Description: 'Description for Post 1' },
+    { PostID: 2, Title: 'Post 2', Thumbnail: 'https://via.placeholder.com/360', Description: 'Description for Post 2' },
+    // Add more dummy social media post data as needed
+  ]);
 
   const {
     setQuickViewItem,
@@ -38,33 +26,26 @@ export default function NewProductsPage({ scrachDent = "0" }) {
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            {scrachDent === "1" ? "Scratch & Dent" : "New Products"}
+            Social Media
           </span>
           <h6 className="home-title-description text-center text-muted">
-            {scrachDent === "1" ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price." : "Check out the latest and greatest from BMR Suspension! We have the suspension parts to be a winner!"}
+            Explore our latest social media posts and updates.
           </h6>
         </div>
 
         <div className="row">
-          {newProducts.map((product) => (
-            <div key={product.ProductID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          {socialMediaPosts.map((post) => (
+            <div key={post.PostID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
               <div className="card-product bg_white radius-20 h-100">
                 <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                   <Link
-                    href={`/product/${product.ProductID}`}
+                    href={`/social-media/${post.PostID}`}
                     className="product-img"
                   >
                     <Image
                       className="lazyload img-product mb-2"
-                      src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
-                      alt="image-product"
-                      width={1200}
-                      height={1200}
-                    />
-                    <Image
-                      className="lazyload img-hover"
-                      src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
-                      alt="image-product"
+                      src={post.Thumbnail}
+                      alt="social-media-thumbnail"
                       width={360}
                       height={360}
                     />
@@ -72,7 +53,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                   <div className="list-product-btn mt-auto">
                     <a
                       href="#quick_add"
-                      onClick={() => setQuickAddItem(product.ProductID)}
+                      onClick={() => setQuickAddItem(post.PostID)}
                       data-bs-toggle="modal"
                       className="box-icon bg_white quick-add tf-btn-loading"
                     >
@@ -80,16 +61,16 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                       <span className="tooltip">Quick Add</span>
                     </a>
                     <a
-                      onClick={() => addToWishlist(product.ProductID)}
+                      onClick={() => addToWishlist(post.PostID)}
                       className="box-icon bg_white wishlist btn-icon-action"
                     >
                       <span
                         className={`icon icon-heart ${
-                          isAddedtoWishlist(product.ProductID) ? "added" : ""
+                          isAddedtoWishlist(post.PostID) ? "added" : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoWishlist(product.ProductID)
+                        {isAddedtoWishlist(post.PostID)
                           ? "Already Wishlisted"
                           : "Add to Wishlist"}
                       </span>
@@ -97,23 +78,23 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                     <a
                       href="#compare"
                       data-bs-toggle="offcanvas"
-                      onClick={() => addToCompareItem(product.ProductID)}
+                      onClick={() => addToCompareItem(post.PostID)}
                       className="box-icon bg_white compare btn-icon-action"
                     >
                       <span
                         className={`icon icon-compare ${
-                          isAddedtoCompareItem(product.ProductID) ? "added" : ""
+                          isAddedtoCompareItem(post.PostID) ? "added" : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoCompareItem(product.ProductID)
+                        {isAddedtoCompareItem(post.PostID)
                           ? "Already Compared"
                           : "Add to Compare"}
                       </span>
                     </a>
                     <a
                       href="#quick_view"
-                      onClick={() => setQuickViewItem(product)}
+                      onClick={() => setQuickViewItem(post)}
                       data-bs-toggle="modal"
                       className="box-icon bg_white quickview tf-btn-loading"
                     >
@@ -122,12 +103,11 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                     </a>
                   </div>
                   <div className="card-product-info mt-2">
-                    <div className="NewProductPartNumber">{product.PartNumber}</div>
-                    <span className="NewProductPlatformName" style={{fontSize: "14px", fontWeight: "bold", margin: "0px", padding: "0px", lineHeight: "0.5"}}>{product.PlatformName}</span>  
-                    <Link href={`/product/${product.ProductID}`} className="title link">
-                      {product?.ProductName}
+                    <div className="NewProductPartNumber">{post.Title}</div>
+                    <span className="NewProductPlatformName" style={{fontSize: "14px", fontWeight: "bold", margin: "0px", padding: "0px", lineHeight: "0.5"}}>{post.Description}</span>  
+                    <Link href={`/social-media/${post.PostID}`} className="title link">
+                      {post?.Title}
                     </Link>
-                    <span className="price"> ${product?.Price} </span>
                   </div>
                 </div>
               </div>
@@ -137,4 +117,4 @@ export default function NewProductsPage({ scrachDent = "0" }) {
       </div>
     </section>
   );
-}
+} 

@@ -1,4 +1,3 @@
-// app/products/new/page.js
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -6,23 +5,14 @@ import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function NewProductsPage({ scrachDent = "0" }) {
-  const [newProducts, setNewProducts] = useState([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(`/api/products/new-products?scrachDent=${scrachDent}`);
-        const data = await response.json();
-        setNewProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
-    fetchProducts();
-    console.log('NEW PRODUCTS', newProducts);
-  }, [scrachDent]);
+export default function VideoPage() {
+  const [videos, setVideos] = useState([
+    { VideoID: 1, Title: 'Video 1', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 1' },
+    { VideoID: 2, Title: 'Video 2', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 2' },
+    { VideoID: 3, Title: 'Video 3', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 3' },
+    { VideoID: 4, Title: 'Video 4', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 4' },
+    // Add more dummy video data as needed
+  ]);
 
   const {
     setQuickViewItem,
@@ -38,41 +28,35 @@ export default function NewProductsPage({ scrachDent = "0" }) {
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            {scrachDent === "1" ? "Scratch & Dent" : "New Products"}
+            Videos
           </span>
           <h6 className="home-title-description text-center text-muted">
-            {scrachDent === "1" ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price." : "Check out the latest and greatest from BMR Suspension! We have the suspension parts to be a winner!"}
+            Explore our collection of videos showcasing our products and features.
           </h6>
         </div>
 
         <div className="row">
-          {newProducts.map((product) => (
-            <div key={product.ProductID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          {videos.map((video) => (
+            <div key={video.VideoID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
               <div className="card-product bg_white radius-20 h-100">
                 <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                   <Link
-                    href={`/product/${product.ProductID}`}
+                    href={`/video/${video.VideoID}`}
                     className="product-img"
                   >
                     <Image
                       className="lazyload img-product mb-2"
-                      src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
-                      alt="image-product"
-                      width={1200}
-                      height={1200}
-                    />
-                    <Image
-                      className="lazyload img-hover"
-                      src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
-                      alt="image-product"
+                      src={video.Thumbnail}
+                      alt="video-thumbnail"
                       width={360}
                       height={360}
+                      style={{borderRadius: "10px", border: "1px solid #707070"}}
                     />
                   </Link>
                   <div className="list-product-btn mt-auto">
                     <a
                       href="#quick_add"
-                      onClick={() => setQuickAddItem(product.ProductID)}
+                      onClick={() => setQuickAddItem(video.VideoID)}
                       data-bs-toggle="modal"
                       className="box-icon bg_white quick-add tf-btn-loading"
                     >
@@ -80,16 +64,16 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                       <span className="tooltip">Quick Add</span>
                     </a>
                     <a
-                      onClick={() => addToWishlist(product.ProductID)}
+                      onClick={() => addToWishlist(video.VideoID)}
                       className="box-icon bg_white wishlist btn-icon-action"
                     >
                       <span
                         className={`icon icon-heart ${
-                          isAddedtoWishlist(product.ProductID) ? "added" : ""
+                          isAddedtoWishlist(video.VideoID) ? "added" : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoWishlist(product.ProductID)
+                        {isAddedtoWishlist(video.VideoID)
                           ? "Already Wishlisted"
                           : "Add to Wishlist"}
                       </span>
@@ -97,23 +81,23 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                     <a
                       href="#compare"
                       data-bs-toggle="offcanvas"
-                      onClick={() => addToCompareItem(product.ProductID)}
+                      onClick={() => addToCompareItem(video.VideoID)}
                       className="box-icon bg_white compare btn-icon-action"
                     >
                       <span
                         className={`icon icon-compare ${
-                          isAddedtoCompareItem(product.ProductID) ? "added" : ""
+                          isAddedtoCompareItem(video.VideoID) ? "added" : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoCompareItem(product.ProductID)
+                        {isAddedtoCompareItem(video.VideoID)
                           ? "Already Compared"
                           : "Add to Compare"}
                       </span>
                     </a>
                     <a
                       href="#quick_view"
-                      onClick={() => setQuickViewItem(product)}
+                      onClick={() => setQuickViewItem(video)}
                       data-bs-toggle="modal"
                       className="box-icon bg_white quickview tf-btn-loading"
                     >
@@ -122,12 +106,11 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                     </a>
                   </div>
                   <div className="card-product-info mt-2">
-                    <div className="NewProductPartNumber">{product.PartNumber}</div>
-                    <span className="NewProductPlatformName" style={{fontSize: "14px", fontWeight: "bold", margin: "0px", padding: "0px", lineHeight: "0.5"}}>{product.PlatformName}</span>  
-                    <Link href={`/product/${product.ProductID}`} className="title link">
-                      {product?.ProductName}
+                    <div className="NewProductPartNumber">{video.Title}</div>
+                    <span className="NewProductPlatformName" style={{fontSize: "14px", fontWeight: "bold", margin: "0px", padding: "0px", lineHeight: "0.5"}}>{video.Description}</span>  
+                    <Link href={`/video/${video.VideoID}`} className="title link">
+                      {video?.Title}
                     </Link>
-                    <span className="price"> ${product?.Price} </span>
                   </div>
                 </div>
               </div>
