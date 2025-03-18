@@ -63,26 +63,29 @@ export default function PlatformPage({ params }) {
                     ]}
                 />
 
-                <CategoryGrid categories={mainCategories} />
+                {/* Main Categories Section */}
+                <section className="mb-5">
+                    
+                    <CategoryGrid categories={mainCategories} platform={platform} />
+                </section>
 
+                {/* Featured Products Section */}
                 {featuredProducts && featuredProducts.length > 0 && (
-                    <div className="mt-4">
-                        <div className="text-center position-relative mb-3">
-                            <h3 className="mb-2" style={{ fontSize: '1.5rem' }}>Featured Products</h3>
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    bottom: '-5px',
-                                    left: '50%',
-                                    transform: 'translateX(-50%)',
-                                    width: '60px',
-                                    height: '2px',
-                                    backgroundColor: 'var(--bs-danger)'
-                                }}
-                            ></div>
+                    <section className="mb-5">
+                        <div className="text-center mb-4">
+                            <h2 className="display-6 fw-bold position-relative d-inline-block">
+                                Featured Products
+                                <div className="position-absolute start-0 end-0 bottom-0" style={{
+                                    height: '4px',
+                                    background: '#FF0000',
+                                    width: '40%',
+                                    margin: '0 auto',
+                                    marginTop: '10px'
+                                }}></div>
+                            </h2>
                         </div>
                         <ProductGrid products={featuredProducts} />
-                    </div>
+                    </section>
                 )}
             </div>
         </div>

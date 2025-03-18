@@ -66,7 +66,7 @@ export default function PlatformCategoryPage({ params }) {
           name: platformName,
           headerImage: platformInfo?.headerImage ? `/images/headers/${platformInfo.headerImage}` : null
         }}
-        title={`${formattedCategoryName} Parts`}
+        title={`${platformName} ${formattedCategoryName} Parts`}
       />
       
       <Breadcrumbs params={params} className="mt-0 pt-0 breadcrumbs-custom" />
@@ -74,18 +74,6 @@ export default function PlatformCategoryPage({ params }) {
       <div className="container">
         {/* Categories Section */}
         <section className="mb-5">
-          <div className="text-center mb-4">
-            <h2 className="display-6 fw-bold position-relative d-inline-block">
-              Categories
-              <div className="position-absolute start-0 end-0 bottom-0" style={{
-                height: '4px',
-                background: 'var(--bs-primary)',
-                width: '40%',
-                margin: '0 auto',
-                marginTop: '10px'
-              }}></div>
-            </h2>
-          </div>
           <CategoryGrid 
             categories={categories} 
             platform={platformSlug} 
@@ -100,7 +88,7 @@ export default function PlatformCategoryPage({ params }) {
               Featured Products
               <div className="position-absolute start-0 end-0 bottom-0" style={{
                 height: '4px',
-                background: 'var(--bs-primary)',
+                background: '#FF0000',
                 width: '40%',
                 margin: '0 auto',
                 marginTop: '10px'

@@ -59,8 +59,8 @@ export default function ProductGrid({ platformName, products, showCategories = t
               key={category.id}
               className={`btn ${
                 selectedMainCategory === category.id
-                  ? "btn-primary"
-                  : "btn-outline-primary"
+                  ? "btn-danger"
+                  : "btn-outline-danger"
               }`}
               onClick={() =>
                 setSelectedMainCategory(
@@ -131,7 +131,7 @@ export default function ProductGrid({ platformName, products, showCategories = t
                       {product.ProductName}
                     </h3>
                     <div className="d-flex justify-content-between align-items-center">
-                      <span className="fw-bold text-primary">
+                      <span className="fw-bold text-danger">
                         ${parseFloat(product.Price).toFixed(2)}
                       </span>
                       <small className="text-muted">

@@ -137,20 +137,16 @@ export default function CategoryGrid({
     isSubCategory = false, 
     categoryImages = {} 
 }) {
-    console.log("categoryImages", categoryImages);
+    console.log("Categories:", categories); // Debug log
     return (
         <div className="container">
             <div className="row justify-content-center">
                 {categories.map((category, index) => {
-                    // Check for both MainCatName and name properties
-                    const categoryName = category.MainCatName || category.name;
-                    const categoryId = category.MainCatID || category.id;
-                    
-                    // Prioritize passed categoryImages, then fallback to category object
-                    const categoryImage = 
-                        categoryImages[categoryId] || 
-                        category.MainCatImage || 
-                        category.image;
+                    // For main categories, use name property
+                    // For subcategories, use CatName or name property
+                    const categoryName = category.name || category.CatName;
+                    const categoryId = category.id || category.CatID;
+                    const categoryImage = category.image || category.CatImage;
 
                     if (!categoryName) {
                         console.warn(`⚠️ Skipping category at index ${index}:`, category);
@@ -158,6 +154,9 @@ export default function CategoryGrid({
                     }
 
                     const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+                    const href = isSubCategory 
+                        ? `/products/${platform}/${categorySlug}` 
+                        : `/products/${platform}/${categorySlug}`;
 
                     return (
                         <div 
@@ -165,15 +164,19 @@ export default function CategoryGrid({
                             className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch"
                         >
                             <div className="category-item text-center w-100">
-                                <Link href={`/products/${platform}/${categorySlug}`}>
-                                    <img
-                                        src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
-                                        alt={categoryName}
-                                        className="category-img"
-                                    />
+                                <Link href={href}>
+                                    {categoryImage && (
+                                        <img
+                                            src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
+                                            alt={categoryName}
+                                            className="category-img"
+                                        />
+                                    )}
                                 </Link>
                                 <div className="category-title-wrapper">
-                                    <p className="category-title">{categoryName}</p>
+                                    <Link href={href} className="text-decoration-none">
+                                        <p className="category-title">{categoryName}</p>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
