@@ -1,22 +1,34 @@
 import { NextResponse } from "next/server";
-import { getPlatformBySlug } from "@/lib/queries";
+import { getMainCategories, getPlatformBySlug, getFeaturedProductsByPlatform } from "@/lib/queries";
 
 export async function GET(request, { params }) {
-    console.log("params", params);
-    const platformSlug = params.platform;
     try {
-        const platformData = await getPlatformBySlug(platformSlug);
+        const { platform } = params;
 
-        if (!platformData) {
-            return NextResponse.json({ error: 'Platform not found' }, { status: 404 });
+        // Fetch platform info, main categories, and featured products
+        const [platformInfo, mainCategories, featuredProducts] = await Promise.all([
+            getPlatformBySlug(platform),
+            getMainCategories(platform),
+            getFeaturedProductsByPlatform(platform)
+        ]);
+
+        if (!platformInfo) {
+            return NextResponse.json(
+                { error: 'Platform not found' },
+                { status: 404 }
+            );
         }
 
-        // Add a formatted name if needed
-        platformData.formattedName = `${platformData.startYear}-${platformData.endYear} ${platformData.name}`;
-
-        return NextResponse.json(platformData);
+        return NextResponse.json({
+            mainCategories,
+            platformInfo,
+            featuredProducts
+        });
     } catch (error) {
-        console.error('Error fetching platform:', error);
-        return NextResponse.json({ error: 'Failed to fetch platform' }, { status: 500 });
+        console.error('Error fetching platform data:', error);
+        return NextResponse.json(
+            { error: 'Failed to fetch platform data' },
+            { status: 500 }
+        );
     }
 }

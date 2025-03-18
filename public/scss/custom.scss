@@ -128,13 +128,7 @@
   letter-spacing: 1.9px;
 }
 
-.platform-header {
-  background-image: url('https://bmrsuspension.com/siteart/platformBanners/homebanner_1stfbody.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  max-height:350px;
-}
+
 
 .breadcrumbs-custom {
   margin-top: 0 !important;
@@ -633,6 +627,8 @@
   border: 1px solid #d3d3d3;
   letter-spacing: 0.5px;
   font-size: 14px;
+  border-radius: 10px;
+  margin-top:20px;
   .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -734,3 +730,7 @@
   padding: 0px;
 }
 
+.tf-page-title {
+  padding: 40px 0;
+  position: relative;
+}

@@ -1,30 +1,23 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import CategoryGrid from "@/components/shop/CategoryGrid";
-import { getPlatformCategories } from "@/lib/queries";
+import ProductGrid from "@/components/shop/ProductGrid";
+import PlatformHeader from "@/components/header/PlatformHeader";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
-export const metadata = {
-  title: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-};
-
-export default async function PlatformCategoryPage({ params }) {
-  
-  console.log("🛠 Params received:", params);
-  
+export default function PlatformCategoryPage({ params }) {
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [platformInfo, setPlatformInfo] = useState(null);
+  const [error, setError] = useState(null);
 
   const platformSlug = Array.isArray(params.platform) 
     ? params.platform[0] 
     : params.platform;
 
   const mainCategory = params.mainCategory;
-  const categories = params.categories;
-
-  // Safely format the platform slug
-  const formattedVehicleName = platformSlug 
-    ? platformSlug
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-    : "Unknown Platform";
 
   // Format the main category name for display
   const formattedCategoryName = mainCategory
@@ -32,49 +25,94 @@ export default async function PlatformCategoryPage({ params }) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-     
-  // Fetch subcategories under the main category
-  if (!categories || categories.length === 0) {
-    console.warn(`⚠️ No categories found for ${mainCategory}`);
-    return <div>No categories available</div>;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/maincategories/mainCategory?platform=${platformSlug}&mainCategory=${formattedCategoryName}`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
 
-  const formattedOptions = categories.map(option => ({
-    value: option.value || option,
-    label: option.label || option
-  }));
+        const data = await response.json();
+        setCategories(data.categories);
+        setProducts(data.products);
+        setPlatformInfo(data.platformInfo);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const formattedOptions2 = categories.map(option => ({
-    value: option,
-    label: option
-  }));
+    fetchData();
+  }, [platformSlug, formattedCategoryName]);
+
+  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+
+  // Format platform name for display
+  const platformName = platformInfo ? 
+    `${platformInfo.startYear}${platformInfo.startYear !== platformInfo.endYear ? '-' + platformInfo.endYear : ''} ${platformInfo.name}` : 
+    "Unknown Platform";
 
   return (
     <>
-      <div className="tf-page-title platform-header">
-        <div className="container-full bg-white ">
-          <div className="heading text-center text-black text-uppercase"  style={{padding:20, borderRadius:10}}>
-            {formattedVehicleName}
-            <br />
-            <span className="category-name">{formattedCategoryName}</span>
-          </div>
-          <p className="text-center text-2 text_black-2 mt_5">
-            Check out our latest selection of Suspension & Chassis Parts!
-          </p>
-        </div>
-      </div>
-      <CategoryGrid 
-        categories={categories} 
-        platform={platformSlug} 
-        isSubCategory={true} 
+      <PlatformHeader 
+        platformData={{
+          name: platformName,
+          headerImage: platformInfo?.headerImage ? `/images/headers/${platformInfo.headerImage}` : null
+        }}
+        title={`${formattedCategoryName} Parts`}
       />
-      <select className="tf-select">
-        {formattedOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      
+      <Breadcrumbs params={params} className="mt-0 pt-0 breadcrumbs-custom" />
+
+      <div className="container">
+        {/* Categories Section */}
+        <section className="mb-5">
+          <div className="text-center mb-4">
+            <h2 className="display-6 fw-bold position-relative d-inline-block">
+              Categories
+              <div className="position-absolute start-0 end-0 bottom-0" style={{
+                height: '4px',
+                background: 'var(--bs-primary)',
+                width: '40%',
+                margin: '0 auto',
+                marginTop: '10px'
+              }}></div>
+            </h2>
+          </div>
+          <CategoryGrid 
+            categories={categories} 
+            platform={platformSlug} 
+            isSubCategory={true} 
+          />
+        </section>
+
+        {/* Featured Products Section */}
+        <section className="mb-5">
+          <div className="text-center mb-4">
+            <h2 className="display-6 fw-bold position-relative d-inline-block">
+              Featured Products
+              <div className="position-absolute start-0 end-0 bottom-0" style={{
+                height: '4px',
+                background: 'var(--bs-primary)',
+                width: '40%',
+                margin: '0 auto',
+                marginTop: '10px'
+              }}></div>
+            </h2>
+          </div>
+          <ProductGrid 
+            products={products}
+            showCategories={false}
+          />
+        </section>
+      </div>
     </>
   );
 }

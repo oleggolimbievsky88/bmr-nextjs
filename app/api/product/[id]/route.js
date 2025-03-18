@@ -14,7 +14,7 @@ export async function GET(request, { params }) {
         // Add a formatted name if needed
         productData.formattedName = `${productData.ProductName}`;
 
-            return NextResponse.json(productData);
+        return NextResponse.json(productData);
     } catch (error) {
         console.error('Error fetching product:', error);
         return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });

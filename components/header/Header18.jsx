@@ -17,7 +17,6 @@ const defaultMenuData = {
 };
 
 export default function Header18({ initialMenuData }) {
-  console.log("initialMenuData", initialMenuData);
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
@@ -30,7 +29,6 @@ export default function Header18({ initialMenuData }) {
           const data = await response.json();
           setMenuData(data);
           setIsDataFetched(true);
-          console.log("menuData", menuData);
         } catch (err) {
           console.error("Error fetching menu:", err);
         } finally {
@@ -77,6 +75,7 @@ export default function Header18({ initialMenuData }) {
                     src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
                     width={230}
                     height={50}
+                    style={{width: "100%", height: "auto"}}
                 />
                 </Link>
             </div>
@@ -569,7 +568,7 @@ export default function Header18({ initialMenuData }) {
                 </div>
               </div>
               <nav className="box-navigation text-center">
-                <div className="box-nav-ul d-flex align-items-center justify-content-center ">
+                <div className=" align-items-center justify-content-center ">
                   <MainMenu />
                   
                 </div>

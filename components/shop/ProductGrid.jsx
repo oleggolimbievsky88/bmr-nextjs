@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from 'next/image';
 
-export default function ProductGrid({ platformName }) {
+export default function ProductGrid({ platformName, products, showCategories = true }) {
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
@@ -11,7 +12,10 @@ export default function ProductGrid({ platformName }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!platformName) return;
+      if (!platformName || !showCategories) {
+        setLoading(false);
+        return;
+      }
 
       setLoading(true);
       setError(null);
@@ -35,28 +39,20 @@ export default function ProductGrid({ platformName }) {
         setError(err.message);
       } finally {
         setLoading(false);
-        console.log("selectedMainCategory", selectedMainCategory);
       }
     };
 
     fetchData();
-  }, [platformName]);
+  }, [platformName, showCategories]);
 
-  if (loading) return <div className="text-center p-4">Loading...</div>;
-  if (error)
-    return <div className="text-center text-danger p-4">Error: {error}</div>;
-  if (!categories.length && !mainCategories.length) {
-    return (
-      <div className="text-center p-4">
-        No categories found for {platformName}
-      </div>
-    );
-  }
+  // Show loading state only when fetching categories
+  if (loading && showCategories) return <div className="text-center p-4">Loading...</div>;
+  if (error) return <div className="text-center text-danger p-4">Error: {error}</div>;
 
   return (
     <div className="container-fluid">
-      {/* Main Categories */}
-      {mainCategories.length > 0 && (
+      {/* Main Categories Section */}
+      {showCategories && mainCategories.length > 0 && (
         <div className="filter-buttons d-flex justify-content-center gap-3 mb-4">
           {mainCategories.map((category) => (
             <button
@@ -79,37 +75,83 @@ export default function ProductGrid({ platformName }) {
       )}
 
       {/* Categories Grid */}
-      <div className="row g-4 justify-content-center mt-4">
-        {categories
-          .filter(
-            (cat) =>
-              !selectedMainCategory ||
-              cat.mainCategoryId === selectedMainCategory
-          )
-          .map((category) => (
-            <div key={category.id} className="col-md-3">
-              <Link
-                href={`/platform/${platformName}/${category.name
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
-                className="text-decoration-none"
-              >
-                <div className="card category-card h-100">
-                  {category.CatImage && (
-                    <img
-                      src={`https://www.bmrsuspension.com/siteart/categories/LLK1861R_1024.jpg`}
-                      alt={category.name}
-                      className="card-img-top"
-                    />
-                  )}
-                  <div className="card-body text-center">
-                    <h5 className="card-title">{category.name}</h5>
+      {showCategories && categories.length > 0 && (
+        <div className="row g-4 justify-content-center mt-4">
+          {categories
+            .filter(
+              (cat) =>
+                !selectedMainCategory ||
+                cat.mainCategoryId === selectedMainCategory
+            )
+            .map((category) => (
+              <div key={category.id} className="col-md-3">
+                <Link
+                  href={`/platform/${platformName}/${category.name
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")}`}
+                  className="text-decoration-none"
+                >
+                  <div className="card category-card h-100">
+                    {category.CatImage && (
+                      <img
+                        src={`https://www.bmrsuspension.com/siteart/categories/LLK1861R_1024.jpg`}
+                        alt={category.name}
+                        className="card-img-top"
+                      />
+                    )}
+                    <div className="card-body text-center">
+                      <h5 className="card-title">{category.name}</h5>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
+            ))}
+        </div>
+      )}
+
+      {/* Products Grid */}
+      {products && products.length > 0 && (
+        <div className="row g-4 justify-content-center mt-4">
+          {products.map((product) => (
+            <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
+              <div className="card h-100 product-card">
+                <Link href={`/product/${product.ProductID}`} className="text-decoration-none">
+                  <div className="position-relative" style={{ height: '200px' }}>
+                    <Image
+                      src={product.ImageSmall ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}` : 'https://bmrsuspension.com/siteart/products/noimage.jpg'}
+                      alt={product.ProductName}
+                      fill
+                      className="card-img-top p-2"
+                      style={{ objectFit: 'contain' }}
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    />
+                  </div>
+                  <div className="card-body">
+                    <h3 className="h6 mb-2 product-title" style={{ minHeight: '2.5rem' }}>
+                      {product.ProductName}
+                    </h3>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="fw-bold text-primary">
+                        ${parseFloat(product.Price).toFixed(2)}
+                      </span>
+                      <small className="text-muted">
+                        Part #: {product.PartNumber}
+                      </small>
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
+
+      {/* No Results Message */}
+      {!loading && !error && !categories.length && !products?.length && (
+        <div className="text-center p-4">
+          No items found {platformName ? `for ${platformName}` : ''}
+        </div>
+      )}
     </div>
   );
 }
