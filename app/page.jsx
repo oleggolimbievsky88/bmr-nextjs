@@ -22,7 +22,8 @@ import Header18 from "@/components/header/Header18";
 import VideoPage from "@/components/common/Videos";
 export const metadata = {
   title: "BMR Suspension | Performance Suspension & Chassis Parts",
-  description: "BMR Suspension - High Performance Suspension & Chassis raceing parts for Mustang, Camaro, F Body, A Body, B Body, G Body, GM W Body, X Body, Firebird, Nova, Trailblazer SS, SSR, Monte Carlo, Intrigue, Grand Prix, Regal, Cutlass, Grand Sport, El Camino, LeMans, Chevelle, Malibu, GTO, G8, Grand National, CTS-V, Caprice, Skylark, buick 442, Shelby GT500, Mustrang GT and more.",
+  description:
+    "BMR Suspension - High Performance Suspension & Chassis raceing parts for Mustang, Camaro, F Body, A Body, B Body, G Body, GM W Body, X Body, Firebird, Nova, Trailblazer SS, SSR, Monte Carlo, Intrigue, Grand Prix, Regal, Cutlass, Grand Sport, El Camino, LeMans, Chevelle, Malibu, GTO, G8, Grand National, CTS-V, Caprice, Skylark, buick 442, Shelby GT500, Mustrang GT and more.",
 };
 export default function page() {
   return (
@@ -31,24 +32,29 @@ export default function page() {
       <Header18 />
       <Hero /> <br />
       {/* <ShopCategories /> <br /> <br /> */}
-      <ThreeColumnLayout /><br />
+      <ThreeColumnLayout />
+      <br />
       {/* <Categories /> */}
-      {/* <Products /><br /><br /> */}
-      <NewProductsPage scrachDent="0"/>
-      <NewProductsPage scrachDent="1"/>
+      <Products />
+      <br />
+      <br />
+      <NewProductsPage scrachDent="0" />
+      <br />
+      <br />
+      <NewProductsPage scrachDent="1" />
+      <br />
+      <br />
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
       {/* <Collections /> */}
-      
       {/* <Collections2 /> */}
       <div className="mt-5"></div>
-
       <VideoPage />
-      
       {/* <Products2 /> */}
       {/* <Marquee /> */}
       {/* <Testimonials /> */}
-      {/* <Brands /> */} <br /><br />
+      {/* <Brands /> */} <br />
+      <br />
       <Features />
       <Footer />
     </>

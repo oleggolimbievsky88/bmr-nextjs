@@ -399,7 +399,7 @@
   font-size: 14px;
   padding: 8px 15px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     color: #ff0000;
   }
@@ -410,10 +410,10 @@
   background-color: #000;
   border: none;
   margin-top: 0;
-  
+
   .dropdown-item {
     color: #fff;
-    
+
     &:hover {
       background-color: #333;
       color: #ff0000;
@@ -671,7 +671,7 @@
   .breadcrumb-item.active {
       color: #000000;
       cursor: default;
-      
+
   }
 
   .icon-arrow-right {
@@ -701,7 +701,7 @@
   margin-bottom: 0px;
   position: relative;
   padding: 0 15px;
-  
+
   &::before,
   &::after {
     content: "";
@@ -712,11 +712,11 @@
     background-color: var(--primary);
     transform: translateY(-50%);
   }
-  
+
   &::before {
     left: -50px;
   }
-  
+
   &::after {
     right: -50px;
   }

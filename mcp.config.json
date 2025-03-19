@@ -1,0 +1,9 @@
+{
+  "database": {
+    "host": "localhost",
+    "user": "root",
+    "password": "Amelia1",
+    "database": "bmrsuspension",
+    "port": 3306
+  }
+} 

@@ -4,5 +4,5 @@ export const metadata = {
 };
 
 export default function MainCategoryLayout({ children }) {
-  return "asdf";
+  return children;
 } 
