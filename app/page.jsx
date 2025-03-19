@@ -35,7 +35,7 @@ export default function page() {
       <ThreeColumnLayout />
       <br />
       {/* <Categories /> */}
-      <Products />
+      {/* <Products /> */}
       <br />
       <br />
       <NewProductsPage scrachDent="0" />
@@ -47,10 +47,10 @@ export default function page() {
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
       {/* <Collections /> */}
-      {/* <Collections2 /> */}
+      <Collections2 />
       <div className="mt-5"></div>
       <VideoPage />
-      {/* <Products2 /> */}
+      <Products2 />
       {/* <Marquee /> */}
       {/* <Testimonials /> */}
       {/* <Brands /> */} <br />

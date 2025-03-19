@@ -27,14 +27,15 @@ export default function Products2() {
             className="title fw-6 wow text-white fadeInUp"
             data-wow-delay="0s"
           >
-            Halloween is coming
+            #BMRequipped
           </span>
           <p
             className="sub-title fs-14 text-white wow fadeInUp"
             data-wow-delay="0s"
           >
-            Skip the pumpkin spice latte it’s Halloween time. Don’t miss
-            spooktacular items
+            Follow us on Facebook and Instagrame to keep up to date with alla
+            things BMR Suspensionconst DM us pictures of your #BMRequipped build
+            for a change to be featured on our pages!
           </p>
         </div>
         <div className="container">
