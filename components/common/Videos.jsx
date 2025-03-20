@@ -1,16 +1,36 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function VideoPage() {
   const [videos, setVideos] = useState([
-    { VideoID: 1, Title: 'Video 1', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 1' },
-    { VideoID: 2, Title: 'Video 2', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 2' },
-    { VideoID: 3, Title: 'Video 3', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 3' },
-    { VideoID: 4, Title: 'Video 4', Thumbnail: 'https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg', Description: 'Description for Video 4' },
+    {
+      VideoID: 1,
+      Title: "Video 1",
+      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
+      Description: "Description for Video 1",
+    },
+    {
+      VideoID: 2,
+      Title: "Video 2",
+      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
+      Description: "Description for Video 2",
+    },
+    {
+      VideoID: 3,
+      Title: "Video 3",
+      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
+      Description: "Description for Video 3",
+    },
+    {
+      VideoID: 4,
+      Title: "Video 4",
+      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
+      Description: "Description for Video 4",
+    },
     // Add more dummy video data as needed
   ]);
 
@@ -31,18 +51,23 @@ export default function VideoPage() {
             Videos
           </span>
           <h6 className="home-title-description text-center text-muted">
-            Explore our collection of videos showcasing our products and features.
+            Explore our collection of videos showcasing our products and
+            features.
           </h6>
         </div>
 
         <div className="row">
           {videos.map((video) => (
-            <div key={video.VideoID} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div
+              key={video.VideoID}
+              className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
+            >
               <div className="card-product bg_white radius-20 h-100">
                 <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                   <Link
-                    href={`/video/${video.VideoID}`}
+                    href={"https://www.youtube.com/user/BMRSuspension"}
                     className="product-img"
+                    target="_blank"
                   >
                     <Image
                       className="lazyload img-product mb-2"
@@ -50,7 +75,10 @@ export default function VideoPage() {
                       alt="video-thumbnail"
                       width={360}
                       height={360}
-                      style={{borderRadius: "10px", border: "1px solid #707070"}}
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid #707070",
+                      }}
                     />
                   </Link>
                   <div className="list-product-btn mt-auto">
@@ -107,8 +135,22 @@ export default function VideoPage() {
                   </div>
                   <div className="card-product-info mt-2">
                     <div className="NewProductPartNumber">{video.Title}</div>
-                    <span className="NewProductPlatformName" style={{fontSize: "14px", fontWeight: "bold", margin: "0px", padding: "0px", lineHeight: "0.5"}}>{video.Description}</span>  
-                    <Link href={`/video/${video.VideoID}`} className="title link">
+                    <span
+                      className="NewProductPlatformName"
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        margin: "0px",
+                        padding: "0px",
+                        lineHeight: "0.5",
+                      }}
+                    >
+                      {video.Description}
+                    </span>
+                    <Link
+                      href={`/video/${video.VideoID}`}
+                      className="title link"
+                    >
                       {video?.Title}
                     </Link>
                   </div>

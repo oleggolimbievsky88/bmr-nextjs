@@ -11,17 +11,17 @@ export default function ThreeColumnLayout() {
           {
             img: "/images/logo/Ford_Logo.png",
             title: "FORD",
-            link: "make/ford",
+            link: "products/ford",
           },
           {
             img: "/images/logo/gm_logo.png",
             title: "GM",
-            link: "make/gm",
+            link: "products/gm",
           },
           {
             img: "/images/logo/dodge_logo.png",
             title: "Dodge",
-            link: "make/dodge",
+            link: "products/mopar",
           },
         ].map((item, index) => (
           <div key={index} className="col-lg-4 col-md-6 col-sm-12 mb-5 pb-5">
