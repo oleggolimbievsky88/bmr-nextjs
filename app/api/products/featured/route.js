@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
-    // Connect to database
+    // Connect to database using environment variables
     await global.mcp_MySQL_MCP_connect_db({
-      host: "localhost",
-      user: "root",
-      password: "Amelia1",
-      database: "bmrsuspension",
+      host: process.env.MYSQL_HOST || "localhost",
+      user: process.env.MYSQL_USER || "root",
+      password: process.env.MYSQL_PASSWORD || "",
+      database: process.env.MYSQL_DATABASE || "bmrsuspension",
     });
 
     // Query featured products

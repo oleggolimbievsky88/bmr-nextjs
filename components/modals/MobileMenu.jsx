@@ -135,7 +135,7 @@ export default function MobileMenu() {
                 <i className="icon icon-heart" />
                 Wishlist
               </Link>
-              <Link href={`/home-search`} className="site-nav-icon">
+              <Link href={`/homes/home-search`} className="site-nav-icon">
                 <i className="icon icon-search" />
                 Search
               </Link>

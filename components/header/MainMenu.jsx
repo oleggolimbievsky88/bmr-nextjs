@@ -12,7 +12,6 @@ const defaultMenuData = {
 };
 
 export default function MainMenu({ initialMenuData }) {
-
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
@@ -71,7 +70,11 @@ export default function MainMenu({ initialMenuData }) {
   return (
     <nav className="navbar navbar-expand-xxl text-center">
       <div className="container-fluid">
-        <div className="collapse navbar-collapse" id="navbarNavDropdown" style={{display: 'flex', justifyContent: 'center'}}>
+        <div
+          className="collapse navbar-collapse"
+          id="navbarNavDropdown"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
           <ul className="navbar-nav">
             {/* <li className="nav-item">
               <Link href="/" className="nav-link">
@@ -81,42 +84,42 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* Ford Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="/ford" className="nav-link dropdown-toggle">
+              <Link href="/products/ford" className="nav-link dropdown-toggle">
                 Ford
               </Link>
-              {renderMenuSection(menuData.fordLinks, "/ford")}
+              {renderMenuSection(menuData.fordLinks, "/products/ford")}
             </li>
 
             {/* GM Late Model Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="#" className="nav-link dropdown-toggle">
+              <Link href="/products/gm" className="nav-link dropdown-toggle">
                 GM Late Model Cars
               </Link>
-              {renderMenuSection(menuData.gmLateModelLinks, "/gm-late-model")}
+              {renderMenuSection(menuData.gmLateModelLinks, "/products/gm")}
             </li>
 
             {/* GM Mid Muscle Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="#" className="nav-link dropdown-toggle">
+              <Link href="/products/gm" className="nav-link dropdown-toggle">
                 GM Mid Muscle Cars
               </Link>
-              {renderMenuSection(menuData.gmMidMuscleLinks, "/gm-mid-muscle")}
+              {renderMenuSection(menuData.gmMidMuscleLinks, "/products/gm")}
             </li>
 
             {/* GM Classic Muscle Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="#" className="nav-link dropdown-toggle">
+              <Link href="/products/gm" className="nav-link dropdown-toggle">
                 GM Classic Muscle Cars
               </Link>
-              {renderMenuSection(menuData.gmClassicMuscleLinks, "/gm-classic")}
+              {renderMenuSection(menuData.gmClassicMuscleLinks, "/products/gm")}
             </li>
 
             {/* Mopar Dropdown */}
             <li className="nav-item dropdown">
-              <Link href="#" className="nav-link dropdown-toggle">
+              <Link href="/products/mopar" className="nav-link dropdown-toggle">
                 Mopar
               </Link>
-              {renderMenuSection(menuData.moparLinks, "/mopar")}
+              {renderMenuSection(menuData.moparLinks, "/products/mopar")}
             </li>
 
             {/* Static Links */}

@@ -1,3 +1,25 @@
+# BMR Suspension Next.js Website
+
+## Deployment Instructions
+
+### Vercel Deployment
+
+1. Push your code to GitHub
+2. Connect your GitHub repository to Vercel
+3. Set up the following environment variables in Vercel:
+   - `MYSQL_HOST`: Your production database host
+   - `MYSQL_USER`: Your production database username
+   - `MYSQL_PASSWORD`: Your production database password
+   - `MYSQL_DATABASE`: Your production database name
+   - `NEXT_PUBLIC_API_URL`: The base URL for your API (e.g., https://your-domain.com/api)
+
+### Local Development
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Create a `.env.local` file with your database credentials
+4. Run the development server: `npm run dev`
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
