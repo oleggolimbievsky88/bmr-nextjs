@@ -3,5 +3,6 @@
         "**/cache/**": true,
         "**/node_modules/**": true
     },
-    "liveServer.settings.multiRootWorkspaceName": "ecomus-nextjs"
+    "liveServer.settings.multiRootWorkspaceName": "ecomus-nextjs",
+    "gitlens.outputLevel": "warn"
 }

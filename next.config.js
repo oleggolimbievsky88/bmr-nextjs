@@ -5,19 +5,28 @@ const nextConfig = {
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
       use: {
-        loader: 'file-loader',
+        loader: "file-loader",
         options: {
-          publicPath: '/_next/static/',
-          outputPath: 'static/',
+          publicPath: "/_next/static/",
+          outputPath: "static/",
         },
       },
-    })
+    });
 
-    return config
+    return config;
   },
   images: {
-    domains: ['localhost', 'bmrsuspension.com'],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "bmrsuspension.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+    ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

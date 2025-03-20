@@ -13,23 +13,9 @@ import "swiper/css/navigation";
 
 export default function NewProductsPage({ scrachDent = "0" }) {
   const [newProducts, setNewProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigationClass = scrachDent === "1" ? "scratch-dent" : "new-products";
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          `/api/products/new-products?scrachDent=${scrachDent}`
-        );
-        const data = await response.json();
-        setNewProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    fetchProducts();
-  }, [scrachDent]);
 
   const {
     setQuickViewItem,
@@ -39,6 +25,31 @@ export default function NewProductsPage({ scrachDent = "0" }) {
     addToCompareItem,
     isAddedtoCompareItem,
   } = useContextElement();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `/api/products/new-products?scrachDent=${scrachDent}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setNewProducts(Array.isArray(data) ? data : []);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError(error.message);
+        setNewProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [scrachDent]);
 
   return (
     <section className="flat-spacing-1 pt_0">
@@ -85,111 +96,130 @@ export default function NewProductsPage({ scrachDent = "0" }) {
             }}
             className="swiper-container"
           >
-            {newProducts.map((product) => (
-              <SwiperSlide key={product.ProductID}>
-                <div className="card-product bg_white radius-20 h-100">
-                  <div className="card-product-wrapper border-line h-100 d-flex flex-column">
-                    <Link
-                      href={`/product/${product.ProductID}`}
-                      className="product-img"
-                    >
-                      <Image
-                        className="lazyload img-product mb-2"
-                        src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
-                        alt="image-product"
-                        width={1200}
-                        height={1200}
-                      />
-                      <Image
-                        className="lazyload img-hover"
-                        src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
-                        alt="image-product"
-                        width={360}
-                        height={360}
-                      />
-                    </Link>
-                    <div className="list-product-btn mt-auto">
-                      <a
-                        href="#quick_add"
-                        onClick={() => setQuickAddItem(product.ProductID)}
-                        data-bs-toggle="modal"
-                        className="box-icon bg_white quick-add tf-btn-loading"
-                      >
-                        <span className="icon icon-bag" />
-                        <span className="tooltip">Quick Add</span>
-                      </a>
-                      <a
-                        onClick={() => addToWishlist(product.ProductID)}
-                        className="box-icon bg_white wishlist btn-icon-action"
-                      >
-                        <span
-                          className={`icon icon-heart ${
-                            isAddedtoWishlist(product.ProductID) ? "added" : ""
-                          }`}
-                        />
-                        <span className="tooltip">
-                          {isAddedtoWishlist(product.ProductID)
-                            ? "Already Wishlisted"
-                            : "Add to Wishlist"}
-                        </span>
-                      </a>
-                      <a
-                        href="#compare"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => addToCompareItem(product.ProductID)}
-                        className="box-icon bg_white compare btn-icon-action"
-                      >
-                        <span
-                          className={`icon icon-compare ${
-                            isAddedtoCompareItem(product.ProductID)
-                              ? "added"
-                              : ""
-                          }`}
-                        />
-                        <span className="tooltip">
-                          {isAddedtoCompareItem(product.ProductID)
-                            ? "Already Compared"
-                            : "Add to Compare"}
-                        </span>
-                      </a>
-                      <a
-                        href="#quick_view"
-                        onClick={() => setQuickViewItem(product)}
-                        data-bs-toggle="modal"
-                        className="box-icon bg_white quickview tf-btn-loading"
-                      >
-                        <span className="icon icon-view" />
-                        <span className="tooltip">Quick View</span>
-                      </a>
-                    </div>
-                    <div className="card-product-info mt-2">
-                      <div className="NewProductPartNumber">
-                        {product.PartNumber}
-                      </div>
-                      <span
-                        className="NewProductPlatformName"
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          margin: "0px",
-                          padding: "0px",
-                          lineHeight: "0.5",
-                        }}
-                      >
-                        {product.PlatformName}
-                      </span>
-                      <Link
-                        href={`/product/${product.ProductID}`}
-                        className="title link"
-                      >
-                        {product?.ProductName}
-                      </Link>
-                      <span className="price"> ${product?.Price} </span>
-                    </div>
-                  </div>
+            {isLoading ? (
+              <SwiperSlide>
+                <div className="text-center p-5">Loading products...</div>
+              </SwiperSlide>
+            ) : error ? (
+              <SwiperSlide>
+                <div className="text-center p-5 text-danger">
+                  Error loading products: {error}
                 </div>
               </SwiperSlide>
-            ))}
+            ) : newProducts.length === 0 ? (
+              <SwiperSlide>
+                <div className="text-center p-5">No products found.</div>
+              </SwiperSlide>
+            ) : (
+              Array.isArray(newProducts) &&
+              newProducts.map((product) => (
+                <SwiperSlide key={product.ProductID}>
+                  <div className="card-product bg_white radius-20 h-100">
+                    <div className="card-product-wrapper border-line h-100 d-flex flex-column">
+                      <Link
+                        href={`/product/${product.ProductID}`}
+                        className="product-img"
+                      >
+                        <Image
+                          className="lazyload img-product mb-2"
+                          src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
+                          alt="image-product"
+                          width={1200}
+                          height={1200}
+                        />
+                        <Image
+                          className="lazyload img-hover"
+                          src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
+                          alt="image-product"
+                          width={360}
+                          height={360}
+                        />
+                      </Link>
+                      <div className="list-product-btn mt-auto">
+                        <a
+                          href="#quick_add"
+                          onClick={() => setQuickAddItem(product.ProductID)}
+                          data-bs-toggle="modal"
+                          className="box-icon bg_white quick-add tf-btn-loading"
+                        >
+                          <span className="icon icon-bag" />
+                          <span className="tooltip">Quick Add</span>
+                        </a>
+                        <a
+                          onClick={() => addToWishlist(product.ProductID)}
+                          className="box-icon bg_white wishlist btn-icon-action"
+                        >
+                          <span
+                            className={`icon icon-heart ${
+                              isAddedtoWishlist(product.ProductID)
+                                ? "added"
+                                : ""
+                            }`}
+                          />
+                          <span className="tooltip">
+                            {isAddedtoWishlist(product.ProductID)
+                              ? "Already Wishlisted"
+                              : "Add to Wishlist"}
+                          </span>
+                        </a>
+                        <a
+                          href="#compare"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => addToCompareItem(product.ProductID)}
+                          className="box-icon bg_white compare btn-icon-action"
+                        >
+                          <span
+                            className={`icon icon-compare ${
+                              isAddedtoCompareItem(product.ProductID)
+                                ? "added"
+                                : ""
+                            }`}
+                          />
+                          <span className="tooltip">
+                            {isAddedtoCompareItem(product.ProductID)
+                              ? "Already Compared"
+                              : "Add to Compare"}
+                          </span>
+                        </a>
+                        <a
+                          href="#quick_view"
+                          onClick={() => setQuickViewItem(product)}
+                          data-bs-toggle="modal"
+                          className="box-icon bg_white quickview tf-btn-loading"
+                        >
+                          <span className="icon icon-view" />
+                          <span className="tooltip">Quick View</span>
+                        </a>
+                      </div>
+                      <div className="card-product-info mt-2">
+                        <div className="NewProductPartNumber">
+                          {product.PartNumber}
+                        </div>
+                        <span
+                          className="NewProductPlatformName"
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            margin: "0px",
+                            padding: "0px",
+                            lineHeight: "0.5",
+                          }}
+                        >
+                          {product.PlatformName}
+                        </span>
+                        <Link
+                          href={`/product/${product.ProductID}`}
+                          className="title link"
+                        >
+                          {product?.ProductName}
+                        </Link>
+                        <span className="price"> ${product?.Price} </span>
+                      </div>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))
+            )}
           </Swiper>
           <div className={`${navigationClass}-prev swiper-nav-button`}></div>
           <div className={`${navigationClass}-next swiper-nav-button`}></div>

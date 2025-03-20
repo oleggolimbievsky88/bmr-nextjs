@@ -1,11 +1,25 @@
-export default function SocialMediaPage({ type = 'video' }) {
+"use client";
+
+import { useState } from "react";
+
+export default function SocialMediaPage({ type = "video" }) {
   const [socialMediaPosts, setSocialMediaPosts] = useState([
-    { PostID: 1, Title: 'Post 1', Thumbnail: 'https://via.placeholder.com/360', Description: 'Description for Video 1' },
-    { PostID: 2, Title: 'Post 2', Thumbnail: 'https://via.placeholder.com/360', Description: 'Description for Video 2' },
+    {
+      PostID: 1,
+      Title: "Post 1",
+      Thumbnail: "https://via.placeholder.com/360",
+      Description: "Description for Video 1",
+    },
+    {
+      PostID: 2,
+      Title: "Post 2",
+      Thumbnail: "https://via.placeholder.com/360",
+      Description: "Description for Video 2",
+    },
     // Add more dummy social media post data as needed
   ]);
 
-  const headerTitle = type === 'social' ? 'Social Media' : 'Videos';
+  const headerTitle = type === "social" ? "Social Media" : "Videos";
 
   return (
     <section className="flat-spacing-1 pt_0">
@@ -18,4 +32,4 @@ export default function SocialMediaPage({ type = 'video' }) {
       </div>
     </section>
   );
-} 
+}

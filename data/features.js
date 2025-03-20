@@ -21,7 +21,7 @@ export const iconBoxData = [
   {
     iconClass: "icon-shipping",
     title: "Free Shipping",
-    description: "Free shipping over order $120",
+    description: "Free shipping on all BMR Products",
   },
   {
     iconClass: "icon-payment fs-22",

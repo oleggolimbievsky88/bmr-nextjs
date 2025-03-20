@@ -40,7 +40,7 @@ export default function Header18({ initialMenuData }) {
     }
   }, [initialMenuData, isDataFetched]);
   return (
-    <header>
+    <header id="header" className="header-default header-style-2">
       <div className="main-header">
         <div className="container">
           <div className="row wrapper-header align-items-center">
@@ -76,10 +76,7 @@ export default function Header18({ initialMenuData }) {
                 />{" "}
               </Link>
             </div>
-            <div
-              className="col-xl-10 col-md-8 col-12 my-10 py-0"
-              style={{ height: "30px" }}
-            >
+            <div className="col-xl-10 col-md-8 col-12 my-10 py-0">
               <div className="tf-form-search">
                 <form
                   onSubmit={(e) => e.preventDefault()}

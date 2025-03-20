@@ -701,6 +701,7 @@
   margin-bottom: 0px;
   position: relative;
   padding: 0 15px;
+  margin-top: 50px;
 
   &::before,
   &::after {
@@ -720,10 +721,14 @@
   &::after {
     right: -50px;
   }
+
+  &.preserve-case {
+    text-transform: none;
+  }
 }
 
 .home-title-description {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 300;
   color: #666;
   margin: 0px;

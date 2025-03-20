@@ -166,7 +166,7 @@ export default function Products2() {
           </div>
           <div className="wow fadeInUp text-center lg-mt-50 mt_37">
             <Link
-              href={`/shop-collection-sub`}
+              href={`/products/new`}
               className="tf-btn btn-md btn-light-icon btn-icon radius-3 animate-hover-btn"
             >
               <span>Get Featured</span>

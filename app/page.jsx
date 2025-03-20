@@ -20,6 +20,7 @@ import NewProductsPage from "./products/new/page";
 import Topbar4 from "@/components/header/Topbar4";
 import Header18 from "@/components/header/Header18";
 import VideoPage from "@/components/common/Videos";
+import Blogs from "@/components/homes/home/SocialMedia";
 export const metadata = {
   title: "BMR Suspension | Performance Suspension & Chassis Parts",
   description:
@@ -50,12 +51,12 @@ export default function page() {
       <Collections2 />
       <div className="mt-5"></div>
       <VideoPage />
-      <Products2 />
+      <Blogs />
       {/* <Marquee /> */}
       {/* <Testimonials /> */}
       {/* <Brands /> */} <br />
       <br />
-      {/* <Features /> */}
+      <Features />
       <Footer />
     </>
   );
