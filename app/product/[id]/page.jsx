@@ -10,7 +10,8 @@ import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
 export const metadata = {
-  title: "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
@@ -51,7 +52,7 @@ export default async function ProductPage({ params }) {
                 {product.ProductName ? product.ProductName : "Product Title"}
               </span>
             </div>
-            <div className="tf-breadcrumb-prev-next">
+            {/* <div className="tf-breadcrumb-prev-next">
               <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
                 <i className="icon icon-arrow-left" />
               </a>
@@ -61,7 +62,7 @@ export default async function ProductPage({ params }) {
               <a href="#" className="tf-breadcrumb-next hover-tooltip center">
                 <i className="icon icon-arrow-right" />
               </a>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

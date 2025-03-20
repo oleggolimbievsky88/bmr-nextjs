@@ -13,7 +13,7 @@ import {
 } from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
-export default function Details6({product}) {
+export default function Details6({ product }) {
   const [currentColor, setCurrentColor] = useState(colors[0]);
   const [currentGrease, setCurrentGrease] = useState(greaseOptions[0]);
   return (
@@ -38,7 +38,7 @@ export default function Details6({product}) {
                   <div className="tf-product-info-title">
                     <h5>{product?.ProductName}</h5>
                   </div>
-                  
+
                   <div className="tf-product-info-price">
                     <div className="price-on-sale">$8.00</div>
                     {/* <div className="compare-at-price">$10.00</div>
@@ -78,7 +78,6 @@ export default function Details6({product}) {
                         {colors.map((color) => (
                           <React.Fragment key={color.id}>
                             <input
-                              
                               type="radio"
                               name={color.id}
                               readOnly
@@ -177,7 +176,7 @@ export default function Details6({product}) {
                             src="/images/payments/paypal.png"
                             width={64}
                             height={18}
-                            style="{{width: '64px', height: 'auto'}}"
+                            style={{ width: "64px", height: "auto" }}
                           />
                         </a>
                         <a href="#" className="payment-more-option">
@@ -292,7 +291,7 @@ export default function Details6({product}) {
                   </div>
                   <div className="tf-product-bundle-wrap">
                     <div className="title">Frequently Bought Together</div>
-                    <BoughtTogether product={product}/>
+                    <BoughtTogether product={product} />
                   </div>
                 </div>
               </div>
@@ -300,7 +299,7 @@ export default function Details6({product}) {
           </div>
         </div>
       </div>
-      <StickyItem  product={product}/>
+      <StickyItem product={product} />
     </section>
   );
 }

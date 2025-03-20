@@ -19,7 +19,7 @@ export default function Products2() {
   return (
     <section
       className="flat-spacing-21 flat-testimonial-bg"
-      style={{ backgroundImage: "url(images/slider/pod-store-bg.jpg)" }}
+      style={{ backgroundImage: "url(images/slider/slide-hp-3.jpg)" }}
     >
       <div className="container-full">
         <div className="flat-title">
@@ -169,7 +169,7 @@ export default function Products2() {
               href={`/shop-collection-sub`}
               className="tf-btn btn-md btn-light-icon btn-icon radius-3 animate-hover-btn"
             >
-              <span>Shop collection</span>
+              <span>Get Featured</span>
             </Link>
           </div>
         </div>

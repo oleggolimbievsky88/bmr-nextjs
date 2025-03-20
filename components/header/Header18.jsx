@@ -40,10 +40,7 @@ export default function Header18({ initialMenuData }) {
     }
   }, [initialMenuData, isDataFetched]);
   return (
-    <header
-      id="header"
-      className="header-default header-style-2"
-    >
+    <header>
       <div className="main-header">
         <div className="container">
           <div className="row wrapper-header align-items-center">
@@ -68,24 +65,31 @@ export default function Header18({ initialMenuData }) {
               </a>
             </div>
             <div className="col-xl-2 col-md-4 col-12">
-                <Link href={`/`} className="logo-header">
+              <Link href={`/`} className="logo-header">
                 <Image
-                    alt="logo"
-                    className="logo"
-                    src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
-                    width={230}
-                    height={50}
-                    style={{width: "100%", height: "auto"}}
-                />
-                </Link>
+                  alt="logo"
+                  className="logo"
+                  src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
+                  width={230}
+                  height={50}
+                  style={{ width: "100%", height: "auto" }}
+                />{" "}
+              </Link>
             </div>
-            <div className="col-xl-10 col-md-8 col-12 my-10">
+            <div
+              className="col-xl-10 col-md-8 col-12 my-10 py-0"
+              style={{ height: "30px" }}
+            >
               <div className="tf-form-search">
                 <form
                   onSubmit={(e) => e.preventDefault()}
                   className="search-box"
                 >
-                  <input type="text" required placeholder="Search by part # or keyword" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Search by part # or keyword"
+                  />
                   <button className="tf-btn">
                     <i className="icon icon-search" />
                   </button>
@@ -191,7 +195,10 @@ export default function Header18({ initialMenuData }) {
       </div>
       <div className="header-bottom line tf-md-hidden">
         <div className="container">
-          <div className="justify-content-between align-items-center" style={{marginTop: "0px", paddingTop: "0px"}}>
+          <div
+            className="justify-content-between align-items-center"
+            style={{ marginTop: "0px", paddingTop: "0px" }}
+          >
             <div>
               <div className="tf-list-categories">
                 {/* <a href="#" className="categories-title">
@@ -570,7 +577,6 @@ export default function Header18({ initialMenuData }) {
               <nav className="box-navigation text-center">
                 <div className=" align-items-center justify-content-center ">
                   <MainMenu />
-                  
                 </div>
               </nav>
             </div>
@@ -611,11 +617,10 @@ export default function Header18({ initialMenuData }) {
               </div>
             </div> */}
           </div>
-          
         </div>
         <div>
-            <VehicleSearch />
-          </div>
+          <VehicleSearch />
+        </div>
       </div>
     </header>
   );

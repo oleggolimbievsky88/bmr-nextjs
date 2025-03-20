@@ -393,41 +393,41 @@ export const swiperSlides = [
   {
     iconClass: "icon-card",
     title: "Physical or digital card?",
-    description: `Prefer a plastic card delivered by post? 
-      Or a digital one sent by email? Most of our gift cards 
+    description: `Prefer a plastic card delivered by post?
+      Or a digital one sent by email? Most of our gift cards
       offer both options.`,
   },
   {
     iconClass: "icon-shopping",
     title: "Last minute shopping?",
-    description: `Most of our digital gift cards are delivered 
-      within 4 hours or can be scheduled to arrive on the 
+    description: `Most of our digital gift cards are delivered
+      within 4 hours or can be scheduled to arrive on the
       day of your choice.`,
   },
   {
     iconClass: "icon-person",
     title: "A large crowd to please?",
-    description: `For your convenience, you can send up to 
+    description: `For your convenience, you can send up to
       10 addresses in a single order.`,
   },
   {
     iconClass: "icon-card",
     title: "Physical or digital card?",
-    description: `Prefer a plastic card delivered by post? 
-      Or a digital one sent by email? Most of our gift cards 
+    description: `Prefer a plastic card delivered by post?
+      Or a digital one sent by email? Most of our gift cards
       offer both options.`,
   },
   {
     iconClass: "icon-shopping",
     title: "Last minute shopping?",
-    description: `Most of our digital gift cards are delivered 
-      within 4 hours or can be scheduled to arrive on the 
+    description: `Most of our digital gift cards are delivered
+      within 4 hours or can be scheduled to arrive on the
       day of your choice.`,
   },
   {
     iconClass: "icon-person",
     title: "A large crowd to please?",
-    description: `For your convenience, you can send up to 
+    description: `For your convenience, you can send up to
       10 addresses in a single order.`,
   },
 ];
@@ -1129,18 +1129,18 @@ export const collectionItems2 = [
 export const recentItems2 = [
   {
     imgSrc: "/images/collections/pod-store-5.jpg",
-    title: "Desert Vibes Tee",
-    price: "Start from $12",
+    title: "New Products",
+    price: "Get the latest products",
   },
   {
     imgSrc: "/images/collections/pod-store-6.jpg",
-    title: "Personalized Gifts",
-    price: "Start from $20",
+    title: "BMR Merch",
+    price: "Get the latest BMR merchandise",
   },
   {
     imgSrc: "/images/collections/pod-store-7.jpg",
-    title: "Custom Pet Portrait",
-    price: "Start from $30",
+    title: "Gift Cards",
+    price: "Get a BMR gift card",
   },
   {
     imgSrc: "/images/collections/pod-store-6.jpg",

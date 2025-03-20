@@ -55,7 +55,7 @@ export default function page() {
       {/* <Testimonials /> */}
       {/* <Brands /> */} <br />
       <br />
-      <Features />
+      {/* <Features /> */}
       <Footer />
     </>
   );

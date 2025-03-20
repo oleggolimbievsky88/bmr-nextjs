@@ -45,7 +45,7 @@ export default function Header({
               <Image
                 alt="logo"
                 className="logo"
-                src="/images/logo/bmr-nav-logo.png"
+                src="/images/logo/bmr-logo-white.webp"
                 width={255}
                 height={45}
               />

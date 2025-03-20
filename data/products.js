@@ -2333,7 +2333,8 @@ export const products20 = [
     id: 135,
     imgSrc: "/images/products/SB763_large.jpg",
     imgHoverSrc: "/images/products/SB763_large.jpg",
-    title: "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
+    title:
+      "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
     price: 299.95,
   },
   {
@@ -2354,7 +2355,8 @@ export const products20 = [
     id: 138,
     imgSrc: "/images/products/SB763_large.jpg",
     imgHoverSrc: "/images/products/SB763_large.jpg",
-    title: "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
+    title:
+      "2024 Mustang - SB763 - Sway Bar Kit With Bushings, Front (SB764) And Rear (SB045)",
     price: 299.95,
   },
   {
@@ -2915,21 +2917,21 @@ export const products26 = [
     id: 168,
     imgSrc: "/images/products/pod-store-16.jpg",
     imgHoverSrc: "/images/products/pod-store-17.png",
-    title: "Slasher T-Shirt",
+    title: "Upper Control Arm",
     price: 30.0,
   },
   {
     id: 169,
     imgSrc: "/images/products/pod-store-18.jpg",
     imgHoverSrc: "/images/products/pod-store-19.jpg",
-    title: "Santa Sleigher T-Shirt",
+    title: "Lower Control Arm",
     price: 30.0,
   },
   {
     id: 170,
     imgSrc: "/images/products/pod-store-20.jpg",
     imgHoverSrc: "/images/products/pod-store-21.jpg",
-    title: "Horror Movies and Chill T-Shirt",
+    title: "Strut Bar",
     price: 30.0,
   },
   {
