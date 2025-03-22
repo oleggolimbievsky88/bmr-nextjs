@@ -6,7 +6,7 @@ export default function GMPage() {
         <div className="col-12">
           <div className="card shadow-sm">
             <div className="card-body text-center p-5">
-              <h2>Explore General Motors Platform Products</h2>
+              <h2>Explore GM Platform Products</h2>
               <p className="lead">
                 Browse our complete catalog of high-quality suspension
                 components for GM vehicles.
