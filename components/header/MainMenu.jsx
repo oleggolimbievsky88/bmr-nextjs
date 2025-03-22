@@ -162,7 +162,11 @@ export default function MainMenu({ initialMenuData }) {
                             <div>
                               <h3 className="main-category-title">
                                 <Link
-                                  href={`/products/${selectedVehicle.slug}/${categoryGroup.mainCategory.name}`}
+                                  href={`/products/${
+                                    selectedVehicle.slug
+                                  }/${encodeURIComponent(
+                                    categoryGroup.mainCategory.name
+                                  )}`}
                                   className="subcategory-link"
                                 >
                                   {categoryGroup.mainCategory.name}
@@ -176,7 +180,11 @@ export default function MainMenu({ initialMenuData }) {
                               (category, idx) => (
                                 <div key={idx} className="subcategory-item">
                                   <Link
-                                    href={`/products/${selectedVehicle.slug}/${category.CatName}`}
+                                    href={`/products/${
+                                      selectedVehicle.slug
+                                    }/${encodeURIComponent(
+                                      categoryGroup.mainCategory.name
+                                    )}/${encodeURIComponent(category.CatName)}`}
                                     className="subcategory-link"
                                   >
                                     {category.CatName}

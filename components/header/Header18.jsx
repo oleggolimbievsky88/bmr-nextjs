@@ -98,7 +98,7 @@ export default function Header18({ initialMenuData }) {
                         <li key={index}>
                           <Link
                             className="search-result-item"
-                            href={`/product-detail/${product.id}`}
+                            href={`/products/${product.partNumber}`}
                           >
                             <div className="img-box">
                               <Image

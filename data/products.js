@@ -4744,7 +4744,7 @@ export const galleryData = [
 
 export const products44 = [
   {
-    id: 306,
+    id: "SB764",
     imgSrc: "https://bmrsuspension.com/siteart/products/SB764_large.jpg",
     imgAlt: "Berry World Blueberries",
     imgWidth: 68,
@@ -4754,7 +4754,7 @@ export const products44 = [
     hasOldPrice: false,
   },
   {
-    id: 307,
+    id: "SB043",
     imgSrc: "https://bmrsuspension.com/siteart/products/SB043_large.jpg",
     imgAlt: "Berry World Strawberries",
     imgWidth: 68,
@@ -4765,7 +4765,7 @@ export const products44 = [
     hasOldPrice: true,
   },
   {
-    id: 308,
+    id: "ELK014",
     imgSrc: "https://bmrsuspension.com/siteart/products/ELK014_large.jpg",
     imgAlt: "Fish Said Fred Sea Bass Fillets",
     imgWidth: 68,
@@ -4775,7 +4775,7 @@ export const products44 = [
     hasOldPrice: false,
   },
   {
-    id: 309,
+    id: "ELK013",
     imgSrc: "https://bmrsuspension.com/siteart/products/ELK013_large.jpg",
     imgAlt: "M&S Full-Bodied Greek Kalamata Olives",
     imgWidth: 68,
@@ -4785,7 +4785,7 @@ export const products44 = [
     hasOldPrice: false,
   },
   {
-    id: 310,
+    id: "ELK012",
     imgSrc: "https://bmrsuspension.com/siteart/products/ELK012_large.jpg",
     imgAlt: "M&S Roast Lamb Dinner",
     imgWidth: 68,
