@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import "../public/scss/main.scss";
 import "photoswipe/dist/photoswipe.css";
 import "rc-slider/assets/index.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import Context from "@/context/Context";
 import QuickView from "@/components/modals/QuickView";
 import ProductSidebar from "@/components/modals/ProductSidebar";
@@ -103,7 +104,8 @@ export default function RootLayout({ children }) {
       // Close any open offcanvas
       const offcanvasElements = document.querySelectorAll(".offcanvas.show");
       offcanvasElements.forEach((offcanvas) => {
-        const offcanvasInstance = window.bootstrap.Offcanvas.getInstance(offcanvas);
+        const offcanvasInstance =
+          window.bootstrap.Offcanvas.getInstance(offcanvas);
         if (offcanvasInstance) {
           offcanvasInstance.hide();
         }

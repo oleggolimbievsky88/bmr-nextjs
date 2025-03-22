@@ -8,7 +8,7 @@ const ProductCategories = () => {
       <div className="row mt-4">
         {/* Card for New Products */}
         <div className="col-md-4 mb-4">
-          <Link href="/new-products" className={styles.cardLink}>
+          <Link href="/products/new" className={styles.cardLink}>
             <div className={`card ${styles.cardHover}`}>
               <div className={styles.overlay}></div>
               <Image

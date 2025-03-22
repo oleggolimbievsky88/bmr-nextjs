@@ -1,32 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config, { isServer }) => {
-    // Add GLB/GLTF loader
-    config.module.rules.push({
-      test: /\.(glb|gltf)$/,
-      use: {
-        loader: "file-loader",
-        options: {
-          publicPath: "/_next/static/",
-          outputPath: "static/",
-        },
-      },
-    });
-
-    return config;
-  },
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "bmrsuspension.com",
+        hostname: "www.bmrsuspension.com",
+        port: "",
+        pathname: "/**",
       },
       {
-        protocol: "http",
-        hostname: "localhost",
+        protocol: "https",
+        hostname: "bmrsuspension.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },
+  output: "standalone",
 };
 
 module.exports = nextConfig;

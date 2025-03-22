@@ -1,6 +1,4 @@
-// /pages/api/categories/route.js
-
-import { getCategoriesByBodyId } from "@/lib/queries";
+import { getBodyDetailsById } from "@/lib/queries";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
@@ -15,17 +13,19 @@ export async function GET(request) {
       );
     }
 
-    const categoriesByMainCat = await getCategoriesByBodyId(bodyId);
-    return NextResponse.json(categoriesByMainCat);
+    const bodyDetails = await getBodyDetailsById(bodyId);
+    return NextResponse.json(bodyDetails);
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching body details:", error);
 
     // Format the error response based on the error type
     if (error.message === "Missing bodyId parameter") {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    } else if (error.message === "Body not found") {
+      return NextResponse.json({ error: error.message }, { status: 404 });
     } else {
       return NextResponse.json(
-        { error: "Failed to fetch categories" },
+        { error: "Failed to fetch body details" },
         { status: 500 }
       );
     }

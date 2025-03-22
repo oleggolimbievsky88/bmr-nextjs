@@ -1,14 +1,14 @@
-import { getMenuStructure } from "@/lib/queries";
+import { getMenuData } from "@/lib/queries";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function GET() {
   try {
-    const menuData = await getMenuStructure();
+    const menuData = await getMenuData();
     return NextResponse.json(menuData);
   } catch (error) {
-    console.error("Menu API error:", error);
+    console.error("Failed to fetch menu data:", error);
     return NextResponse.json(
-      { message: "Error fetching menu data" },
+      { error: "Failed to fetch menu data", details: error.message },
       { status: 500 }
     );
   }

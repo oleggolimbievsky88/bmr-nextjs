@@ -10,6 +10,7 @@ import { Navigation, Grid } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/grid";
 import "swiper/css/navigation";
+import styles from "./NewProducts.module.css";
 
 export default function NewProductsPage({ scrachDent = "0" }) {
   const [newProducts, setNewProducts] = useState([]);
@@ -31,7 +32,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `/api/products/new-products?scrachDent=${scrachDent}`
+          `/api/products/new-products?scrachDent=${scrachDent}&limit=35`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -122,7 +123,9 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                       >
                         <Image
                           className="lazyload img-product mb-2"
-                          src={`https://bmrsuspension.com/siteart/products/${product.ImageLarge}`}
+                          src={`https://bmrsuspension.com/siteart/products/${
+                            product.ImageLarge || product.ImageSmall
+                          }`}
                           alt="image-product"
                           width={1200}
                           height={1200}
