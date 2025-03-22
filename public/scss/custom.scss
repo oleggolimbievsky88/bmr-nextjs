@@ -14,7 +14,7 @@
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  z-index: 1030;
+  z-index: 1020;
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
@@ -1114,4 +1114,15 @@
 .tf-page-title {
   padding: 40px 0;
   position: relative;
+}
+
+/* Search dropdown styling */
+.search-wrapper {
+  position: relative;
+  z-index: 1030; /* Adjusted from 1100 */
+}
+
+.search-wrapper .dropdown-menu,
+.header-search .dropdown-menu {
+  z-index: 1030 !important; /* Adjusted from 1100 */
 }

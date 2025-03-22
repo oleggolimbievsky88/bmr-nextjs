@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -21,6 +21,9 @@ export default function MainMenu({ initialMenuData }) {
   const [bodyDetails, setBodyDetails] = useState(null);
   const [vehicleList, setVehicleList] = useState([]);
   const [error, setError] = useState(null);
+  const [activePlatform, setActivePlatform] = useState(null);
+  const hoverTimeoutRef = useRef(null);
+  const megaMenuContainerRef = useRef(null);
 
   // Fetch data immediately when component mounts
   useEffect(() => {
@@ -45,6 +48,24 @@ export default function MainMenu({ initialMenuData }) {
       fetchMenuData();
     }
   }, [initialMenuData, isDataFetched]);
+
+  // Function to handle platform hover with delay
+  const handlePlatformHover = (platform) => {
+    clearTimeout(hoverTimeoutRef.current);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setActivePlatform(platform);
+      setActiveVehicle(null);
+    }, 200);
+  };
+
+  // Function to handle platform leave
+  const handlePlatformLeave = () => {
+    clearTimeout(hoverTimeoutRef.current);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setActivePlatform(null);
+      setActiveVehicle(null);
+    }, 200);
+  };
 
   // Function to handle vehicle hover and fetch relevant data
   const handleVehicleHover = async (vehicle, bodyId) => {
@@ -101,7 +122,7 @@ export default function MainMenu({ initialMenuData }) {
     );
 
     return (
-      <div className="dropdown-menu mega-menu">
+      <div className="dropdown-menu mega-menu" ref={megaMenuContainerRef}>
         <div className="mega-menu-container">
           {/* Left sidebar - Platforms/Vehicles */}
           <div className="mega-menu-sidebar">
@@ -182,9 +203,7 @@ export default function MainMenu({ initialMenuData }) {
                                   <Link
                                     href={`/products/${
                                       selectedVehicle.slug
-                                    }/${encodeURIComponent(
-                                      categoryGroup.mainCategory.name
-                                    )}/${encodeURIComponent(category.CatName)}`}
+                                    }/${encodeURIComponent(category.CatName)}`}
                                     className="subcategory-link"
                                   >
                                     {category.CatName}
@@ -283,56 +302,66 @@ export default function MainMenu({ initialMenuData }) {
             {/* Ford Dropdown */}
             <li
               className="nav-item dropdown"
-              onMouseEnter={() => setActiveVehicle(null)}
+              onMouseEnter={() => handlePlatformHover("ford")}
+              onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/ford" className="nav-link dropdown-toggle">
                 Ford
               </Link>
-              {renderMegaMenu(menuData.fordLinks, "/products/ford")}
+              {activePlatform === "ford" &&
+                renderMegaMenu(menuData.fordLinks, "/products/ford")}
             </li>
 
             {/* GM Late Model Dropdown */}
             <li
               className="nav-item dropdown"
-              onMouseEnter={() => setActiveVehicle(null)}
+              onMouseEnter={() => handlePlatformHover("gmLateModel")}
+              onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/gm" className="nav-link dropdown-toggle">
                 GM Late Model Cars
               </Link>
-              {renderMegaMenu(menuData.gmLateModelLinks, "/products/gm")}
+              {activePlatform === "gmLateModel" &&
+                renderMegaMenu(menuData.gmLateModelLinks, "/products/gm")}
             </li>
 
             {/* GM Mid Muscle Dropdown */}
             <li
               className="nav-item dropdown"
-              onMouseEnter={() => setActiveVehicle(null)}
+              onMouseEnter={() => handlePlatformHover("gmMidMuscle")}
+              onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/gm" className="nav-link dropdown-toggle">
                 GM Mid Muscle Cars
               </Link>
-              {renderMegaMenu(menuData.gmMidMuscleLinks, "/products/gm")}
+              {activePlatform === "gmMidMuscle" &&
+                renderMegaMenu(menuData.gmMidMuscleLinks, "/products/gm")}
             </li>
 
             {/* GM Classic Muscle Dropdown */}
             <li
               className="nav-item dropdown"
-              onMouseEnter={() => setActiveVehicle(null)}
+              onMouseEnter={() => handlePlatformHover("gmClassicMuscle")}
+              onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/gm" className="nav-link dropdown-toggle">
                 GM Classic Muscle Cars
               </Link>
-              {renderMegaMenu(menuData.gmClassicMuscleLinks, "/products/gm")}
+              {activePlatform === "gmClassicMuscle" &&
+                renderMegaMenu(menuData.gmClassicMuscleLinks, "/products/gm")}
             </li>
 
             {/* Mopar Dropdown */}
             <li
               className="nav-item dropdown"
-              onMouseEnter={() => setActiveVehicle(null)}
+              onMouseEnter={() => handlePlatformHover("mopar")}
+              onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/mopar" className="nav-link dropdown-toggle">
                 Mopar
               </Link>
-              {renderMegaMenu(menuData.moparLinks, "/products/mopar")}
+              {activePlatform === "mopar" &&
+                renderMegaMenu(menuData.moparLinks, "/products/mopar")}
             </li>
 
             {/* Static Links */}
