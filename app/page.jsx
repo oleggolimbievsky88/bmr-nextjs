@@ -12,7 +12,6 @@ import React from "react";
 import Footer from "@/components/footer/Footer";
 import Topbar1 from "@/components/header/Topbar1";
 import Header from "@/components/header/Header";
-import ShopCategories from "@/components/homes/home/ShopCategories";
 import CollectionBanner from "@/components/homes/home/CollectionBanner";
 import ThreeColumnLayout from "@/components/homes/home/ThreeColumnLayout";
 import ProductsPage from "./products/page";
@@ -21,6 +20,7 @@ import Topbar4 from "@/components/header/Topbar4";
 import Header18 from "@/components/header/Header18";
 import VideoPage from "@/components/common/Videos";
 import Blogs from "@/components/homes/home/SocialMedia";
+import ShopCategories from "@/components/homes/home/ShopCategories";
 export const metadata = {
   title: "BMR Suspension | Performance Suspension & Chassis Parts",
   description:
@@ -41,7 +41,7 @@ export default function page() {
       <br />
       <NewProductsPage scrachDent="0" />
       <br />
-      <Collections2 />
+      <ShopCategories />
       <br />
       <NewProductsPage scrachDent="1" />
       <br />
