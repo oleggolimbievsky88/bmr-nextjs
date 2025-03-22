@@ -41,6 +41,7 @@ export default function page() {
       <br />
       <NewProductsPage scrachDent="0" />
       <br />
+      <Collections2 />
       <br />
       <NewProductsPage scrachDent="1" />
       <br />
@@ -48,7 +49,6 @@ export default function page() {
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
       {/* <Collections /> */}
-      <Collections2 />
       <div className="mt-5"></div>
       <VideoPage />
       <Blogs />

@@ -2,7 +2,7 @@ async function getProducts(scratchDent = "0") {
   try {
     // Use relative URL to work in both development and production
     const res = await fetch(
-      `/api/products?scratchDent=${scratchDent}&limit=8`,
+      `/api/products/new-products?scrachDent=${scratchDent}`,
       {
         cache: "no-store",
       }
