@@ -28,7 +28,7 @@ export async function GET(request) {
     if (mainCategoryId && subCategoryId) {
       // Specific query for main and sub category
       // TODO: Add limit to this query
-      
+
       const [rows] = await pool.query(
         `
         SELECT
@@ -46,7 +46,7 @@ export async function GET(request) {
         LEFT JOIN mans m ON p.ManID = m.ManID
         LEFT JOIN categories c ON p.CatID = c.CatID
         LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
-        WHERE mc.MainCatID = ? AND c.CatID = ?
+        WHERE p.Display = 1 AND mc.MainCatID = ? AND c.CatID = ?
       `,
         [mainCategoryId, subCategoryId]
       );
@@ -70,7 +70,7 @@ export async function GET(request) {
         LEFT JOIN mans m ON p.ManID = m.ManID
         LEFT JOIN categories c ON p.CatID = c.CatID
         LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
-        WHERE mc.MainCatID = ?
+        WHERE p.Display = 1 AND mc.MainCatID = ?
       `,
         [mainCategoryId]
       );

@@ -102,7 +102,7 @@ export default function NewsletterModal() {
                   type="email"
                   name="email-form"
                   placeholder="Email *"
-                  autoComplete="abc@xyz.com"
+                  autoComplete="email"
                 />
                 <button
                   type="submit"

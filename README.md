@@ -1,26 +1,61 @@
-# BMR Suspension Next.js Website
+# BMR Suspension E-commerce Site
 
-## Deployment Instructions
+This is a Next.js application built with the App Router for BMR Suspension.
 
-### Vercel Deployment
+## Development
 
-1. Push your code to GitHub
-2. Connect your GitHub repository to Vercel
-3. Set up the following environment variables in Vercel:
-   - `MYSQL_HOST`: Your production database host
-   - `MYSQL_USER`: Your production database username
-   - `MYSQL_PASSWORD`: Your production database password
-   - `MYSQL_DATABASE`: Your production database name
-   - `NEXT_PUBLIC_API_URL`: The base URL for your API (e.g., https://your-domain.com/api)
+1. Clone this repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Copy `.env.example` to `.env.local` and fill in your database credentials:
+   ```
+   cp .env.example .env.local
+   ```
+4. Start the development server:
+   ```
+   npm run dev
+   ```
 
-### Local Development
+## Deployment to Vercel
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Create a `.env.local` file with your database credentials
-4. Run the development server: `npm run dev`
+When deploying to Vercel, make sure to configure the following environment variables in your Vercel project settings:
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+- `MYSQL_HOST` - Your MySQL database host
+- `MYSQL_USER` - Your MySQL database user
+- `MYSQL_PASSWORD` - Your MySQL database password
+- `MYSQL_DATABASE` - Your MySQL database name (usually "bmrsuspension")
+
+## Troubleshooting
+
+### API Route Errors (404/500)
+
+If you encounter 404 errors for routes like `/fitment/[id]` or `/video/[id]`, make sure:
+
+1. The directory structure in the `app` folder is correctly set up
+2. The appropriate API routes exist in the `app/api` directory
+3. The database connection environment variables are correctly set in Vercel
+
+### Database Connection Errors (500)
+
+If your API routes return 500 errors:
+
+1. Check the Vercel logs for specific error messages
+2. Verify your environment variables in Vercel project settings
+3. Ensure your MySQL database is accessible from Vercel's deployment servers
+
+## Required Routes
+
+This application requires the following routes to function correctly:
+
+- `/api/menu`
+- `/api/products/new-products`
+- `/api/platforms/[platform]`
+- `/fitment/[id]`
+- `/video/[id]`
+- `/bmr-merchandise`
+- `/gift-cards`
 
 ## Getting Started
 

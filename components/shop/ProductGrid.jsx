@@ -1,9 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from 'next/image';
+import Image from "next/image";
 
-export default function ProductGrid({ platformName, products, showCategories = true }) {
+export default function ProductGrid({
+  platformName,
+  products,
+  showCategories = true,
+}) {
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
@@ -46,8 +50,10 @@ export default function ProductGrid({ platformName, products, showCategories = t
   }, [platformName, showCategories]);
 
   // Show loading state only when fetching categories
-  if (loading && showCategories) return <div className="text-center p-4">Loading...</div>;
-  if (error) return <div className="text-center text-danger p-4">Error: {error}</div>;
+  if (loading && showCategories)
+    return <div className="text-center p-4">Loading...</div>;
+  if (error)
+    return <div className="text-center text-danger p-4">Error: {error}</div>;
 
   return (
     <div className="container-fluid">
@@ -115,19 +121,38 @@ export default function ProductGrid({ platformName, products, showCategories = t
           {products.map((product) => (
             <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
               <div className="card h-100 product-card">
-                <Link href={`/product/${product.ProductID}`} className="text-decoration-none">
-                  <div className="position-relative" style={{ height: '200px' }}>
+                <Link
+                  href={`/product/${product.ProductID}`}
+                  className="text-decoration-none"
+                >
+                  <div
+                    className="position-relative"
+                    style={{ height: "200px" }}
+                  >
                     <Image
-                      src={product.ImageSmall ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}` : 'https://bmrsuspension.com/siteart/products/noimage.jpg'}
+                      src={
+                        product.ImageSmall
+                          ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}`
+                          : "https://bmrsuspension.com/siteart/products/noimage.jpg"
+                      }
                       alt={product.ProductName}
                       fill
                       className="card-img-top p-2"
-                      style={{ objectFit: 'contain' }}
+                      style={{ objectFit: "contain" }}
                       sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                      unoptimized={true}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          "https://bmrsuspension.com/siteart/products/noimage.jpg";
+                      }}
                     />
                   </div>
                   <div className="card-body">
-                    <h3 className="h6 mb-2 product-title" style={{ minHeight: '2.5rem' }}>
+                    <h3
+                      className="h6 mb-2 product-title"
+                      style={{ minHeight: "2.5rem" }}
+                    >
                       {product.ProductName}
                     </h3>
                     <div className="d-flex justify-content-between align-items-center">
@@ -149,7 +174,7 @@ export default function ProductGrid({ platformName, products, showCategories = t
       {/* No Results Message */}
       {!loading && !error && !categories.length && !products?.length && (
         <div className="text-center p-4">
-          No items found {platformName ? `for ${platformName}` : ''}
+          No items found {platformName ? `for ${platformName}` : ""}
         </div>
       )}
     </div>

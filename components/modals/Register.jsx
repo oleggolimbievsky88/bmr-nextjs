@@ -24,9 +24,11 @@ export default function Register() {
                   placeholder=" "
                   type="text"
                   required
-                  name=""
+                  name="firstName"
+                  id="register-firstName"
+                  autoComplete="given-name"
                 />
-                <label className="tf-field-label" htmlFor="">
+                <label className="tf-field-label" htmlFor="register-firstName">
                   First name
                 </label>
               </div>
@@ -36,9 +38,11 @@ export default function Register() {
                   placeholder=" "
                   type="text"
                   required
-                  name=""
+                  name="lastName"
+                  id="register-lastName"
+                  autoComplete="family-name"
                 />
-                <label className="tf-field-label" htmlFor="">
+                <label className="tf-field-label" htmlFor="register-lastName">
                   Last name
                 </label>
               </div>
@@ -47,11 +51,12 @@ export default function Register() {
                   className="tf-field-input tf-input"
                   placeholder=" "
                   type="email"
-                  autoComplete="abc@xyz.com"
+                  autoComplete="email"
                   required
-                  name=""
+                  name="email"
+                  id="register-email"
                 />
-                <label className="tf-field-label" htmlFor="">
+                <label className="tf-field-label" htmlFor="register-email">
                   Email *
                 </label>
               </div>
@@ -61,10 +66,11 @@ export default function Register() {
                   placeholder=" "
                   type="password"
                   required
-                  name=""
-                  autoComplete="current-password"
+                  name="password"
+                  id="register-password"
+                  autoComplete="new-password"
                 />
-                <label className="tf-field-label" htmlFor="">
+                <label className="tf-field-label" htmlFor="register-password">
                   Password *
                 </label>
               </div>

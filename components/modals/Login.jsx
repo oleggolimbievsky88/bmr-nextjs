@@ -27,11 +27,12 @@ export default function Login() {
                   className="tf-field-input tf-input"
                   placeholder=" "
                   type="email"
-                  name=""
+                  name="email"
+                  id="login-email"
                   required
-                  autoComplete="abc@xyz.com"
+                  autoComplete="email"
                 />
-                <label className="tf-field-label" htmlFor="">
+                <label className="tf-field-label" htmlFor="login-email">
                   Email *
                 </label>
               </div>
@@ -40,11 +41,12 @@ export default function Login() {
                   className="tf-field-input tf-input"
                   placeholder=" "
                   type="password"
-                  name=""
+                  name="password"
+                  id="login-password"
                   required
                   autoComplete="current-password"
                 />
-                <label className="tf-field-label" htmlFor="">
+                <label className="tf-field-label" htmlFor="login-password">
                   Password *
                 </label>
               </div>

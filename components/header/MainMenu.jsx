@@ -266,10 +266,8 @@ export default function MainMenu({ initialMenuData }) {
                   ) : vehicleList.length > 0 ? (
                     vehicleList.map((vehicle, idx) => (
                       <li key={idx}>
-                        <Link href={`/fitment/${vehicle.VehicleID}`}>
-                          {vehicle.StartYear}-{vehicle.EndYear} {vehicle.Make}{" "}
-                          {vehicle.Model}
-                        </Link>
+                        {vehicle.StartYear}-{vehicle.EndYear} {vehicle.Make}{" "}
+                        {vehicle.Model}
                       </li>
                     ))
                   ) : (

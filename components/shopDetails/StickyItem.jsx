@@ -8,8 +8,8 @@ import { useContextElement } from "@/context/Context";
 export default function StickyItem({ soldOut = false, product }) {
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
 
-  if (!product) return null; 
-  
+  if (!product) return null;
+
   return (
     <div className="tf-sticky-btn-atc">
       <div className="container">
@@ -19,10 +19,16 @@ export default function StickyItem({ soldOut = false, product }) {
               <Image
                 className="lazyloaded"
                 data-src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
-                alt=""
+                alt={product?.ProductName || "Product image"}
                 src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
                 width={770}
                 height={1075}
+                unoptimized={true}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://bmrsuspension.com/siteart/products/noimage.jpg";
+                }}
               />
             </div>
             <div className="tf-sticky-atc-title fw-5 d-xl-block d-none">
@@ -54,7 +60,7 @@ export default function StickyItem({ soldOut = false, product }) {
                     className="tf-btn btn-fill radius-3 justify-content-center fw-6 fs-14 flex-grow-1 animate-hover-btn"
                   >
                     <span>
-                        {isAddedToCartProducts(product.ProductID)
+                      {isAddedToCartProducts(product.ProductID)
                         ? "Already Added"
                         : "Add to cart"}
                     </span>

@@ -1,68 +1,69 @@
-'use client'
-import { useState } from 'react'
+"use client";
+import { useState } from "react";
 
 export default function ImportPage() {
-  const [status, setStatus] = useState('')
-  const [debug, setDebug] = useState(null)
+  const [status, setStatus] = useState("");
+  const [debug, setDebug] = useState(null);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setStatus('Uploading...')
-    setDebug(null)
-    
-    const formData = new FormData()
-    const fileInput = e.target.querySelector('input[type="file"]')
-    formData.append('file', fileInput.files[0])
+    e.preventDefault();
+    setStatus("Uploading...");
+    setDebug(null);
+
+    const formData = new FormData();
+    const fileInput = e.target.querySelector('input[type="file"]');
+    formData.append("file", fileInput.files[0]);
 
     try {
-      console.log('Sending request to /api/admin/import')
-      const response = await fetch('/api/admin/import', {
-        method: 'POST',
+      console.log("Sending request to /api/admin/import");
+      const response = await fetch("/api/admin/import", {
+        method: "POST",
         body: formData,
-      })
-      
-      const data = await response.json()
-      console.log('Response data:', data)
-      
+      });
+
+      const data = await response.json();
+      console.log("Response data:", data);
+
       if (data.success) {
-        setStatus(`Success: ${data.message}`)
+        setStatus(`Success: ${data.message}`);
       } else {
-        setStatus(`Error: ${data.error}`)
+        setStatus(`Error: ${data.error}`);
       }
-      
+
       if (data.debug) {
-        setDebug(data.debug)
+        setDebug(data.debug);
       }
     } catch (error) {
-      console.error('Import failed:', error)
-      setStatus('Import failed: ' + error.message)
+      console.error("Import failed:", error);
+      setStatus("Import failed: " + error.message);
     }
-  }
+  };
 
   return (
     <div className="p-4">
       <h1 className="text-2xl mb-4">Import PIES Data</h1>
       <form onSubmit={handleSubmit}>
-        <input 
-          type="file" 
-          accept=".xml" 
-          required 
+        <label htmlFor="pies-file" className="block mb-2">
+          PIES XML File:
+        </label>
+        <input
+          type="file"
+          accept=".xml"
+          required
           className="mb-4 block"
+          name="file"
+          id="pies-file"
         />
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Import
         </button>
       </form>
-      
-      {status && (
-        <div className="mt-4 p-2 border rounded">
-          {status}
-        </div>
-      )}
-      
+
+      {status && <div className="mt-4 p-2 border rounded">{status}</div>}
+
       {debug && (
         <div className="mt-4 p-2 bg-gray-100 rounded">
           <h2 className="font-bold">Debug Info:</h2>
@@ -71,7 +72,8 @@ export default function ImportPage() {
             {debug.xmlVersion && <li>PIES Version: {debug.xmlVersion}</li>}
             {debug.sampleItem && (
               <li>
-                Sample Item: {debug.sampleItem.partNumber} ({debug.sampleItem.brand})
+                Sample Item: {debug.sampleItem.partNumber} (
+                {debug.sampleItem.brand})
               </li>
             )}
           </ul>
@@ -99,5 +101,5 @@ export default function ImportPage() {
         </div>
       )}
     </div>
-  )
-} 
+  );
+}
