@@ -53,7 +53,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
   }, [scrachDent]);
 
   return (
-    <section className="flat-spacing-1 pt_0">
+    <section className="flat-spacing-1">
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">

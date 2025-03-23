@@ -34,28 +34,19 @@ export default function page() {
       <Hero /> <br />
       {/* <ShopCategories /> <br /> <br /> */}
       <ThreeColumnLayout />
-      <br />
       {/* <Categories /> */}
       {/* <Products /> */}
-      <br />
-      <br />
       <NewProductsPage scrachDent="0" />
-      <br />
       <ShopCategories />
-      <br />
       <NewProductsPage scrachDent="1" />
-      <br />
-      <br />
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
       {/* <Collections /> */}
-      <div className="mt-5"></div>
       <VideoPage />
       <Blogs />
       {/* <Marquee /> */}
       {/* <Testimonials /> */}
-      {/* <Brands /> */} <br />
-      <br />
+      {/* <Brands /> */}
       <Features />
       <Footer />
     </>

@@ -44,7 +44,7 @@ export default function VideoPage() {
   } = useContextElement();
 
   return (
-    <section className="flat-spacing-1 pt_0">
+    <section className=" pt_0">
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">

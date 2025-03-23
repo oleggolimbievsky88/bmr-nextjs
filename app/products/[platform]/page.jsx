@@ -44,7 +44,7 @@ export default function PlatformPage({ params }) {
 
     return (
         <div className="p-0 m-0">
-            <PlatformHeader 
+            <PlatformHeader
                 platformData={{
                     HeaderImage: platformInfo?.headerImage,
                     Name: platformInfo?.name,
@@ -55,7 +55,7 @@ export default function PlatformPage({ params }) {
             />
 
             <div className="container">
-                <Breadcrumbs 
+                <Breadcrumbs
                     items={[
                         { label: 'Home', href: '/' },
                         { label: 'Products', href: '/products' },
@@ -65,7 +65,7 @@ export default function PlatformPage({ params }) {
 
                 {/* Main Categories Section */}
                 <section className="mb-5">
-                    
+
                     <CategoryGrid categories={mainCategories} platform={platform} />
                 </section>
 

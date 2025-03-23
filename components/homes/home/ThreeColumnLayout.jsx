@@ -5,7 +5,7 @@ import Link from "next/link";
 // components/ThreeColumnLayout.js
 export default function ThreeColumnLayout() {
   return (
-    <div className="container mt-5">
+    <div className="container three-column-layout">
       <div className="row">
         {[
           {
@@ -24,7 +24,7 @@ export default function ThreeColumnLayout() {
             link: "products/mopar",
           },
         ].map((item, index) => (
-          <div key={index} className="col-lg-4 col-md-6 col-sm-12 mb-5 pb-5">
+          <div key={index} className="col-lg-4 col-md-6 col-sm-12">
             <Link key={index} href={`/${item.link}`}>
               <div className="card text-white border-0 custom-card">
                 <img

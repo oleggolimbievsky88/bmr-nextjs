@@ -1083,7 +1083,7 @@
     position: absolute;
     top: 50%;
     width: 40px;
-    height: 3px;
+    height: 5px;
     background-color: var(--primary);
     transform: translateY(-50%);
   }
@@ -1126,3 +1126,8 @@
 .header-search .dropdown-menu {
   z-index: 1030 !important; /* Adjusted from 1100 */
 }
+
+.three-column-layout {
+  margin-top: 50px !important;
+}
+
