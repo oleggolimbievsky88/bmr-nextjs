@@ -41,14 +41,14 @@ export default async function CategoryPage({ params }) {
     <>
       <Topbar1 />
       <Header2 />
-      <PlatformHeader 
+      <PlatformHeader
         platformData={{
           name: platformName,
           headerImage: platformInfo?.headerImage ? `/images/headers/${platformInfo.headerImage}` : null
         }}
         title={`${platformName} ${formattedCategoryName} Parts`}
       />
-      
+
       <div className="tf-page-title">
         <div className="container-full">
           <div className="heading text-center">{formattedVehicleName} - {mainCategory}</div>

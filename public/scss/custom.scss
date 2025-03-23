@@ -233,6 +233,18 @@
   color: #dc3545;
 }
 
+.category-title{
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000;
+  text-transform: uppercase;
+  font-family: 'Impact', sans-serif;
+  letter-spacing: 1.3px;
+  transition: color 0.3s ease;
+}
+.category-title:hover{
+  color: var(--primary);
+}
 /* Fitment section styling */
 .fitment-column {
   width: 250px;

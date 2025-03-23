@@ -82,7 +82,16 @@ export default function PlatformCategoryPage({ params }) {
 
         {/* Featured Products Section */}
         {products && products.length > 0 && (
-          <section className="mb-5">
+          <section
+            className="mb-5"
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "20px",
+              borderRadius: "10px",
+              border: "1px solid #ddd",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+            }}
+          >
             <div className="text-center mb-4">
               <h2 className="display-6 fw-bold position-relative d-inline-block">
                 Featured Products
