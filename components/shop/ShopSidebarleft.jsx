@@ -1,15 +1,51 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { layouts, sortingOptions } from "@/data/shop";
 import ProductGrid from "./ProductGrid";
 import Pagination from "../common/Pagination";
 import Sorting from "./Sorting";
-import { products1 } from "@/data/products";
 
-export default function ShopSidebarleft() {
+export default function ShopSidebarleft({
+  initialProducts,
+  categories,
+  brands,
+  platforms,
+}) {
   const [gridItems, setGridItems] = useState(3);
-  const [finalSorted, setFinalSorted] = useState([]);
+  const [products, setProducts] = useState(initialProducts);
+  const [finalSorted, setFinalSorted] = useState(initialProducts);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
+
+  // Calculate pagination
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = finalSorted.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+  const totalPages = Math.ceil(finalSorted.length / productsPerPage);
+
+  // Handle filter updates from sidebar
+  const handleFilterUpdate = async (filters) => {
+    try {
+      const response = await fetch("/api/products/filter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filters),
+      });
+      const data = await response.json();
+      setProducts(data);
+      setFinalSorted(data);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Error filtering products:", error);
+    }
+  };
+
   return (
     <>
       <section className="flat-spacing-1">
@@ -33,21 +69,30 @@ export default function ShopSidebarleft() {
             </ul>
             <div className="tf-control-sorting d-flex justify-content-end">
               <div className="tf-dropdown-sort" data-bs-toggle="dropdown">
-                <Sorting setFinalSorted={setFinalSorted} products={products1} />
+                <Sorting setFinalSorted={setFinalSorted} products={products} />
               </div>
             </div>
           </div>
           <div className="tf-row-flex">
-            <Sidebar />
+            <Sidebar
+              categories={categories}
+              brands={brands}
+              platforms={platforms}
+              onFilterUpdate={handleFilterUpdate}
+            />
             <div className="tf-shop-content">
-              <ProductGrid allproducts={finalSorted} gridItems={gridItems} />
-              {/* pagination */}{" "}
-              {finalSorted.length ? (
+              <ProductGrid
+                allproducts={currentProducts}
+                gridItems={gridItems}
+              />
+              {finalSorted.length > productsPerPage && (
                 <ul className="tf-pagination-wrap tf-pagination-list">
-                  <Pagination />
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
                 </ul>
-              ) : (
-                ""
               )}
             </div>
           </div>

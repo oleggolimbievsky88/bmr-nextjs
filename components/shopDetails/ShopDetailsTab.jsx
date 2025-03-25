@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 
 const tabs = [
   { title: "Description", active: true },
-  { title: "Review", active: false },
-  { title: "Shiping", active: false },
-  { title: "Return Polocies", active: false },
+  { title: "Features", active: false },
+  { title: "Installation", active: false },
+  { title: "Fitment", active: false },
 ];
 
-export default function ShopDetailsTab({product}) {
+export default function ShopDetailsTab({ product }) {
   const [currentTab, setCurrentTab] = useState(1);
-  const description = typeof product?.Description === 'string' ? product.Description : "No description available";
+  console.log("product", product);
+  const description =
+    typeof product?.Description === "string"
+      ? product.Description
+      : "No description available";
   return (
     <section
       className="flat-spacing-17 pt_0"
@@ -41,9 +45,7 @@ export default function ShopDetailsTab({product}) {
                   } `}
                 >
                   <div className="">
-                    <p className="mb_30">
-                      {description}
-                    </p>
+                    <p className="mb_30">{description}</p>
                     <div className="tf-product-des-demo">
                       <div className="right">
                         <h3 className="fs-16 fw-5">Features</h3>

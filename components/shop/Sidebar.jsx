@@ -1,11 +1,32 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { featuredProducts } from "@/data/products";
 import { galleryItems } from "@/data/gallery";
 import { categories } from "@/data/categories";
 import { socialLinks } from "@/data/socials";
-export default function Sidebar() {
+
+export default function Sidebar({
+  categories,
+  brands,
+  platforms,
+  onFilterUpdate,
+}) {
+  const [filters, setFilters] = useState({
+    categoryId: null,
+    brandId: null,
+    platformId: null,
+    minPrice: "",
+    maxPrice: "",
+  });
+
+  const handleFilterChange = (type, value) => {
+    const newFilters = { ...filters, [type]: value };
+    setFilters(newFilters);
+    onFilterUpdate(newFilters);
+  };
+
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
       <div className="widget-facet wd-categories">
@@ -21,12 +42,19 @@ export default function Sidebar() {
         </div>
         <div id="categories" className="collapse show">
           <ul className="list-categoris current-scrollbar mb_36">
-            {categories.map((category, index) => (
-              <li key={index} className={`cate-item ${category.className}`}>
-                <a href="#">
-                  <span>{category.name}</span>&nbsp;
-                  <span>({category.count})</span>
-                </a>
+            {categories.map((category) => (
+              <li key={category.CatID}>
+                <label className="tf-checkbox">
+                  <input
+                    type="radio"
+                    name="category"
+                    onChange={() =>
+                      handleFilterChange("categoryId", category.CatID)
+                    }
+                    checked={filters.categoryId === category.CatID}
+                  />
+                  <span>{category.CatName}</span>
+                </label>
               </li>
             ))}
           </ul>

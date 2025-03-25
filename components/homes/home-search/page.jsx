@@ -5,8 +5,8 @@ import Products from "@/components/homes/home-search/Products";
 import React from "react";
 
 export const metadata = {
-  title: "Home Search || Ecomus - Ultimate Nextjs Ecommerce Template",
-  description: "Ecomus - Ultimate Nextjs Ecommerce Template",
+  title: "BMR Suspension | Search Page",
+  description: "BMR Suspension Search Page",
 };
 export default function page() {
   return (

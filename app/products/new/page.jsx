@@ -56,10 +56,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
     <section className="flat-spacing-1">
       <div className="container">
         <div className="flat-title ">
-          <span
-            className="title wow fadeInUp home-title"
-            data-wow-delay="0s"
-          >
+          <span className="title wow fadeInUp home-title" data-wow-delay="0s">
             {scrachDent === "1" ? "Scratch & Dent" : "New Products"}
           </span>
           <h6 className="home-title-description text-center text-muted">
@@ -121,7 +118,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                   <div className="card-product bg_white radius-20 h-100">
                     <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                       <Link
-                        href={`/product/${product.ProductID}`}
+                        href={`/products/${product.ProductID}`}
                         className="product-img"
                       >
                         <Image
@@ -214,7 +211,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                           {product.PlatformName}
                         </span>
                         <Link
-                          href={`/product/${product.ProductID}`}
+                          href={`/products/${product.ProductID}`}
                           className="title link"
                         >
                           {product?.ProductName}

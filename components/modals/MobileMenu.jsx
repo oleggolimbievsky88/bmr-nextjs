@@ -135,7 +135,10 @@ export default function MobileMenu() {
                 <i className="icon icon-heart" />
                 Wishlist
               </Link>
-              <Link href={`/homes/home-search`} className="site-nav-icon">
+              <Link
+                href={`/components/homes/home-search/page.jsx`}
+                className="site-nav-icon"
+              >
                 <i className="icon icon-search" />
                 Search
               </Link>

@@ -289,10 +289,10 @@ export default function Details6({ product }) {
                       ))}
                     </div>
                   </div>
-                  <div className="tf-product-bundle-wrap">
+                  {/* <div className="tf-product-bundle-wrap">
                     <div className="title">Frequently Bought Together</div>
                     <BoughtTogether product={product} />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
