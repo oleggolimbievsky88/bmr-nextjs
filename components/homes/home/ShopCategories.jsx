@@ -4,8 +4,11 @@ import styles from "./ProductCategories.module.css";
 
 const ProductCategories = () => {
   return (
-    <div className="container mt-5">
-      <div className="row mt-4">
+    <div
+      className="container mt-5 flat-title"
+      style={{ marginTop: "80px", paddingTop: "80px" }}
+    >
+      <div className="row mt-5">
         {/* Card for New Products */}
         <div className="col-md-4 mb-4">
           <Link href="/products/new" className={styles.cardLink}>

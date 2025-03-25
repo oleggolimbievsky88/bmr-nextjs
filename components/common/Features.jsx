@@ -6,10 +6,25 @@ import { Swiper, SwiperSlide } from "swiper/react";
 export default function Features() {
   return (
     <section
-      className="flat-spacing-7 flat-iconbox wow fadeInUp"
+      className="flat-spacing-7 flat-iconbox wow fadeInUp features-section"
       data-wow-delay="0s"
     >
       <div className="container">
+        {/* Header Section */}
+        <div className="row">
+          <div className="col-md-12">
+            <div className="section-title text-center mb-5">
+              <h3 className="fw-bold">
+                Why Choose <span className="text-danger">BMR Suspension</span>?
+              </h3>
+              <p className="text-muted fs-5 mt-3">
+                Experience unmatched quality in automotive performance with our
+                industry-leading suspension solutions
+              </p>
+            </div>
+          </div>
+        </div>
+        {/* Features Carousel */}
         <div className="wrap-carousel wrap-mobile">
           <Swiper
             slidesPerView={4}

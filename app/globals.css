@@ -58,6 +58,10 @@ a {
   }
 }
 
+.home-title {
+  font-family: "Impact", sans-serif;
+}
+
 .flat-title {
   text-align: center;
 }
@@ -69,6 +73,7 @@ a {
   position: relative;
   display: inline-block;
   padding-bottom: 0.5rem;
+
 }
 
 .flat-title .title::after {

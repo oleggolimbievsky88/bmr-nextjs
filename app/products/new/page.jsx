@@ -55,8 +55,11 @@ export default function NewProductsPage({ scrachDent = "0" }) {
   return (
     <section className="flat-spacing-1">
       <div className="container">
-        <div className="flat-title">
-          <span className="title wow fadeInUp home-title" data-wow-delay="0s">
+        <div className="flat-title ">
+          <span
+            className="title wow fadeInUp home-title"
+            data-wow-delay="0s"
+          >
             {scrachDent === "1" ? "Scratch & Dent" : "New Products"}
           </span>
           <h6 className="home-title-description text-center text-muted">

@@ -8,8 +8,8 @@ import { Navigation, Pagination } from "swiper/modules";
 export default function Blogs() {
   return (
     <section>
-      <div className="container">
-        <div className="flat-title wow fadeInUp" data-wow-delay="0s">
+      <div className="container mt-5">
+        <div className="wow fadeInUp mb-3" data-wow-delay="0s">
           <div className="flat-title">
             <span
               className="title wow fadeInUp home-title preserve-case"

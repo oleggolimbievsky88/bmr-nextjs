@@ -70,8 +70,8 @@ export default function Header18({ initialMenuData }) {
                   alt="logo"
                   className="logo"
                   src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
-                  width={230}
-                  height={50}
+                  width={280}
+                  height={65}
                   style={{ width: "100%", height: "auto" }}
                 />{" "}
               </Link>

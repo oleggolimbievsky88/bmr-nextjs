@@ -251,9 +251,6 @@
             overflow: hidden;
             flex-shrink: 0;
         }
-        .content{
-            // margin-top: 5px;
-        }
     }
     &.lg-2{
         .box-author{
@@ -282,7 +279,7 @@
     .testimonial-ver-text{
         padding: 0 50px;
     }
-  
+
 }
 .testimonial-ver-text{
     display: flex;
@@ -324,6 +321,6 @@
     .swiper-slide-thumb-active{
         .thumb-tes-item{
             opacity: 1;
-        }  
+        }
     }
 }

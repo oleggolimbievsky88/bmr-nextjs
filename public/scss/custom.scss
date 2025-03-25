@@ -1141,9 +1141,12 @@
 }
 
 .three-column-layout {
-  margin-top: 50px !important;
+  margin-top: 80px !important;
 }
 
+.features-section {
+  margin-top: 80px !important;
+}
 
 /* Youtube Button */
 .video-section {
@@ -1152,6 +1155,11 @@
 
   .flat-title {
     margin-bottom: 40px;
+    font-family: "Impact", sans-serif;
+  }
+
+  .home-title {
+    font-family: "Impact", sans-serif;
   }
 
   .title-section {
@@ -1205,6 +1213,7 @@
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
       }
 
@@ -1216,6 +1225,7 @@
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
       }
     }

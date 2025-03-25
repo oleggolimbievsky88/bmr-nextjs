@@ -175,7 +175,6 @@ export default function VideoPage() {
           <div className="col-md-12 text-center custom-youtube-button">
             <Link
               href="https://www.youtube.com/@BMRSuspension"
-
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -259,28 +258,34 @@ export default function VideoPage() {
           }
 
           .custom-youtube-button {
+            display: inline-block;
             background-color: var(--primary);
-            color: white;
-            padding: 15px 32px;
+            padding: 12px 32px;
             border-radius: 30px;
             font-weight: 600;
             font-size: 16px;
             letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
             border: 2px solid var(--primary);
             text-transform: uppercase;
-            text-decoration: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            max-width: 500px;
+            margin: 0 auto;
+          }
+
+          .custom-youtube-button a {
+            color: #fff !important;
+            text-decoration: none;
           }
 
           .custom-youtube-button:hover {
             background-color: transparent;
-            color: var(--primary);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          }
+
+          .custom-youtube-button:hover a {
+            color: #000 !important;
           }
 
           .custom-youtube-button:active {
