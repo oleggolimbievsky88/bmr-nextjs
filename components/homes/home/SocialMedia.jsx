@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
 export default function Blogs() {
   return (
-    <section className="flat-spacing-14">
+    <section>
       <div className="container">
         <div className="flat-title wow fadeInUp" data-wow-delay="0s">
           <div className="flat-title">

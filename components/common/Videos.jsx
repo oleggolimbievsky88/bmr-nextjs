@@ -4,35 +4,13 @@ import { useEffect, useState } from "react";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 
 export default function VideoPage() {
-  const [videos, setVideos] = useState([
-    {
-      VideoID: 1,
-      Title: "Video 1",
-      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
-      Description: "Description for Video 1",
-    },
-    {
-      VideoID: 2,
-      Title: "Video 2",
-      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
-      Description: "Description for Video 2",
-    },
-    {
-      VideoID: 3,
-      Title: "Video 3",
-      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
-      Description: "Description for Video 3",
-    },
-    {
-      VideoID: 4,
-      Title: "Video 4",
-      Thumbnail: "https://bmrsuspension.com/siteart/videos/bmr_you_tube.jpg",
-      Description: "Description for Video 4",
-    },
-    // Add more dummy video data as needed
-  ]);
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const {
     setQuickViewItem,
@@ -43,8 +21,55 @@ export default function VideoPage() {
     isAddedtoCompareItem,
   } = useContextElement();
 
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch("/api/youtube");
+        if (!response.ok) throw new Error("Failed to fetch videos");
+        const data = await response.json();
+        setVideos(data.items);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching videos:", err);
+        setError("Failed to load videos. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="pt_0">
+        <div className="container">
+          <div className="flat-title">
+            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
+              Loading Videos...
+            </span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="pt_0">
+        <div className="container">
+          <div className="flat-title">
+            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
+              {error}
+            </span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className=" pt_0">
+    <section className="pt_0">
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">
@@ -56,109 +81,212 @@ export default function VideoPage() {
           </h6>
         </div>
 
-        <div className="row">
-          {videos.map((video) => (
-            <div
-              key={video.VideoID}
-              className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
-            >
-              <div className="card-product bg_white radius-20 h-100">
-                <div className="card-product-wrapper border-line h-100 d-flex flex-column">
-                  <Link
-                    href={"https://www.youtube.com/user/BMRSuspension"}
-                    className="product-img"
-                    target="_blank"
-                  >
-                    <Image
-                      className="lazyload img-product mb-2"
-                      src={video.Thumbnail}
-                      alt="video-thumbnail"
-                      width={360}
-                      height={360}
-                      style={{
-                        borderRadius: "10px",
-                        border: "1px solid #707070",
-                      }}
-                    />
-                  </Link>
-                  <div className="list-product-btn mt-auto">
-                    <a
-                      href="#quick_add"
-                      onClick={() => setQuickAddItem(video.VideoID)}
-                      data-bs-toggle="modal"
-                      className="box-icon bg_white quick-add tf-btn-loading"
-                    >
-                      <span className="icon icon-bag" />
-                      <span className="tooltip">Quick Add</span>
-                    </a>
-                    <a
-                      onClick={() => addToWishlist(video.VideoID)}
-                      className="box-icon bg_white wishlist btn-icon-action"
-                    >
-                      <span
-                        className={`icon icon-heart ${
-                          isAddedtoWishlist(video.VideoID) ? "added" : ""
-                        }`}
-                      />
-                      <span className="tooltip">
-                        {isAddedtoWishlist(video.VideoID)
-                          ? "Already Wishlisted"
-                          : "Add to Wishlist"}
-                      </span>
-                    </a>
-                    <a
-                      href="#compare"
-                      data-bs-toggle="offcanvas"
-                      onClick={() => addToCompareItem(video.VideoID)}
-                      className="box-icon bg_white compare btn-icon-action"
-                    >
-                      <span
-                        className={`icon icon-compare ${
-                          isAddedtoCompareItem(video.VideoID) ? "added" : ""
-                        }`}
-                      />
-                      <span className="tooltip">
-                        {isAddedtoCompareItem(video.VideoID)
-                          ? "Already Compared"
-                          : "Add to Compare"}
-                      </span>
-                    </a>
-                    <a
-                      href="#quick_view"
-                      onClick={() => setQuickViewItem(video)}
-                      data-bs-toggle="modal"
-                      className="box-icon bg_white quickview tf-btn-loading"
-                    >
-                      <span className="icon icon-view" />
-                      <span className="tooltip">Quick View</span>
-                    </a>
-                  </div>
-                  <div className="card-product-info mt-2">
-                    <div className="NewProductPartNumber">{video.Title}</div>
-                    <span
-                      className="NewProductPlatformName"
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        margin: "0px",
-                        padding: "0px",
-                        lineHeight: "0.5",
-                      }}
-                    >
-                      {video.Description}
-                    </span>
+        <div className="video-slider-wrapper hover-sw-nav">
+          <Swiper
+            spaceBetween={24}
+            slidesPerView={4}
+            navigation={{
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
+            }}
+            modules={[Navigation]}
+            className="video-slider"
+            breakpoints={{
+              0: {
+                slidesPerView: 1,
+                spaceBetween: 16,
+              },
+              576: {
+                slidesPerView: 2,
+                spaceBetween: 16,
+              },
+              768: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
+              1200: {
+                slidesPerView: 4,
+                spaceBetween: 24,
+              },
+            }}
+          >
+            {videos.map((video) => (
+              <SwiperSlide key={video.id}>
+                <div className="card-product bg_white radius-20 h-100">
+                  <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                     <Link
-                      href={`/video/${video.VideoID}`}
-                      className="title link"
+                      href={`https://www.youtube.com/watch?v=${video.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="video-thumbnail-link"
                     >
-                      {video?.Title}
+                      <div className="video-thumbnail-wrapper">
+                        <Image
+                          src={video.thumbnail.url}
+                          alt={video.title}
+                          width={320}
+                          height={180}
+                          className="video-thumbnail"
+                          priority
+                        />
+                        <div className="play-button">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                          >
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
                     </Link>
+                    <div className="card-product-info mt-2">
+                      <div className="NewProductPartNumber">{video.title}</div>
+                      <span
+                        className="NewProductPlatformName"
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          margin: "0px",
+                          padding: "0px",
+                          lineHeight: "1.2",
+                          display: "-webkit-box",
+                          WebkitLineClamp: "2",
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          height: "auto",
+                          maxHeight: "2.4em",
+                        }}
+                      >
+                        {video.description}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </SwiperSlide>
+            ))}
+            <div className="swiper-button-next button-style-arrow thumbs-next"></div>
+            <div className="swiper-button-prev button-style-arrow thumbs-prev"></div>
+          </Swiper>
         </div>
+
+        <div className="row mt-4">
+          <div className="col-md-12 text-center custom-youtube-button">
+            <Link
+              href="https://www.youtube.com/@BMRSuspension"
+
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Visit Our YouTube Channel
+            </Link>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .video-slider-wrapper {
+            position: relative;
+            margin: 0 -12px;
+            padding: 0 12px;
+          }
+
+          .video-thumbnail-link {
+            display: block;
+            position: relative;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+          }
+
+          .video-thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+          }
+
+          .video-thumbnail {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+          }
+
+          .video-thumbnail-link:hover .video-thumbnail {
+            transform: scale(1.05);
+          }
+
+          .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            transition: background-color 0.3s ease;
+          }
+
+          .video-thumbnail-link:hover .play-button {
+            background-color: rgba(0, 0, 0, 0.9);
+          }
+
+          .NewProductPartNumber {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+
+          .NewProductPlatformName {
+            font-size: 14px;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: #666;
+          }
+
+          .custom-youtube-button {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          }
+
+          .custom-youtube-button:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          }
+
+          .custom-youtube-button:active {
+            transform: translateY(0);
+          }
+        `}</style>
       </div>
     </section>
   );

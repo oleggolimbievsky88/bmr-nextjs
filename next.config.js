@@ -16,6 +16,8 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+    domains: ["i.ytimg.com", "img.youtube.com"],
+    unoptimized: true,
   },
   output: "standalone",
 };

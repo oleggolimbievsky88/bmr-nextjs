@@ -54,7 +54,15 @@ export default function MainMenu({ initialMenuData }) {
     clearTimeout(hoverTimeoutRef.current);
     hoverTimeoutRef.current = setTimeout(() => {
       setActivePlatform(platform);
-      setActiveVehicle(null);
+
+      // Get the links array for the selected platform
+      const platformLinks = menuData[`${platform}Links`];
+
+      // If there are vehicles in the list, automatically select the first one
+      if (platformLinks && platformLinks.length > 0) {
+        const firstVehicle = platformLinks[0];
+        handleVehicleHover(firstVehicle.slug, firstVehicle.bodyId);
+      }
     }, 200);
   };
 
