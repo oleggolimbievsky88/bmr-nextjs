@@ -7,44 +7,54 @@ export const metadata = {
 };
 
 async function getData() {
-  // Get all products with their relationships
-  const productsQuery = `
-    SELECT p.*, m.ManName as BrandName, b.Name as PlatformName
-    FROM products p
-    LEFT JOIN mans m ON p.ManID = m.ManID
-    LEFT JOIN bodies b ON p.BodyID = b.BodyID
-    WHERE p.Display = 1
-    ORDER BY p.ProductID DESC
-  `;
+  try {
+    // Get all products with their relationships
+    const productsQuery = `
+      SELECT p.*, m.ManName as BrandName, b.Name as PlatformName
+      FROM products p
+      LEFT JOIN mans m ON p.ManID = m.ManID
+      LEFT JOIN bodies b ON p.BodyID = b.BodyID
+      WHERE p.Display = ?
+      ORDER BY p.ProductID DESC
+    `;
 
-  // Get all categories with their main categories
-  const categoriesQuery = `
-    SELECT c.*, mc.MainCatName
-    FROM categories c
-    LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
-    ORDER BY c.CatName
-  `;
+    // Get all categories with their main categories
+    const categoriesQuery = `
+      SELECT c.*, mc.MainCatName
+      FROM categories c
+      LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
+      ORDER BY c.CatName
+    `;
 
-  // Get all brands
-  const brandsQuery = `SELECT * FROM mans ORDER BY ManName`;
+    // Get all brands
+    const brandsQuery = `SELECT * FROM mans ORDER BY ManName`;
 
-  // Get all platforms
-  const platformsQuery = `SELECT * FROM bodies ORDER BY Name`;
+    // Get all platforms
+    const platformsQuery = `SELECT * FROM bodies ORDER BY Name`;
 
-  // Fetch all required data in parallel
-  const [products, categories, brands, platforms] = await Promise.all([
-    mcp_MySQL_MCP_query(productsQuery),
-    mcp_MySQL_MCP_query(categoriesQuery),
-    mcp_MySQL_MCP_query(brandsQuery),
-    mcp_MySQL_MCP_query(platformsQuery),
-  ]);
+    // Fetch all required data in parallel
+    const [products, categories, brands, platforms] = await Promise.all([
+      mcp_MySQL_MCP_query(productsQuery, [1]), // 1 for Display = true
+      mcp_MySQL_MCP_query(categoriesQuery),
+      mcp_MySQL_MCP_query(brandsQuery),
+      mcp_MySQL_MCP_query(platformsQuery),
+    ]);
 
-  return {
-    products,
-    categories,
-    brands,
-    platforms,
-  };
+    return {
+      products: products || [],
+      categories: categories || [],
+      brands: brands || [],
+      platforms: platforms || [],
+    };
+  } catch (error) {
+    console.error("Error fetching shop data:", error);
+    return {
+      products: [],
+      categories: [],
+      brands: [],
+      platforms: [],
+    };
+  }
 }
 
 export default async function ShopPage() {
