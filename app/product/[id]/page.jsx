@@ -9,9 +9,27 @@ import { notFound } from "next/navigation";
 import { getProductById } from "@/lib/queries";
 
 export async function generateMetadata({ params }) {
-  const product = await getProductById(params.id);
-
-  if (!product) {
+  try {
+    const product = await getProductById(params.id);
+    return {
+      title: `${product.ProductName} | BMR Suspension`,
+      description:
+        product.Description?.substring(0, 160) ||
+        "BMR Suspension - Performance Racing Suspension & Chassis Parts",
+      openGraph: {
+        title: product.ProductName,
+        description: product.Description?.substring(0, 160),
+        images: [
+          {
+            url: `/images/products/${product.ImageLarge || product.ImageSmall}`,
+            width: 800,
+            height: 600,
+            alt: product.ProductName,
+          },
+        ],
+      },
+    };
+  } catch (error) {
     return {
       title: "Product Not Found | BMR Suspension",
       description: "The requested product could not be found.",
@@ -39,9 +57,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const product = await getProductById(params.id);
-
-  if (!product) {
+  let product;
+  try {
+    product = await getProductById(params.id);
+  } catch (error) {
     notFound();
   }
 
