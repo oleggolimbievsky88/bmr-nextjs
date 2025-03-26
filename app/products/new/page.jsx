@@ -118,7 +118,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                   <div className="card-product bg_white radius-20 h-100">
                     <div className="card-product-wrapper border-line h-100 d-flex flex-column">
                       <Link
-                        href={`/products/${product.ProductID}`}
+                        href={`/product/${product.ProductID}`}
                         className="product-img"
                       >
                         <Image
@@ -211,7 +211,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                           {product.PlatformName}
                         </span>
                         <Link
-                          href={`/products/${product.ProductID}`}
+                          href={`/product/${product.ProductID}`}
                           className="title link"
                         >
                           {product?.ProductName}

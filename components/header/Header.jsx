@@ -40,67 +40,24 @@ export default function Header({
               </svg>
             </a>
           </div>
-          <div className="col-xl-3 col-md-4 col-6">
+          <div className="col-xl-4 col-md-4 col-6">
             <Link href={`/`} className="logo-header">
               <Image
                 alt="logo"
                 className="logo"
                 src="/images/logo/bmr-logo-white.webp"
                 width={280}
-                height={55}
+                height={95}
               />
             </Link>
           </div>
-          <div className="col-xl-6 tf-md-hidden">
+          <div className="col-xl-4 tf-md-hidden">
             <nav className="box-navigation text-center">
               <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-30">
                 {/* <Nav isArrow={isArrow} Linkfs={Linkfs} /> */}
                 <MainMenu />
               </ul>
             </nav>
-          </div>
-          <div className="col-xl-3 col-md-4 col-3 text-white">
-            <ul className="nav-icon d-flex justify-content-end align-items-center gap-20 text-white">
-              <li className="nav-search text-white">
-                <a
-                  href="#canvasSearch"
-                  data-bs-toggle="offcanvas"
-                  aria-controls="offcanvasLeft"
-                  className="nav-icon-item"
-                >
-                  <i className="icon icon-search" />
-                </a>
-              </li>
-              <li className="nav-account">
-                <a
-                  href="#login"
-                  data-bs-toggle="modal"
-                  className="nav-icon-item"
-                >
-                  <i className="icon icon-account" />
-                </a>
-              </li>
-              <li className="nav-wishlist">
-                <Link href={`/wishlist`} className="nav-icon-item">
-                  <i className="icon icon-heart" />
-                  <span className={`count-box ${bgColor} ${textClass}`}>
-                    <WishlistLength />
-                  </span>
-                </Link>
-              </li>
-              <li className="nav-cart">
-                <a
-                  href="#shoppingCart"
-                  data-bs-toggle="modal"
-                  className="nav-icon-item"
-                >
-                  <i className="icon icon-bag" />
-                  <span className={`count-box ${bgColor} ${textClass}`}>
-                    <CartLength />
-                  </span>
-                </a>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

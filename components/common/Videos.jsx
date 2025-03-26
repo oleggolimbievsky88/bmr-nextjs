@@ -260,6 +260,7 @@ export default function VideoPage() {
           .custom-youtube-button {
             display: inline-block;
             background-color: var(--primary);
+            color: var(--white);
             padding: 12px 32px;
             border-radius: 30px;
             font-weight: 600;

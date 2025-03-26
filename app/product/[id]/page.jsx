@@ -2,36 +2,51 @@
 
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
-import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
-import Products from "@/components/shopDetails/Products";
-import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
-import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
-import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
-export const metadata = {
-  title:
-    "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-};
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getProductById } from "@/lib/queries";
 
-export default async function ProductPage({ params }) {
-  const { id } = params;
+export async function generateMetadata({ params }) {
+  const product = await getProductById(params.id);
 
-  const API_URL = process.env.API_URL || "http://localhost:3000";
-
-  // Fetch product data from API
-  const res = await fetch(`${API_URL}/api/product/${id}`);
-
-  console.log("Res:", res);
-  if (!res.ok) {
-    // Handle product not found or server error
-    return <p>Product not found.</p>;
+  if (!product) {
+    return {
+      title: "Product Not Found | BMR Suspension",
+      description: "The requested product could not be found.",
+    };
   }
 
-  const product = await res.json();
+  return {
+    title: `${product.ProductName} | BMR Suspension`,
+    description:
+      product.Description?.substring(0, 160) ||
+      "BMR Suspension - Performance Racing Suspension & Chassis Parts",
+    openGraph: {
+      title: product.ProductName,
+      description: product.Description?.substring(0, 160),
+      images: [
+        {
+          url: `/images/products/${product.ImageLarge || product.ImageSmall}`,
+          width: 800,
+          height: 600,
+          alt: product.ProductName,
+        },
+      ],
+    },
+  };
+}
 
-  console.log("Product:", product);
+export default async function ProductPage({ params }) {
+  const product = await getProductById(params.id);
+
+  if (!product) {
+    notFound();
+  }
+
+  // Get the platform/body name for breadcrumb
+  const platformName = product.PlatformName || "Products";
 
   return (
     <>
@@ -40,37 +55,39 @@ export default async function ProductPage({ params }) {
         <div className="container">
           <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
             <div className="tf-breadcrumb-list">
-              <Link href={`/`} className="text">
+              <Link href="/" className="text">
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <a href="#" className="text">
-                2024 Mustang
-              </a>
+              <Link href="/products" className="text">
+                Products
+              </Link>
               <i className="icon icon-arrow-right" />
-              <span className="text">
-                {product.ProductName ? product.ProductName : "Product Title"}
-              </span>
+              {product.BodyID && (
+                <>
+                  <Link
+                    href={`/products/${platformName
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                    className="text"
+                  >
+                    {platformName}
+                  </Link>
+                  <i className="icon icon-arrow-right" />
+                </>
+              )}
+              <span className="text">{product.ProductName}</span>
             </div>
-            {/* <div className="tf-breadcrumb-prev-next">
-              <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
-                <i className="icon icon-arrow-left" />
-              </a>
-              <a href="#" className="tf-breadcrumb-back hover-tooltip center">
-                <i className="icon icon-shop" />
-              </a>
-              <a href="#" className="tf-breadcrumb-next hover-tooltip center">
-                <i className="icon icon-arrow-right" />
-              </a>
-            </div> */}
           </div>
         </div>
       </div>
-      {/* <DetailsOuterZoom product={product} /> */}
+
       <Details6 product={product} />
-      <ShopDetailsTab />
-      <Products />
-      <RecentProducts />
+
+      <div className="container mb-90">
+        <ShopDetailsTab product={product} />
+      </div>
+
       <Footer1 />
     </>
   );

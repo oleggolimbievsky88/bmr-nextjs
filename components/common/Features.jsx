@@ -53,7 +53,10 @@ export default function Features() {
               <SwiperSlide key={i} className="swiper-slide">
                 <div className="tf-icon-box style-border-line text-center">
                   <div className="icon">
-                    <i className={elm.iconClass} />
+                    <i
+                      className={elm.iconClass}
+                      style={{ color: "var(--primary)" }}
+                    />
                   </div>
                   <div className="content">
                     <div className="title">{elm.title}</div>

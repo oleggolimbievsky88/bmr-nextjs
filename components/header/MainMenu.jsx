@@ -196,7 +196,7 @@ export default function MainMenu({ initialMenuData }) {
                                   }/${encodeURIComponent(
                                     categoryGroup.mainCategory.name
                                   )}`}
-                                  className="subcategory-link"
+                                  className="megamenu-subcategory-header"
                                 >
                                   {categoryGroup.mainCategory.name}
                                 </Link>
@@ -374,6 +374,11 @@ export default function MainMenu({ initialMenuData }) {
             <li className="nav-item">
               <Link href="/installation" className="nav-link">
                 Installation
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link href="/installation" className="nav-link">
+                Cart
               </Link>
             </li>
           </ul>
