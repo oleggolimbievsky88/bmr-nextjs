@@ -48,51 +48,30 @@ export default function ShopDetailsTab({ product }) {
                     <p className="mb_30">{description}</p>
                     <div className="tf-product-des-demo">
                       <div className="right">
-                        <h3 className="fs-16 fw-5">Features</h3>
-                        <ul>
-                          <li>Front button placket sadfs</li>
-                          <li>Adjustable sleeve tabs</li>
-                          <li>Babaton embroidered crest at placket and hem</li>
-                        </ul>
-                        <h3 className="fs-16 fw-5">Materials Care</h3>
-                        <ul className="mb-0">
-                          <li>Content: 100% LENZING™ ECOVERO™ Viscose</li>
-                          <li>Care: Hand wash</li>
-                          <li>Imported</li>
-                        </ul>
-                      </div>
-                      <div className="left">
-                        <h3 className="fs-16 fw-5">Materials Care</h3>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-machine" />
-                          </div>
-                          <span>Machine wash max. 30ºC. Short spin.</span>
-                        </div>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-iron" />
-                          </div>
-                          <span>Iron maximum 110ºC.</span>
-                        </div>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-bleach" />
-                          </div>
-                          <span>Do not bleach/bleach.</span>
-                        </div>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-dry-clean" />
-                          </div>
-                          <span>Do not dry clean.</span>
-                        </div>
-                        <div className="d-flex gap-10 align-items-center">
-                          <div className="icon">
-                            <i className="icon-tumble-dry" />
-                          </div>
-                          <span>Tumble dry, medium hear.</span>
-                        </div>
+                        <h2
+                          className="fs-16 fw-5"
+                          style={{
+                            fontFamily: "impact",
+                            color: "var(--primary)",
+                            letterSpacing: "1px",
+                            fontSize: "20px",
+                          }}
+                        >
+                          Features
+                        </h2>
+                        <p>
+                          {product?.Features && (
+                            <ul>
+                              {product.Features.split(/(?:\n|- )/g)
+                                .map((item) => item.trim())
+                                .filter((item) => item.length > 0)
+                                .map((feature, index) => (
+                                  <li key={index}>{feature}</li>
+                                ))}
+                            </ul>
+                          )}
+                          ;
+                        </p>
                       </div>
                     </div>
                   </div>
