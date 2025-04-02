@@ -79,7 +79,10 @@ export default function PlatformCategoryPage({ params }) {
             isSubCategory={true}
           />
         </section>
-
+        <br />
+        <br />
+        <br />
+        <br />
         {/* Featured Products Section */}
         {products && products.length > 0 && (
           <section

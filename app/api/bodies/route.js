@@ -1,33 +1,14 @@
-import { getBodyDetailsById } from "@/lib/queries";
 import { NextResponse } from "next/server";
+import { mcp_MySQL_MCP_query } from "@/lib/db";
 
-export async function GET(request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const bodyId = searchParams.get("bodyId");
+    const bodies = await mcp_MySQL_MCP_query({
+      sql: "SELECT * FROM bodies ORDER BY Name ASC",
+    });
 
-    if (!bodyId) {
-      return NextResponse.json(
-        { error: "Missing bodyId parameter" },
-        { status: 400 }
-      );
-    }
-
-    const bodyDetails = await getBodyDetailsById(bodyId);
-    return NextResponse.json(bodyDetails);
+    return NextResponse.json(bodies);
   } catch (error) {
-    console.error("Error fetching body details:", error);
-
-    // Format the error response based on the error type
-    if (error.message === "Missing bodyId parameter") {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    } else if (error.message === "Body not found") {
-      return NextResponse.json({ error: error.message }, { status: 404 });
-    } else {
-      return NextResponse.json(
-        { error: "Failed to fetch body details" },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

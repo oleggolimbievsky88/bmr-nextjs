@@ -1,64 +1,72 @@
-import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
-import Topbar1 from "@/components/header/Topbar1";
-import CategoryGrid from "@/components/shop/CategoryGrid";
-import { getSubCategories } from "@/lib/queries";
+import {
+  getProducts,
+  getCategories,
+  getBrands,
+  getPlatforms,
+} from "@/lib/queries";
+import dynamic from "next/dynamic";
 
-export const metadata = {
-  title: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-};
+// Import the client component
+const ShopContent = dynamic(() => import("@/components/shop/ShopContent"), {
+  ssr: true,
+});
 
 export default async function CategoryPage({ params }) {
-  console.log("🛠 Params received:", params);
+  console.log("Category Page Params:", params);
 
-  const { platform, mainCategory } = params;
+  try {
+    // Fetch data from database with the additional category filter
+    const products = await getProducts(
+      params.platform,
+      params.mainCategory,
+      params.category
+    );
 
-  // Ensure platform is defined before using it
-  if (!platform) {
-    console.error("⛔ Error: platform is undefined");
-    return <div>Error: Platform not found</div>;
-  }
+    console.log("Products found:", products?.length || 0);
 
-  // Format the platform slug for display
-  const formattedVehicleName = platform
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    if (!products || products.length === 0) {
+      console.log("No products found for:", {
+        platform: params.platform,
+        mainCategory: params.mainCategory,
+        category: params.category,
+      });
+    }
 
-  console.log("🔍 Platform:", platform);
-  console.log("📂 Main Category:", mainCategory);
+    const categories = await getCategories(params.platform);
+    const brands = await getBrands();
+    const platforms = await getPlatforms();
 
-  // Fetch subcategories under the SubCategory category
-    const categories = await getSubCategories(platform, mainCategory);
-
-  if (!categories || categories.length === 0) {
-    console.warn(`⚠️ No categories found for ${mainCategory}`);
-    return <div>No categories available</div>;
-  }
-
-  return (
-    <>
-      <Topbar1 />
-      <Header2 />
-      <PlatformHeader
-        platformData={{
-          name: platformName,
-          headerImage: platformInfo?.headerImage ? `/images/headers/${platformInfo.headerImage}` : null
-        }}
-        title={`${platformName} ${formattedCategoryName} Parts`}
-      />
-
-      <div className="tf-page-title">
-        <div className="container-full">
-          <div className="heading text-center">{formattedVehicleName} - {mainCategory}</div>
-          <p className="text-center text-1 text_black-2 mt_5">
-            Select a category to shop through our latest selection of Suspension & Chassis Parts
-          </p>
+    return (
+      <>
+        <section className="flat-spacing-1">
+          <div className="container">
+            <ShopContent
+              initialProducts={products}
+              categories={categories}
+              brands={brands}
+              platforms={platforms}
+            />
+          </div>
+        </section>
+        <div className="btn-sidebar-style2">
+          <button
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarmobile"
+            aria-controls="offcanvas"
+          >
+            <i className="icon icon-sidebar-2" />
+          </button>
+        </div>
+      </>
+    );
+  } catch (error) {
+    console.error("Error in CategoryPage:", error);
+    return (
+      <div className="container py-8">
+        <div className="alert alert-danger">
+          Error loading products. Please try again later.
         </div>
       </div>
-      <CategoryGrid categories={categories} platform={platform} />
-      <Footer1 />
-    </>
-  );
+    );
+  }
 }

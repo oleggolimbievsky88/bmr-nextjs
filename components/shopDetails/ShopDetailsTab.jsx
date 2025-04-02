@@ -81,22 +81,7 @@ export default function ShopDetailsTab({ product }) {
                     currentTab == 2 ? "active" : ""
                   } `}
                 >
-                  <table className="tf-pr-attrs">
-                    <tbody>
-                      <tr className="tf-attr-pa-color">
-                        <th className="tf-attr-label">Color</th>
-                        <td className="tf-attr-value">
-                          <p>White, Pink, Black</p>
-                        </td>
-                      </tr>
-                      <tr className="tf-attr-pa-size">
-                        <th className="tf-attr-label">Size</th>
-                        <td className="tf-attr-value">
-                          <p>S, M, L, XL</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {product?.Features}
                 </div>
                 <div
                   className={`widget-content-inner ${
