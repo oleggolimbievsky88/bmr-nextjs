@@ -7,8 +7,8 @@ export async function GET(request, { params }) {
   try {
     const query = `
       SELECT p.* FROM products p
-      JOIN platforms pl ON p.platformId = pl.id
-      WHERE p.Display = 1 AND pl.name = ? AND p.categoryId = ?
+      JOIN bodies pl ON p.BodyID = pl.BodyID
+      WHERE p.Display = 1 AND pl.Name = ? AND p.categoryId = ?
     `;
     const [rows] = await pool.query(query, [
       platformName,

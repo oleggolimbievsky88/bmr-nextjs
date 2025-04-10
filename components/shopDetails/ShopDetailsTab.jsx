@@ -59,7 +59,7 @@ export default function ShopDetailsTab({ product }) {
                         >
                           Features
                         </h2>
-                        <p>
+                        <div className="row">
                           {product?.Features && (
                             <ul>
                               {product.Features.split(/(?:\n|- )/g)
@@ -70,8 +70,7 @@ export default function ShopDetailsTab({ product }) {
                                 ))}
                             </ul>
                           )}
-                          ;
-                        </p>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -2,12 +2,12 @@ export const colors = [
   {
     id: "blackHammertone",
     value: "Black Hammertone",
-    className: "bg-color-black",
+    className: "bg-color-black-hammertone",
   },
   {
     id: "redPowdercoat",
     value: "Red",
-    className: "bg-color-red",
+    className: "bg-color-red-powdercoat",
   },
 ];
 
@@ -63,7 +63,7 @@ export const colorOptions3 = [
   {
     id: "values-black",
     value: "Black",
-    className: "bg-color-black",
+    className: "bg-color-black-hammertone",
     defaultChecked: false,
     additionalClasses: "",
   },
@@ -99,11 +99,11 @@ export const paymentImages = [
 export const options = [
   { value: "Red", label: "Red" },
   { value: "Black Hammertone", label: "Black Hammertone" },
-]
+];
 
 export const options2 = [
   { value: "Red1", label: "Red" },
-  { value: "Black1 Hammertone", label: "Black Hammertone" }
+  { value: "Black1 Hammertone", label: "Black Hammertone" },
 ];
 
 export const imageOptions = [

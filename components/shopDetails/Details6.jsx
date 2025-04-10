@@ -14,8 +14,8 @@ import {
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
 export default function Details6({ product }) {
-  const [currentColor, setCurrentColor] = useState(colors[0]);
-  const [currentGrease, setCurrentGrease] = useState(greaseOptions[0]);
+  const [currentColor, setCurrentColor] = useState(null);
+  const [currentGrease, setCurrentGrease] = useState(null);
   return (
     <section
       className="flat-spacing-4 pt_0"
@@ -71,7 +71,9 @@ export default function Details6({ product }) {
                       <div className="variant-picker-label">
                         Color:{" "}
                         <span className="fw-6 variant-picker-label-value">
-                          {currentColor.value}
+                          {currentColor
+                            ? currentColor.value
+                            : "Please select a color"}
                         </span>
                       </div>
                       <form className="variant-picker-values">
@@ -79,20 +81,41 @@ export default function Details6({ product }) {
                           <React.Fragment key={color.id}>
                             <input
                               type="radio"
-                              name={color.id}
+                              name="color1"
+                              id={color.id}
                               readOnly
-                              checked={currentColor == color}
+                              checked={currentColor === color}
                             />
                             <label
                               onClick={() => setCurrentColor(color)}
-                              className="hover-tooltip radius-60"
+                              className="style-text"
                               htmlFor={color.id}
                               data-value={color.value}
+                              style={{
+                                backgroundColor:
+                                  currentColor === color
+                                    ? color.value
+                                    : "white",
+                                color:
+                                  currentColor === color ? "white" : "black",
+                                border: "1px solid lightgray",
+                                padding: "8px 25px",
+                                borderRadius: "5px",
+                                display: "inline-block",
+                                cursor: "pointer",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  color.value)
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  currentColor === color
+                                    ? color.value
+                                    : "white")
+                              }
                             >
-                              <span
-                                className={`btn-checkbox ${color.className}`}
-                              />
-                              <span className="tooltip">{color.value}</span>
+                              {color.value}
                             </label>
                           </React.Fragment>
                         ))}
@@ -103,16 +126,18 @@ export default function Details6({ product }) {
                         <div className="variant-picker-label">
                           Grease:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentGrease.value}
+                            {currentGrease
+                              ? currentGrease.value
+                              : "Select grease option"}
                           </span>
                         </div>
-                        <a
+                        {/* <a
                           href="#find_size"
                           data-bs-toggle="modal"
                           className="find-size fw-6"
                         >
                           Product Fitment Guide
-                        </a>
+                        </a> */}
                       </div>
                       <form className="variant-picker-values">
                         {greaseOptions.map((grease) => (
@@ -146,6 +171,7 @@ export default function Details6({ product }) {
                       <a
                         href="#"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn "
+                        disabled={!currentColor || !currentGrease}
                       >
                         <span>Add to cart -&nbsp;</span>
                         <span className="tf-qty-price">$8.00</span>

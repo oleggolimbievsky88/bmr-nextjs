@@ -1,0 +1,35 @@
+.products-layout {
+  // Add any specific styling for the products layout
+  .main-content {
+    min-height: 500px;
+    padding: 2rem 0;
+  }
+
+  // Sidebar button styling
+  .btn-sidebar-style2 {
+    position: fixed;
+    right: 15px;
+    bottom: 15px;
+    z-index: 99;
+
+    button {
+      width: 45px;
+      height: 45px;
+      line-height: 45px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: var(--secondary-color);
+      }
+
+      i {
+        font-size: 20px;
+      }
+    }
+  }
+}

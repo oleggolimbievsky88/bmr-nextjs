@@ -12,10 +12,10 @@ export default function ProductsLayout({ children }) {
   console.log(children.props?.childProp?.segment);
 
   return (
-    <div>
+    <div className="products-layout">
       <Topbar4 />
       <Header18 />
-      <main>{children}</main>
+      <main className="main-content">{children}</main>
       <br />
       <Footer1 />
     </div>

@@ -36,6 +36,11 @@ export default async function CategoryPage({ params }) {
     const brands = await getBrands();
     const platforms = await getPlatforms();
 
+    console.log("Categories:", categories);
+    console.log("Brands:", brands);
+    console.log("Platforms:", platforms);
+    console.log("Products:", products);
+
     return (
       <>
         <section className="flat-spacing-1">
