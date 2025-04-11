@@ -4,8 +4,12 @@ import Topbar1 from "@/components/header/Topbar1";
 import ShopSidebarRight from "@/components/shop/ShopSidebarRight";
 import React from "react";
 
+// Make this page dynamic to avoid build errors with undefined data
+export const dynamic = "force-dynamic";
+
 export const metadata = {
-  title: "Shop Right Sidebar | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Shop Right Sidebar | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {

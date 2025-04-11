@@ -1,6 +1,9 @@
 import { getVehiclesByBodyId } from "@/lib/queries";
 import { NextResponse } from "next/server";
 
+// Mark the route as dynamically renderable
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);

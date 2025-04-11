@@ -11,6 +11,28 @@ export default function ProductDetailPage({ params }) {
 
   console.log("params", params);
 
+  // Dummy product data for development
+  const product = {
+    id: 1,
+    name: "Delrin Bushing Kit for Front Control Arms",
+    description:
+      "High performance polyurethane bushings for improved handling and durability",
+    platform: "2010-2015 Camaro",
+    basePrice: 89.99,
+    images: ["/images/product1.jpg"],
+    colors: ["Red", "Black", "Blue"],
+    additionalOptions: [
+      { name: "Grease", price: 4.99 },
+      { name: "Angle Finder", price: 9.99 },
+    ],
+    features: [
+      "Made from high-quality materials",
+      "Improves handling and performance",
+      "Easy installation",
+      "Made in USA",
+    ],
+  };
+
   const calculateTotalPrice = () => {
     let total = product.basePrice;
     if (addGrease) total += product.additionalOptions[0].price;
