@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCategoriesByPlatform, getPlatformBySlug } from "@/lib/queries";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 
@@ -27,18 +28,21 @@ export async function GET(request, { params }) {
         return NextResponse.json(
           {
             error: "Platform not found",
-            message: `No platform found with slug: ${platform}`,
-            requestedSlug: platform,
+            message: `No platform found for: ${platform}`,
+            searchedFor: platform,
           },
           { status: 404 }
         );
       }
 
-      // If we found the platform, get its categories
+      console.log("✅ Platform found with ID:", platformData.id);
+
+      // Get categories for this platform
       const { categories, platformInfo } = await getCategoriesByPlatform(
         platform
       );
 
+      // Return platform and categories data
       return NextResponse.json({
         platform: platformData,
         categories,
@@ -46,21 +50,15 @@ export async function GET(request, { params }) {
       });
     } catch (error) {
       console.error("Error fetching platform data:", error);
-
-      // Return a proper error response
       return NextResponse.json(
-        {
-          error: "Error fetching platform data",
-          message: error.message,
-          requestedSlug: platform,
-        },
+        { error: "Error fetching platform data", message: error.message },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("Error in platform route:", error);
+    console.error("Failed to process platform request:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to process request", message: error.message },
       { status: 500 }
     );
   }
