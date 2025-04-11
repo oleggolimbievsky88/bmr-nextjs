@@ -4,7 +4,13 @@ const nextConfig = {
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {
-        ignored: ["**/.git/**", "**/node_modules/**", "**/.next/**"],
+        poll: 1000,
+        ignored: [
+          "**/.git/**",
+          "**/node_modules/**",
+          "**/.next/**",
+          "**/prisma/**",
+        ],
       };
     }
     return config;
@@ -35,9 +41,7 @@ const nextConfig = {
     unoptimized: true,
   },
   output: "standalone",
-  experimental: {
-    serverMemoryLimit: 4096,
-  },
+  experimental: {},
   poweredByHeader: false,
 };
 
