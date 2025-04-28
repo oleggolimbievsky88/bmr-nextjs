@@ -71,8 +71,25 @@ export default function PlatformCategoryPage({ params }) {
       <Breadcrumbs params={params} className="mt-0 pt-0 breadcrumbs-custom" />
 
       <div className="container">
+        <h2
+          className="display-6 fw-bold position-relative d-inline-block"
+          style={{ textAlign: "center", width: "100%" }}
+        >
+          Categories
+          <div
+            className="position-absolute start-0 end-0 bottom-0"
+            style={{
+              height: "4px",
+              background: "#FF0000",
+              width: "20%",
+              margin: "0 auto",
+              marginTop: "10px",
+            }}
+          ></div>
+        </h2>
         {/* Categories Section */}
-        <section className="mb-5">
+        <section className="mb-10">
+          <div className="mb-3"></div>
           <CategoryGrid
             categories={categories}
             platform={platformSlug}
@@ -90,6 +107,8 @@ export default function PlatformCategoryPage({ params }) {
               borderRadius: "10px",
               border: "1px solid #ddd",
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+              marginTop: "10px",
+              paddingTop: "20px",
             }}
           >
             <div className="text-center mb-4">
