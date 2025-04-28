@@ -376,6 +376,11 @@ export default function MainMenu({ initialMenuData }) {
                 Installation
               </Link>
             </li>
+            <li className="nav-item">
+              <Link href="/cart" className="nav-link">
+                Cart
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
