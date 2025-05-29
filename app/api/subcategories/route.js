@@ -1,35 +1,35 @@
 import { getCategoriesByMainCat } from "@/lib/queries";
-import { NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic'
+import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const subCategoryId = searchParams.get('subCategoryId');
+    const mainCategoryId = searchParams.get("mainCategoryId");
 
-    if (!subCategoryId) {
+    if (!mainCategoryId) {
       return NextResponse.json(
-        { error: 'Sub Category ID is required' }, 
+        { error: "Main Category ID is required" },
         { status: 400 }
       );
     }
 
-    const subCategories = await getCategoriesByMainCat(subCategoryId);
+    const subCategories = await getCategoriesByMainCat(mainCategoryId);
 
     // Transform the result to match the previous implementation
-    const transformedSubCategories = subCategories.map(category => ({
+    const transformedSubCategories = subCategories.map((category) => ({
       CatID: category.CatID,
       CatName: category.CatName,
       CatImage: category.CatImage,
-      ProductCount: 0  // You might want to add a method to count products per category
+      ProductCount: 3, // You might want to add a method to count products per category
     }));
 
     return NextResponse.json(transformedSubCategories);
   } catch (error) {
-    console.error('Error fetching sub-categories:', error);
+    console.error("Error fetching sub-categories:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch sub-categories' }, 
+      { error: "Failed to fetch sub-categories" },
       { status: 500 }
     );
   }
-} 
+}

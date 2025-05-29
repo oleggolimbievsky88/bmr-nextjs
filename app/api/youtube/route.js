@@ -20,7 +20,9 @@ export async function GET() {
     );
 
     if (!channelResponse.ok) {
-      throw new Error("Failed to fetch channel data");
+      const errorText = await channelResponse.text();
+      console.error("Failed to fetch channel data:", errorText);
+      throw new Error("Failed to fetch channel data: " + errorText);
     }
 
     const channelData = await channelResponse.json();
@@ -33,7 +35,9 @@ export async function GET() {
     );
 
     if (!videosResponse.ok) {
-      throw new Error("Failed to fetch videos");
+      const errorText = await videosResponse.text();
+      console.error("Failed to fetch videos:", errorText);
+      throw new Error("Failed to fetch videos: " + errorText);
     }
 
     const videosData = await videosResponse.json();
@@ -53,7 +57,7 @@ export async function GET() {
   } catch (error) {
     console.error("YouTube API Error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch YouTube videos" },
+      { error: error.message || "Failed to fetch YouTube videos" },
       { status: 500 }
     );
   }

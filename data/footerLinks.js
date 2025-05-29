@@ -16,9 +16,9 @@ export const aboutLinks = [
 ];
 
 export const paymentImages = [
-  { src: "/images/payments/visa.png", width: 48, height: 30, alt: "" },
-  { src: "/images/payments/paypal.png", width: 49, height: 30, alt: "" },
-  { src: "/images/payments/mastercard.png", width: 48, height: 30, alt: "" },
-  { src: "/images/payments/amex.png", width: 57, height: 30, alt: "" },
-  { src: "/images/payments/discover.png", width: 49, height: 30, alt: "" },
+  { src: "/images/payments/visa.png", width: 48, height: 30, alt: "Visa" },
+  { src: "/images/payments/paypal.png", width: 49, height: 30, alt: "Paypal" },
+  { src: "/images/payments/mastercard.png", width: 48, height: 30, alt: "Mastercard" },
+  { src: "/images/payments/amex.png", width: 57, height: 30, alt: "American Express" },
+  { src: "/images/payments/discover.png", width: 49, height: 30, alt: "Discover" },
 ];

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   getCategoriesByPlatform,
   getProductsByMainCategory,
+  getProductBySlug,
 } from "@/lib/queries";
 
 // Enable dynamic rendering for this route
@@ -39,3 +40,4 @@ export async function GET(request, { params }) {
     );
   }
 }
+ 

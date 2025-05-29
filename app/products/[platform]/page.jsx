@@ -75,10 +75,11 @@ export default function PlatformPage({ params }) {
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (
           <section
-            className="mb-5"
+            className="mb-5 mt-10"
             style={{
               backgroundColor: "#f8f9fa",
-              padding: "20px",
+              padding: "30px",
+              marginTop: "60px",
               borderRadius: "10px",
               border: "1px solid #ddd",
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",

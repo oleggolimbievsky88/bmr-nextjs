@@ -68,8 +68,8 @@ export default async function ProductPage({ params }) {
       </div>
       {/* <DetailsOuterZoom product={product} /> */}
       <Details6 product={product} />
-      <ShopDetailsTab />
-      <Products />
+      <ShopDetailsTab product={product} />
+      <Products product={product} />
       <RecentProducts />
       <Footer1 />
     </>

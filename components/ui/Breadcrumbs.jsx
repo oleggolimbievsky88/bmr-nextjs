@@ -5,7 +5,10 @@ import { usePathname } from "next/navigation";
 
 export default function Breadcrumbs({ params }) {
   const pathname = usePathname();
-  const parts = pathname.split("/").filter(Boolean);
+  const parts = pathname
+    .split("/")
+    .filter(Boolean)
+    .filter((part) => part !== "products");
 
   return (
     <div className="tf-breadcrumb">
@@ -23,11 +26,32 @@ export default function Breadcrumbs({ params }) {
                   <i className="icon icon-arrow-right mx-2" />
                   {isLast ? (
                     <span className="text breadcrumb-item active">
-                      {decodeURIComponent(part).replace(/-/g, " ")}
+                      {(() => {
+                        const decoded = decodeURIComponent(part);
+                        const yearRangeMatch =
+                          decoded.match(/^(\d{4})-(\d{4})(.*)/);
+                        if (yearRangeMatch) {
+                          // Keep dash between years, replace dashes in the rest
+                          return `${yearRangeMatch[1]}-${
+                            yearRangeMatch[2]
+                          }${yearRangeMatch[3].replace(/-/g, " ")}`;
+                        }
+                        return decoded.replace(/-/g, " ");
+                      })()}
                     </span>
                   ) : (
                     <Link href={url} className="text breadcrumb-item">
-                      {decodeURIComponent(part).replace(/-/g, " ")}
+                      {(() => {
+                        const decoded = decodeURIComponent(part);
+                        const yearRangeMatch =
+                          decoded.match(/^(\d{4})-(\d{4})(.*)/);
+                        if (yearRangeMatch) {
+                          return `${yearRangeMatch[1]}-${
+                            yearRangeMatch[2]
+                          }${yearRangeMatch[3].replace(/-/g, " ")}`;
+                        }
+                        return decoded.replace(/-/g, " ");
+                      })()}
                     </Link>
                   )}
                 </span>

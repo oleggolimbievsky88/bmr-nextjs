@@ -8,27 +8,30 @@ import SidebarFilter from "./SidebarFilter";
 import Pagination from "../common/Pagination";
 import Sorting from "./Sorting";
 
-export default function FilterSidebar({ categories = [] }) {
+export default function FilterSidebar({ platform = "" }) {
   const [gridItems, setGridItems] = useState(3);
   const [products, setProducts] = useState([]);
   const [finalSorted, setFinalSorted] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   const handleCategorySelect = async (category) => {
     setSelectedCategory(category);
     setSelectedSubCategory(null);
-    
+
     try {
-      const response = await fetch(`/api/subcategories?mainCategoryId=${category.MainCatID}`);
+      const response = await fetch(
+        `/api/subcategories/${category.mainCategoryId}`
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch sub-categories');
+        throw new Error("Failed to fetch sub-categories");
       }
       const fetchedSubCategories = await response.json();
       setSubCategories(fetchedSubCategories);
     } catch (error) {
-      console.error('Error fetching sub-categories:', error);
+      console.error("Error fetching sub-categories:", error);
       setSubCategories([]);
     }
   };
@@ -36,6 +39,13 @@ export default function FilterSidebar({ categories = [] }) {
   const handleSubCategorySelect = (subCategory) => {
     setSelectedSubCategory(subCategory);
   };
+
+  useEffect(() => {
+    if (!platform) return;
+    fetch(`/api/maincategories?platform=${encodeURIComponent(platform)}`)
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+  }, [platform]);
 
   return (
     <>
@@ -70,9 +80,13 @@ export default function FilterSidebar({ categories = [] }) {
                 <h3 className="title-widget">Main Categories</h3>
                 <div className="list-categories">
                   {categories.map((category) => (
-                    <div 
-                      key={category.MainCatID} 
-                      className={`category-item ${selectedCategory?.MainCatID === category.MainCatID ? 'active' : ''}`}
+                    <div
+                      key={category.MainCatID}
+                      className={`category-item ${
+                        selectedCategory?.MainCatID === category.MainCatID
+                          ? "active"
+                          : ""
+                      }`}
                       onClick={() => handleCategorySelect(category)}
                     >
                       {category.MainCatName}
@@ -91,9 +105,13 @@ export default function FilterSidebar({ categories = [] }) {
                   <h3 className="title-widget">Sub Categories</h3>
                   <div className="list-categories">
                     {subCategories.map((subCategory) => (
-                      <div 
-                        key={subCategory.CatID} 
-                        className={`category-item ${selectedSubCategory?.CatID === subCategory.CatID ? 'active' : ''}`}
+                      <div
+                        key={subCategory.CatID}
+                        className={`category-item ${
+                          selectedSubCategory?.CatID === subCategory.CatID
+                            ? "active"
+                            : ""
+                        }`}
                         onClick={() => handleSubCategorySelect(subCategory)}
                       >
                         {subCategory.CatName}
@@ -106,8 +124,8 @@ export default function FilterSidebar({ categories = [] }) {
                 </div>
               )}
 
-              <SidebarFilter 
-                setProducts={setProducts} 
+              <SidebarFilter
+                setProducts={setProducts}
                 selectedCategory={selectedCategory}
                 selectedSubCategory={selectedSubCategory}
               />
@@ -116,8 +134,9 @@ export default function FilterSidebar({ categories = [] }) {
               <div className="meta-filter-shop">
                 {selectedCategory && (
                   <h2>
-                    {selectedCategory.MainCatName} 
-                    {selectedCategory.PlatformName && ` - ${selectedCategory.PlatformName}`}
+                    {selectedCategory.MainCatName}
+                    {selectedCategory.PlatformName &&
+                      ` - ${selectedCategory.PlatformName}`}
                     {selectedSubCategory && ` > ${selectedSubCategory.CatName}`}
                   </h2>
                 )}

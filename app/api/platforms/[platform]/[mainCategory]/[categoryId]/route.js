@@ -1,25 +1,40 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import {
+  getCategoriesByPlatform,
+  getProductsByMainCategory,
+} from "@/lib/queries";
+
+// Enable dynamic rendering for this route
+export const dynamic = "force-dynamic";
 
 export async function GET(request, { params }) {
-  const { platformName, categoryId } = params;
-
   try {
-    const query = `
-      SELECT p.* FROM products p
-      JOIN platforms pl ON p.platformId = pl.id
-      WHERE p.Display = 1 AND pl.name = ? AND p.categoryId = ?
-    `;
-    const [rows] = await pool.query(query, [
-      platformName,
-      parseInt(categoryId),
+    const url = new URL(request.url);
+    const platformSlug = url.searchParams.get("platform");
+    const mainCategory = url.searchParams.get("mainCategory");
+    const categoryId = url.searchParams.get("categoryId");
+    if (!platformSlug || !mainCategory) {
+      return NextResponse.json(
+        { error: "Platform and main category are required" },
+        { status: 400 }
+      );
+    }
+
+    // Get subcategories and initial products
+    const [{ categories, platformInfo }, products] = await Promise.all([
+      getCategoriesByPlatform(platformSlug, mainCategory),
+      getProductsByMainCategory(platformSlug, mainCategory, 8), // Limit to 8 products
     ]);
 
-    return NextResponse.json(rows);
+    return NextResponse.json({
+      categories,
+      products,
+      platformInfo,
+    });
   } catch (error) {
-    console.error("Failed to fetch products:", error);
+    console.error("Error in main category route:", error);
     return NextResponse.json(
-      { error: "Failed to fetch products" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }

@@ -254,7 +254,11 @@ export default function MainMenu({ initialMenuData }) {
                       alt={bodyDetails.Name}
                       width={200}
                       height={150}
-                      style={{ objectFit: "contain" }}
+                      style={{
+                        objectFit: "contain",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
                       onError={handleImageError}
                       unoptimized={true}
                       priority

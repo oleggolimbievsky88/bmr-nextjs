@@ -1,18 +1,18 @@
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
 import FilterSidebar from "@/components/shop/FilterSidebar";
-import { getMainCategories } from "@/lib/queries";
 
 import React from "react";
 
 export const metadata = {
-  title: "Shop Categories | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Shop Categories | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "Browse our performance suspension and chassis parts categories",
 };
 
-export default async function ShopFilterSidebar() {
-  // Use a default platform slug or fetch dynamically
-  const categories = await getMainCategories('2010-2015-camaro');
+export default function ShopFilterSidebar({ searchParams }) {
+  // You can get the platform from searchParams, params, or set a default
+  const platform = searchParams?.platform || "";
 
   return (
     <>
@@ -25,7 +25,7 @@ export default async function ShopFilterSidebar() {
           </p>
         </div>
       </div>
-      <FilterSidebar categories={categories} />
+      <FilterSidebar platform={platform} />
       <Footer1 />
     </>
   );

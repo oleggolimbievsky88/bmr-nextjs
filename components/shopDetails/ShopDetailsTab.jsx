@@ -4,14 +4,29 @@ import { useEffect, useState } from "react";
 
 const tabs = [
   { title: "Description", active: true },
-  { title: "Review", active: false },
-  { title: "Shiping", active: false },
-  { title: "Return Polocies", active: false },
+  { title: "Features", active: false },
+  { title: "Installation", active: false },
+  { title: "Fitment", active: false },
 ];
 
-export default function ShopDetailsTab({product}) {
+export default function ShopDetailsTab({ product }) {
   const [currentTab, setCurrentTab] = useState(1);
-  const description = typeof product?.Description === 'string' ? product.Description : "No description available";
+  console.log("product", product);
+  const descHtml = product.Description || "";
+  const lines = descHtml.split(/\r?\n/);
+  const bulletIndex = lines.findIndex((line) => /^\s*[-•*]\s+/.test(line));
+  let descPart = "";
+  let featuresArr = [];
+  if (bulletIndex !== -1) {
+    descPart = lines.slice(0, bulletIndex).join(" ");
+    featuresArr = lines
+      .slice(bulletIndex)
+      .filter((line) => /^\s*[-•*]\s+/.test(line))
+      .map((line) => line.replace(/^\s*[-•*]\s+/, "").trim());
+  } else {
+    descPart = descHtml;
+  }
+
   return (
     <section
       className="flat-spacing-17 pt_0"
@@ -41,58 +56,38 @@ export default function ShopDetailsTab({product}) {
                   } `}
                 >
                   <div className="">
-                    <p className="mb_30">
-                      {description}
-                    </p>
-                    <div className="tf-product-des-demo">
-                      <div className="right">
-                        <h3 className="fs-16 fw-5">Features</h3>
-                        <ul>
-                          <li>Front button placket sadfs</li>
-                          <li>Adjustable sleeve tabs</li>
-                          <li>Babaton embroidered crest at placket and hem</li>
-                        </ul>
-                        <h3 className="fs-16 fw-5">Materials Care</h3>
-                        <ul className="mb-0">
-                          <li>Content: 100% LENZING™ ECOVERO™ Viscose</li>
-                          <li>Care: Hand wash</li>
-                          <li>Imported</li>
-                        </ul>
-                      </div>
-                      <div className="left">
-                        <h3 className="fs-16 fw-5">Materials Care</h3>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-machine" />
+                    <div dangerouslySetInnerHTML={{ __html: descPart }} />
+                    {featuresArr.length > 0 && (
+                      <div className="tf-product-des-demo">
+                        <div className="right">
+                          <h2
+                            className="fs-16 fw-5"
+                            style={{
+                              fontFamily: "impact",
+                              color: "var(--primary)",
+                              letterSpacing: "1px",
+                              fontSize: "20px",
+                            }}
+                          ></h2>
+                          <div className="row">
+                            <ul>
+                              {featuresArr.map((feature, idx) => (
+                                <li
+                                  key={idx}
+                                  style={{
+                                    fontSize: "14px",
+                                    color: "black !important",
+                                    lineHeight: "10px",
+                                  }}
+                                >
+                                  {feature}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                          <span>Machine wash max. 30ºC. Short spin.</span>
-                        </div>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-iron" />
-                          </div>
-                          <span>Iron maximum 110ºC.</span>
-                        </div>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-bleach" />
-                          </div>
-                          <span>Do not bleach/bleach.</span>
-                        </div>
-                        <div className="d-flex gap-10 mb_15 align-items-center">
-                          <div className="icon">
-                            <i className="icon-dry-clean" />
-                          </div>
-                          <span>Do not dry clean.</span>
-                        </div>
-                        <div className="d-flex gap-10 align-items-center">
-                          <div className="icon">
-                            <i className="icon-tumble-dry" />
-                          </div>
-                          <span>Tumble dry, medium hear.</span>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
                 <div
@@ -100,22 +95,41 @@ export default function ShopDetailsTab({product}) {
                     currentTab == 2 ? "active" : ""
                   } `}
                 >
-                  <table className="tf-pr-attrs">
-                    <tbody>
-                      <tr className="tf-attr-pa-color">
-                        <th className="tf-attr-label">Color</th>
-                        <td className="tf-attr-value">
-                          <p>White, Pink, Black</p>
-                        </td>
-                      </tr>
-                      <tr className="tf-attr-pa-size">
-                        <th className="tf-attr-label">Size</th>
-                        <td className="tf-attr-value">
-                          <p>S, M, L, XL</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div className="row">
+                    <ul>
+                      {featuresArr.length > 0 && (
+                        <div className="tf-product-des-demo">
+                          <div className="right">
+                            <h2
+                              className="fs-16 fw-5"
+                              style={{
+                                fontFamily: "impact",
+                                color: "black",
+                                letterSpacing: "1px",
+                                fontSize: "20px",
+                              }}
+                            ></h2>
+                            <div className="row">
+                              <ul>
+                                {featuresArr.map((feature, idx) => (
+                                  <li
+                                    key={idx}
+                                    style={{
+                                      fontSize: "14px",
+                                      color: "black !important",
+                                      lineHeight: "10px",
+                                    }}
+                                  >
+                                    {feature}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </ul>
+                  </div>
                 </div>
                 <div
                   className={`widget-content-inner ${

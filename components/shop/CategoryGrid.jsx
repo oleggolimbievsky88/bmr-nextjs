@@ -127,63 +127,60 @@
 //   );
 // }
 
-
-
 import Link from "next/link";
 
-export default function CategoryGrid({ 
-    categories = [], 
-    platform, 
-    isSubCategory = false, 
-    categoryImages = {} 
+export default function CategoryGrid({
+  categories = [],
+  platform,
+  isSubCategory = false,
+  categoryImages = {},
 }) {
-    console.log("Categories:", categories); // Debug log
-    return (
-        <div className="container">
-            <div className="row justify-content-center">
-                {categories.map((category, index) => {
-                    // For main categories, use name property
-                    // For subcategories, use CatName or name property
-                    const categoryName = category.name || category.CatName;
-                    const categoryId = category.id || category.CatID;
-                    const categoryImage = category.image || category.CatImage;
+  console.log("Categories:", categories); // Debug log
+  return (
+    <div className="container">
+      <div className="row justify-content-center">
+        {categories.map((category, index) => {
+          // For main categories, use name property
+          // For subcategories, use CatName or name property
+          const categoryName = category.name || category.CatName;
+          const categoryId = category.id || category.CatID;
+          const categoryImage = category.image || category.CatImage;
 
-                    if (!categoryName) {
-                        console.warn(`⚠️ Skipping category at index ${index}:`, category);
-                        return null;
-                    }
+          if (!categoryName) {
+            console.warn(`⚠️ Skipping category at index ${index}:`, category);
+            return null;
+          }
 
-                    const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
-                    const href = isSubCategory 
-                        ? `/products/${platform}/${categorySlug}` 
-                        : `/products/${platform}/${categorySlug}`;
+          const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+          const href = isSubCategory
+            ? `/products/${platform}/${categorySlug}`
+            : `/products/${platform}/${categorySlug}`;
 
-                    return (
-                        <div 
-                            key={categoryId || index} 
-                            className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch"
-                        >
-                            <div className="category-item text-center w-100">
-                                <Link href={href}>
-                                    {categoryImage && (
-                                        <img
-                                            src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
-                                            alt={categoryName}
-                                            className="category-img"
-                                        />
-                                    )}
-                                </Link>
-                                <div className="category-title-wrapper">
-                                    <Link href={href} className="text-decoration-none">
-                                        <p className="category-title">{categoryName}</p>
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
+          return (
+            <div
+              key={categoryId || index}
+              className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch category-container"
+            >
+              <div className="category-item text-center w-100">
+                <Link href={href}>
+                  {categoryImage && (
+                    <img
+                      src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
+                      alt={categoryName}
+                      className="category-img"
+                    />
+                  )}
+                </Link>
+                <div className="category-title-wrapper">
+                  <Link href={href} className="text-decoration-none">
+                    <p className="category-title">{categoryName}</p>
+                  </Link>
+                </div>
+              </div>
             </div>
-        </div>
-    );
+          );
+        })}
+      </div>
+    </div>
+  );
 }
-

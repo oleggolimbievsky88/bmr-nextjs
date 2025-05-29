@@ -30,7 +30,7 @@ export default async function CategoryPage({ params }) {
   console.log("📂 Main Category:", mainCategory);
 
   // Fetch subcategories under the SubCategory category
-    const categories = await getSubCategories(platform, mainCategory);
+  const categories = await getSubCategories(platform, mainCategory);
 
   if (!categories || categories.length === 0) {
     console.warn(`⚠️ No categories found for ${mainCategory}`);
@@ -44,16 +44,21 @@ export default async function CategoryPage({ params }) {
       <PlatformHeader
         platformData={{
           name: platformName,
-          headerImage: platformInfo?.headerImage ? `/images/headers/${platformInfo.headerImage}` : null
+          headerImage: platformInfo?.headerImage
+            ? `/images/headers/${platformInfo.headerImage}`
+            : null,
         }}
         title={`${platformName} ${formattedCategoryName} Parts`}
       />
 
       <div className="tf-page-title">
         <div className="container-full">
-          <div className="heading text-center">{formattedVehicleName} - {mainCategory}</div>
+          <div className="heading text-center">
+            {formattedVehicleName} - {mainCategory}
+          </div>
           <p className="text-center text-1 text_black-2 mt_5">
-            Select a category to shop through our latest selection of Suspension & Chassis Parts
+            Select a category to shop through our latest selection of Suspension
+            & Chassis Parts
           </p>
         </div>
       </div>
