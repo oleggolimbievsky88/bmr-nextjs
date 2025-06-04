@@ -1,110 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import { db } from "@/lib/db";
+import { getProductData } from "@/lib/queries";
 
 // This enables dynamic rendering for this route
 export const dynamic = "force-dynamic";
-
-async function getProductData(productSlug, platform, mainCategory, category) {
-  try {
-    // Get platform ID
-    const platformQuery = `
-      SELECT BodyID
-      FROM bodies
-      WHERE Name LIKE ?
-      LIMIT 1
-    `;
-
-    const platformData = await db.queryOne(platformQuery, [`%${platform}%`]);
-
-    if (!platformData) {
-      return null;
-    }
-
-    // Get category ID
-    const categoryQuery = `
-      SELECT CatID
-      FROM categories
-      WHERE CatName LIKE ?
-      LIMIT 1
-    `;
-
-    const categoryData = await db.queryOne(categoryQuery, [
-      `%${category.replace(/-/g, " ")}%`,
-    ]);
-
-    if (!categoryData) {
-      return null;
-    }
-
-    // Get product by slug and category
-    const productQuery = `
-      SELECT
-        p.ProductID,
-        p.ProductName,
-        p.PartNumber,
-        p.Description,
-        p.Features,
-        p.Price,
-        p.Retail,
-        p.ImageSmall,
-        p.ImageLarge,
-        p.Images,
-        p.Instructions,
-        p.Color,
-        p.Hardware,
-        p.Grease,
-        p.AngleFinder,
-        p.video
-      FROM products p
-      WHERE p.BodyID = ?
-        AND FIND_IN_SET(?, p.CatID)
-        AND p.ProductName LIKE ?
-      LIMIT 1
-    `;
-
-    const productData = await db.queryOne(productQuery, [
-      platformData.BodyID,
-      categoryData.CatID,
-      `%${productSlug.replace(/-/g, " ")}%`,
-    ]);
-
-    if (!productData) {
-      return null;
-    }
-
-    // Get related products
-    const relatedProductsQuery = `
-      SELECT
-        p.ProductID,
-        p.ProductName,
-        p.PartNumber,
-        p.Price,
-        p.ImageSmall
-      FROM products p
-      WHERE p.BodyID = ?
-        AND FIND_IN_SET(?, p.CatID)
-        AND p.ProductID != ?
-      LIMIT 4
-    `;
-
-    const relatedProducts = await db.query(relatedProductsQuery, [
-      platformData.BodyID,
-      categoryData.CatID,
-      productData.ProductID,
-    ]);
-
-    return {
-      product: productData,
-      relatedProducts,
-    };
-  } catch (error) {
-    console.error("Error fetching product data:", error);
-    return null;
-  }
-}
 
 export default async function ProductDetailPage({ params }) {
   const { platform, mainCategory, category, product: productSlug } = params;
@@ -116,10 +15,6 @@ export default async function ProductDetailPage({ params }) {
     mainCategory,
     category
   );
-
-  if (!data) {
-    notFound();
-  }
 
   const { product, relatedProducts } = data;
 
