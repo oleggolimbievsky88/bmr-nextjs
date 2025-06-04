@@ -3,7 +3,7 @@
 import { getCategoryById } from "../../../../lib/queries"; // Import your query function
 
 export async function GET(req, { params }) {
-  const { catId } = params; // Extract catId from the dynamic route
+  const { platform, catId } = params; // Extract catId from the dynamic route
 
   try {
     const categories = await getCategoryById(catId); // Fetch categories based on catId

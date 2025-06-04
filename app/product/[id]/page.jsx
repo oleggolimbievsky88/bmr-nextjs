@@ -66,7 +66,7 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       </div>
-      {/* <DetailsOuterZoom product={product} /> */}
+      <DetailsOuterZoom product={product} />
       <Details6 product={product} />
       <ShopDetailsTab product={product} />
       <Products product={product} />

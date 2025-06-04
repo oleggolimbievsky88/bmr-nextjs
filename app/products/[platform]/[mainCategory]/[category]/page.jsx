@@ -2,7 +2,8 @@ import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
 import Topbar1 from "@/components/header/Topbar1";
 import CategoryGrid from "@/components/shop/CategoryGrid";
-import { getSubCategories } from "@/lib/queries";
+import { getSubCategories, getPlatformInfo } from "@/lib/queries";
+import PlatformHeader from "@/components/common/PlatformHeader";
 
 export const metadata = {
   title: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
@@ -26,8 +27,16 @@ export default async function CategoryPage({ params }) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
+  const formattedCategoryName = mainCategory
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
   console.log("🔍 Platform:", platform);
   console.log("📂 Main Category:", mainCategory);
+
+  // Fetch platform info (if you want to show header image, etc)
+  const platformInfo = await getPlatformInfo(platform);
 
   // Fetch subcategories under the SubCategory category
   const categories = await getSubCategories(platform, mainCategory);
@@ -43,25 +52,26 @@ export default async function CategoryPage({ params }) {
       <Header2 />
       <PlatformHeader
         platformData={{
-          name: platformName,
+          name: formattedVehicleName,
           headerImage: platformInfo?.headerImage
             ? `/images/headers/${platformInfo.headerImage}`
             : null,
         }}
-        title={`${platformName} ${formattedCategoryName} Parts`}
+        title={`${formattedVehicleName} ${formattedCategoryName} Parts`}
       />
 
       <div className="tf-page-title">
         <div className="container-full">
           <div className="heading text-center">
-            {formattedVehicleName} - {mainCategory}
+            {formattedVehicleName} - {formattedCategoryName}
           </div>
-          <p className="text-center text-1 text_black-2 mt_5">
+          <p className="text-center text-1 text-bmr-red mt_5">
             Select a category to shop through our latest selection of Suspension
             & Chassis Parts
           </p>
         </div>
       </div>
+      {categories}
       <CategoryGrid categories={categories} platform={platform} />
       <Footer1 />
     </>

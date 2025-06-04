@@ -1,63 +1,10 @@
-"use client";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import LanguageSelect from "../common/LanguageSelect";
-import CurrencySelect from "../common/CurrencySelect";
-import emailjs from "@emailjs/browser";
+import FooterEmailForm from "./FooterEmailForm";
 import { aboutLinks, footerLinks, paymentImages } from "@/data/footerLinks";
 
-
-export default function Footer({ bgColor = "background-black" }) {
-  useEffect(() => {
-    const headings = document.querySelectorAll(".footer-heading-moblie");
-
-    const toggleOpen = (event) => {
-      const parent = event.target.closest(".footer-col-block");
-
-      parent.classList.toggle("open");
-    };
-
-    headings.forEach((heading) => {
-      heading.addEventListener("click", toggleOpen);
-    });
-
-    // Clean up event listeners when the component unmounts
-    return () => {
-      headings.forEach((heading) => {
-        heading.removeEventListener("click", toggleOpen);
-      });
-    };
-  }, []); // Empty dependency array means this will run only once on mount
-
-  const formRef = useRef();
-  const [success, setSuccess] = useState(true);
-  const [showMessage, setShowMessage] = useState(false);
-
-  const handleShowMessage = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 2000);
-  };
-
-  const sendMail = (e) => {
-    emailjs
-      .sendForm("service_noj8796", "template_fs3xchn", formRef.current, {
-        publicKey: "iG4SCmR-YtJagQ4gV",
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setSuccess(true);
-          handleShowMessage();
-          formRef.current.reset();
-        } else {
-          setSuccess(false);
-          handleShowMessage();
-        }
-      });
-  };
-
+export default function Footer1({ bgColor = "background-black" }) {
   return (
     <footer id="footer" className={`footer md-pb-70 ${bgColor}`}>
       <div className="footer-wrap">
@@ -73,7 +20,7 @@ export default function Footer({ bgColor = "background-black" }) {
                         alt="BMR Logo"
                         width={165}
                         height={35}
-                        style={{ fill: false, width: 165, height: 35 }}
+                        style={{ width: 165, height: 35 }}
                       />
                     </Link>
                   </div>
@@ -86,12 +33,15 @@ export default function Footer({ bgColor = "background-black" }) {
                     </li>
                     <li>
                       <p>
-                        Email: <a href="#">info@bmrsuspension.com</a>
+                        Email:{" "}
+                        <a href="mailto:info@bmrsuspension.com">
+                          info@bmrsuspension.com
+                        </a>
                       </p>
                     </li>
                     <li>
                       <p>
-                        Phone: <a href="#">(813) 986-9302</a>
+                        Phone: <a href="tel:8139869302">(813) 986-9302</a>
                       </p>
                     </li>
                   </ul>
@@ -178,70 +128,7 @@ export default function Footer({ bgColor = "background-black" }) {
                 </ul>
               </div>
               <div className="col-xl-3 col-md-6 col-12">
-                <div className="footer-newsletter footer-col-block">
-                  <div className="footer-heading footer-heading-desktop">
-                    <h6>Sign Up for Email</h6>
-                  </div>
-                  <div className="footer-heading footer-heading-moblie">
-                    <h6>Sign Up for Email</h6>
-                  </div>
-                  <div className="tf-collapse-content">
-                    <div className="footer-menu_item">
-                      Sign up to get first dibs on new arrivals, sales,
-                      exclusive content, events and more!
-                    </div>
-                    <div
-                      className={`tfSubscribeMsg ${
-                        showMessage ? "active" : ""
-                      }`}
-                    >
-                      {success ? (
-                        <p style={{ color: "rgb(52, 168, 83)" }}>
-                          You have successfully subscribed.
-                        </p>
-                      ) : (
-                        <p style={{ color: "red" }}>Something went wrong</p>
-                      )}
-                    </div>
-                    <form
-                      ref={formRef}
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        sendMail();
-                      }}
-                      className="form-newsletter subscribe-form"
-                      action="#"
-                      method="post"
-                      acceptCharset="utf-8"
-                      data-mailchimp="true"
-                    >
-                      <div className="subscribe-content">
-                        <fieldset className="email">
-                          <input
-                            required
-                            type="email"
-                            name="email-form"
-                            className="subscribe-email"
-                            placeholder="Enter your email...."
-                            tabIndex={0}
-                            aria-required="true"
-                            autoComplete="abc@xyz.com"
-                          />
-                        </fieldset>
-                        <div className="button-submit">
-                          <button
-                            className="subscribe-button tf-btn btn-sm radius-3 btn-fill btn-icon animate-hover-btn"
-                            type="submit"
-                          >
-                            Subscribe
-                            <i className="icon icon-arrow1-top-left" />
-                          </button>
-                        </div>
-                      </div>
-                      <div className="subscribe-msg" />
-                    </form>
-                  </div>
-                </div>
+                <FooterEmailForm />
               </div>
             </div>
           </div>

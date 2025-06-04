@@ -67,9 +67,13 @@ export default function PlatformPage({ params }) {
           ]}
         />
 
-        {/* Main Categories Section */}
+        {/* Categories Section */}
         <section className="mb-5">
-          <CategoryGrid categories={mainCategories} platform={platform} />
+          <CategoryGrid
+            categories={mainCategories}
+            platform={platform}
+            isMainCategory={true}
+          />
         </section>
 
         {/* Featured Products Section */}

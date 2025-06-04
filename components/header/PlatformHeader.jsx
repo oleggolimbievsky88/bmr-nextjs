@@ -1,6 +1,6 @@
 export default function PlatformHeader({
   platformData,
-  title = "Select a category to shop through our latest selection",
+  title = "Select a category to shop through our latest selection of Suspension & Chassis Parts",
   subtitle,
 }) {
   if (!platformData) return null;

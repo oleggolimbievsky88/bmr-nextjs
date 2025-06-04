@@ -12,7 +12,7 @@ export async function GET(request) {
     const scratchDent = searchParams.get("scratchDent") || "0";
     const limit = searchParams.get("limit")
       ? parseInt(searchParams.get("limit"))
-      : null;
+      : 100;
 
     // Check if we need to get new products
     if (searchParams.has("scratchDent")) {
@@ -47,6 +47,7 @@ export async function GET(request) {
         LEFT JOIN categories c ON p.CatID = c.CatID
         LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
         WHERE p.Display = 1 AND mc.MainCatID = ? AND c.CatID = ?
+        LIMIT ${limit}
       `,
         [mainCategoryId, subCategoryId]
       );

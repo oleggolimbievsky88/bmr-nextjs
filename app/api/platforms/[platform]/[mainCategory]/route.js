@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import {
   getCategoriesByPlatform,
   getProductsByMainCategory,
-  getProductBySlug,
 } from "@/lib/queries";
 
 // Enable dynamic rendering for this route
@@ -13,7 +12,7 @@ export async function GET(request, { params }) {
     const url = new URL(request.url);
     const platformSlug = url.searchParams.get("platform");
     const mainCategory = url.searchParams.get("mainCategory");
-
+    const categoryId = url.searchParams.get("categoryId");
     if (!platformSlug || !mainCategory) {
       return NextResponse.json(
         { error: "Platform and main category are required" },
@@ -40,4 +39,3 @@ export async function GET(request, { params }) {
     );
   }
 }
- 

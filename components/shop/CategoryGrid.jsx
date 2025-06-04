@@ -143,7 +143,7 @@ export default function CategoryGrid({
           // For main categories, use name property
           // For subcategories, use CatName or name property
           const categoryName = category.name || category.CatName;
-          const categoryId = category.id || category.CatID;
+          const categoryId = category.MainCatID || category.CatID;
           const categoryImage = category.image || category.CatImage;
 
           if (!categoryName) {
