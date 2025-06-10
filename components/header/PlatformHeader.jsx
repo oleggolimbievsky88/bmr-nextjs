@@ -51,14 +51,11 @@ export default function PlatformHeader({
                 style={{ width: "95px", height: "60px", marginBottom: "10px" }}
               />
             )}
-            <h1
-              className="mb-0"
-              style={{ fontSize: "2rem", lineHeight: "2.5rem" }}
-            >
+            <h1 className="mb-0 header-main-title">
               {yearDisplay} {platformData.Name}
             </h1>
             <p
-              className="text-center mt-2 mb-0"
+              className="text-center mt-2 mb-3"
               style={{ color: "#666", fontSize: "1.5rem" }}
             >
               {subtitle || title}

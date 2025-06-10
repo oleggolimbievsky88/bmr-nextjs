@@ -9,6 +9,7 @@ export async function GET(request, { params }) {
 
     const products = await getFeaturedProductsByPlatform(platform, limit);
     return NextResponse.json(products);
+    
   } catch (error) {
     console.error('Error fetching featured products:', error);
     return NextResponse.json(
@@ -16,4 +17,4 @@ export async function GET(request, { params }) {
       { status: error.message === 'Platform not found' ? 404 : 500 }
     );
   }
-} 
+}

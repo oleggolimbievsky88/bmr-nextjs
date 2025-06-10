@@ -18,10 +18,8 @@ export const metadata = {
 export default async function ProductPage({ params }) {
   const { id } = params;
 
-  const API_URL = process.env.API_URL || "http://localhost:3000";
-
   // Fetch product data from API
-  const res = await fetch(`${API_URL}/api/product/${id}`);
+  const res = await fetch(`/api/product/${id}`, { cache: "no-store" });
 
   console.log("Res:", res);
   if (!res.ok) {

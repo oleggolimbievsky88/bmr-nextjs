@@ -90,14 +90,14 @@ export default function PlatformPage({ params }) {
             }}
           >
             <div className="text-center mb-4">
-              <h2 className="display-6 fw-bold position-relative d-inline-block">
+              <h2 className="display-6 position-relative d-inline-block header-main-title">
                 Featured Products
                 <div
                   className="position-absolute start-0 end-0 bottom-0"
                   style={{
                     height: "4px",
-                    background: "#FF0000",
-                    width: "40%",
+                    backgroundColor: "var(--bmr-red)",
+                    width: "80%",
                     margin: "0 auto",
                     marginTop: "10px",
                   }}

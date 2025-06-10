@@ -5,16 +5,16 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
 async function fetchCategories(category) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/maincategories/${category.mainCatId}`
-  );
+  const res = await fetch(`/api/maincategories/${category.mainCatId}`, {
+    cache: "no-store",
+  });
   return res.json();
 }
 
 async function fetchProducts(platformId, category) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/maincategories/${category.mainCatId}`
-  );
+  const res = await fetch(`/api/maincategories/${category.mainCatId}`, {
+    cache: "no-store",
+  });
   return res.json();
 }
 
