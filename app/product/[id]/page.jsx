@@ -18,8 +18,10 @@ export const metadata = {
 export default async function ProductPage({ params }) {
   const { id } = params;
 
-  // Fetch product data from API
-  const res = await fetch(`/api/product/${id}`, { cache: "no-store" });
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/product/${id}`, {
+    cache: "no-store",
+  });
 
   console.log("Res:", res);
   if (!res.ok) {
@@ -64,7 +66,7 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       </div>
-      <DetailsOuterZoom product={product} />
+      {/* <DetailsOuterZoom product={product} /> */}
       <Details6 product={product} />
       <ShopDetailsTab product={product} />
       <Products product={product} />
