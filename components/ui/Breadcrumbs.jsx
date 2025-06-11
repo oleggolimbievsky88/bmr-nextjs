@@ -19,7 +19,7 @@ export default function Breadcrumbs({ params }) {
               Home
             </Link>
             {parts.map((part, index) => {
-              const url = `/${parts.slice(0, index + 1).join("/")}`;
+              const url = `/products/${parts.slice(0, index + 1).join("/")}`;
               const isLast = index === parts.length - 1;
               return (
                 <span key={url} className="d-inline-flex align-items-center">
