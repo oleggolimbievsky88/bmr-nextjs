@@ -136,10 +136,11 @@ export default function CategoryGrid({
   categoryImages = {},
 }) {
   console.log("Categories:", categories); // Debug log
+  const safeCategories = Array.isArray(categories) ? categories : [];
   return (
     <div className="container">
       <div className="row justify-content-center">
-        {categories.map((category, index) => {
+        {safeCategories.map((category, index) => {
           // For main categories, use name property
           // For subcategories, use CatName or name property
           const categoryName = category.name || category.CatName;

@@ -1,7 +1,7 @@
 node_modules
 .next
 .vercel
-.env
-.env.local
 .cursorignore
 .cursor
+.env
+.env.local

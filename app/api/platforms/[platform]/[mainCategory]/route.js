@@ -9,11 +9,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request, { params }) {
   try {
-    const url = new URL(request.url);
-    const platformSlug = url.searchParams.get("platform");
-    const mainCategory = url.searchParams.get("mainCategory");
-    const categoryId = url.searchParams.get("categoryId");
-    if (!platformSlug || !mainCategory) {
+    const { platform, mainCategory } = params;
+    if (!platform || !mainCategory) {
       return NextResponse.json(
         { error: "Platform and main category are required" },
         { status: 400 }
@@ -22,8 +19,8 @@ export async function GET(request, { params }) {
 
     // Get subcategories and initial products
     const [{ categories, platformInfo }, products] = await Promise.all([
-      getCategoriesByPlatform(platformSlug, mainCategory),
-      getProductsByMainCategory(platformSlug, mainCategory, 8), // Limit to 8 products
+      getCategoriesByPlatform(platform, mainCategory),
+      getProductsByMainCategory(platform, mainCategory, 8), // Limit to 8 products
     ]);
 
     return NextResponse.json({
