@@ -81,7 +81,7 @@ export default function ProductGrid({
       )}
 
       {/* Categories Grid */}
-      {showCategories && categories.length > 0 && (
+      {/* showCategories && categories.length > 0 && (
         <div className="row g-4 justify-content-center mt-4">
           {categories
             .filter(
@@ -113,7 +113,7 @@ export default function ProductGrid({
               </div>
             ))}
         </div>
-      )}
+      ) */}
 
       {/* Products Grid */}
       {products && products.length > 0 && (

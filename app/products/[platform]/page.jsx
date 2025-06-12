@@ -78,20 +78,8 @@ export default function PlatformPage({ params }) {
 
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (
-          <section
-            className="mb-5 mt-10"
-            style={{
-              backgroundColor: "#f8f9fa",
-              padding: "30px",
-              marginTop: "60px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div className="text-center mb-4">
-              <h2 className="display-6 position-relative d-inline-block header-main-title">
-                Featured Products
+          <section className="mb-5 mt-10">
+            {/* <div className="text-center mb-4">
                 <div
                   className="position-absolute start-0 end-0 bottom-0"
                   style={{
@@ -102,8 +90,13 @@ export default function PlatformPage({ params }) {
                     marginTop: "10px",
                   }}
                 ></div>
-              </h2>
-            </div>
+            </div> */}
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
             <ProductGrid products={featuredProducts} />
           </section>
         )}
