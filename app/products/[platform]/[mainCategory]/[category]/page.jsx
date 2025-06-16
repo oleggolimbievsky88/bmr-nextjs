@@ -12,7 +12,6 @@ export default function page() {
   return (
     <>
       <Topbar1 />
-      <Header2 />
       <div className="tf-page-title">
         <div className="container-full">
           <div className="heading text-center">New Arrival</div>
@@ -22,7 +21,6 @@ export default function page() {
         </div>
       </div>
       <FilterSidebar />
-      <Footer1 />
     </>
   );
 }
