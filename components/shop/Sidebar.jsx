@@ -3,9 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { featuredProducts } from "@/data/products";
 import { galleryItems } from "@/data/gallery";
-import { categories } from "@/data/categories";
 import { socialLinks } from "@/data/socials";
-export default function Sidebar() {
+
+export default function Sidebar({
+  mainCategories = [],
+  categories = [],
+  products,
+}) {
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
       <div className="widget-facet wd-categories">
@@ -16,34 +20,69 @@ export default function Sidebar() {
           aria-expanded="true"
           aria-controls="categories"
         >
-          <span>Product categories</span>
+          <span>Categories</span>
           <span className="icon icon-arrow-up" />
         </div>
         <div id="categories" className="collapse show">
-          <ul className="list-categoris current-scrollbar mb_36">
-            {categories.map((category, index) => (
-              <li key={index} className={`cate-item ${category.className}`}>
-                <a href="#">
-                  <span>{category.name}</span>&nbsp;
-                  <span>({category.count})</span>
-                </a>
-              </li>
-            ))}
+          <ul className="list-categoris mb_36">
+            {mainCategories && mainCategories.length > 0 ? (
+              mainCategories.map((cat, index) => (
+                <li key={cat.id || index} className={`cate-item`}>
+                  <a href="#">
+                    <span>{cat.name || cat.MainCatName}</span>
+                  </a>
+                </li>
+              ))
+            ) : (
+              <li>No categories found</li>
+            )}
           </ul>
         </div>
       </div>
-      <div className="widget-facet">
+      {/* Only show Product Types if categories are provided and not empty */}
+      {categories && categories.length > 0 && (
+        <div className="widget-facet wd-categories">
+          <div
+            className="facet-title"
+            data-bs-target="#product-types"
+            data-bs-toggle="collapse"
+            aria-expanded="true"
+            aria-controls="product-types"
+          >
+            <span>Product Types</span>
+            <span className="icon icon-arrow-up" />
+          </div>
+          <div id="product-types" className="collapse show">
+            <ul className="list-categoris mb_36">
+              {categories.map((category, index) => (
+                <li
+                  key={category.id || category.CatID || index}
+                  className={`cate-item`}
+                >
+                  <a href="#">
+                    <span>{category.name || category.CatName}</span>&nbsp;
+                    <span>
+                      ({category.count || category.productCount || 0})
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      {/* <div className="widget-facet">
         <div
           className="facet-title"
-          data-bs-target="#sale-products"
+          data-bs-target="#scrach-dent-products"
           data-bs-toggle="collapse"
           aria-expanded="true"
-          aria-controls="sale-products"
+          aria-controls="scrach-dent-products"
         >
-          <span>Sale products</span>
+          <span>Scratch & Dent Products</span>
           <span className="icon icon-arrow-up" />
         </div>
-        <div id="sale-products" className="collapse show">
+        <div id="scrach-dent-products" className="collapse show">
           <div className="widget-featured-products mb_36">
             {featuredProducts.map((product, index) => (
               <div className="featured-product-item" key={index}>
@@ -72,7 +111,7 @@ export default function Sidebar() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="widget-facet">
         <div
           className="facet-title"
@@ -105,7 +144,7 @@ export default function Sidebar() {
               </div>
               <div className="iconbox-content">
                 <h4 className="iconbox-title">Free shipping</h4>
-                <p className="iconbox-desc">Free iconbox for all US order</p>
+                <p className="iconbox-desc">Free shopping for all US order</p>
               </div>
             </li>
             <li className="iconbox-item">
@@ -125,7 +164,7 @@ export default function Sidebar() {
               </div>
               <div className="iconbox-content">
                 <h4 className="iconbox-title">Premium Support</h4>
-                <p className="iconbox-desc">Support 24 hours a day</p>
+                <p className="iconbox-desc">Support M-F 9am-5pm EST</p>
               </div>
             </li>
             <li className="iconbox-item">
@@ -151,7 +190,7 @@ export default function Sidebar() {
           </ul>
         </div>
       </div>
-      <div className="widget-facet">
+      {/* <div className="widget-facet">
         <div
           className="facet-title"
           data-bs-target="#gallery"
@@ -177,8 +216,8 @@ export default function Sidebar() {
             ))}
           </div>
         </div>
-      </div>
-      <div className="widget-facet">
+      </div> */}
+      {/* <div className="widget-facet">
         <div
           className="facet-title"
           data-bs-target="#follow"
@@ -203,7 +242,7 @@ export default function Sidebar() {
             ))}
           </ul>
         </div>
-      </div>
+      </div> */}
     </aside>
   );
 }

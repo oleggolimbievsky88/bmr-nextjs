@@ -7,7 +7,14 @@ import Pagination from "../common/Pagination";
 import Sorting from "./Sorting";
 import { products1 } from "@/data/products";
 
-export default function ShopSidebarleft({ products, categories }) {
+export default function ShopSidebarleft({
+  products,
+  categories,
+  mainCategories,
+}) {
+  console.log("Products:", products);
+  console.log("Categories:", categories);
+  console.log("MainCategories:", mainCategories);
   const [gridItems, setGridItems] = useState(3);
   const [finalSorted, setFinalSorted] = useState([]);
   return (
@@ -38,7 +45,11 @@ export default function ShopSidebarleft({ products, categories }) {
             </div>
           </div>
           <div className="tf-row-flex">
-            <Sidebar />
+            <Sidebar
+              mainCategories={mainCategories}
+              categories={categories}
+              products={products}
+            />
             <div className="tf-shop-content">
               <ProductGrid allproducts={finalSorted} gridItems={gridItems} />
               {/* pagination */}{" "}

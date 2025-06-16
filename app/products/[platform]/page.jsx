@@ -4,6 +4,7 @@ import CategoryGrid from "@/components/shop/CategoryGrid";
 import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
 export default function PlatformPage({ params }) {
   const { platform } = params;
@@ -94,10 +95,12 @@ export default function PlatformPage({ params }) {
             <br />
             <br />
             <br />
-            <br />
-            <br />
-            <br />
-            <ProductGrid products={featuredProducts} />
+            {/* <ProductGrid products={featuredProducts} /> */}
+            <ShopSidebarleft
+              products={featuredProducts}
+              categories={[]}
+              mainCategories={mainCategories}
+            />
           </section>
         )}
       </div>

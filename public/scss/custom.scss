@@ -237,12 +237,12 @@
   border: 1px solid #000000;
 }
 .category-img {
-  width: 100%;
-  height: auto;
+  width: auto;
+
   padding: 10px;
 }
 .category-title{
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #000;
   font-family: 'arial', sans-serif;
@@ -788,7 +788,8 @@
 }
 
 .category-container {
-  min-height: 250px;
+  min-height: 300px;
+  margin-top:10px;
 }
 .nav-link {
   color: #fff !important;
@@ -860,15 +861,13 @@
 }
 
 .category-card {
-  flex: 0 0 calc(20% - 20px); /* 5 items per row with gap */
+  height: 250px; /* adjust as needed */
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  border: 1px solid #ddd;
   padding: 20px;
   margin: 20px 0;
-  border-radius: 8px;
   transition: transform 0.2s;
 }
 
@@ -879,7 +878,15 @@
 .category-card img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border: 1px solid #000;
+  transition: box-shadow 0.3s, border-color 0.3s;
+  padding: 5px;
+}
+
+/* When hovering the image or the card, change the text color of the title */
+.category-card:hover .category-title,
+.category-card img:hover + .category-title {
+  color: var(--primary);
 }
 
 .category-card h5 {

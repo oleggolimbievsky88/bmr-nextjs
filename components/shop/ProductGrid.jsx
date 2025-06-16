@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import ShopSidebarleft from "./ShopSidebarleft";
 
 export default function ProductGrid({
   platformName,
@@ -116,6 +117,7 @@ export default function ProductGrid({
       ) */}
 
       {/* Products Grid */}
+
       {products && products.length > 0 && (
         <div className="row g-4 justify-content-center mt-4">
           {products.map((product) => (

@@ -4648,7 +4648,7 @@ export const featuredProducts = [
     imgSrc: "/images/products/img-feature-1.png",
     width: 92,
     height: 128,
-    title: "Jersey thong body",
+    title: " UTCA002 - Upper Control Arms",
     price: 105.95,
   },
   {
@@ -4656,7 +4656,7 @@ export const featuredProducts = [
     imgSrc: "/images/products/img-feature-2.png",
     width: 92,
     height: 138,
-    title: "Lace-trimmed Satin Camisole Top",
+    title: " CB001 - Chassis Brace",
     price: 24.95,
   },
   {
@@ -4664,7 +4664,7 @@ export const featuredProducts = [
     imgSrc: "/images/products/img-feature-3.png",
     width: 92,
     height: 138,
-    title: "Linen-blend Tank Top",
+    title: " CB002 - Chassis Brace",
     price: 16.95,
   },
 ];

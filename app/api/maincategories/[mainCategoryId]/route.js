@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request, { params }) {
   try {
-    const url = new URL(request.url);
-    const platformSlug = url.searchParams.get("platform");
-    const mainCategory = url.searchParams.get("mainCategory");
+    const url = useSearchParams();
+    const platformSlug = url.get("platform");
+    const mainCategory = url.get("mainCategory");
 
     if (!platformSlug || !mainCategory) {
       return NextResponse.json(

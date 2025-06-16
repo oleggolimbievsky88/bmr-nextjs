@@ -128,6 +128,7 @@
 // }
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CategoryGrid({
   categories = [],
@@ -162,13 +163,19 @@ export default function CategoryGrid({
               key={categoryId || index}
               className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch category-container"
             >
-              <div className="category-item text-center w-100">
+              <div className="category-card text-center w-100">
                 <Link href={href}>
                   {categoryImage && (
-                    <img
+                    <Image
                       src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
                       alt={categoryName}
-                      className="category-img"
+                      width={250}
+                      height={200}
+                      style={{
+                        objectFit: "contain",
+                        width: "100%",
+                        height: "160px",
+                      }}
                     />
                   )}
                 </Link>

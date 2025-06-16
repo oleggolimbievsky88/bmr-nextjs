@@ -4,11 +4,13 @@ import CategoryGrid from "@/components/shop/CategoryGrid";
 import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
 export default function CategoryPage({ params }) {
   console.log("🛠 Params received:", params);
 
   const [categories, setCategories] = useState([]);
+  const [mainCategories, setMainCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [platformInfo, setPlatformInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,12 @@ export default function CategoryPage({ params }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch main categories for the platform
+        const mainCatRes = await fetch(`/api/platforms/${params.platform}`);
+        const mainCatData = await mainCatRes.json();
+        setMainCategories(mainCatData.mainCategories || []);
+
+        // Fetch subcategories and products for the selected main category
         const res = await fetch(
           `/api/platforms/${params.platform}/${params.mainCategory}`
         );
@@ -78,22 +86,24 @@ export default function CategoryPage({ params }) {
             isMainCategory={false}
           />
         </section>
+        <br />
+        <br />
 
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (
           <section
             className="mb-5 mt-10"
-            style={{
-              backgroundColor: "#f8f9fa",
-              padding: "30px",
-              marginTop: "60px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
+            // style={{
+            //   backgroundColor: "#f8f9fa",
+            //   padding: "30px",
+            //   marginTop: "60px",
+            //   borderRadius: "10px",
+            //   border: "1px solid #ddd",
+            //   boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+            // }}
           >
             <div className="text-center mb-4">
-              <h2 className="display-6 position-relative d-inline-block header-main-title">
+              {/* <h2 className="display-6 position-relative d-inline-block header-main-title">
                 Featured Products
                 <div
                   className="position-absolute start-0 end-0 bottom-0"
@@ -105,9 +115,14 @@ export default function CategoryPage({ params }) {
                     marginTop: "10px",
                   }}
                 ></div>
-              </h2>
+              </h2> */}
             </div>
-            <ProductGrid products={featuredProducts} />
+            {/* <ProductGrid products={featuredProducts} /> */}
+            <ShopSidebarleft
+              products={featuredProducts}
+              categories={categories}
+              mainCategories={mainCategories}
+            />
           </section>
         )}
       </div>
