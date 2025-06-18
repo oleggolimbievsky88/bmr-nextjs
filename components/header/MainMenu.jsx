@@ -91,10 +91,10 @@ export default function MainMenu({ initialMenuData }) {
       setCategoriesByMainCat(catData);
 
       // Fetch body details
-      const bodyResponse = await fetch(`/api/bodies?bodyId=${bodyId}`);
-      if (!bodyResponse.ok) throw new Error("Failed to fetch body details");
-      const bodyData = await bodyResponse.json();
-      setBodyDetails(bodyData);
+      const platformResponse = await fetch(`/api/platforms/${bodyId}`);
+      if (!platformResponse.ok) throw new Error("Failed to fetch body details");
+      const platformData = await platformResponse.json();
+      setBodyDetails(platformData);
 
       // Fetch vehicles for this body
       const vehiclesResponse = await fetch(`/api/vehicles?bodyId=${bodyId}`);

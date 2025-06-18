@@ -5,10 +5,10 @@ import Slider from "rc-slider";
 import { products1 } from "@/data/products";
 import Link from "next/link";
 
-export default function SidebarFilter({ 
-  setProducts, 
-  selectedCategory, 
-  selectedSubCategory 
+export default function SidebarFilter({
+  setProducts,
+  selectedCategory,
+  selectedSubCategory,
 }) {
   const [price, setPrice] = useState([10, 20]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -23,54 +23,58 @@ export default function SidebarFilter({
         // Construct query parameters
         const params = new URLSearchParams();
         if (selectedCategory) {
-          params.append('mainCategoryId', selectedCategory.MainCatID);
+          params.append("mainCategoryId", selectedCategory.MainCatID);
         }
         if (selectedSubCategory) {
-          params.append('subCategoryId', selectedSubCategory.CatID);
+          params.append("subCategoryId", selectedSubCategory.CatID);
         }
+
+        console.log("params", params.toString());
 
         const response = await fetch(`/api/products?${params.toString()}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch products');
+          throw new Error("Failed to fetch products");
         }
         const fetchedProducts = await response.json();
-        
+
         // Apply additional filters
         let filteredProducts = fetchedProducts;
 
         // Price filter
         filteredProducts = filteredProducts.filter(
-          (product) => parseFloat(product.Price) >= price[0] && parseFloat(product.Price) <= price[1]
+          (product) =>
+            parseFloat(product.Price) >= price[0] &&
+            parseFloat(product.Price) <= price[1]
         );
 
         // Color filter (if implemented)
         if (selectedColors.length > 0) {
-          filteredProducts = filteredProducts.filter(
-            (product) => selectedColors.includes(product.Color)
+          filteredProducts = filteredProducts.filter((product) =>
+            selectedColors.includes(product.Color)
           );
         }
 
         // Brand filter
         if (selectedBrands.length > 0) {
-          filteredProducts = filteredProducts.filter(
-            (product) => selectedBrands.includes(product.ManName)
+          filteredProducts = filteredProducts.filter((product) =>
+            selectedBrands.includes(product.ManName)
           );
         }
 
         setProducts(filteredProducts);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
         setProducts([]);
       }
     };
 
     fetchProducts();
   }, [
-    selectedCategory, 
-    selectedSubCategory, 
-    price, 
-    selectedColors, 
-    selectedBrands
+    selectedCategory,
+    selectedSubCategory,
+    price,
+    selectedColors,
+    selectedBrands,
   ]);
 
   const handlePrice = (value) => {
@@ -78,18 +82,14 @@ export default function SidebarFilter({
   };
 
   const handleSelectColor = (color) => {
-    setSelectedColors(prev => 
-      prev.includes(color) 
-        ? prev.filter(c => c !== color) 
-        : [...prev, color]
+    setSelectedColors((prev) =>
+      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
     );
   };
 
   const handleSelectBrand = (brand) => {
-    setSelectedBrands(prev => 
-      prev.includes(brand) 
-        ? prev.filter(b => b !== brand) 
-        : [...prev, brand]
+    setSelectedBrands((prev) =>
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
   };
 
@@ -118,7 +118,7 @@ export default function SidebarFilter({
             <Slider
               formatLabel={() => ``}
               range
-              max={1000}  // Adjust based on your product prices
+              max={1000} // Adjust based on your product prices
               min={0}
               defaultValue={price}
               onChange={(value) => handlePrice(value)}
@@ -145,10 +145,12 @@ export default function SidebarFilter({
         </div>
         <div id="color" className="collapse show">
           <ul className="tf-color-filter d-flex flex-wrap gap-10">
-            {['Red', 'Blue', 'Green', 'Black', 'White'].map((color) => (
-              <li 
-                key={color} 
-                className={`color-item ${selectedColors.includes(color) ? 'active' : ''}`}
+            {["Red", "Blue", "Green", "Black", "White"].map((color) => (
+              <li
+                key={color}
+                className={`color-item ${
+                  selectedColors.includes(color) ? "active" : ""
+                }`}
                 onClick={() => handleSelectColor(color)}
               >
                 <span className={`color-box bg-${color.toLowerCase()}`} />
@@ -172,7 +174,7 @@ export default function SidebarFilter({
         </div>
         <div id="brand" className="collapse show">
           <ul className="tf-filter-group current-scrollbar mb_36">
-            {['BMR', 'Performance', 'Racing'].map((brand) => (
+            {["BMR", "Performance", "Racing"].map((brand) => (
               <li
                 key={brand}
                 className="list-item d-flex gap-12 align-items-center"
@@ -193,10 +195,7 @@ export default function SidebarFilter({
 
       {/* Clear Filter Button */}
       <div className="widget-facet">
-        <button 
-          className="tf-btn-filter w-100"
-          onClick={clearFilter}
-        >
+        <button className="tf-btn-filter w-100" onClick={clearFilter}>
           Clear All Filters
         </button>
       </div>

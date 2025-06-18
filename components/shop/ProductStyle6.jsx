@@ -5,7 +5,7 @@ import Pagination from "../common/Pagination";
 import { products1 } from "@/data/products";
 import { ProductCard25 } from "../shopCards/ProductCard25";
 import ShopFilter from "./ShopFilter";
-import Sorting from "./Sorting";
+import SortiShopFilterng from "./Sorting";
 
 export default function ProductStyle6() {
   const [gridItems, setGridItems] = useState(4);

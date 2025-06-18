@@ -42,7 +42,7 @@ export default function FilterSidebar({ platform = "" }) {
 
   useEffect(() => {
     if (!platform) return;
-    fetch(`/api/maincategories?platform=${encodeURIComponent(platform)}`)
+    fetch(`/api/platforms/${encodeURIComponent(platform)}`)
       .then((res) => res.json())
       .then((data) => setCategories(data));
   }, [platform]);
