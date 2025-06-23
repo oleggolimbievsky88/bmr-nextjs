@@ -18,7 +18,17 @@ export default function page({ params }) {
           </div>
         </div>
       </div>
-      <FilterSidebar />
+      {/* <FilterSidebar /> */}
+      <ShopSidebarleft
+        platform={platformInfo}
+        isMainCategory={true}
+        products={featuredProducts}
+        setProducts={featuredProducts}
+        categories={categories}
+        mainCategories={mainCategories}
+        selectedMainCatId={null}
+        selectedCatId={null}
+      />
     </>
   );
 }

@@ -8,7 +8,10 @@ import { socialLinks } from "@/data/socials";
 export default function Sidebar({
   mainCategories = [],
   categories = [],
-  products,
+  products = [],
+  platform = "",
+  selectedMainCatId = null,
+  selectedCatId = null,
 }) {
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
@@ -27,7 +30,12 @@ export default function Sidebar({
           <ul className="list-categoris mb_36">
             {mainCategories && mainCategories.length > 0 ? (
               mainCategories.map((cat, index) => (
-                <li key={cat.id || index} className={`cate-item`}>
+                <li
+                  key={cat.id || index}
+                  className={`cate-item${
+                    selectedMainCatId == cat.id ? " active" : ""
+                  }`}
+                >
                   <a href="#">
                     <span>{cat.name || cat.MainCatName}</span>
                   </a>
@@ -57,7 +65,9 @@ export default function Sidebar({
               {categories.map((category, index) => (
                 <li
                   key={category.id || category.CatID || index}
-                  className={`cate-item`}
+                  className={`cate-item${
+                    selectedCatId == category.id ? " active" : ""
+                  }`}
                 >
                   <a href="#">
                     <span>{category.name || category.CatName}</span>&nbsp;

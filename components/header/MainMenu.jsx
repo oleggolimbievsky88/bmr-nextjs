@@ -63,7 +63,7 @@ export default function MainMenu({ initialMenuData }) {
         const firstVehicle = platformLinks[0];
         handleVehicleHover(firstVehicle.slug, firstVehicle.bodyId);
       }
-    }, 200);
+    }, 500);
   };
 
   // Function to handle platform leave
@@ -72,29 +72,29 @@ export default function MainMenu({ initialMenuData }) {
     hoverTimeoutRef.current = setTimeout(() => {
       setActivePlatform(null);
       setActiveVehicle(null);
-    }, 200);
+    }, 500);
   };
 
   // Function to handle vehicle hover and fetch relevant data
-  const handleVehicleHover = async (vehicle, bodyId) => {
-    setActiveVehicle(vehicle);
+  const handleVehicleHover = async (vehicleSlug, bodyId) => {
+    setActiveVehicle(vehicleSlug);
 
     if (!bodyId) return;
 
     try {
       setIsLoading(true);
 
+      // Fetch body details
+      const platformResponse = await fetch(`/api/platform/${bodyId}`);
+      if (!platformResponse.ok) throw new Error("Failed to fetch body details");
+      const platformData = await platformResponse.json();
+      setBodyDetails(platformData.platform);
+
       // Fetch categories for this body/platform
       const catResponse = await fetch(`/api/categories?bodyId=${bodyId}`);
       if (!catResponse.ok) throw new Error("Failed to fetch categories");
       const catData = await catResponse.json();
       setCategoriesByMainCat(catData);
-
-      // Fetch body details
-      const platformResponse = await fetch(`/api/platforms/${bodyId}`);
-      if (!platformResponse.ok) throw new Error("Failed to fetch body details");
-      const platformData = await platformResponse.json();
-      setBodyDetails(platformData);
 
       // Fetch vehicles for this body
       const vehiclesResponse = await fetch(`/api/vehicles?bodyId=${bodyId}`);
@@ -381,7 +381,7 @@ export default function MainMenu({ initialMenuData }) {
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="/cart" className="nav-link">
+              <Link href="/view-cart" className="nav-link">
                 Cart
               </Link>
             </li>

@@ -6,6 +6,7 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import ShopFilter from "@/components/shop/ShopFilter";
+import { categories } from "@/data/blogs";
 
 export default function PlatformPage({ params }) {
   const { platform } = params;
@@ -97,10 +98,15 @@ export default function PlatformPage({ params }) {
             <br />
             <br />
             {/* <ProductGrid products={featuredProducts} /> */}
-            <ShopFilter
-              categories={mainCategories}
-              platform={platform}
+            <ShopSidebarleft
+              platform={platformInfo}
               isMainCategory={true}
+              products={featuredProducts}
+              setProducts={featuredProducts}
+              categories={categories}
+              mainCategories={mainCategories}
+              selectedMainCatId={null}
+              selectedCatId={null}
             />
           </section>
         )}

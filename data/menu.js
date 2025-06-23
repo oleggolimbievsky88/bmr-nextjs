@@ -4,20 +4,22 @@ export const homePage = [
     src: "",
     alt: "Home - BMR Suspension",
     name: "Home",
-    labels: [{ className: "demo-new", text: "New" }, { text: "Trend" }],
+    labels: [{ className: "demo-new", text: "Home" }, { text: "Trend" }],
   },
 ];
-
 
 export const fordLinks = [
   {
     heading: "2024 Mustang",
     links: [
       { href: "/platform/2024-mustang/suspension", text: "Suspension" },
-      { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
+      { href: "/platform/2024-mustang/Chassis", text: "Chassis" },
       { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
       { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
-      { href: "/platform/2024-mustang/Safety-Equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2024-mustang/Safety-Equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2024-mustang/Wheels", text: "Wheels" },
       { href: "/platform/2024-mustang/Miscellaneous", text: "Miscellaneous" },
     ],
@@ -26,10 +28,13 @@ export const fordLinks = [
     heading: "2015 - 2023 Mustang",
     links: [
       { href: "/platform/2024-mustang/suspension", text: "Suspension" },
-      { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
+      { href: "/platform/2024-mustang/Chassis", text: "Chassis" },
       { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
       { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
-      { href: "/platform/2024-mustang/Safety-Equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2024-mustang/Safety-Equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2024-mustang/Wheels", text: "Wheels" },
       { href: "/platform/2024-mustang/Miscellaneous", text: "Miscellaneous" },
     ],
@@ -38,10 +43,13 @@ export const fordLinks = [
     heading: "2007 - 2014 Shelby GT500",
     links: [
       { href: "/platform/2024-mustang/suspension", text: "Suspension" },
-      { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
+      { href: "/platform/2024-mustang/Chassis", text: "Chassis" },
       { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
       { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
-      { href: "/platform/2024-mustang/Safety-Equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2024-mustang/Safety-Equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2024-mustang/Wheels", text: "Wheels" },
       { href: "/platform/2024-mustang/Miscellaneous", text: "Miscellaneous" },
     ],
@@ -50,10 +58,13 @@ export const fordLinks = [
     heading: "2005 - 2014 Mustang",
     links: [
       { href: "/platform/2024-mustang/suspension", text: "Suspension" },
-      { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
+      { href: "/platform/2024-mustang/Chassis", text: "Chassis" },
       { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
       { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
-      { href: "/platform/2024-mustang/Safety-Equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2024-mustang/Safety-Equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2024-mustang/Wheels", text: "Wheels" },
       { href: "/platform/2024-mustang/Miscellaneous", text: "Miscellaneous" },
     ],
@@ -62,10 +73,13 @@ export const fordLinks = [
     heading: "1979-2004 Mustang",
     links: [
       { href: "/platform/2024-mustang/suspension", text: "Suspension" },
-      { href: "/platform/2024-mustang/Chassis", text: "Chassis" }, 
+      { href: "/platform/2024-mustang/Chassis", text: "Chassis" },
       { href: "/platform/2024-mustang/Bushing-Kits", text: "Bushing Kits" },
       { href: "/platform/2024-mustang/Tshirts", text: "Tshirts" },
-      { href: "/platform/2024-mustang/Safety-Equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2024-mustang/Safety-Equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2024-mustang/Wheels", text: "Wheels" },
       { href: "/platform/2024-mustang/Miscellaneous", text: "Miscellaneous" },
     ],
@@ -76,22 +90,40 @@ export const moparLinks = [
   {
     heading: "2006 - 2023 Dodge Charger",
     links: [
-      { href: "/platform/2006-2023-dodge-charger/suspension", text: "Suspension" },
+      {
+        href: "/platform/2006-2023-dodge-charger/suspension",
+        text: "Suspension",
+      },
       { href: "/platform/2006-2023-dodge-charger/chassis", text: "Chassis" },
-      { href: "/platform/2006-2023-dodge-charger/bushing-kits", text: "Bushing Kits" },
+      {
+        href: "/platform/2006-2023-dodge-charger/bushing-kits",
+        text: "Bushing Kits",
+      },
       { href: "/platform/2006-2023-dodge-charger/tshirts", text: "Tshirts" },
-      { href: "/platform/2006-2023-dodge-charger/safety-equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2006-2023-dodge-charger/safety-equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2006-2023-dodge-charger/wheels", text: "Wheels" },
     ],
   },
   {
     heading: "2008 - 2023 Dodge Challenger",
     links: [
-      { href: "/platform/2008-2023-dodge-challenger/suspension", text: "Suspension" },
+      {
+        href: "/platform/2008-2023-dodge-challenger/suspension",
+        text: "Suspension",
+      },
       { href: "/platform/2008-2023-dodge-challenger/chassis", text: "Chassis" },
-      { href: "/platform/2008-2023-dodge-challenger/bushing-kits", text: "Bushing Kits" },
+      {
+        href: "/platform/2008-2023-dodge-challenger/bushing-kits",
+        text: "Bushing Kits",
+      },
       { href: "/platform/2008-2023-dodge-challenger/tshirts", text: "Tshirts" },
-      { href: "/platform/2008-2023-dodge-challenger/safety-equipment", text: "Safety Equipment" },
+      {
+        href: "/platform/2008-2023-dodge-challenger/safety-equipment",
+        text: "Safety Equipment",
+      },
       { href: "/platform/2008-2023-dodge-challenger/wheels", text: "Wheels" },
     ],
   },
@@ -134,7 +166,6 @@ export const gmClassicMuscleLinks = [
     ],
   },
 ];
-
 
 export const productDetailPages = [
   {
@@ -266,9 +297,7 @@ export const navItems = [
   {
     id: "Home",
     label: "Home",
-    links: [
-      { href: "/", label: "Home" },
-    ],
+    links: [{ href: "/", label: "Home" }],
   },
   {
     id: "dropdown-menu-two",

@@ -1,20 +1,10 @@
 {
     "build": {
       "env": {
-        "NODE_ENV": "preview"
+        "NODE_ENV": "development"
       }
     },
     "rewrites": [
       { "source": "/api/:path*", "destination": "/app/api/:path*" }
-    ],
-      "git": {
-        "deploymentEnabled": {
-          "main": true,
-          "staging": true
-        }
-      },
-      "github": {
-        "enabled": true,
-        "silent": true
-      }
-    }
+    ]
+  }

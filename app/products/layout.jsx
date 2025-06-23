@@ -15,8 +15,7 @@ export default function ProductsLayout({ children }) {
     <div>
       <Topbar4 />
       <Header18 />
-      <main>{children}</main>
-      <br />
+      <main className="product-page">{children}</main>
       <Footer1 />
     </div>
   );

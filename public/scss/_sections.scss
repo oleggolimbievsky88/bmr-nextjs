@@ -2933,3 +2933,10 @@
         margin-top: 16px;
     }
 }
+
+.cate-item.active > a {
+	font-weight: bold;
+	color: var(--bmr-red);
+	background: #f8f9fa;
+	border-radius: 4px;
+}

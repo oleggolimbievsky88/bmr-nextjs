@@ -4,7 +4,7 @@ import CategoryGrid from "@/components/shop/CategoryGrid";
 import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import ShopFilter from "@/components/shop/ShopFilter";
+import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
 export default function CategoryPage({ params }) {
   console.log("🛠 Params received:", params);
@@ -117,16 +117,17 @@ export default function CategoryPage({ params }) {
                 ></div>
               </h2> */}
             </div>
-            <ProductGrid products={featuredProducts} />
-            {/* <ShopSidebarleft
-              products={featuredProducts}
+            {mainCategories.map((mainCategory) => {
+              return <div key={mainCategory.id}>{mainCategory.name}</div>;
+            })}
+            <ShopSidebarleft
               categories={categories}
-              mainCategories={mainCategories}
-            /> */}
-            <ShopFilter
+              platform={platformInfo}
+              isMainCategory={false}
               products={featuredProducts}
-              categories={categories}
               mainCategories={mainCategories}
+              selectedMainCatId={params.mainCategory}
+              selectedProductType={featuredProducts.catId}
             />
           </section>
         )}

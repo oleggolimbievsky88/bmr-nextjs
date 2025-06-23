@@ -1,3 +1,7 @@
+.product-page{
+  background-color: #f3f3f3;
+}
+
 .nav-item.dropdown {
   position: static;
 }
@@ -29,6 +33,7 @@
   min-width: 1000px;
   width: 100%;
   overflow: hidden;
+  align-items: stretch;
 }
 
 /* Left sidebar styling */
@@ -38,6 +43,8 @@
   overflow-y: auto;
   background-color: #f5f5f5;
   border-right: 1px solid #e0e0e0;
+  height: 100%;
+  min-height: 100%;
   /* Hide scrollbar */
   &::-webkit-scrollbar {
     display: none;
@@ -83,9 +90,7 @@
   transform: translateY(-50%);
   width: 0;
   height: 0;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
-  border-right: 8px solid #fff;
+
 }
 
 .vehicle-list li a.vehicle-link {
@@ -109,7 +114,7 @@
   overflow-y: auto;
   padding: 20px;
   background-color: #fff;
-  max-height: 770px;
+  /* max-height: 770px; */
   /* Hide scrollbar */
   &::-webkit-scrollbar {
     display: none;
@@ -242,16 +247,22 @@
   padding: 10px;
 }
 .category-title{
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #000;
   font-family: 'arial', sans-serif;
   letter-spacing: 1px;
   transition: color 0.3s ease;
-  margin-top: 15px;
+  margin-top: 25px;
+  vertical-align: bottom;
 }
 .category-title:hover{
   color: var(--primary);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+  text-decoration: none;
+
 }
 /* Fitment section styling */
 .fitment-column {
@@ -260,16 +271,19 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   background-color: #fff;
+  height: 100%;
+  min-height: 100%;
 }
 
 .vehicle-image-container {
   width: 100%;
-  height: 150px;
+  /* height: 150px; */
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   margin-bottom: 15px;
 }
 
@@ -787,10 +801,6 @@
   position: static;
 }
 
-.category-container {
-  min-height: 300px;
-  margin-top:10px;
-}
 .nav-link {
   color: #fff !important;
   font-weight: 600;
@@ -832,7 +842,7 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
-  background-color: #000;
+  background-color: #fff;
   width: auto;
   min-width: 600px;
   padding: 20px;
@@ -860,15 +870,25 @@
   margin: 0 auto; /* Center the container */
 }
 
+.category-container {
+  min-height: 250px;
+  margin-top:5px;
+}
+
 .category-card {
-  height: 300px; /* adjust as needed */
+  height: 250px; /* adjust as needed */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 20px;
   margin: 20px 0;
-  transition: transform 0.2s;
+  transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.9s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 1px solid #bfbfbf;
+  box-shadow: 5px 8px 5px 0 rgba(0, 0, 0, 0.298);
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #fff;
 }
 
 .category-card:hover {
@@ -878,17 +898,16 @@
 .category-card img {
   width: 300px;
   height: auto;
-  border: 1px solid #000;
-  box-shadow: 5px 8px 5px 0 rgba(0, 0, 0, 0.298);
-  transition: box-shadow 0.3s, border-color 0.3s;
-  padding: 5px;
-  border-radius: 10px;
+  padding: 10px 5px 0px 5px;
 }
 
 /* When hovering the image or the card, change the text color of the title */
 .category-card:hover .category-title,
 .category-card img:hover + .category-title {
+  text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.15);
   color: var(--primary);
+  transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .category-card h5 {
