@@ -132,9 +132,10 @@ import Image from "next/image";
 
 export default function CategoryGrid({
   categories = [],
+  mainCategories = [],
   platform,
   isSubCategory = false,
-  categoryImages = {},
+  mainCategory,
 }) {
   console.log("Categories:", categories); // Debug log
   const safeCategories = Array.isArray(categories) ? categories : [];
@@ -155,7 +156,7 @@ export default function CategoryGrid({
 
           const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
           const href = isSubCategory
-            ? `/products/${platform}/${categorySlug}`
+            ? `/products/${platform}/${mainCategory}/${categorySlug}`
             : `/products/${platform}/${categorySlug}`;
 
           return (
@@ -192,4 +193,3 @@ export default function CategoryGrid({
     </div>
   );
 }
- 

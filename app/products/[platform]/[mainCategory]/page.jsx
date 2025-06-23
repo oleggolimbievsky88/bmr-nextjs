@@ -69,8 +69,7 @@ export default function CategoryPage({ params }) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "Products", href: "/products" },
-            { label: params.platform, href: `/products/platformInfo?.name` },
+            { label: params.platform, href: `/products/${params.platform}` },
             {
               label: params.mainCategory,
               href: `/products/${params.platform}/${params.mainCategory}`,
@@ -81,9 +80,12 @@ export default function CategoryPage({ params }) {
         {/* Categories Section */}
         <section className="mb-5">
           <CategoryGrid
+            mainCategory={params.mainCategory}
+            mainCategories={mainCategories}
             categories={categories}
             platform={params.platform}
             isMainCategory={false}
+            isSubCategory={true}
           />
         </section>
         <br />
@@ -93,17 +95,17 @@ export default function CategoryPage({ params }) {
         {featuredProducts && featuredProducts.length > 0 && (
           <section
             className="mb-5 mt-10"
-            // style={{
-            //   backgroundColor: "#f8f9fa",
-            //   padding: "30px",
-            //   marginTop: "60px",
-            //   borderRadius: "10px",
-            //   border: "1px solid #ddd",
-            //   boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            // }}
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "30px",
+              marginTop: "60px",
+              borderRadius: "10px",
+              border: "1px solid #ddd",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+            }}
           >
             <div className="text-center mb-4">
-              {/* <h2 className="display-6 position-relative d-inline-block header-main-title">
+              <h2 className="display-6 position-relative d-inline-block header-main-title">
                 Featured Products
                 <div
                   className="position-absolute start-0 end-0 bottom-0"
@@ -115,11 +117,9 @@ export default function CategoryPage({ params }) {
                     marginTop: "10px",
                   }}
                 ></div>
-              </h2> */}
+              </h2>
             </div>
-            {mainCategories.map((mainCategory) => {
-              return <div key={mainCategory.id}>{mainCategory.name}</div>;
-            })}
+
             <ShopSidebarleft
               categories={categories}
               platform={platformInfo}
