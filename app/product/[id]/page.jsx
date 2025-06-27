@@ -17,6 +17,7 @@ export const metadata = {
 
 export default async function ProductPage({ params }) {
   const { id } = params;
+  console.log("params", params);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/product/${id}`, {

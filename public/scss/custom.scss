@@ -253,7 +253,7 @@
   font-family: 'arial', sans-serif;
   letter-spacing: 1px;
   transition: color 0.3s ease;
-  margin-top: 25px;
+  margin-top: 5px;
   vertical-align: bottom;
 }
 .category-title:hover{
@@ -264,6 +264,10 @@
   text-decoration: none;
 
 }
+
+
+
+
 /* Fitment section styling */
 .fitment-column {
   width: 250px;
@@ -871,18 +875,18 @@
 }
 
 .category-container {
-  min-height: 250px;
+  min-height: 180px;
   margin-top:5px;
 }
 
 .category-card {
-  height: 250px; /* adjust as needed */
+  height: 200px; /* adjust as needed */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 20px;
-  margin: 20px 0;
+  padding: 10px;
+  margin: 10px 0;
   transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.9s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.9s cubic-bezier(0.23, 1, 0.32, 1);
   border: 1px solid #bfbfbf;
   box-shadow: 5px 8px 5px 0 rgba(0, 0, 0, 0.298);
@@ -1393,6 +1397,13 @@
       transform: translateY(-2px);
     }
   }
+}
+
+@media (min-width: 1200px) {
+	.col-xl-5th {
+		flex: 0 0 20%;
+		max-width: 20%;
+	}
 }
 
 

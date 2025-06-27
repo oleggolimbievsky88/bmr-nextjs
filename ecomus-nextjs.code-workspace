@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "ecomus-nextjs",
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "ecomus-nextjs",
+		"gitlens.outputLevel": "warn"
+	}
+}

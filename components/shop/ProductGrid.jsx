@@ -7,6 +7,10 @@ import ShopSidebarleft from "./ShopSidebarleft";
 export default function ProductGrid({
   platformName,
   products = [],
+  mainCategories = [],
+  categories = [],
+  selectedCategory = null,
+  selectedSubCategory = null,
   showCategories = true,
 }) {
   const [categories, setCategories] = useState([]);

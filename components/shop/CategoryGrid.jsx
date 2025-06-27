@@ -162,7 +162,7 @@ export default function CategoryGrid({
           return (
             <div
               key={categoryId || index}
-              className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch category-container"
+              className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-5th mb-4 d-flex align-items-stretch category-container"
             >
               <div className="category-card text-center w-100">
                 <Link href={href}>
@@ -170,12 +170,12 @@ export default function CategoryGrid({
                     <Image
                       src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
                       alt={categoryName}
-                      width={250}
-                      height={200}
+                      width={200}
+                      height={150}
                       style={{
                         objectFit: "contain",
                         width: "100%",
-                        height: "160px",
+                        height: "150px",
                       }}
                     />
                   )}

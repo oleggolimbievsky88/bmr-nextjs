@@ -104,7 +104,7 @@ export default function CategoryPage({ params }) {
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <div className="text-center mb-4">
+            {/* <div className="text-center mb-4">
               <h2 className="display-6 position-relative d-inline-block header-main-title">
                 Featured Products
                 <div
@@ -118,7 +118,7 @@ export default function CategoryPage({ params }) {
                   }}
                 ></div>
               </h2>
-            </div>
+            </div> */}
 
             <ShopSidebarleft
               categories={categories}
