@@ -1,9 +1,4 @@
 {
-    "build": {
-      "env": {
-        "NODE_ENV": "development"
-      }
-    },
     "rewrites": [
       { "source": "/api/:path*", "destination": "/app/api/:path*" }
     ]
