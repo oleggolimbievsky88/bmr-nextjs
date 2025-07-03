@@ -18,7 +18,7 @@
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  z-index: 1020;
+  z-index: 9999 !important;
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
@@ -247,7 +247,7 @@
   padding: 10px;
 }
 .category-title{
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #000;
   font-family: 'arial', sans-serif;
@@ -258,9 +258,6 @@
 }
 .category-title:hover{
   color: var(--primary);
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  transform: scale(1.05);
-  transition: all 0.3s ease;
   text-decoration: none;
 
 }
@@ -880,23 +877,25 @@
 }
 
 .category-card {
-  height: 200px; /* adjust as needed */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 10px;
-  margin: 10px 0;
-  transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.9s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.9s cubic-bezier(0.23, 1, 0.32, 1);
-  border: 1px solid #bfbfbf;
-  box-shadow: 5px 8px 5px 0 rgba(0, 0, 0, 0.298);
-  padding: 5px;
-  border-radius: 10px;
-  background-color: #fff;
-}
+  min-height: 100px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 5px 4px 8px #707070 !important;
+  border: 1px solid rgb(205, 205, 205) !important;
 
-.category-card:hover {
-  transform: scale(1.05);
+  &:hover {
+    box-shadow: 5px 6px 10px rgba(0,0,0,0.7);
+    transform: translateY(-2px) scale(1.01);
+  }
+
+  .category-card-img {
+    background: #707070;
+    border-radius: 0.75rem;
+  }
+  .category-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.01em;
+  }
 }
 
 .category-card img {
@@ -1162,13 +1161,13 @@
 }
 
 .home-title-description {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   font-weight: 300;
-  color: #666;
+  color: #868686 !important;
   margin: 0px;
   padding: 0px;
-  // font-family: 'Impact', sans-serif;
-  letter-spacing: 1px;
+  font-family: 'Impact', sans-serif;
+  letter-spacing: 0.7px;
 }
 
 .tf-page-title {
@@ -1404,6 +1403,23 @@
 		flex: 0 0 20%;
 		max-width: 20%;
 	}
+}
+
+.sidebar-section-title {
+	font-weight: 700;
+	font-size: 1.5rem;
+	position: relative;
+	letter-spacing: 0.01em;
+  color: var(--primary);
+}
+
+.mega-menu {
+  z-index: 9999;
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 24px 32px;
 }
 
 

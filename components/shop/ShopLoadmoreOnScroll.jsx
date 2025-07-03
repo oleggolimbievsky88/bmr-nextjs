@@ -20,6 +20,8 @@ export default function ShopLoadmoreOnScroll() {
       setLoading(false);
     }, 1000);
   };
+  console.log("All Products:", allproducts);
+  console.log("Final Sorted Products:", finalSorted);
 
   const elementRef = useRef(null);
 

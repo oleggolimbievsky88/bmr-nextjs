@@ -6,7 +6,7 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
-export default function CategoryPage({ params }) {
+export default function MainCategoryPage({ params }) {
   console.log("🛠 Params received:", params);
 
   const [categories, setCategories] = useState([]);
@@ -96,9 +96,7 @@ export default function CategoryPage({ params }) {
           <section
             className="mb-5 mt-10"
             style={{
-              backgroundColor: "#f8f9fa",
-              padding: "30px",
-              marginTop: "60px",
+              backgroundColor: "#ffffff",
               borderRadius: "10px",
               border: "1px solid #ddd",
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",

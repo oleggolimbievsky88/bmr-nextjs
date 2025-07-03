@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   getCategoriesByPlatform,
+  getMainCategoryProductCounts,
   getProductsByMainCategory,
 } from "@/lib/queries";
 
@@ -20,7 +21,8 @@ export async function GET(request, { params }) {
     // Get subcategories and initial products
     const [{ categories, platformInfo }, products] = await Promise.all([
       getCategoriesByPlatform(platform, mainCategory),
-      getProductsByMainCategory(platform, mainCategory, 8), // Limit to 8 products
+      getProductsByMainCategory(platform, mainCategory, 16), // Limit to 8 products
+      getMainCategoryProductCounts(platform, mainCategory), // Get product counts for each subcategory
     ]);
 
     return NextResponse.json({

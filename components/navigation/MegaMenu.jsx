@@ -38,7 +38,15 @@ export default function MegaMenu() {
                 </button>
 
                 {activeGroup === group.id && (
-                  <div className="absolute left-0 mt-2 w-screen max-w-screen-xl bg-white border shadow-xl rounded-lg">
+                  <div
+                    className="absolute left-0 mt-2 w-screen max-w-screen-xl bg-white border shadow-xl rounded-lg"
+                    style={{
+                      zIndex: 9999,
+                      background: "white",
+                      position: "absolute",
+                      top: 40,
+                    }}
+                  >
                     <div className="grid grid-cols-4 gap-6 p-6">
                       {group.platforms.map((platform) => (
                         <div key={platform.id} className="space-y-4">

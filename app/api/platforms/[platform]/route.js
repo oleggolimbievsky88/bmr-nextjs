@@ -3,6 +3,8 @@ import {
   getMainCategories,
   getPlatformBySlug,
   getFeaturedProductsByPlatform,
+  getMainCategoryProductCounts,
+  getMainCategoriesWithProductCount,
 } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +23,7 @@ export async function GET(request, { params }) {
     // Fetch platform info, main categories, and featured products
     const [platformInfo, mainCategories, featuredProducts] = await Promise.all([
       getPlatformBySlug(platform),
-      getMainCategories(platform),
+      getMainCategoriesWithProductCount(platform),
       getFeaturedProductsByPlatform(platform),
     ]);
 

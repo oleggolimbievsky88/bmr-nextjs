@@ -531,6 +531,7 @@ select:disabled {
 [type="submit"],
 button {
   -webkit-appearance: button;
+  appearance: button;
 }
 
 [type="button"]:not(:disabled),
@@ -591,6 +592,7 @@ legend + * {
 
 [type="search"] {
   -webkit-appearance: textfield;
+  appearance: textfield;
   outline-offset: -2px;
 }
 
@@ -610,6 +612,7 @@ legend + * {
 ::file-selector-button {
   font: inherit;
   -webkit-appearance: button;
+  appearance: button;
 }
 
 output {
@@ -2756,7 +2759,6 @@ textarea.form-control-lg {
   background-size: contain;
   border: var(--bs-border-width) solid var(--bs-border-color);
   -webkit-print-color-adjust: exact;
-  color-adjust: exact;
   print-color-adjust: exact;
 }
 
@@ -4562,6 +4564,7 @@ fieldset:disabled .btn {
   align-items: center;
   justify-content: space-between;
   padding: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
+  z-index: 9999 !important;
 }
 
 .navbar > .container,
@@ -4575,6 +4578,7 @@ fieldset:disabled .btn {
   flex-wrap: inherit;
   align-items: center;
   justify-content: space-between;
+  z-index: 9999 !important;
 }
 
 .navbar-brand {
@@ -4585,11 +4589,13 @@ fieldset:disabled .btn {
   color: var(--bs-navbar-brand-color);
   text-decoration: none;
   white-space: nowrap;
+  z-index: 9999 !important;
 }
 
 .navbar-brand:focus,
 .navbar-brand:hover {
   color: var(--bs-navbar-brand-hover-color);
+  z-index: 9999 !important;
 }
 
 .navbar-nav {
@@ -4604,6 +4610,7 @@ fieldset:disabled .btn {
   padding-left: 0;
   margin-bottom: 0;
   list-style: none;
+  z-index: 9999 !important;
 }
 
 .navbar-nav .nav-link.active,

@@ -130,8 +130,6 @@
   .modal-content {
     cursor: default !important;
   }
-  &.fade {
-  }
   &.fade:not(.show) {
     opacity: 0;
     // transition: opacity 3s linear;
@@ -161,17 +159,18 @@
     cursor: default;
     overflow: hidden;
   }
-  .mega-menu {
-    padding: 0 40px;
-    overscroll-behavior-y: contain;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      width: 5px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: var(--line);
-    }
-  }
+  // .mega-menu {
+  //   padding: 0 40px;
+  //   overscroll-behavior-y: contain;
+  //   overflow-y: auto;
+  //   &::-webkit-scrollbar {
+  //     width: 5px;
+  //   }
+  //   &::-webkit-scrollbar-thumb {
+  //     background: var(--line);
+  //   }
+  //   z-index: 9999;
+  // }
   .header {
     position: relative;
     .icon-close-popup {
@@ -284,7 +283,7 @@
   .modal-dialog {
     max-width: min(900px, 90vw);
     .modal-content {
-      // max-height: calc(100svh - 16px);
+      max-height: calc(100svh - 16px);
     }
   }
   .tf-rte {
@@ -1463,8 +1462,6 @@
 #sidebarmobile {
   max-height: 100vh;
   overflow-y: auto;
-  .tf-section-sidebar {
-  }
 }
 
 .modal-newleter {

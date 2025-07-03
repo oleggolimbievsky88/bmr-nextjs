@@ -62,7 +62,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
           <h6 className="home-title-description text-center text-muted">
             {scrachDent === "1"
               ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price."
-              : "Check out the latest and greatest from BMR Suspension! We have the suspension parts to be a winner!"}
+              : "Check out the latest for your vehicle from BMR Suspension!"}
           </h6>
         </div>
 

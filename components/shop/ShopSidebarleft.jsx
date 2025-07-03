@@ -5,6 +5,7 @@ import { layouts, sortingOptions } from "@/data/shop";
 import ProductGrid from "./ProductGrid";
 import Pagination from "../common/Pagination";
 import Sorting from "./Sorting";
+import ShopLoadmoreOnScroll from "./ShopLoadmoreOnScroll";
 // import { products1 } from "@/data/products";
 
 export default function ShopSidebarleft({
@@ -16,6 +17,7 @@ export default function ShopSidebarleft({
   selectedMainCatId,
   selectedCatId,
 }) {
+  console.log("Platform:", platform);
   console.log("Products:", products);
   console.log("Categories:", categories);
   console.log("MainCategories:", mainCategories);
@@ -32,7 +34,7 @@ export default function ShopSidebarleft({
         <div className="container">
           <div className="tf-shop-control grid-3 align-items-center">
             <div className="tf-control-filter"></div>
-            <ul className="tf-control-layout d-flex justify-content-center">
+            {/* <ul className="tf-control-layout d-flex justify-content-center">
               {layouts.slice(0, 4).map((layout, index) => (
                 <li
                   key={index}
@@ -46,7 +48,8 @@ export default function ShopSidebarleft({
                   </div>
                 </li>
               ))}
-            </ul>
+            </ul> */}
+            <span></span>
             <div className="tf-control-sorting d-flex justify-content-end">
               <div className="tf-dropdown-sort" data-bs-toggle="dropdown">
                 <Sorting setFinalSorted={setFinalSorted} products={products} />
@@ -60,16 +63,22 @@ export default function ShopSidebarleft({
               products={products}
               selectedMainCatId={isMainCategory ? selectedMainCatId : null}
               selectedCatId={!isMainCategory ? selectedCatId : null}
+              platform={platform}
+              isMainCategory={isMainCategory}
             />
             <div className="tf-shop-content">
               <ProductGrid products={finalSorted} gridItems={gridItems} />
-              {finalSorted.length ? (
+              <ShopLoadmoreOnScroll
+                products={finalSorted}
+                gridItems={gridItems}
+              />
+              {/* {finalSorted.length ? (
                 <ul className="tf-pagination-wrap tf-pagination-list">
                   <Pagination />
                 </ul>
               ) : (
                 ""
-              )}
+              )} */}
             </div>
           </div>
         </div>

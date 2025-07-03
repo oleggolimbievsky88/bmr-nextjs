@@ -7,6 +7,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import ShopFilter from "@/components/shop/ShopFilter";
 import { categories } from "@/data/blogs";
+import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function PlatformPage({ params }) {
   const { platform } = params;
@@ -71,7 +72,7 @@ export default function PlatformPage({ params }) {
         />
 
         {/* Categories Section */}
-        <section className="mb-5">
+        <section className="mb-3">
           <CategoryGrid
             categories={mainCategories}
             platform={platform}
@@ -82,11 +83,10 @@ export default function PlatformPage({ params }) {
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (
           <section
-            className="mb-5 mt-10"
             style={{
               backgroundColor: "#f8f9fa",
-              padding: "30px",
-              marginTop: "60px",
+              padding: "0px",
+              margin: "0px",
               borderRadius: "10px",
               border: "1px solid #ddd",
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
@@ -104,9 +104,7 @@ export default function PlatformPage({ params }) {
                   }}
                 ></div>
             </div> */}
-            <br />
-            <br />
-            <br />
+
             {/* <ProductGrid products={featuredProducts} /> */}
             <ShopSidebarleft
               platform={platformInfo}

@@ -23,7 +23,7 @@ export default function Sidebar({
           aria-expanded="true"
           aria-controls="categories"
         >
-          <span>Categories</span>
+          <h5 className="sidebar-section-title">Categories</h5>
           <span className="icon icon-arrow-up" />
         </div>
         <div id="categories" className="collapse show">
@@ -36,9 +36,13 @@ export default function Sidebar({
                     selectedMainCatId == cat.id ? " active" : ""
                   }`}
                 >
-                  <a href="#">
+                  <Link
+                    href={`/products/${platform.slug}/${
+                      cat.name || cat.MainCatName
+                    }`}
+                  >
                     <span>{cat.name || cat.MainCatName}</span>
-                  </a>
+                  </Link>
                 </li>
               ))
             ) : (
@@ -57,7 +61,7 @@ export default function Sidebar({
             aria-expanded="true"
             aria-controls="product-types"
           >
-            <span>Product Types</span>
+            <h5 className="sidebar-section-title">Product Types</h5>
             <span className="icon icon-arrow-up" />
           </div>
           <div id="product-types" className="collapse show">
@@ -71,9 +75,7 @@ export default function Sidebar({
                 >
                   <a href="#">
                     <span>{category.name || category.CatName}</span>&nbsp;
-                    <span>
-                      ({category.count || category.productCount || 0})
-                    </span>
+                    <span>({category.productCount || 0})</span>
                   </a>
                 </li>
               ))}
@@ -130,7 +132,7 @@ export default function Sidebar({
           aria-expanded="true"
           aria-controls="shipping"
         >
-          <span>Shipping &amp; Delivery</span>
+          <h5 className="sidebar-section-title">Shipping &amp; Delivery</h5>
           <span className="icon icon-arrow-up" />
         </div>
         <div id="shipping" className="collapse show">

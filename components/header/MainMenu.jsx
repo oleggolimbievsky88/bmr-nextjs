@@ -24,6 +24,7 @@ export default function MainMenu({ initialMenuData }) {
   const [activePlatform, setActivePlatform] = useState(null);
   const hoverTimeoutRef = useRef(null);
   const megaMenuContainerRef = useRef(null);
+  const dataCacheRef = useRef({}); // { [bodyId]: { bodyDetails, categoriesByMainCat, vehicleList } }
 
   // Fetch data immediately when component mounts
   useEffect(() => {
@@ -48,6 +49,28 @@ export default function MainMenu({ initialMenuData }) {
       fetchMenuData();
     }
   }, [initialMenuData, isDataFetched]);
+
+  // Prefetch first vehicle for each platform on mount
+  useEffect(() => {
+    if (menuData) {
+      [
+        "ford",
+        "gmLateModel",
+        "gmMidMuscle",
+        "gmClassicMuscle",
+        "mopar",
+      ].forEach((platform) => {
+        const links = menuData[platform + "Links"];
+        if (links && links[0] && links[0].bodyId) {
+          const { slug, bodyId } = links[0];
+          if (!dataCacheRef.current[bodyId]) {
+            handleVehicleHover(slug, bodyId, true);
+          }
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menuData]);
 
   // Function to handle platform hover with delay
   const handlePlatformHover = (platform) => {
@@ -76,38 +99,57 @@ export default function MainMenu({ initialMenuData }) {
   };
 
   // Function to handle vehicle hover and fetch relevant data
-  const handleVehicleHover = async (vehicleSlug, bodyId) => {
+  const handleVehicleHover = async (
+    vehicleSlug,
+    bodyId,
+    prefetchOnly = false
+  ) => {
     setActiveVehicle(vehicleSlug);
-
     if (!bodyId) return;
-
+    // Use cache if available
+    if (dataCacheRef.current[bodyId]) {
+      const { bodyDetails, categoriesByMainCat, vehicleList } =
+        dataCacheRef.current[bodyId];
+      setBodyDetails(bodyDetails);
+      setCategoriesByMainCat(categoriesByMainCat);
+      setVehicleList(vehicleList);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
     try {
       setIsLoading(true);
-
-      // Fetch body details
-      const platformResponse = await fetch(`/api/platform/${bodyId}`);
-      if (!platformResponse.ok) throw new Error("Failed to fetch body details");
+      const [platformResponse, catResponse, vehiclesResponse] =
+        await Promise.all([
+          fetch(`/api/platform/${bodyId}`),
+          fetch(`/api/categories?bodyId=${bodyId}`),
+          fetch(`/api/vehicles?bodyId=${bodyId}`),
+        ]);
+      if (!platformResponse.ok || !catResponse.ok || !vehiclesResponse.ok)
+        throw new Error("Failed to fetch data");
       const platformData = await platformResponse.json();
-      setBodyDetails(platformData.platform);
-
-      // Fetch categories for this body/platform
-      const catResponse = await fetch(`/api/categories?bodyId=${bodyId}`);
-      if (!catResponse.ok) throw new Error("Failed to fetch categories");
       const catData = await catResponse.json();
-      setCategoriesByMainCat(catData);
-
-      // Fetch vehicles for this body
-      const vehiclesResponse = await fetch(`/api/vehicles?bodyId=${bodyId}`);
-      if (!vehiclesResponse.ok) throw new Error("Failed to fetch vehicles");
       const vehiclesData = await vehiclesResponse.json();
-      setVehicleList(vehiclesData);
-
-      setError(null);
+      const cacheObj = {
+        bodyDetails: platformData.platform,
+        categoriesByMainCat: catData,
+        vehicleList: vehiclesData,
+      };
+      dataCacheRef.current[bodyId] = cacheObj;
+      if (!prefetchOnly) {
+        setBodyDetails(cacheObj.bodyDetails);
+        setCategoriesByMainCat(cacheObj.categoriesByMainCat);
+        setVehicleList(cacheObj.vehicleList);
+        setError(null);
+      }
     } catch (err) {
       console.error("Error fetching data:", err);
-      setError("Failed to load data for this vehicle. Please try again later.");
+      if (!prefetchOnly)
+        setError(
+          "Failed to load data for this vehicle. Please try again later."
+        );
     } finally {
-      setIsLoading(false);
+      if (!prefetchOnly) setIsLoading(false);
     }
   };
 

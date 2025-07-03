@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
-export default function Blogs() {
+export default function SocialMedia() {
   return (
     <section>
       <div className="container">
@@ -18,8 +18,11 @@ export default function Blogs() {
               #BMRequipped
             </span>
             <h6 className="home-title-description text-center text-muted">
-              Explore our collection of videos showcasing our products and
-              features.
+              Follow us on Facebook and Instagram to keep up to date with all
+              things BMR Suspension!
+              <br />
+              DM us pictures of your #BMRequipped build for a chance to be
+              featured on our pages!
             </h6>
           </div>
         </div>

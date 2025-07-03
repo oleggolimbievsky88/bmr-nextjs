@@ -384,7 +384,8 @@
     padding-top: 37px;
     padding-bottom: 42px;
     border-top: 1px solid var(--primary);
-    max-height: calc(100vh - 74px);
+    //max-height: calc(100vh - 74px);
+    min-height: 800px;
     overflow: auto;
     left: 0;
     right: 0;
@@ -425,6 +426,15 @@
   }
 }
 .mega-menu {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+  position: absolute !important;
+  background: #fff !important;
+  min-width: 600px !important;
+  min-height: 800px !important;
+  border: 2px solid red !important; // for debugging, remove later
   .row-demo {
     display: grid;
     grid-template-columns: repeat(6, 1fr);

@@ -132,7 +132,6 @@ import Image from "next/image";
 
 export default function CategoryGrid({
   categories = [],
-  mainCategories = [],
   platform,
   isSubCategory = false,
   mainCategory,
@@ -140,8 +139,8 @@ export default function CategoryGrid({
   console.log("Categories:", categories); // Debug log
   const safeCategories = Array.isArray(categories) ? categories : [];
   return (
-    <div className="container">
-      <div className="row">
+    <div className="container m-0 p-0">
+      <div className="row m-0 p-0">
         {safeCategories.map((category, index) => {
           // For main categories, use name property
           // For subcategories, use CatName or name property
@@ -162,29 +161,31 @@ export default function CategoryGrid({
           return (
             <div
               key={categoryId || index}
-              className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-5th mb-4 d-flex align-items-stretch category-container"
+              className="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 mb-4"
             >
-              <div className="category-card text-center w-100">
-                <Link href={href}>
+              <div className="card category-card flex-row align-items-center rounded-4 w-100 p-2">
+                <Link
+                  href={href}
+                  className="d-flex align-items-center text-decoration-none"
+                >
                   {categoryImage && (
                     <Image
                       src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
                       alt={categoryName}
-                      width={200}
-                      height={150}
+                      width={100}
+                      height={90}
+                      className="category-card-img flex-shrink-0 me-3"
                       style={{
                         objectFit: "contain",
-                        width: "100%",
-                        height: "150px",
+                        width: "100px",
+                        height: "90px",
+                        borderRadius: "0.75rem",
+                        background: "#ffffff",
                       }}
                     />
                   )}
+                  <span className="category-title">{categoryName}</span>
                 </Link>
-                <div className="category-title-wrapper">
-                  <Link href={href} className="text-decoration-none">
-                    <p className="category-title">{categoryName}</p>
-                  </Link>
-                </div>
               </div>
             </div>
           );

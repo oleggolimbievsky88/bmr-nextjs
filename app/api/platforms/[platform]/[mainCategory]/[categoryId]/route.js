@@ -23,7 +23,7 @@ export async function GET(request, { params }) {
     // Get subcategories and initial products
     const [{ categories, platformInfo }, products] = await Promise.all([
       getCategoriesByPlatform(platformSlug, mainCategory),
-      getProductsByMainCategory(platformSlug, mainCategory, 8), // Limit to 8 products
+      getProductsByMainCategory(platformSlug, mainCategory, 12), // Limit to 8 products
     ]);
 
     return NextResponse.json({
