@@ -3,6 +3,8 @@ import {
   getCategoriesByPlatform,
   getMainCategoryProductCounts,
   getProductsByMainCategory,
+  getSubCategoriesWithProductCount,
+  getMainCategoryIdBySlugAndPlatform,
 } from "@/lib/queries";
 
 // Enable dynamic rendering for this route
@@ -25,10 +27,34 @@ export async function GET(request, { params }) {
       getMainCategoryProductCounts(platform, mainCategory), // Get product counts for each subcategory
     ]);
 
+    // Get mainCatId from slug and platform
+    const mainCatId = await getMainCategoryIdBySlugAndPlatform(
+      platform,
+      mainCategory
+    );
+    // Get product types (subcategories) with product count
+    let productTypes = [];
+    if (mainCatId) {
+      productTypes = await getSubCategoriesWithProductCount(
+        platform,
+        mainCatId
+      );
+    }
+
+    // If you want to merge productCount into your old categories array:
+    const categoriesWithCount = categories.map((cat) => {
+      const found = productTypes.find((sub) => sub.id === cat.id);
+      return {
+        ...cat,
+        productCount: found ? found.productCount : 0,
+      };
+    });
+
     return NextResponse.json({
-      categories,
+      categories: categoriesWithCount,
       products,
       platformInfo,
+      productTypes,
     });
   } catch (error) {
     console.error("Error in main category route:", error);

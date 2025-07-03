@@ -13,6 +13,8 @@ export default function Sidebar({
   selectedMainCatId = null,
   selectedCatId = null,
 }) {
+  console.log(selectedMainCatId, selectedCatId);
+  console.log("Platform in Sidebar:", platform);
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
       <div className="widget-facet wd-categories">
@@ -41,7 +43,8 @@ export default function Sidebar({
                       cat.name || cat.MainCatName
                     }`}
                   >
-                    <span>{cat.name || cat.MainCatName}</span>
+                    <span>{cat.name || cat.MainCatName}</span> &nbsp; (
+                    {cat.productCount || 0})
                   </Link>
                 </li>
               ))

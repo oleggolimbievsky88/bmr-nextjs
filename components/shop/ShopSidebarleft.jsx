@@ -69,8 +69,12 @@ export default function ShopSidebarleft({
             <div className="tf-shop-content">
               <ProductGrid products={finalSorted} gridItems={gridItems} />
               <ShopLoadmoreOnScroll
-                products={finalSorted}
+                setProducts={finalSorted}
+                finalSorted={finalSorted}
+                setFinalSorted={setFinalSorted}
                 gridItems={gridItems}
+                allProducts={products}
+                platform={platform}
               />
               {/* {finalSorted.length ? (
                 <ul className="tf-pagination-wrap tf-pagination-list">

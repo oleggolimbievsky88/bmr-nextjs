@@ -2,7 +2,6 @@
 import { layouts, sortingOptions } from "@/data/shop";
 import ProductGrid from "./ProductGrid";
 import { useEffect, useRef, useState } from "react";
-import { products1 } from "@/data/products";
 import ShopFilter from "./ShopFilter";
 import Sorting from "./Sorting";
 
@@ -10,13 +9,13 @@ export default function ShopLoadmoreOnScroll() {
   const [gridItems, setGridItems] = useState(4);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [allproducts, setAllproducts] = useState([...products1]);
   const [products, setProducts] = useState([]);
+  const [allproducts, setAllproducts] = useState([...products]);
   const [finalSorted, setFinalSorted] = useState([]);
   const handleLoad = () => {
     setLoading(true);
     setTimeout(() => {
-      setAllproducts((pre) => [...pre, ...products1.slice(0, 12)]);
+      setAllproducts((pre) => [...pre, ...products.slice(0, 12)]);
       setLoading(false);
     }, 1000);
   };
