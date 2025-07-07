@@ -55,6 +55,8 @@ export async function GET(request, { params }) {
       products,
       platformInfo,
       productTypes,
+      platformSlug: platform,
+      mainCategorySlug: mainCategory,
     });
   } catch (error) {
     console.error("Error in main category route:", error);

@@ -4,7 +4,7 @@ export default function PlatformHeader({
   platformData,
   title = "Select a category to shop through our latest selection of Suspension & Chassis Parts",
   subtitle,
-  slug = "",
+  slug = "platformData.slug",
 }) {
   if (!platformData) return null;
   console.log("Platform Header Data:", platformData);
