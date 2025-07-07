@@ -62,6 +62,7 @@ export default function MainCategoryPage({ params }) {
           StartYear: platformInfo?.startYear,
           EndYear: platformInfo?.endYear,
           Image: platformInfo?.image,
+          slug: platformInfo?.slug,
         }}
       />
 

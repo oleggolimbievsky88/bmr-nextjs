@@ -49,6 +49,7 @@ export default function PlatformPage({ params }) {
   }
 
   const { mainCategories, platformInfo, featuredProducts } = data;
+  console.log("Platform Info:", platformInfo);
 
   return (
     <div className="p-0 m-0">
@@ -59,6 +60,7 @@ export default function PlatformPage({ params }) {
           StartYear: platformInfo?.startYear,
           EndYear: platformInfo?.endYear,
           Image: platformInfo?.platformImage,
+          slug: platformInfo?.slug,
         }}
       />
 

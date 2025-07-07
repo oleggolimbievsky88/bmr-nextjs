@@ -2,30 +2,30 @@
 
 import { useEffect, useState } from "react";
 const categories = [
-  { id: 1, name: "Fashion", isActive: true, link: "/shop-default" },
-  { id: 2, name: "Men", isActive: false, link: "/shop-men" },
-  { id: 3, name: "Women", isActive: false, link: "/shop-women" },
-  { id: 4, name: "Denim", isActive: false, link: "/shop-default" },
-  { id: 5, name: "Dress", isActive: false, link: "/shop-default" },
+  { id: 1, name: "Suspension", isActive: true, link: "/shop-default" },
+  // { id: 2, name: "Men", isActive: false, link: "/shop-men" },
+  // { id: 3, name: "Women", isActive: false, link: "/shop-women" },
+  // { id: 4, name: "Denim", isActive: false, link: "/shop-default" },
+  // { id: 5, name: "Dress", isActive: false, link: "/shop-default" },
 ];
 
 const filterColors = [
-  { name: "Orange", colorClass: "bg_orange-3" },
-  { name: "Black", colorClass: "bg_dark" },
-  { name: "White", colorClass: "bg_white" },
-  { name: "Brown", colorClass: "bg_brown" },
-  { name: "Light Purple", colorClass: "bg_purple" },
-  { name: "Light Green", colorClass: "bg_light-green" },
-  { name: "Pink", colorClass: "bg_purple" },
-  { name: "Blue", colorClass: "bg_blue-2" },
-  { name: "Dark Blue", colorClass: "bg_dark-blue" },
-  { name: "Light Grey", colorClass: "bg_light-grey" },
-  { name: "Beige", colorClass: "bg_beige" },
-  { name: "Light Blue", colorClass: "bg_light-blue" },
-  { name: "Grey", colorClass: "bg_grey" },
-  { name: "Light Pink", colorClass: "bg_light-pink" },
+  { name: "Red", colorClass: "bg_orange-3" },
+  { name: "Black Hammertone", colorClass: "bg_dark" },
+  // { name: "White", colorClass: "bg_white" },
+  // { name: "Brown", colorClass: "bg_brown" },
+  // { name: "Light Purple", colorClass: "bg_purple" },
+  // { name: "Light Green", colorClass: "bg_light-green" },
+  // { name: "Pink", colorClass: "bg_purple" },
+  // { name: "Blue", colorClass: "bg_blue-2" },
+  // { name: "Dark Blue", colorClass: "bg_dark-blue" },
+  // { name: "Light Grey", colorClass: "bg_light-grey" },
+  // { name: "Beige", colorClass: "bg_beige" },
+  // { name: "Light Blue", colorClass: "bg_light-blue" },
+  // { name: "Grey", colorClass: "bg_grey" },
+  // { name: "Light Pink", colorClass: "bg_light-pink" },
 ];
-const brands = ["Ecomus", "M&H"];
+const brands = ["BMR Suspension", "Qa1"];
 const availabilities = [
   { id: 1, isAvailable: true, text: "Available", count: 14 },
   { id: 2, isAvailable: false, text: "Out of Stock", count: 2 },

@@ -134,6 +134,7 @@ export default function CategoryPage({ params }) {
           StartYear: platformInfo?.startYear,
           EndYear: platformInfo?.endYear,
           Image: platformInfo?.image,
+          slug: platformInfo?.slug,
         }}
       />
 

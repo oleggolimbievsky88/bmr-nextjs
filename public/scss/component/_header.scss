@@ -861,126 +861,81 @@
     }
   }
 }
-#header {
-  &.header-uppercase {
-    .box-nav-ul {
-      .item-link {
-        text-transform: uppercase;
-        font-size: 12px;
-        line-height: 14.4px;
-        font-weight: 700;
-      }
-    }
-  }
-  .header-bottom {
-    .box-right {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      .phone {
-        font-size: 28px;
-        line-height: 28px;
-        font-weight: 700;
-        color: var(--primary);
-      }
-    }
-    .tf-list-categories {
-      position: relative;
-      .categories-title {
-        min-width: 226px;
-        height: 40px;
-        font-size: 16px;
-        line-height: 40px;
-        padding: 0 14px;
-        margin-inline-end: 35px;
-        background-color: var(--primary);
-        color: var(--white);
-        border-radius: 5px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .list-categories-inner {
-        left: 0;
-        border-radius: 10px;
-        position: absolute;
-        background-color: var(--red);
-        min-width: 367px;
-        z-index: 3;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(15px);
-        transition: 0.4s ease 0.1s;
-        text-align: left;
-        box-shadow: rgba(37, 61, 78, 0.08) 0px 4px 8px 0px;
-        border: solid 1px var(--line);
-        top: 100%;
-        margin-top: 10px;
-        color: var(--main);
-        pointer-events: none;
-        &::before {
-          height: 20px;
-          position: absolute;
-          top: -15px;
-          left: 0;
-          right: 0;
-          content: "";
-        }
-        .categories-bottom {
-          min-height: 50px;
-          padding: 15px 26px;
-          background-color: rgba(37, 61, 78, 0.05);
-        }
-      }
-      &:hover {
-        .list-categories-inner {
-          opacity: 1;
-          visibility: visible;
-          transform: none;
-          pointer-events: all;
-        }
-      }
-      .nav-ul-mb {
-        padding-top: 24px;
-        padding-inline-start: 21px;
-        padding-inline-end: 20px;
-        padding-bottom: 11px;
-      }
-      .nav-mb-item {
-        &:last-child {
-          .tf-category-link {
-            &::after {
-              content: none;
-            }
-          }
-          .list-cate.show::after {
-            content: none;
-          }
-        }
-      }
-    }
-    .box-left {
-      display: flex;
-      align-items: center;
-    }
-  }
+.banner-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
-#header {
-  &.header-style-4 {
-    .nav-icon {
-      .nav-search {
-        display: none;
-      }
-    }
-    .header-bottom {
-      .wrapper-header {
-        max-height: 20px;
-      }
-      .menu-item {
-        padding: 28px 0px;
-      }
-    }
-  }
+
+.banner-inner {
+  position: relative;     /* This establishes a stacking context for absolute children */
+  width: 100%;
+  max-width: 1500px;
+}
+
+.banner-img {
+  width: 100%;
+  height: 340px;           /* or whatever you want */
+  object-fit: cover;
+  display: block;
+}
+
+.banner-text {
+  position: absolute;      /* This puts the text ON TOP of the image */
+  top: 0;
+  left: 0;
+  padding: 2rem 2.5rem;
+  color: #fff;
+  z-index: 2;
+  text-align: left;
+  /* Add a subtle text-shadow for contrast if needed */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.platform-header-container {
+  position: relative;
+  width: 100%;
+  min-height: 325px;
+  background: #000;
+  background-image: url('/images/platformHeaders/your_slug_Banner.jpg'); // set dynamically in React
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.platform-header-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5); // darken for readability
+  z-index: 1;
+}
+
+.platform-header-content {
+  position: relative;
+  z-index: 2;
+  padding-left: 8vw; // or use Bootstrap's container class for perfect alignment
+  max-width: 1200px; // match your main content width
+}
+
+.platform-header-title {
+  color: #fff;
+  font-weight: 900;
+  font-size: 4vw;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  text-shadow: 2px 2px 0 #111;
+  text-align: left;
+}
+
+.platform-header-image {
+  width: 50%;
+  min-height: 350px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 

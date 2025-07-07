@@ -190,11 +190,14 @@ export default function Header18({ initialMenuData }) {
           </div>
         </div>
       </div>
-      <div className="header-bottom line tf-md-hidden">
+      <div className="header-bottom tf-md-hidden">
         <div className="container">
           <div
             className="justify-content-between align-items-center"
-            style={{ marginTop: "0px", paddingTop: "0px" }}
+            style={{
+              marginTop: "0px",
+              paddingTop: "0px",
+            }}
           >
             <div>
               <div className="tf-list-categories">
@@ -214,7 +217,7 @@ export default function Header18({ initialMenuData }) {
                   Browse All Categories
                 </a> */}
                 <div className="list-categories-inner toolbar-shop-mobile">
-                  <ul className="nav-ul-mb" id="wrapper-menu-navigation">
+                  {/* <ul className="nav-ul-mb" id="wrapper-menu-navigation">
                     <li className="nav-mb-item">
                       <Link
                         href={`/shop-default`}
@@ -559,7 +562,7 @@ export default function Header18({ initialMenuData }) {
                         </ul>
                       </div>
                     </li>
-                  </ul>
+                  </ul> */}
                   <div className="categories-bottom">
                     <Link
                       href={`/shop-collection-sub`}
@@ -619,7 +622,6 @@ export default function Header18({ initialMenuData }) {
           <VehicleSearch />
         </div>
       </div>
-      <h1 className="header-main-title">2024-2025 Mustang</h1>
     </header>
   );
 }

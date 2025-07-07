@@ -87,7 +87,7 @@ export default function ShopSidebarleft({
           </div>
         </div>
       </section>
-      <div className="btn-sidebar-style2">
+      {/* <div className="btn-sidebar-style2">
         <button
           data-bs-toggle="offcanvas"
           data-bs-target="#sidebarmobile"
@@ -95,7 +95,7 @@ export default function ShopSidebarleft({
         >
           <i className="icon icon-sidebar-2" />
         </button>
-      </div>
+      </div> */}
     </>
   );
 }
