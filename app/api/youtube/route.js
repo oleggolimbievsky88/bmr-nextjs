@@ -46,7 +46,7 @@ export async function GET() {
     const videos = videosData.items.map((item) => ({
       id: item.snippet.resourceId.videoId,
       title: item.snippet.title,
-      description: item.snippet.description.slice(0, 100) + "...",
+      description: item.snippet?.description.slice(0, 100) + "...",
       thumbnail: {
         url: `https://i.ytimg.com/vi/${item.snippet.resourceId.videoId}/hqdefault.jpg`,
       },

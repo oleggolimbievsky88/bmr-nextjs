@@ -135,9 +135,9 @@ export default function ProductDetails({ params }) {
                 </div>
 
                 <div className="product-description">
-                  {product.Description && (
+                  {product?.Description && (
                     <div
-                      dangerouslySetInnerHTML={{ __html: product.Description }}
+                      dangerouslySetInnerHTML={{ __html: product?.Description }}
                     />
                   )}
                 </div>
