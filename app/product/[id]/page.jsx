@@ -9,6 +9,8 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+import { use } from "react";
+
 export const metadata = {
   title:
     "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
@@ -16,7 +18,7 @@ export const metadata = {
 };
 
 export default async function ProductPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
   console.log("params", params);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

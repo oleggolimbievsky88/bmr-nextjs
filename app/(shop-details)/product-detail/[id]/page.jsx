@@ -9,6 +9,7 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+import { use } from "react";
 
 export const metadata = {
   title:
@@ -17,7 +18,7 @@ export const metadata = {
 };
 
 export default async function ProductPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
 
   // Fetch product data from API
   const res = await fetch(`/api/product/${id}`, { cache: "no-store" });

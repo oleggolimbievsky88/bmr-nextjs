@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import CategoryGrid from "@/components/shop/CategoryGrid";
 import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
@@ -10,7 +10,7 @@ import { categories } from "@/data/blogs";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function PlatformPage({ params }) {
-  const { platform } = params;
+  const { platform } = use(params);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);

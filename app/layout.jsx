@@ -121,14 +121,7 @@ export default function RootLayout({ children }) {
       header.style.top = "-185px";
     }
   }, [scrollDirection]);
-  useEffect(() => {
-    const { WOW } = require("wowjs");
-    const wow = new WOW({
-      mobile: false,
-      live: false,
-    });
-    wow.init();
-  }, [pathname]);
+
   return (
     <html lang="en">
       <body className="preload-wrapper popup-loader">

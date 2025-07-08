@@ -1,5 +1,7 @@
+import { use } from "react";
+
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = use(params);
 
   return {
     title: `YouTube Video | BMR Suspension`,
@@ -8,7 +10,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default function VideoPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
 
   // In a production app, you would fetch video data from your database
   // For now, we'll create a simple placeholder
