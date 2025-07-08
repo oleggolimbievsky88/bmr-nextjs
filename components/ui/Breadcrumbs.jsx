@@ -13,7 +13,7 @@ export default function Breadcrumbs({ params }) {
   return (
     <div className="tf-breadcrumb">
       <div className="container">
-        <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
+        <div className="tf-breadcrumb-wrap d-flex justify-content-center flex-wrap align-items-center">
           <div className="tf-breadcrumb-list">
             <Link href="/" className="text breadcrumb-item">
               Home

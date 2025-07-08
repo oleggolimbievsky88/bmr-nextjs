@@ -800,6 +800,8 @@
 
 .nav-item {
   position: static;
+  padding-right:20px;
+  height:40px;
 }
 
 .nav-link {
@@ -807,7 +809,7 @@
   font-weight: 600;
   text-transform: uppercase;
   font-size: 15px;
-  padding: 15px 50px;
+  padding: 10px 0px;
   transition: all .3s ease;
   font-family: Arial, sans-serif;
   letter-spacing: 1px;
@@ -1178,12 +1180,12 @@
 /* Search dropdown styling */
 .search-wrapper {
   position: relative;
-  z-index: 1030; /* Adjusted from 1100 */
+  z-index: 190; /* Adjusted from 1100 */
 }
 
 .search-wrapper .dropdown-menu,
 .header-search .dropdown-menu {
-  z-index: 1030 !important; /* Adjusted from 1100 */
+  z-index: 190; /* Adjusted from 1100 */
 }
 
 .three-column-layout {

@@ -4,9 +4,9 @@
     .flat-toggle2,
     .flat-toggle1,
     .flat-toggle {
-        :not(:last-child) {
-            // margin-bottom: 18px;
-        }
+        // :not(:last-child) {
+        //     // margin-bottom: 18px;
+        // }
         .toggle-title {
             background-color: #F5F5F5;
             font-size: 18px;
@@ -14,7 +14,7 @@
             line-height: 30px;
             color: var(--main);
             padding: 14px 20px;
-            
+
             cursor: pointer;
             position: relative;
             @include transition3;
@@ -29,7 +29,7 @@
             // margin-top: 18px;
             // margin-bottom: 10px;
         }
-      
+
     }
     &.has-btns {
         .flat-toggle {
@@ -78,7 +78,7 @@
                         right: 20px;
                     }
                 }
-                
+
             }
         }
     }
@@ -121,6 +121,6 @@
             border: 0;
         }
     }
-    
+
 }
 

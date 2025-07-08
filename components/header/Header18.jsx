@@ -563,7 +563,7 @@ export default function Header18({ initialMenuData }) {
                       </div>
                     </li>
                   </ul> */}
-                  <div className="categories-bottom">
+                  {/* <div className="categories-bottom">
                     <Link
                       href={`/shop-collection-sub`}
                       className="tf-btn btn-line collection-other-link"
@@ -571,11 +571,11 @@ export default function Header18({ initialMenuData }) {
                       <span>View all collection</span>
                       <i className="icon icon-arrow1-top-left" />
                     </Link>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <nav className="box-navigation text-center">
-                <div className=" align-items-center justify-content-center ">
+                <div className="align-items-center justify-content-center ">
                   <MainMenu />
                 </div>
               </nav>

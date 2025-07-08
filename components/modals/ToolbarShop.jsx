@@ -361,12 +361,12 @@ export default function ToolbarShop() {
             </li>
           </ul>
         </div>
-        <div className="mb-bottom">
+        {/* <div className="mb-bottom">
           <Link href={`/shop-default`} className="tf-btn fw-5 btn-line">
             View all collection
             <i className="icon icon-arrow1-top-left" />
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -23,50 +23,53 @@ export default function MegaMenu() {
 
   return (
     <nav className="bg-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="relative">
-          <div className="flex space-x-8">
+      <div className="container px-0">
+        <div className="position-relative">
+          <div className="d-flex gap-3">
             {menuData.map((group) => (
               <div
                 key={group.id}
-                className="relative"
+                className="position-relative"
                 onMouseEnter={() => setActiveGroup(group.id)}
                 onMouseLeave={() => setActiveGroup(null)}
               >
-                <button className="px-3 py-2 text-gray-700 hover:text-gray-900">
+                <button className="px-3 py-2 text-secondary bg-transparent border-0 fw-semibold">
                   {group.name}
                 </button>
 
                 {activeGroup === group.id && (
                   <div
-                    className="absolute left-0 mt-2 w-screen max-w-screen-xl bg-white border shadow-xl rounded-lg"
+                    className="position-absolute start-0 mt-2 w-100 bg-white border shadow rounded"
                     style={{
                       zIndex: 9999,
                       background: "white",
-                      position: "absolute",
                       top: 40,
                     }}
                   >
-                    <div className="grid grid-cols-4 gap-6 p-6">
+                    <div className="row g-4 p-4">
                       {group.platforms.map((platform) => (
-                        <div key={platform.id} className="space-y-4">
-                          <h3 className="text-lg font-medium text-gray-900">
+                        <div
+                          key={platform.id}
+                          className="col-12 col-md-6 col-lg-3"
+                        >
+                          <h3 className="h6 fw-bold text-dark">
                             <Link
                               href={`/products/${platform.name.toLowerCase()}`}
+                              className="text-dark text-decoration-none"
                             >
-                              <a>{platform.name}</a>
+                              {platform.name}
                             </Link>
                           </h3>
                           <Link
                             href={`/products/${platform.name.toLowerCase()}`}
-                            className="block text-sm text-gray-500 hover:text-gray-900"
+                            className="d-block text-secondary text-decoration-none mb-2"
                           >
                             View All {platform.name} Products
                           </Link>
                           {platform.category && (
                             <Link
                               href={`/products/${platform.name.toLowerCase()}/${platform.category.name.toLowerCase()}`}
-                              className="block text-sm text-gray-500 hover:text-gray-900"
+                              className="d-block text-secondary text-decoration-none"
                             >
                               {platform.category.name}
                             </Link>

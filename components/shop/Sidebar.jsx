@@ -29,7 +29,7 @@ export default function Sidebar({
           <span className="icon icon-arrow-up" />
         </div>
         <div id="categories" className="collapse show">
-          <ul className="list-categoris mb_36">
+          <ul className="list-categoris mb_40">
             {mainCategories && mainCategories.length > 0 ? (
               mainCategories.map((cat, index) => (
                 <li
@@ -38,13 +38,8 @@ export default function Sidebar({
                     selectedMainCatId == cat.id ? " active" : ""
                   }`}
                 >
-                  <Link
-                    href={`/products/${platform.slug}/${
-                      cat.name || cat.MainCatName
-                    }`}
-                  >
-                    <span>{cat.name || cat.MainCatName}</span> &nbsp; (
-                    {cat.productCount || 0})
+                  <Link href={`/products/${platform.slug}/${cat.MainCatName}`}>
+                    <span>{cat.name}</span> &nbsp; ({cat.productCount || 0})
                   </Link>
                 </li>
               ))
