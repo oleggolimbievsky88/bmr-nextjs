@@ -187,9 +187,9 @@ export default function ShopFilter({ setProducts, products = products }) {
                         <span>{category.name}</span>
                       </Link>
                     ) : (
-                      <a href="#">
+                      <Link href="/${category.slug}">
                         <span>{category.name}</span>
-                      </a>
+                      </Link>
                     )}
                   </li>
                 ))}

@@ -1180,12 +1180,12 @@
 /* Search dropdown styling */
 .search-wrapper {
   position: relative;
-  z-index: 190; /* Adjusted from 1100 */
+  z-index: 1030; /* Adjusted from 1100 */
 }
 
 .search-wrapper .dropdown-menu,
 .header-search .dropdown-menu {
-  z-index: 190; /* Adjusted from 1100 */
+  z-index: 1030 !important; /* Adjusted from 1100 */
 }
 
 .three-column-layout {
