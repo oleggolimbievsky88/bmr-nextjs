@@ -143,7 +143,6 @@ export default function ShopFilter({ setProducts, products = [] }) {
     selectedBrands,
     selectedAvailabilities,
     selectedSizes,
-    products,
   ]);
   const clearFilter = () => {
     setSelectedColors([]);

@@ -8,8 +8,6 @@ import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function CategoryPage({ params }) {
-  console.log("🛠 Params received:", params);
-
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -20,24 +18,34 @@ export default function CategoryPage({ params }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch main categories for the platform
-        const mainCatRes = await fetch(`/api/platforms/${params.platform}`);
-        const mainCatData = await mainCatRes.json();
-        setMainCategories(mainCatData.mainCategories || []);
+        // Fetch platform info and main categories (for sidebar/header)
+        const platformRes = await fetch(`/api/platforms/${params.platform}`);
+        if (!platformRes.ok) throw new Error("Failed to fetch platform info");
+        const platformData = await platformRes.json();
+        setPlatformInfo(platformData.platformInfo || {});
+        setMainCategories(platformData.mainCategories || []);
 
-        // Fetch subcategories and products for the selected main category
-        const res = await fetch(
+        // Fetch subcategories for the selected main category (for sidebar)
+        const subcatRes = await fetch(
           `/api/platforms/${params.platform}/${params.mainCategory}`
         );
-        if (!res.ok) throw new Error("Failed to fetch data");
-        const { categories, products, platformInfo } = await res.json();
-        setCategories(categories);
-        setFeaturedProducts(products);
-        setPlatformInfo(platformInfo);
+        if (!subcatRes.ok) throw new Error("Failed to fetch subcategories");
+        const subcatData = await subcatRes.json();
+        setCategories(subcatData.categories || []);
 
-        const allProducts = await fetch(
-          `/api/products?platformSlug=${params.platform}&mainCategorySlug=${params.mainCategory}&categorySlug=${params.category}`
-        );
+        // Fetch products for this platform/mainCategory/category
+        const query = new URLSearchParams({
+          platform: params.platform,
+          mainCategory: params.mainCategory,
+          category: params.category,
+          page: 1,
+          limit: 12,
+        }).toString();
+
+        const prodRes = await fetch(`/api/products?${query}`);
+        if (!prodRes.ok) throw new Error("Failed to fetch products");
+        const products = await prodRes.json();
+        setFeaturedProducts(products);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -46,7 +54,7 @@ export default function CategoryPage({ params }) {
     };
 
     fetchData();
-  }, [params.platform, params.mainCategory]);
+  }, [params.platform, params.mainCategory, params.category]);
 
   if (loading) {
     return <div className="text-center py-5">Loading...</div>;
@@ -55,8 +63,6 @@ export default function CategoryPage({ params }) {
   if (error) {
     return <div className="text-center py-5 text-danger">{error}</div>;
   }
-
-  console.log("platformInfo:", platformInfo);
 
   return (
     <div className="p-0 m-0">

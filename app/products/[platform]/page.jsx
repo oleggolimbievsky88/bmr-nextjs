@@ -1,55 +1,42 @@
 "use client";
 import { useEffect, useState } from "react";
-import CategoryGrid from "@/components/shop/CategoryGrid";
-import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
-import ShopFilter from "@/components/shop/ShopFilter";
-import { categories } from "@/data/blogs";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function PlatformPage({ params }) {
-  const { platform } = params;
+  const [platformInfo, setPlatformInfo] = useState(null);
+  const [mainCategories, setMainCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/platforms/${platform}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch platform data");
-        }
-        const result = await response.json();
-        console.log("Fetched Data:", result); // Debug log
-        setData(result);
+        // Fetch platform info and main categories
+        const platformRes = await fetch(`/api/platforms/${params.platform}`);
+        if (!platformRes.ok) throw new Error("Failed to fetch platform info");
+        const platformData = await platformRes.json();
+        setPlatformInfo(platformData.platformInfo || {});
+        setMainCategories(platformData.mainCategories || []);
       } catch (err) {
-        console.error("Error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, [platform]);
+  }, [params.platform]);
 
   if (loading) {
     return <div className="text-center py-5">Loading...</div>;
   }
 
-  if (error || !data) {
-    return (
-      <div className="text-center py-5 text-danger">
-        Error loading platform data
-      </div>
-    );
+  if (error) {
+    return <div className="text-center py-5 text-danger">{error}</div>;
   }
-
-  const { mainCategories, platformInfo, featuredProducts } = data;
-  console.log("Platform Info:", platformInfo);
 
   return (
     <div className="p-0 m-0">
@@ -59,7 +46,7 @@ export default function PlatformPage({ params }) {
           Name: platformInfo?.name,
           StartYear: platformInfo?.startYear,
           EndYear: platformInfo?.endYear,
-          Image: platformInfo?.platformImage,
+          Image: platformInfo?.image,
           slug: platformInfo?.slug,
         }}
       />
@@ -69,7 +56,7 @@ export default function PlatformPage({ params }) {
           items={[
             { label: "Home", href: "/" },
             { label: "Products", href: "/products" },
-            { label: platformInfo?.name || platform, href: "#" },
+            { label: platformInfo?.name || params.platform, href: "#" },
           ]}
         />
 
@@ -77,49 +64,25 @@ export default function PlatformPage({ params }) {
         <section className="mb-3">
           <CategoryGrid
             categories={mainCategories}
-            platform={platform}
+            platform={params.platform}
             isMainCategory={true}
           />
         </section>
 
-        {/* Featured Products Section */}
-        {featuredProducts && featuredProducts.length > 0 && (
-          <section
-            style={{
-              backgroundColor: "#f8f9fa",
-              padding: "0px",
-              margin: "0px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            {/* <div className="text-center mb-4">
-                <div
-                  className="position-absolute start-0 end-0 bottom-0"
-                  style={{
-                    height: "4px",
-                    backgroundColor: "var(--bmr-red)",
-                    width: "80%",
-                    margin: "0 auto",
-                    marginTop: "10px",
-                  }}
-                ></div>
-            </div> */}
-
-            {/* <ProductGrid products={featuredProducts} /> */}
+        {/* Sidebar and Infinite Scroll */}
+        <div className="row">
+          <div className="col-md-3">
             <ShopSidebarleft
               platform={platformInfo}
+              categories={mainCategories}
               isMainCategory={true}
-              products={featuredProducts}
-              setProducts={featuredProducts}
-              categories={categories}
               mainCategories={mainCategories}
-              selectedMainCatId={null}
-              selectedCatId={null}
             />
-          </section>
-        )}
+          </div>
+          <div className="col-md-9">
+            {/* <ShopLoadmoreOnScroll platform={params.platform} /> */}
+          </div>
+        </div>
       </div>
     </div>
   );
