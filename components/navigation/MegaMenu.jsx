@@ -54,21 +54,29 @@ export default function MegaMenu() {
                         >
                           <h3 className="h6 fw-bold text-dark">
                             <Link
-                              href={`/products/${platform.name.toLowerCase()}`}
+                              href={`/products/${encodeURIComponent(
+                                platform.name.toLowerCase()
+                              )}`}
                               className="text-dark text-decoration-none"
                             >
                               {platform.name}
                             </Link>
                           </h3>
                           <Link
-                            href={`/products/${platform.name.toLowerCase()}`}
+                            href={`/products/${encodeURIComponent(
+                              platform.name.toLowerCase()
+                            )}`}
                             className="d-block text-secondary text-decoration-none mb-2"
                           >
                             View All {platform.name} Products
                           </Link>
                           {platform.category && (
                             <Link
-                              href={`/products/${platform.name.toLowerCase()}/${platform.category.name.toLowerCase()}`}
+                              href={`/products/${encodeURIComponent(
+                                platform.name.toLowerCase()
+                              )}/${encodeURIComponent(
+                                platform.category.name.toLowerCase()
+                              )}`}
                               className="d-block text-secondary text-decoration-none"
                             >
                               {platform.category.name}

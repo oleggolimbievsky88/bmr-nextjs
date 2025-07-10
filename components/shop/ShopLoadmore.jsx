@@ -77,7 +77,7 @@ export default function ShopLoadmore() {
           </div>
         </div>
       </section>
-      <ShopFilter products={allproducts} setProducts={setProducts} />
+      <ShopFilter products={products} setProducts={setProducts} />
     </>
   );
 }

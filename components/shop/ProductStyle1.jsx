@@ -80,7 +80,7 @@ export default function ProductStyle1() {
           </div>
         </div>
       </section>
-      <ShopFilter setProducts={setProducts} />
+      <ShopFilter products={[]} setProducts={() => {}} />
     </>
   );
 }

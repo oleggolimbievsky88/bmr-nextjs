@@ -6,23 +6,20 @@ import React, { useEffect, useState } from "react";
 export default function Sorting({ products = products1, setFinalSorted }) {
   const [selectedOptions, setSelectedOptions] = useState(sortingOptions[0]);
 
-  useEffect(() => {
-    if (selectedOptions.text == "Default") {
-      setFinalSorted([...products]);
-    } else if (selectedOptions.text == "Alphabetically, A-Z") {
-      setFinalSorted(
-        [...products].sort((a, b) => a.ProductName.localeCompare(b.ProductName))
-      );
-    } else if (selectedOptions.text == "Alphabetically, Z-A") {
-      setFinalSorted(
-        [...products].sort((a, b) => b.ProductName.localeCompare(a.ProductName))
-      );
-    } else if (selectedOptions.text == "Price, low to high") {
-      setFinalSorted([...products].sort((a, b) => a.Price - b.Price));
-    } else if (selectedOptions.text == "Price, high to low") {
-      setFinalSorted([...products].sort((a, b) => b.Price - a.Price));
-    }
-  }, [products, selectedOptions]);
+  // useEffect(() => {
+  //   let sorted = [...products];
+  //   if (selectedOptions.text === "Alphabetically, A-Z") {
+  //     sorted.sort((a, b) => a.ProductName.localeCompare(b.ProductName));
+  //   } else if (selectedOptions.text === "Alphabetically, Z-A") {
+  //     sorted.sort((a, b) => b.ProductName.localeCompare(a.ProductName));
+  //   } else if (selectedOptions.text === "Price, low to high") {
+  //     sorted.sort((a, b) => a.Price - b.Price);
+  //   } else if (selectedOptions.text === "Price, high to low") {
+  //     sorted.sort((a, b) => b.Price - a.Price);
+  //   }
+  //   // Only update if different
+  //   setFinalSorted(sorted);
+  // }, [products, selectedOptions]);
 
   return (
     <>

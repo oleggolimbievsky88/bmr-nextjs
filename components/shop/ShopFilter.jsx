@@ -34,7 +34,7 @@ const sizes = ["S", "M", "L", "XL"];
 import Slider from "rc-slider";
 import { products1 } from "@/data/products";
 import Link from "next/link";
-export default function ShopFilter({ setProducts, products = products }) {
+export default function ShopFilter({ setProducts, products = [] }) {
   const [price, setPrice] = useState([10, 20]);
   const handlePrice = (value) => {
     setPrice(value);
@@ -187,7 +187,7 @@ export default function ShopFilter({ setProducts, products = products }) {
                         <span>{category.name}</span>
                       </Link>
                     ) : (
-                      <Link href="/${category.slug}">
+                      <Link href={`${category.name.toLowerCase()}`}>
                         <span>{category.name}</span>
                       </Link>
                     )}

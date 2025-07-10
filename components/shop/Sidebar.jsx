@@ -12,6 +12,7 @@ export default function Sidebar({
   platform = "",
   selectedMainCatId = null,
   selectedCatId = null,
+  selectedMainCatSlug = null,
 }) {
   console.log(selectedMainCatId, selectedCatId);
   console.log("Platform in Sidebar:", platform);
@@ -38,7 +39,7 @@ export default function Sidebar({
                     selectedMainCatId == cat.id ? " active" : ""
                   }`}
                 >
-                  <Link href={`/products/${platform.slug}/${cat.MainCatName}`}>
+                  <Link href={`/products/${platform.slug}/${cat.slug}`}>
                     <span>{cat.name}</span> &nbsp; ({cat.productCount || 0})
                   </Link>
                 </li>
@@ -71,10 +72,14 @@ export default function Sidebar({
                     selectedCatId == category.id ? " active" : ""
                   }`}
                 >
-                  <a href="#">
+                  <Link
+                    href={`/products/${platform.slug}/${encodeURIComponent(
+                      selectedMainCatSlug
+                    )}/${category.name}`}
+                  >
                     <span>{category.name || category.CatName}</span>&nbsp;
                     <span>({category.productCount || 0})</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

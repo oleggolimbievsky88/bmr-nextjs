@@ -6,48 +6,90 @@ import {
   getFilteredProducts,
   getNewProducts,
   getFilteredProductsPaginated,
+  getPlatformBySlug,
+  getMainCategoryIdBySlugAndPlatform,
+  getCategoryIdBySlugAndMainCat,
 } from "@/lib/queries";
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const mainCategoryId = searchParams.get("mainCategoryId");
-  const subCategoryId = searchParams.get("subCategoryId");
-  const page = searchParams.get("page");
-  const limit = searchParams.get("limit");
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
-  const color = searchParams.get("color");
-  const brand = searchParams.get("brand");
+  try {
+    const { searchParams } = new URL(request.url);
+    const mainCategoryId = searchParams.get("mainCategoryId");
+    const subCategoryId = searchParams.get("subCategoryId");
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "12", 10);
+    const offset = (page - 1) * limit;
 
-  // 1. Special case: scratchDent
-  if (searchParams.has("scratchDent")) {
-    const newProducts = await getNewProducts(searchParams.get("scratchDent"));
-    return NextResponse.json(
-      limit ? newProducts.slice(0, parseInt(limit)) : newProducts
-    );
-  }
+    if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
+      return NextResponse.json({ error: "Invalid page or limit" }, { status: 400 });
+    }
 
-  // 2. If any filter/pagination param is present, use the new paginated/filterable query
-  if (page || minPrice || maxPrice || color || brand) {
-    const products = await getFilteredProductsPaginated({
-      mainCategoryId,
-      subCategoryId,
-      page: parseInt(page) || 1,
-      limit: parseInt(limit) || 12,
-      minPrice,
-      maxPrice,
-      color,
-      brand,
-    });
-    return NextResponse.json(products);
-  }
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const color = searchParams.get("color");
+    const brand = searchParams.get("brand");
+    // New: Accept slugs for SEO-friendly URLs
+    const platformSlug = searchParams.get("platformSlug");
+    const mainCategorySlug = searchParams.get("mainCategorySlug");
+    const categorySlug = searchParams.get("categorySlug");
 
-  // 3. Your existing queries
-  let products;
-  if (mainCategoryId && subCategoryId) {
-    // ... your existing query for main and sub category
-    const [rows] = await pool.query(
-      `
+    let resolvedMainCategoryId = mainCategoryId;
+    let resolvedSubCategoryId = subCategoryId;
+
+    // If slugs are provided, resolve them to IDs
+    if (platformSlug && mainCategorySlug) {
+      // 1. Get MainCatID from platformSlug and mainCategorySlug
+      resolvedMainCategoryId = await getMainCategoryIdBySlugAndPlatform(
+        platformSlug,
+        mainCategorySlug
+      );
+    }
+    if (resolvedMainCategoryId && categorySlug) {
+      // 2. Get CatID from mainCategoryId and categorySlug
+      resolvedSubCategoryId = await getCategoryIdBySlugAndMainCat(
+        resolvedMainCategoryId,
+        categorySlug
+      );
+    }
+
+    // 1. Special case: scratchDent
+    if (searchParams.has("scratchDent")) {
+      const newProducts = await getNewProducts(searchParams.get("scratchDent"));
+      return NextResponse.json(
+        limit ? newProducts.slice(0, parseInt(limit)) : newProducts
+      );
+    }
+
+    // 2. If any filter/pagination param is present, use the new paginated/filterable query
+    if (
+      page ||
+      minPrice ||
+      maxPrice ||
+      color ||
+      brand ||
+      resolvedMainCategoryId ||
+      resolvedSubCategoryId
+    ) {
+      const products = await getFilteredProductsPaginated({
+        mainCategoryId: resolvedMainCategoryId,
+        subCategoryId: resolvedSubCategoryId,
+        page: page,
+        limit: limit,
+        offset: offset,
+        minPrice,
+        maxPrice,
+        color,
+        brand,
+      });
+      return NextResponse.json(products);
+    }
+
+    // 3. Your existing queries
+    let products;
+    if (resolvedMainCategoryId && resolvedSubCategoryId) {
+      // ... your existing query for main and sub category
+      const [rows] = await pool.query(
+        `
       SELECT
         p.ProductID,
         p.ProductName,
@@ -64,15 +106,15 @@ export async function GET(request) {
       LEFT JOIN categories c ON p.CatID = c.CatID
       LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
       WHERE p.Display = 1 AND mc.MainCatID = ? AND c.CatID = ?
-      LIMIT ${limit || 100}
+      LIMIT ${limit} OFFSET ${offset}
     `,
-      [mainCategoryId, subCategoryId]
-    );
-    products = rows;
-  } else if (mainCategoryId) {
-    // ... your existing query for main category
-    const [rows] = await pool.query(
-      `
+        [resolvedMainCategoryId, resolvedSubCategoryId]
+      );
+      products = rows;
+    } else if (resolvedMainCategoryId) {
+      // ... your existing query for main category
+      const [rows] = await pool.query(
+        `
       SELECT
         p.ProductID,
         p.ProductName,
@@ -90,18 +132,25 @@ export async function GET(request) {
       LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
       WHERE p.Display = 1 AND mc.MainCatID = ?
     `,
-      [mainCategoryId]
+        [resolvedMainCategoryId]
+      );
+      products = rows;
+    } else {
+      // Fallback to all products
+      products = await getFilteredProducts();
+    }
+
+    // Apply limit if specified
+    if (limit && Array.isArray(products)) {
+      products = products.slice(0, parseInt(limit));
+    }
+
+    return NextResponse.json(products);
+  } catch (err) {
+    console.error("API error:", err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
     );
-    products = rows;
-  } else {
-    // Fallback to all products
-    products = await getFilteredProducts();
   }
-
-  // Apply limit if specified
-  if (limit && Array.isArray(products)) {
-    products = products.slice(0, parseInt(limit));
-  }
-
-  return NextResponse.json(products);
 }

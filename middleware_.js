@@ -1,20 +1,16 @@
-import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
-export default withAuth(
-  function middleware(req) {
-    if (req.nextUrl.pathname.startsWith("/admin") && 
-        req.nextauth.token?.role !== "admin") {
-      return NextResponse.redirect(new URL("/admin/login", req.url))
+export function middleware(request) {
+  const url = new URL(request.url);
+  if (
+    url.pathname === "/index.cfm" &&
+    url.searchParams.get("page") === "products"
+  ) {
+    const productid = url.searchParams.get("productid");
+    if (productid) {
+      return NextResponse.redirect(`/product/${productid}`);
     }
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    },
+    // ...handle other legacy params
   }
-)
-
-export const config = {
-  matcher: ["/admin/:path*"]
-} 
+  return NextResponse.next();
+}

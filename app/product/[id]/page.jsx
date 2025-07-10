@@ -15,7 +15,8 @@ export const metadata = {
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
-export default async function ProductPage({ params }) {
+export default async function Page({ params, searchParams }) {
+  const { platform, mainCategory, category } = params;
   const { id } = params;
   console.log("params", params);
 

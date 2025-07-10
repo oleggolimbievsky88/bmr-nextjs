@@ -61,7 +61,7 @@ export default function ShopFullwidth() {
           </div>
         </div>
       </section>{" "}
-      <ShopFilter setProducts={setProducts} />{" "}
+      <ShopFilter products={[]} setProducts={() => {}} />{" "}
     </>
   );
 }

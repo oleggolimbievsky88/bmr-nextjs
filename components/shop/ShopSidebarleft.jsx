@@ -16,6 +16,7 @@ export default function ShopSidebarleft({
   platform,
   selectedMainCatId,
   selectedCatId,
+  selectedMainCatSlug = null,
 }) {
   console.log("Platform:", platform);
   console.log("Products:", products);
@@ -65,9 +66,10 @@ export default function ShopSidebarleft({
               selectedCatId={!isMainCategory ? selectedCatId : null}
               platform={platform}
               isMainCategory={isMainCategory}
+              selectedMainCatSlug={selectedMainCatSlug}
             />
             <div className="tf-shop-content">
-              <ProductGrid products={finalSorted} gridItems={gridItems} />
+              {/* <ProductGrid products={finalSorted} gridItems={gridItems} /> */}
               <ShopLoadmoreOnScroll
                 setProducts={finalSorted}
                 finalSorted={finalSorted}
