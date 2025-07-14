@@ -1,10 +1,10 @@
 // app/api/products/platform/[id]/route.js
 
-import { NextResponse } from 'next/server';
-import { getProductsByPlatformId } from '@/lib/queries';
+import { NextResponse } from "next/server";
+import { getProductsByPlatformId } from "@/lib/queries";
 
 export async function GET(request, { params }) {
-  const { id } = params; // Get platform ID from the route parameters
+  const { id } = await params; // Get platform ID from the route parameters
   console.log("🔍 Platform ID:", id);
 
   try {
@@ -12,6 +12,9 @@ export async function GET(request, { params }) {
     return NextResponse.json(products);
   } catch (error) {
     console.error(`Failed to fetch products for platform ${id}:`, error);
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 }
+    );
   }
 }

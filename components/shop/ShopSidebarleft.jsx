@@ -71,12 +71,9 @@ export default function ShopSidebarleft({
             <div className="tf-shop-content">
               {/* <ProductGrid products={finalSorted} gridItems={gridItems} /> */}
               <ShopLoadmoreOnScroll
-                setProducts={finalSorted}
-                finalSorted={finalSorted}
-                setFinalSorted={setFinalSorted}
-                gridItems={gridItems}
-                allProducts={products}
-                platform={platform}
+                platform={platform?.slug || platform} // Use .slug if platform is an object, or platform if it's already a string
+                mainCategory={selectedMainCatSlug ? selectedMainCatSlug : null}
+                categories={[]}
               />
               {/* {finalSorted.length ? (
                 <ul className="tf-pagination-wrap tf-pagination-list">

@@ -1,37 +1,27 @@
-"use client";
-import { useEffect, useState } from "react";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
-export default function PlatformPage({ params }) {
-  const [platformInfo, setPlatformInfo] = useState(null);
-  const [mainCategories, setMainCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default async function PlatformPage({ params }) {
+  const { platform } = await params;
+  let platformInfo = null;
+  let mainCategories = [];
+  let error = null;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch platform info and main categories
-        const platformRes = await fetch(`/api/platforms/${params.platform}`);
-        if (!platformRes.ok) throw new Error("Failed to fetch platform info");
-        const platformData = await platformRes.json();
-        setPlatformInfo(platformData.platformInfo || {});
-        setMainCategories(platformData.mainCategories || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [params.platform]);
-
-  if (loading) {
-    return <div className="text-center py-5">Loading...</div>;
+  try {
+    // Fetch platform info and main categories
+    const platformRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/platforms/${platform}`,
+      { cache: "no-store" }
+    );
+    if (!platformRes.ok) throw new Error("Failed to fetch platform info");
+    const platformData = await platformRes.json();
+    platformInfo = platformData.platformInfo || {};
+    mainCategories = platformData.mainCategories || [];
+  } catch (err) {
+    error = err.message;
   }
 
   if (error) {
@@ -56,7 +46,7 @@ export default function PlatformPage({ params }) {
           items={[
             { label: "Home", href: "/" },
             { label: "Products", href: "/products" },
-            { label: platformInfo?.name || params.platform, href: "#" },
+            { label: platformInfo?.name || platform, href: "#" },
           ]}
         />
 
@@ -64,24 +54,23 @@ export default function PlatformPage({ params }) {
         <section className="mb-3">
           <CategoryGrid
             categories={mainCategories}
-            platform={params.platform}
+            platform={platform}
             isMainCategory={true}
           />
         </section>
 
         {/* Sidebar and Infinite Scroll */}
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-md-12">
             <ShopSidebarleft
               platform={platformInfo}
-              categories={mainCategories}
-              isMainCategory={true}
+              isMainCategory={false}
               mainCategories={mainCategories}
             />
           </div>
-          <div className="col-md-9">
-            {/* <ShopLoadmoreOnScroll platform={params.platform} /> */}
-          </div>
+          {/* <div className="col-md-9">
+						<ShopLoadmoreOnScroll platform={platform} />
+					</div> */}
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request, { params }) {
   try {
-    const { platform } = params;
+    const { platform } = await params;
 
     if (!platform) {
       return NextResponse.json(

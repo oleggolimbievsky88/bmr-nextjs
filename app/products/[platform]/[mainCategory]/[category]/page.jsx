@@ -111,11 +111,11 @@ export default function CategoryPage({ params }) {
         )}
 
         {/* Infinite Scroll Product List */}
-        <ShopLoadmoreOnScroll
+        {/* <ShopLoadmoreOnScroll
           platformSlug={params.platform}
           mainCategorySlug={params.mainCategory}
           categorySlug={params.category}
-        />
+        /> */}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import ShopSidebarleft from "./ShopSidebarleft";
 export default function ProductGrid({
   platformName,
   products = [],
+  allproducts = [],
   selectedCategory = null,
   selectedSubCategory = null,
   showCategories = true,

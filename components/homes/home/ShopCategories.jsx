@@ -4,7 +4,7 @@ import styles from "./ProductCategories.module.css";
 
 const ProductCategories = () => {
   return (
-    <div className="container mt-5">
+    <div className="container mt-10" style={{ marginTop: "100px" }}>
       <div className="row mt-4">
         {/* Card for New Products */}
         <div className="col-md-4 mb-4">

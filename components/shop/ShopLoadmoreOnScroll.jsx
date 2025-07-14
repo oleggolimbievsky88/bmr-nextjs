@@ -8,9 +8,9 @@ import { layouts } from "@/data/shop";
 const PAGE_SIZE = 12;
 
 export default function ShopLoadmoreOnScroll({
-  platformSlug,
-  mainCategorySlug,
-  categorySlug,
+  platform,
+  mainCategory,
+  category,
 }) {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
@@ -20,25 +20,27 @@ export default function ShopLoadmoreOnScroll({
   const [finalSorted, setFinalSorted] = useState([]);
   const sentinelRef = useRef(null);
 
-  // Fetch products with optional slug filters
+  // Fetch products with optional filters
   const fetchProducts = async (pageNum) => {
+    if (loading || loaded) return; // Prevent duplicate fetches
     setLoading(true);
     try {
       const params = new URLSearchParams({
         page: pageNum,
         limit: PAGE_SIZE,
       });
-      if (platformSlug) params.append("platformSlug", platformSlug);
-      if (mainCategorySlug) params.append("mainCategorySlug", mainCategorySlug);
-      if (categorySlug) params.append("categorySlug", categorySlug);
+      if (platform) params.append("platform", platform);
+      if (mainCategory) params.append("mainCategory", mainCategory);
+      if (category) params.append("category", category);
 
       const res = await fetch(`/api/products?${params.toString()}`);
       const data = await res.json();
-      if (Array.isArray(data)) {
-        if (data.length < PAGE_SIZE) setLoaded(true);
-        setProducts((prev) => [...prev, ...data]);
+      const newProducts = data.products || [];
+      if (newProducts.length === 0 || newProducts.length < PAGE_SIZE)
+        setLoaded(true);
+      if (newProducts.length > 0) {
+        setProducts((prev) => [...prev, ...newProducts]);
       }
-      console.log("Fetched Products:", data); // Debug log
     } catch (err) {
       console.error("Failed to fetch products", err);
     } finally {
@@ -47,16 +49,22 @@ export default function ShopLoadmoreOnScroll({
   };
 
   // Initial load
+  // This effect runs whenever the platform, mainCategory, or category props change.
+  // It resets the products list, page number, and loaded state to their initial values,
+  // then fetches the first page of products with the new filters.
   useEffect(() => {
-    fetchProducts(1);
-  }, [platformSlug, mainCategorySlug, categorySlug]);
+    setProducts([]); // Clear the current list of products
+    setPage(1); // Reset the page number to 1
+    setLoaded(false); // Indicate that not all products have been loaded yet
+    fetchProducts(1); // Fetch the first page of products with the new filters
+  }, [platform, mainCategory, category]);
 
   // Infinite scroll observer
   useEffect(() => {
     if (loaded) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !loading) {
+        if (entry.isIntersecting && !loading && !loaded) {
           setPage((prev) => prev + 1);
         }
       },
@@ -117,9 +125,18 @@ export default function ShopLoadmoreOnScroll({
               allproducts={finalSorted.length ? finalSorted : products}
               gridItems={gridItems}
             />
-            <div ref={sentinelRef} style={{ height: 1 }} />
+            {(finalSorted.length ? finalSorted : products).length > 0 && (
+              <div ref={sentinelRef} style={{ height: 1 }} />
+            )}
             {loading && <div className="text-center">Loading...</div>}
-            {loaded && <div className="text-center">No more products</div>}
+            {!loading && products.length === 0 && (
+              <div className="text-center">No Items found</div>
+            )}
+            {loaded && products.length > 0 && (
+              <div className="text-center">No more products</div>
+            )}
+            {/* pagination */}
+            <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn"></div>
           </div>
         </div>
       </section>

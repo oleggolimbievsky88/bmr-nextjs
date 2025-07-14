@@ -9,7 +9,7 @@ const { getPlatformById } = require("@/lib/queries");
  * @returns {NextResponse}
  */
 async function GET(request, { params }) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const platform = await getPlatformById(id);

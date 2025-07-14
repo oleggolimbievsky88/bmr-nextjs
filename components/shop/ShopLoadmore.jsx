@@ -60,7 +60,20 @@ export default function ShopLoadmore() {
           </div>
           <div className="wrapper-control-shop">
             <div className="meta-filter-shop" />
-            <ProductGrid allproducts={finalSorted} gridItems={gridItems} />
+            <ProductGrid
+              allproducts={finalSorted.length ? finalSorted : products}
+              gridItems={gridItems}
+            />
+            {(finalSorted.length ? finalSorted : products).length > 0 && (
+              <div ref={sentinelRef} style={{ height: 1 }} />
+            )}
+            {loading && <div className="text-center">Loading...</div>}
+            {!loading && products.length === 0 && (
+              <div className="text-center">No Items found</div>
+            )}
+            {loaded && products.length > 0 && (
+              <div className="text-center">No more products</div>
+            )}
             {/* pagination */}
             <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn">
               {!loaded && (

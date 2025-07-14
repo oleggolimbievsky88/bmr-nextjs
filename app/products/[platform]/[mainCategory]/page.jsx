@@ -123,8 +123,8 @@ export default function MainCategoryPage({ params }) {
               categories={categories}
               platform={platformInfo}
               isMainCategory={false}
-              products={featuredProducts}
               mainCategories={mainCategories}
+              products={featuredProducts}
               selectedMainCatId={params.mainCategory}
               selectedProductType={featuredProducts.catId}
               selectedMainCatSlug={params.mainCategory}

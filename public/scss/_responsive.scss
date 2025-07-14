@@ -597,7 +597,7 @@
   }
   // flat tittle
   .flat-title {
-    margin-bottom: 50px;
+    margin-bottom: 0px;
     .title {
       font-size: 32px;
       line-height: 38.4px;
@@ -2223,7 +2223,8 @@
   }
   // flat tittle
   .flat-title {
-    margin-bottom: 60px;
+    margin-bottom: 10px;
+    margin-top: 50px;
     .title {
       font-size: 42px;
       line-height: 50.4px;
@@ -3492,6 +3493,7 @@
   }
   .flat-spacing-7 {
     padding-bottom: 50px;
+    margin-top: 50px !important;
   }
   .flat-spacing-8 {
     padding-top: 30px;
@@ -4783,6 +4785,7 @@
   }
   .flat-spacing-7 {
     padding-bottom: 45px;
+    margin-top: 50px !important;
   }
   .flat-spacing-8 {
     padding-top: 15px;

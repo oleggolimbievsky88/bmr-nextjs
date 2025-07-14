@@ -7,11 +7,13 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata = {
-  title: "Blog Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Blog Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
-export default function page({ params }) {
-  const blog = allBlogs.filter((elm) => elm.id == params.id)[0] || allBlogs[0];
+export default async function page({ params }) {
+  const { id } = await params;
+  const blog = allBlogs.filter((elm) => elm.id == id)[0] || allBlogs[0];
   return (
     <>
       <Header2 />

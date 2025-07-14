@@ -20,7 +20,7 @@ export default async function Page({ params, searchParams }) {
   const { id } = params;
   console.log("params", params);
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/product/${id}`, {
     cache: "no-store",
   });
