@@ -20,6 +20,14 @@ export default function ShopLoadmoreOnScroll({
   const [finalSorted, setFinalSorted] = useState([]);
   const sentinelRef = useRef(null);
 
+  console.log("products", products);
+  console.log("page", page);
+  console.log("loaded", loaded);
+  console.log("loading", loading);
+  console.log("gridItems", gridItems);
+  console.log("finalSorted", finalSorted);
+  console.log("sentinelRef", sentinelRef);
+
   // Fetch products with optional filters
   const fetchProducts = async (pageNum) => {
     if (loading || loaded) return; // Prevent duplicate fetches
@@ -35,11 +43,15 @@ export default function ShopLoadmoreOnScroll({
 
       const res = await fetch(`/api/products?${params.toString()}`);
       const data = await res.json();
-      const newProducts = data.products || [];
-      if (newProducts.length === 0 || newProducts.length < PAGE_SIZE)
-        setLoaded(true);
-      if (newProducts.length > 0) {
-        setProducts((prev) => [...prev, ...newProducts]);
+      const products = data.products || [];
+      if (products.length === 0 || products.length < PAGE_SIZE) setLoaded(true);
+      if (products.length > 0) {
+        setProducts((prev) => [
+          ...prev,
+          ...products.filter(
+            (p) => !prev.some((existing) => existing.ProductID === p.ProductID)
+          ),
+        ]);
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
@@ -49,14 +61,11 @@ export default function ShopLoadmoreOnScroll({
   };
 
   // Initial load
-  // This effect runs whenever the platform, mainCategory, or category props change.
-  // It resets the products list, page number, and loaded state to their initial values,
-  // then fetches the first page of products with the new filters.
   useEffect(() => {
-    setProducts([]); // Clear the current list of products
-    setPage(1); // Reset the page number to 1
-    setLoaded(false); // Indicate that not all products have been loaded yet
-    fetchProducts(1); // Fetch the first page of products with the new filters
+    setProducts([]);
+    setPage(1);
+    setLoaded(false);
+    fetchProducts(1);
   }, [platform, mainCategory, category]);
 
   // Infinite scroll observer
@@ -84,7 +93,7 @@ export default function ShopLoadmoreOnScroll({
 
   return (
     <>
-      <section className="flat-spacing-2">
+      <section>
         <div className="container">
           <div className="tf-shop-control grid-3 align-items-center">
             <div className="tf-control-filter">
@@ -122,21 +131,12 @@ export default function ShopLoadmoreOnScroll({
           <div className="wrapper-control-shop">
             <div className="meta-filter-shop" />
             <ProductGrid
-              allproducts={finalSorted.length ? finalSorted : products}
+              products={finalSorted.length ? finalSorted : products}
               gridItems={gridItems}
             />
-            {(finalSorted.length ? finalSorted : products).length > 0 && (
-              <div ref={sentinelRef} style={{ height: 1 }} />
-            )}
+            <div ref={sentinelRef} style={{ height: 1 }} />
             {loading && <div className="text-center">Loading...</div>}
-            {!loading && products.length === 0 && (
-              <div className="text-center">No Items found</div>
-            )}
-            {loaded && products.length > 0 && (
-              <div className="text-center">No more products</div>
-            )}
-            {/* pagination */}
-            <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn"></div>
+            {loaded && <div className="text-center">No more products</div>}
           </div>
         </div>
       </section>

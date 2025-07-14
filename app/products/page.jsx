@@ -1,6 +1,6 @@
 // For App Router: /app/products/page.js
-'use client';
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -11,9 +11,9 @@ export default function ProductsPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('Failed to fetch products');
-        
+        const response = await fetch("/api/products/new-products");
+        if (!response.ok) throw new Error("Failed to fetch products");
+
         const data = await response.json();
         setProducts(data); // Store the products in state
       } catch (err) {

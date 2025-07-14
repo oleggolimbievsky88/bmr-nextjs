@@ -5,8 +5,10 @@ import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
+import { use } from "react";
 
 export default function MainCategoryPage({ params }) {
+  const { platform, mainCategory } = use(params);
   console.log("🛠 Params received:", params);
 
   const [categories, setCategories] = useState([]);
@@ -20,14 +22,12 @@ export default function MainCategoryPage({ params }) {
     const fetchData = async () => {
       try {
         // Fetch main categories for the platform
-        const mainCatRes = await fetch(`/api/platforms/${params.platform}`);
+        const mainCatRes = await fetch(`/api/platforms/${platform}`);
         const mainCatData = await mainCatRes.json();
         setMainCategories(mainCatData.mainCategories || []);
 
         // Fetch subcategories and products for the selected main category
-        const res = await fetch(
-          `/api/platforms/${params.platform}/${params.mainCategory}`
-        );
+        const res = await fetch(`/api/platforms/${platform}/${mainCategory}`);
         if (!res.ok) throw new Error("Failed to fetch data");
         const { categories, products, platformInfo } = await res.json();
         setCategories(categories);
@@ -41,7 +41,7 @@ export default function MainCategoryPage({ params }) {
     };
 
     fetchData();
-  }, [params.platform, params.mainCategory]);
+  }, [platform, mainCategory]);
 
   if (loading) {
     return <div className="text-center py-5">Loading...</div>;
@@ -70,10 +70,10 @@ export default function MainCategoryPage({ params }) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: params.platform, href: `/products/${params.platform}` },
+            { label: platform, href: `/products/${platform}` },
             {
-              label: params.mainCategory,
-              href: `/products/${params.platform}/${params.mainCategory}`,
+              label: mainCategory,
+              href: `/products/${platform}/${mainCategory}`,
             },
           ]}
         />
@@ -81,10 +81,10 @@ export default function MainCategoryPage({ params }) {
         {/* Categories Section */}
         <section className="mb-5">
           <CategoryGrid
-            mainCategory={params.mainCategory}
+            mainCategory={mainCategory}
             mainCategories={mainCategories}
             categories={categories}
-            platform={params.platform}
+            platform={platform}
             isMainCategory={false}
             isSubCategory={true}
           />
@@ -125,9 +125,9 @@ export default function MainCategoryPage({ params }) {
               isMainCategory={false}
               mainCategories={mainCategories}
               products={featuredProducts}
-              selectedMainCatId={params.mainCategory}
+              selectedMainCatId={mainCategory}
               selectedProductType={featuredProducts.catId}
-              selectedMainCatSlug={params.mainCategory}
+              selectedMainCatSlug={mainCategory}
             />
           </section>
         )}

@@ -89,13 +89,14 @@ a {
 
 .product-card {
   background: #fff;
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   transition: all 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.606);
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid #000000;
 }
 
 .product-card:hover {

@@ -48,14 +48,29 @@ export async function GET(request) {
   if (!platformId) {
     return NextResponse.json({ error: "Platform not found" }, { status: 404 });
   }
-  if (!mainCategoryId && mainCategory && platformId) {
+
+  // Only get mainCategoryId if no specific category is provided
+  if (
+    !categoryId &&
+    !category &&
+    !mainCategoryId &&
+    mainCategory &&
+    platformId
+  ) {
     mainCategoryId = await getMainCategoryIdBySlugAndPlatform(
       platform,
       mainCategory
     );
   }
+
+  // Get categoryId if category slug is provided
   if (!categoryId && category && mainCategoryId) {
     categoryId = await getCategoryIdBySlugAndMainCat(mainCategoryId, category);
+  }
+
+  // If we have a specific category (either by ID or slug), don't use mainCategoryId
+  if (categoryId || category) {
+    mainCategoryId = null;
   }
 
   // Now use these IDs in your DB query

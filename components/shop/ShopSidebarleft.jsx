@@ -18,10 +18,6 @@ export default function ShopSidebarleft({
   selectedCatId,
   selectedMainCatSlug = null,
 }) {
-  console.log("Platform:", platform);
-  console.log("Products:", products);
-  console.log("Categories:", categories);
-  console.log("MainCategories:", mainCategories);
   const [gridItems, setGridItems] = useState(3);
   const [finalSorted, setFinalSorted] = useState([]);
 
@@ -50,12 +46,12 @@ export default function ShopSidebarleft({
                 </li>
               ))}
             </ul> */}
-            <span></span>
+            {/* <span></span>
             <div className="tf-control-sorting d-flex justify-content-end">
               <div className="tf-dropdown-sort" data-bs-toggle="dropdown">
                 <Sorting setFinalSorted={setFinalSorted} products={products} />
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="tf-row-flex">
             <Sidebar

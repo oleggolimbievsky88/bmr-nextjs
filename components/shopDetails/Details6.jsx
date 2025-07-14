@@ -40,7 +40,9 @@ export default function Details6({ product }) {
                   </div>
 
                   <div className="tf-product-info-price">
-                    <div className="price-on-sale">$8.00</div>
+                    <div className="price-on-sale">
+                      {product.Price ? `$${product.Price}` : "Price"}
+                    </div>
                     {/* <div className="compare-at-price">$10.00</div>
                     <div className="badges-on-sale">
                       <span>20</span>% OFF
@@ -148,7 +150,7 @@ export default function Details6({ product }) {
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn "
                       >
                         <span>Add to cart -&nbsp;</span>
-                        <span className="tf-qty-price">$8.00</span>
+                        <span className="tf-qty-price">${product.Price}</span>
                       </a>
                       <a
                         href="#"
@@ -289,10 +291,10 @@ export default function Details6({ product }) {
                       ))}
                     </div>
                   </div>
-                  <div className="tf-product-bundle-wrap">
+                  {/* <div className="tf-product-bundle-wrap">
                     <div className="title">Frequently Bought Together</div>
                     <BoughtTogether product={product} />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

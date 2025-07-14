@@ -9,31 +9,27 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+
 export const metadata = {
   title:
     "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
-export default async function Page({ params, searchParams }) {
-  const { platform, mainCategory, category } = params;
+export default async function Page({ params }) {
   const { id } = params;
-  console.log("params", params);
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/product/${id}`, {
     cache: "no-store",
   });
 
-  console.log("Res:", res);
   if (!res.ok) {
     // Handle product not found or server error
     return <p>Product not found.</p>;
   }
 
   const product = await res.json();
-
-  console.log("Product:", product);
 
   return (
     <>
@@ -46,25 +42,27 @@ export default async function Page({ params, searchParams }) {
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <a href="#" className="text">
-                2024 Mustang
-              </a>
+              <Link
+                href={`/products/${product.StartAppYear}-${
+                  product.EndAppYear
+                }-${
+                  product.PlatformName
+                    ? product.PlatformName.replace(/\s+/g, "-")
+                    : ""
+                }`}
+                className="text"
+              >
+                {product.StartAppYear && product.EndAppYear
+                  ? `${product.StartAppYear}-${product.EndAppYear} ${product.PlatformName}`
+                  : product.PlatformName
+                  ? product.PlatformName
+                  : "Platform Name"}
+              </Link>
               <i className="icon icon-arrow-right" />
               <span className="text">
                 {product.ProductName ? product.ProductName : "Product Title"}
               </span>
             </div>
-            {/* <div className="tf-breadcrumb-prev-next">
-              <a href="#" className="tf-breadcrumb-prev hover-tooltip center">
-                <i className="icon icon-arrow-left" />
-              </a>
-              <a href="#" className="tf-breadcrumb-back hover-tooltip center">
-                <i className="icon icon-shop" />
-              </a>
-              <a href="#" className="tf-breadcrumb-next hover-tooltip center">
-                <i className="icon icon-arrow-right" />
-              </a>
-            </div> */}
           </div>
         </div>
       </div>

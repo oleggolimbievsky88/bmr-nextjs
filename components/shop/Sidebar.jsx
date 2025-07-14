@@ -14,8 +14,10 @@ export default function Sidebar({
   selectedCatId = null,
   selectedMainCatSlug = null,
 }) {
-  console.log(selectedMainCatId, selectedCatId);
+  console.log("selectedMainCatId", selectedMainCatId);
+  console.log("selectedCatId", selectedCatId);
   console.log("Platform in Sidebar:", platform);
+  console.log("selectedMainCatSlug", selectedMainCatSlug);
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
       <div className="widget-facet wd-categories">
@@ -75,7 +77,9 @@ export default function Sidebar({
                   <Link
                     href={`/products/${platform.slug}/${encodeURIComponent(
                       selectedMainCatSlug
-                    )}/${category.name}`}
+                    )}/${encodeURIComponent(
+                      (category.name || category.CatName).replace(/\s+/g, "-")
+                    )}`}
                   >
                     <span>{category.name || category.CatName}</span>&nbsp;
                     <span>({category.productCount || 0})</span>

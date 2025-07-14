@@ -122,7 +122,7 @@ export default function ProductGrid({
       {/* Products Grid */}
 
       {products && products.length > 0 && (
-        <div className="row g-4 justify-content-center mt-4">
+        <div className="row g-4 mt-4">
           {products.map((product) => (
             <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
               <div className="card h-100 product-card">

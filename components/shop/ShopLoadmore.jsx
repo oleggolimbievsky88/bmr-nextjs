@@ -1,26 +1,89 @@
 "use client";
-import { layouts, sortingOptions } from "@/data/shop";
+import { useEffect, useRef, useState } from "react";
 import ProductGrid from "./ProductGrid";
-import { useState } from "react";
-import { products1 } from "@/data/products";
 import ShopFilter from "./ShopFilter";
 import Sorting from "./Sorting";
+import { layouts } from "@/data/shop";
 
-export default function ShopLoadmore() {
-  const [gridItems, setGridItems] = useState(4);
+const PAGE_SIZE = 12;
+
+export default function ShopLoadmoreOnScroll({
+  platform,
+  mainCategory,
+  category,
+}) {
+  const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [allproducts, setAllproducts] = useState([...products1]);
-  const [products, setProducts] = useState([]);
+  const [gridItems, setGridItems] = useState(4);
   const [finalSorted, setFinalSorted] = useState([]);
-  const handleLoad = () => {
+  const sentinelRef = useRef(null);
+
+  // Fetch products with optional filters
+  const fetchProducts = async (pageNum) => {
+    if (loading || loaded) return;
     setLoading(true);
-    setTimeout(() => {
-      setAllproducts((pre) => [...pre, ...products1.slice(0, 12)]);
-      setLoading(false);
+    try {
+      const params = new URLSearchParams({
+        page: pageNum,
+        limit: PAGE_SIZE,
+      });
+      if (platform) params.append("platform", platform);
+      if (mainCategory) params.append("mainCategory", mainCategory);
+      if (category) params.append("category", category);
+
+      const res = await fetch(`/api/products?${params.toString()}`);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      const newProducts = data.products || [];
+      if (newProducts.length === 0 || newProducts.length < PAGE_SIZE)
+        setLoaded(true);
+      if (newProducts.length > 0) {
+        setProducts((prev) => [...prev, ...newProducts]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch products", err);
       setLoaded(true);
-    }, 1000);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Initial load and filter change
+  useEffect(() => {
+    setProducts([]);
+    setPage(1);
+    setLoaded(false);
+    // Fetch first page
+    fetchProducts(1);
+    // eslint-disable-next-line
+  }, [platform, mainCategory, category]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (loaded) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !loading && !loaded) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
+    return () => {
+      if (sentinelRef.current) observer.unobserve(sentinelRef.current);
+    };
+  }, [loaded, loading]);
+
+  // Fetch next page when page changes
+  useEffect(() => {
+    if (page === 1) return;
+    fetchProducts(page);
+    // eslint-disable-next-line
+  }, [page]);
+
   return (
     <>
       <section className="flat-spacing-2">
@@ -74,19 +137,7 @@ export default function ShopLoadmore() {
             {loaded && products.length > 0 && (
               <div className="text-center">No more products</div>
             )}
-            {/* pagination */}
-            <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn">
-              {!loaded && (
-                <button
-                  className={`tf-btn-loading tf-loading-default animate-hover-btn btn-loadmore ${
-                    loading ? "loading" : ""
-                  } `}
-                  onClick={() => handleLoad()}
-                >
-                  <span className="text">Load more</span>
-                </button>
-              )}
-            </div>
+            <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn"></div>
           </div>
         </div>
       </section>
