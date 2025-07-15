@@ -60,18 +60,28 @@ export default async function PlatformPage({ params }) {
         </section>
 
         {/* Sidebar and Infinite Scroll */}
-        <div className="row">
-          <div className="col-md-12">
-            <ShopSidebarleft
-              platform={platformInfo}
-              isMainCategory={false}
-              mainCategories={mainCategories}
-            />
+        <section
+          className="mb-5 mt-10"
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "10px",
+            border: "1px solid #ddd",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <div className="row">
+            <div className="col-md-12">
+              <ShopSidebarleft
+                platform={platformInfo}
+                isMainCategory={false}
+                mainCategories={mainCategories}
+              />
+            </div>
+            {/* <div className="col-md-9">
+              <ShopLoadmoreOnScroll platform={platform} />
+            </div> */}
           </div>
-          {/* <div className="col-md-9">
-						<ShopLoadmoreOnScroll platform={platform} />
-					</div> */}
-        </div>
+        </section>
       </div>
     </div>
   );

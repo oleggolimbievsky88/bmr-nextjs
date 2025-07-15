@@ -1,18 +1,16 @@
 // app/api/products/[id]/route.js
 
-import { NextResponse } from 'next/server';
-import { getProductById } from '@/lib/queries'; // Import the query function
+import { NextResponse } from "next/server";
+import { getProductById } from "@/lib/queries"; // Import the query function
 
-export async function GET(request, { params }) {
+export async function GET(request, context) {
+  const { id } = await context.params;
   try {
-    const product = await getProductById(params.id); // Fetch product by ID
+    const product = await getProductById(id); // Fetch product by ID
 
     console.log("Product:", product);
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     // Helper function to parse the Images field
@@ -30,14 +28,15 @@ export async function GET(request, { params }) {
     };
 
     // Create the main image object using ImageLarge if valid
-    const mainImage = product.ImageLarge && product.ImageLarge.trim() !== "0"
-      ? {
-          imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
-          alt: `Main image for ${product?.ProductName}`,
-          width: 770,
-          height: 1075,
-        }
-      : null;
+    const mainImage =
+      product.ImageLarge && product.ImageLarge.trim() !== "0"
+        ? {
+            imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
+            alt: `Main image for ${product?.ProductName}`,
+            width: 770,
+            height: 1075,
+          }
+        : null;
 
     // Parse other images from the Images field
     const otherImages = parseImages(product?.Images);
@@ -50,10 +49,7 @@ export async function GET(request, { params }) {
 
     return NextResponse.json(product); // Return the modified product object
   } catch (error) {
-    console.error(`Failed to fetch product with id ${params.id}:`, error);
-    return NextResponse.json(
-      { error: 'Product not found' },
-      { status: 500 }
-    );
+    console.error(`Failed to fetch product with id ${id}:`, error);
+    return NextResponse.json({ error: "Product not found" }, { status: 500 });
   }
 }

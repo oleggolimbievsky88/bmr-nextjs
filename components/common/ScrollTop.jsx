@@ -32,6 +32,12 @@ export default function ScrollTop() {
     };
   }, []);
 
+  const safeScrollHeight =
+    typeof scrollHeight === "number" && scrollHeight > 0 ? scrollHeight : 1;
+  const safeScrolled =
+    typeof scrolled === "number" && !isNaN(scrolled) ? scrolled : 0;
+  const offset = 307.919 - (safeScrolled / safeScrollHeight) * 307.919;
+
   return (
     <div
       className={`progress-wrap ${scrolled > 150 ? "active-progress" : ""}`}
@@ -48,7 +54,7 @@ export default function ScrollTop() {
           style={{
             transition: "stroke-dashoffset 10ms linear",
             strokeDasharray: "307.919, 307.919",
-            strokeDashoffset: 307.919 - (scrolled / scrollHeight) * 307.919,
+            strokeDashoffset: Number.isFinite(offset) ? offset : 0,
           }}
         />
       </svg>

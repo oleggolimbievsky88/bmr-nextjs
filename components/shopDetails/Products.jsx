@@ -10,7 +10,7 @@ export default function Products() {
     <section className="flat-spacing-1 pt_0">
       <div className="container">
         <div className="flat-title">
-          <span className="title">People Also Bought</span>
+          <span className="title">Related Products</span>
         </div>
         <div className="hover-sw-nav hover-sw-2">
           <Swiper

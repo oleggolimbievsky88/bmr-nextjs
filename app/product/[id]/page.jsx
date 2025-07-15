@@ -16,8 +16,8 @@ export const metadata = {
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
-export default async function Page({ params }) {
-  const { id } = params;
+export default async function ProductDetails({ params }) {
+  const { id } = await params;
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/product/${id}`, {
@@ -31,6 +31,24 @@ export default async function Page({ params }) {
 
   const product = await res.json();
 
+  // Helper to slugify for URLs
+  const slugify = (str) =>
+    str
+      ? str
+          .toString()
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9\-]/g, "")
+      : "";
+
+  const platformSlug = `${product.StartAppYear}-${product.EndAppYear}-${slugify(
+    product.PlatformName
+  )}`;
+  const mainCategorySlug = slugify(product.MainCategoryName);
+  const categorySlug = slugify(product.CategoryName);
+
+  console.log("Product:", product);
   return (
     <>
       <Header2 />
@@ -38,27 +56,42 @@ export default async function Page({ params }) {
         <div className="container">
           <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
             <div className="tf-breadcrumb-list">
-              <Link href={`/`} className="text">
+              <Link href="/" className="text">
                 Home
               </Link>
               <i className="icon icon-arrow-right" />
-              <Link
-                href={`/products/${product.StartAppYear}-${
-                  product.EndAppYear
-                }-${
-                  product.PlatformName
-                    ? product.PlatformName.replace(/\s+/g, "-")
-                    : ""
-                }`}
-                className="text"
-              >
-                {product.StartAppYear && product.EndAppYear
-                  ? `${product.StartAppYear}-${product.EndAppYear} ${product.PlatformName}`
-                  : product.PlatformName
-                  ? product.PlatformName
-                  : "Platform Name"}
+              <Link href="/products" className="text">
+                Products
               </Link>
               <i className="icon icon-arrow-right" />
+              <Link href={`/products/${platformSlug}`} className="text">
+                {product.StartAppYear && product.EndAppYear
+                  ? `${product.StartAppYear}-${product.EndAppYear} ${product.PlatformName}`
+                  : product.PlatformName || "Platform"}
+              </Link>
+              <i className="icon icon-arrow-right" />
+              {product.MainCategoryName && (
+                <>
+                  <Link
+                    href={`/products/${platformSlug}/${mainCategorySlug}`}
+                    className="text"
+                  >
+                    {product.MainCategoryName}
+                  </Link>
+                  <i className="icon icon-arrow-right" />
+                </>
+              )}
+              {product.CategoryName && (
+                <>
+                  <Link
+                    href={`/products/${platformSlug}/${mainCategorySlug}/${categorySlug}`}
+                    className="text"
+                  >
+                    {product.CategoryName}
+                  </Link>
+                  <i className="icon icon-arrow-right" />
+                </>
+              )}
               <span className="text">
                 {product.ProductName ? product.ProductName : "Product Title"}
               </span>
@@ -70,7 +103,7 @@ export default async function Page({ params }) {
       <Details6 product={product} />
       <ShopDetailsTab product={product} />
       <Products product={product} />
-      <RecentProducts />
+      {/* <RecentProducts /> */}
       <Footer1 />
     </>
   );

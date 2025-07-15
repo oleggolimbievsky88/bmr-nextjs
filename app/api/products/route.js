@@ -73,7 +73,6 @@ export async function GET(request) {
     mainCategoryId = null;
   }
 
-  // Now use these IDs in your DB query
   const products = await getFilteredProductsPaginated({
     platformId,
     mainCategoryId,
@@ -82,6 +81,5 @@ export async function GET(request) {
     offset,
   });
 
-  // Always return 200 with an array, even if empty
   return NextResponse.json({ products: products || [] }, { status: 200 });
 }

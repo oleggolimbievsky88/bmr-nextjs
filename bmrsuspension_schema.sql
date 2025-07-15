@@ -120,6 +120,7 @@ CREATE TABLE `categories` (
   `CatImage` varchar(45) NOT NULL DEFAULT '0',
   `MainCatID` varchar(45) NOT NULL DEFAULT '0',
   `ParentID` int unsigned NOT NULL DEFAULT '0',
+  `CatNameSlug` varchar(45) NOT NULL DEFAULT '0',
   PRIMARY KEY (`CatID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=763 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

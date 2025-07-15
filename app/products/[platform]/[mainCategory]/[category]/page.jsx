@@ -38,7 +38,7 @@ export default function CategoryPage({ params }) {
         const query = new URLSearchParams({
           platform,
           mainCategory,
-          category,
+          category, // this is the slug, e.g. "rear-cradle-bushing-kits"
           page: 1,
           limit: 12,
         }).toString();

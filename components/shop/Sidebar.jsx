@@ -5,7 +5,7 @@ import { featuredProducts } from "@/data/products";
 import { galleryItems } from "@/data/gallery";
 import { socialLinks } from "@/data/socials";
 
-export default function Sidebar({
+export default function ({
   mainCategories = [],
   categories = [],
   products = [],
@@ -13,6 +13,8 @@ export default function Sidebar({
   selectedMainCatId = null,
   selectedCatId = null,
   selectedMainCatSlug = null,
+  selectedCatSlug = null, // NEW
+  onCategorySelect = () => {}, // NEW
 }) {
   console.log("selectedMainCatId", selectedMainCatId);
   console.log("selectedCatId", selectedCatId);
@@ -38,7 +40,10 @@ export default function Sidebar({
                 <li
                   key={cat.id || index}
                   className={`cate-item${
-                    selectedMainCatId == cat.id ? " active" : ""
+                    selectedMainCatSlug ==
+                    cat.name.toLowerCase().replace(/\s+/g, "-")
+                      ? " active"
+                      : ""
                   }`}
                 >
                   <Link href={`/products/${platform.slug}/${cat.slug}`}>
@@ -67,25 +72,27 @@ export default function Sidebar({
           </div>
           <div id="product-types" className="collapse show">
             <ul className="list-categoris mb_36">
-              {categories.map((category, index) => (
-                <li
-                  key={category.id || category.CatID || index}
-                  className={`cate-item${
-                    selectedCatId == category.id ? " active" : ""
-                  }`}
-                >
-                  <Link
-                    href={`/products/${platform.slug}/${encodeURIComponent(
-                      selectedMainCatSlug
-                    )}/${encodeURIComponent(
-                      (category.name || category.CatName).replace(/\s+/g, "-")
-                    )}`}
+              {categories.map((category, index) => {
+                const catSlug = (category.name || category.CatName)
+                  .toLowerCase()
+                  .replace(/\s+/g, "-");
+                return (
+                  <li
+                    key={category.id || category.CatID || index}
+                    className={`cate-item${
+                      selectedCatSlug === catSlug.toLowerCase() ? " active" : ""
+                    }`}
+                    onClick={() => onCategorySelect(catSlug)}
                   >
-                    <span>{category.name || category.CatName}</span>&nbsp;
-                    <span>({category.productCount || 0})</span>
-                  </Link>
-                </li>
-              ))}
+                    <Link
+                      href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
+                    >
+                      <span>{category.name || category.CatName}</span>&nbsp;
+                      <span>({category.productCount || 0})</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

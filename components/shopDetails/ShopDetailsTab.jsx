@@ -13,7 +13,7 @@ const tabs = [
 export default function ShopDetailsTab({ product }) {
   const [currentTab, setCurrentTab] = useState(1);
   console.log("product", product);
-  const descHtml = product.Description || "";
+  const descHtml = product?.Description || "";
   const lines = descHtml.split(/\r?\n/);
   const bulletIndex = lines.findIndex((line) => /^\s*[-•*]\s+/.test(line));
   let descPart = "";
@@ -56,8 +56,15 @@ export default function ShopDetailsTab({ product }) {
                     currentTab == 1 ? "active" : ""
                   } `}
                 >
-                  <div className="">
-                    <div dangerouslySetInnerHTML={{ __html: descPart }} />
+                  <div>
+                    <div
+                      dangerouslySetInnerHTML={{ __html: descPart }}
+                      style={{
+                        fontSize: "16px !important",
+                        color: "black !important",
+                        lineHeight: "20px !important",
+                      }}
+                    />
                     {featuresArr.length > 0 && (
                       <div className="tf-product-des-demo">
                         <div className="right">
@@ -67,7 +74,7 @@ export default function ShopDetailsTab({ product }) {
                               fontFamily: "impact",
                               color: "var(--primary)",
                               letterSpacing: "1px",
-                              fontSize: "20px",
+                              fontSize: "16px !important",
                             }}
                           ></h2>
                           <div className="row">
@@ -76,9 +83,9 @@ export default function ShopDetailsTab({ product }) {
                                 <li
                                   key={idx}
                                   style={{
-                                    fontSize: "14px",
+                                    fontSize: "15px",
                                     color: "black !important",
-                                    lineHeight: "10px",
+                                    lineHeight: "15px",
                                   }}
                                 >
                                   {feature}
@@ -116,9 +123,9 @@ export default function ShopDetailsTab({ product }) {
                                   <li
                                     key={idx}
                                     style={{
-                                      fontSize: "14px",
+                                      fontSize: "15px",
                                       color: "black !important",
-                                      lineHeight: "10px",
+                                      lineHeight: "15px",
                                     }}
                                   >
                                     {feature}
@@ -139,10 +146,10 @@ export default function ShopDetailsTab({ product }) {
                 >
                   <div>
                     <Link
-                      href={`https://www.bmrsuspension.com/siteart/install/${product.Instructions}`}
+                      href={`https://www.bmrsuspension.com/siteart/install/${product?.Instructions}`}
                       className="btn btn-primary"
                     >
-                      View / Download {product.PartNumber} Installation
+                      View / Download {product?.PartNumber} Installation
                       Instructions
                     </Link>
                   </div>
@@ -152,7 +159,7 @@ export default function ShopDetailsTab({ product }) {
                     currentTab == 4 ? "active" : ""
                   } `}
                 >
-                  Platform ID: {product.BodyID}
+                  Platform ID: {product?.BodyID}
                 </div>
               </div>
             </div>

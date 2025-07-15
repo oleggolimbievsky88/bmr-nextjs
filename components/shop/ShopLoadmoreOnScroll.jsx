@@ -5,7 +5,7 @@ import ShopFilter from "./ShopFilter";
 import Sorting from "./Sorting";
 import { layouts } from "@/data/shop";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 8;
 
 export default function ShopLoadmoreOnScroll({
   platform,
@@ -136,7 +136,7 @@ export default function ShopLoadmoreOnScroll({
             />
             <div ref={sentinelRef} style={{ height: 1 }} />
             {loading && <div className="text-center">Loading...</div>}
-            {loaded && <div className="text-center">No more products</div>}
+            {loaded && <div className="text-center">Products Loaded.</div>}
           </div>
         </div>
       </section>

@@ -5,7 +5,7 @@ import ShopFilter from "./ShopFilter";
 import Sorting from "./Sorting";
 import { layouts } from "@/data/shop";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 8;
 
 export default function ShopLoadmoreOnScroll({
   platform,
@@ -135,7 +135,7 @@ export default function ShopLoadmoreOnScroll({
               <div className="text-center">No Items found</div>
             )}
             {loaded && products.length > 0 && (
-              <div className="text-center">No more products</div>
+              <div className="text-center">Products Loaded.</div>
             )}
             <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn"></div>
           </div>
