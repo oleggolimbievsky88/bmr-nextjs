@@ -1,3 +1,6 @@
+@use "abstracts/mixin";
+@use "abstracts/variable";
+
 html,
 body,
 div,
@@ -120,7 +123,7 @@ html {
 }
 
 body {
-  font-family: $font-main;
+  font-family: variable.$font-main;
   font-size: 14px;
   line-height: 22px;
   font-weight: 400;
@@ -196,7 +199,7 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"] {
-  font-family: $font-main;
+  font-family: variable.$font-main;
   border: 1px solid var(--line);
   outline: 0;
   -webkit-box-shadow: none;
@@ -231,7 +234,7 @@ input[type="search"]::placeholder,
 input[type="tel"]::placeholder,
 input[type="color"]::placeholder {
   color: var(--text-2);
-  @include transition3;
+  @include mixin.transition3;
 }
 
 textarea {
@@ -261,17 +264,17 @@ textarea {
 /* Typography
 -------------------------------------------------------------- */
 .font-young-serif {
-  font-family: $font-Young-Serif;
+  font-family: variable.$font-Young-Serif;
 }
 
 .font-gloock {
-  font-family: $font-gloock;
+  font-family: variable.$font-gloock;
 }
 .font-caprasimo {
-  font-family: $font-caprasimo;
+  font-family: variable.$font-caprasimo;
 }
 .font-poppins {
-  font-family: $font-poppins;
+  font-family: variable.$font-poppins;
 }
 
 h1,
@@ -280,7 +283,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: $font-main;
+  font-family: variable.$font-main;
   text-rendering: optimizeLegibility;
   color: var(--main);
   font-weight: 400;
@@ -718,14 +721,14 @@ video {
 }
 
 a {
-  @include transition3;
+  @include mixin.transition3;
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
   color: var(--main);
   &:focus,
   &:hover {
-    @include transition3;
+    @include mixin.transition3;
     text-decoration: none;
     outline: 0;
   }
@@ -734,7 +737,7 @@ label {
   font-weight: 600;
 }
 .link {
-  @include transition3;
+  @include mixin.transition3;
   &:hover {
     color: var(--primary) !important;
   }
@@ -742,16 +745,16 @@ label {
 
 // grid
 .grid-2 {
-  @include grid(2, 1fr);
+  @include mixin.grid(2, 1fr);
 }
 .grid-3 {
-  @include grid(3, 1fr);
+  @include mixin.grid(3, 1fr);
 }
 .grid-4 {
-  @include grid(4, 1fr);
+  @include mixin.grid(4, 1fr);
 }
 .grid-6 {
-  @include grid(6, 1fr);
+  @include mixin.grid(6, 1fr);
 }
 
 // gap

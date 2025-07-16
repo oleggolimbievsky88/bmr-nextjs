@@ -1,3 +1,5 @@
+@use "../abstracts/mixin";
+
 .blog-article-item {
   margin-bottom: 37px;
   .article-thumb {
@@ -118,7 +120,7 @@
   .pagination-item {
     width: 45px;
     height: 39px;
-    @include flex(center, center);
+    @include mixin.flex(center, center);
     border: 1px solid var(--line);
     border-radius: 3px;
     overflow: hidden;

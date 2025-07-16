@@ -1,3 +1,5 @@
+@use "../abstracts/mixin";
+
 .nice-select {
   -webkit-tap-highlight-color: transparent;
   background-color: #fff;
@@ -246,7 +248,7 @@
         color: rgba(0, 0, 0, 0.8);
       }
       .filter-option-inner-inner {
-        @include flex(center, flex-start);
+        @include mixin.flex(center, flex-start);
         gap: 5px;
         font-weight: 400;
         font-size: 14px;
@@ -271,7 +273,7 @@
           > a {
             padding: 5px 0;
             .text {
-              @include flex(center, flex-start);
+              @include mixin.flex(center, flex-start);
               gap: 5px;
               font-weight: 400;
               font-size: 14px;

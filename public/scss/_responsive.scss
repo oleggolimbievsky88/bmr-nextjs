@@ -1,3 +1,5 @@
+@use "abstracts/mixin";
+
 /* Media Queries
 -------------------------------------------------------------- */
 // min-width:
@@ -1586,11 +1588,11 @@
     .navigation-sw-dot {
       width: 24px;
       height: 24px;
-      @include transition3;
+      @include mixin.transition3;
       span {
         width: 8px;
         height: 8px;
-        @include transition3;
+        @include mixin.transition3;
       }
       &:hover {
         width: 32px;
@@ -1655,7 +1657,7 @@
   .collection-item-circle {
     .tf-shopall-icon {
       .icon {
-        @include transition3;
+        @include mixin.transition3;
       }
       &:hover {
         border-color: var(--primary);

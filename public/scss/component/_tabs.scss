@@ -1,3 +1,5 @@
+@use "../abstracts/mixin";
+
 .widget-tabs {
     .widget-menu-tab {
         .item-title {
@@ -11,7 +13,7 @@
                     position: absolute;
                     content: "";
                     background-color: var(--main);
-                    @include transition3;
+                    @include mixin.transition3;
                 }
             }
         }
@@ -108,7 +110,7 @@
 }
 
 .widget-tab-2 {
-    @include flex(center, space-between);
+    @include mixin.flex(center, space-between);
     margin-bottom: 30px;
     gap: 15px;
     .nav-tab-item {
@@ -149,7 +151,7 @@
             white-space: nowrap;
             padding-bottom: 12px;
             border-bottom: 2px solid transparent;
-            @include transition3;
+            @include mixin.transition3;
             color: var(--text);
             &.active{
                 font-weight: 500;
@@ -192,7 +194,7 @@
         gap: 10px;
         padding: 5px 0px;
         min-height: 30px;
-        @include transition3;
+        @include mixin.transition3;
         cursor: pointer;
         .icon {
             font-size: 10px;

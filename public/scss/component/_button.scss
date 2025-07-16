@@ -1,5 +1,7 @@
+@use "../abstracts/mixin";
+
 .tf-btn {
-    @include transition3;
+    @include mixin.transition3;
     will-change: background-color, color, border;
     pointer-events: auto;
     overflow: hidden;
@@ -16,7 +18,7 @@
     cursor: pointer;
     &.hover-icon {
         .icon {
-            @include transition3;
+            @include mixin.transition3;
             transform: scale(0);
             transform-origin: right;
             width: 0;
@@ -170,7 +172,7 @@
         right: 0;
         height: 1px;
         background-color: var(--main);
-        @include transition3;
+        @include mixin.transition3;
     }
     &:hover {
         color: var(--primary);
@@ -238,7 +240,7 @@
 .tf-loading-default,
 .tf-btn-loading {
     position: relative;
-    @include transition3;
+    @include mixin.transition3;
     &.loading {
         background-color: var(--main);
         .icon,
@@ -291,7 +293,7 @@
         font-size: 14px;
         color: var(--main);
         font-weight: 400;
-        @include transition3;
+        @include mixin.transition3;
     }
     &.style-2 {
         height: 38px;
@@ -302,7 +304,7 @@
         &.loading {
             border-color: var(--primary);
             &::before {
-                @include transition3;
+                @include mixin.transition3;
 
                 border-color: var(--primary);
             }

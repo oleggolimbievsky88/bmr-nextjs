@@ -1,3 +1,6 @@
+@use "../abstracts/mixin";
+@use "../abstracts/variable";
+
 // top bar
 .tf-top-bar {
   .swiper-wrapper {
@@ -91,7 +94,7 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
-    @include flex(center, center);
+    @include mixin.flex(center, center);
     .icon {
       color: var(--white);
       font-size: 12px;
@@ -191,7 +194,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      @include transition3;
+      @include mixin.transition3;
       position: relative;
       .icon {
         font-size: 7px;
@@ -331,7 +334,7 @@
     &::after {
       position: absolute;
       content: "\e906";
-      font-family: $fontIcon;
+      font-family: variable.$fontIcon;
       font-size: 11px;
       right: 0;
       top: 50%;
@@ -378,7 +381,7 @@
     visibility: hidden;
     transform: translateX(0px) translateY(15px);
     box-shadow: 0 4px 8px rgb(235 235 235);
-    @include transition3;
+    @include mixin.transition3;
   }
   .mega-menu {
     padding-top: 37px;
@@ -456,7 +459,7 @@
       overflow: hidden;
       text-align: center;
       font-weight: 600;
-      @include transition3;
+      @include mixin.transition3;
       &:hover {
         color: var(--primary);
       }
@@ -501,7 +504,7 @@
     background-color: rgb(131 183 53);
     color: var(--white);
     border-radius: 3px;
-    @include flex(center, center);
+    @include mixin.flex(center, center);
   }
   .demo-new {
     background-color: rgb(72 212 187);

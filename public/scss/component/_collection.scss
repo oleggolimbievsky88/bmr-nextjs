@@ -1,3 +1,5 @@
+@use "../abstracts/mixin";
+
 .collection-item {
   .collection-inner {
     position: relative;
@@ -369,7 +371,7 @@
       font-size: 16px;
       background-color: var(--white);
       color: var(--main);
-      @include flex(center, center);
+      @include mixin.flex(center, center);
       white-space: nowrap;
       .icon {
         display: none;
@@ -390,7 +392,7 @@
   line-height: 48px;
   border-radius: 3px;
   padding: 0px 30px;
-  @include transition3;
+  @include mixin.transition3;
   background-color: var(--white);
   &:hover {
     color: var(--white);

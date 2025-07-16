@@ -1,3 +1,5 @@
+@use "../abstracts/mixin";
+
 .testimonial-item {
     .icon {
         margin-bottom: 16px;
@@ -312,7 +314,7 @@
         padding-left: 10px;
         padding-right: 10px;
         opacity: 0.3;
-        @include transition3;
+        @include mixin.transition3;
         img{
             max-width: 100px;
             cursor: pointer;
