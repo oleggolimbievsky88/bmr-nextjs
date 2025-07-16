@@ -50,18 +50,19 @@ export async function GET(request) {
   }
 
   // Only get mainCategoryId if no specific category is provided
-  if (
-    !categoryId &&
-    !category &&
-    !mainCategoryId &&
-    mainCategory &&
-    platformId
-  ) {
+  if (!mainCategoryId && mainCategory && platformId) {
     mainCategoryId = await getMainCategoryIdBySlugAndPlatform(
       platform,
       mainCategory
     );
   }
+
+  console.log("categoryId", categoryId);
+  console.log("mainCategoryId", mainCategoryId);
+  console.log("platformId", platformId);
+  console.log("category", category);
+  console.log("mainCategory", mainCategory);
+  console.log("platform", platform);
 
   // Get categoryId if category slug is provided
   if (!categoryId && category && mainCategoryId) {

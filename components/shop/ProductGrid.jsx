@@ -160,13 +160,13 @@ export default function ProductGrid({
                     >
                       {product.ProductName}
                     </h3>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span className="fw-bold text-danger">
-                        ${parseFloat(product.Price).toFixed(2)}
-                      </span>
-                      <small className="text-muted">
+                    <div>
+                      <div className="text-muted">
                         Part #: {product.PartNumber}
-                      </small>
+                      </div>
+                      <div className="fw-bold text-danger">
+                        ${parseFloat(product.Price).toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 </Link>

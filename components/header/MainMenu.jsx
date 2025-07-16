@@ -212,63 +212,56 @@ export default function MainMenu({ initialMenuData }) {
                     <div className="loading-categories">
                       Loading categories...
                     </div>
-                  ) : categoriesByMainCat.length > 0 ? (
+                  ) : selectedVehicle.mainCategories &&
+                    selectedVehicle.mainCategories.length > 0 ? (
                     <div className="main-categories-container">
-                      {categoriesByMainCat.map((categoryGroup, groupIdx) => (
-                        <div key={groupIdx} className="main-category-group">
-                          <div className="main-category-header">
-                            <div className="main-category-image">
-                              {categoryGroup.mainCategory.image && (
-                                <Image
-                                  src={`https://bmrsuspension.com/siteart/categories/${categoryGroup.mainCategory.image}`}
-                                  alt={categoryGroup.mainCategory.name}
-                                  width={100}
-                                  height={100}
-                                  style={{ objectFit: "contain" }}
-                                  onError={handleImageError}
-                                  unoptimized={true}
-                                />
+                      {selectedVehicle.mainCategories.map(
+                        (mainCat, mainIdx) => (
+                          <div key={mainIdx} className="main-category-group">
+                            <div className="main-category-header">
+                              {mainCat.image && (
+                                <div className="main-category-image">
+                                  <Image
+                                    src={`https://bmrsuspension.com/siteart/categories/${mainCat.image}`}
+                                    alt={mainCat.name}
+                                    width={100}
+                                    height={100}
+                                    style={{ objectFit: "contain" }}
+                                    onError={handleImageError}
+                                    unoptimized={true}
+                                  />
+                                </div>
                               )}
-                            </div>
-                            <div>
-                              <h3 className="main-category-title">
-                                <Link
-                                  href={`/products/${
-                                    selectedVehicle.slug
-                                  }/${encodeURIComponent(
-                                    categoryGroup.mainCategory.name
-                                  )}`}
-                                  className="subcategory-link"
-                                >
-                                  {categoryGroup.mainCategory.name}
-                                </Link>
-                              </h3>
-                            </div>
-                          </div>
-
-                          <div className="subcategories-list">
-                            {categoryGroup.subCategories.map(
-                              (category, idx) => (
-                                <div key={idx} className="subcategory-item">
+                              <div>
+                                <h3 className="main-category-title">
                                   <Link
-                                    href={`/products/${
-                                      selectedVehicle.slug
-                                    }/${encodeURIComponent(category.CatName)}`}
+                                    href={`/products/${selectedVehicle.slug}/${mainCat.slug}`}
+                                  >
+                                    {mainCat.name}
+                                  </Link>
+                                </h3>
+                              </div>
+                            </div>
+                            <div className="subcategories-list">
+                              {mainCat.categories.map((cat, catIdx) => (
+                                <div key={catIdx} className="subcategory-item">
+                                  <Link
+                                    href={cat.link}
                                     className="subcategory-link"
                                   >
-                                    {category.CatName}
-                                    {category.productCount && (
+                                    {cat.name}
+                                    {cat.productCount > 0 && (
                                       <span className="product-count">
-                                        {category.productCount}
+                                        {cat.productCount}
                                       </span>
                                     )}
                                   </Link>
                                 </div>
-                              )
-                            )}
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   ) : (
                     <div className="no-categories">No categories found</div>
