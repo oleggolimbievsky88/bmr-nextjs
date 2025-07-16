@@ -6,6 +6,7 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import { use } from "react";
+import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function MainCategoryPage({ params }) {
   const { platform, mainCategory } = use(params);
@@ -89,8 +90,6 @@ export default function MainCategoryPage({ params }) {
             isSubCategory={true}
           />
         </section>
-        <br />
-        <br />
 
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (

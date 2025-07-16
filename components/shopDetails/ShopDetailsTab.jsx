@@ -84,8 +84,8 @@ export default function ShopDetailsTab({ product }) {
                                   key={idx}
                                   style={{
                                     fontSize: "15px",
-                                    color: "black !important",
                                     lineHeight: "15px",
+                                    color: "black !important",
                                   }}
                                 >
                                   {feature}
