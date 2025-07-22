@@ -74,9 +74,12 @@ export default function ShopCart() {
                           <Link href={`/product-detail/${elm.id}`}>
                             <Image
                               alt=""
-                              src={elm.imgSrc}
-                              width={668}
-                              height={932}
+                              src={
+                                elm.imgSrc ||
+                                "/images/logo/bmr_logo_square_small.webp"
+                              }
+                              width={135}
+                              height={135}
                               style={{ objectFit: "cover" }}
                             />
                           </Link>

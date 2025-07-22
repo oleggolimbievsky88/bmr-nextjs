@@ -2,8 +2,9 @@
 import { useState } from "react";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useContextElement } from "@/context/Context";
-export default function Productcard23({ product }) {
+export default function Productcard23({ product, colorsMap = {} }) {
   const [currentImage, setCurrentImage] = useState(product.imgSrc);
   const { setQuickViewItem } = useContextElement();
   const {
@@ -13,60 +14,71 @@ export default function Productcard23({ product }) {
     addToCompareItem,
     isAddedtoCompareItem,
   } = useContextElement();
+
+  const imageSrc = product.ImageSmall
+    ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}`
+    : "https://bmrsuspension.com/siteart/products/noimage.jpg";
+
+  // Limit description to 200 chars
+  const shortDescription =
+    product.Description && product.Description.length > 200
+      ? product.Description.slice(0, 200) + "..."
+      : product.Description;
+
+  const colorIds = product.Color ? product.Color.split(",") : [];
+
+  // Use the colorsMap from above (pass as prop or import)
+  const productColors = colorIds.map((id) => colorsMap[id]).filter(Boolean);
+
   return (
     <div className="card-product list-layout">
       <div className="card-product-wrapper">
-        <a href="#" className="product-img">
+        <Link href={`/product/${product.ProductID}`} className="product-img">
           <Image
             className="lazyload img-product"
-            alt="image-product"
-            src={currentImage}
+            src={imageSrc}
+            alt={product.ProductName}
             width={720}
             height={1005}
           />
-          <Image
-            className="lazyload img-hover"
-            alt="image-product"
-            src={product.imgHoverSrc}
-            width={720}
-            height={1005}
-          />
-        </a>
+        </Link>
       </div>
       <div className="card-product-info">
-        <a href="#" className="title link">
-          {product.title}
-        </a>
-        <span className="price">${product.price.toFixed(2)}</span>
-        <p className="description">
-          Button-up shirt sleeves and a relaxed silhouette. It’s tailored with
-          drapey, crinkle-texture fabric that’s made from LENZING™ ECOVERO™
-          Viscose — responsibly sourced wood-based fibres produced through a
-          process that reduces...
-        </p>
-        {product.colors && (
-          <ul className="list-color-product">
-            {product.colors.map((color) => (
-              <li
-                className={`list-color-item color-swatch ${
-                  currentImage == color.imgSrc ? "active" : ""
-                } `}
-                onMouseOver={() => setCurrentImage(color.imgSrc)}
-                key={color.name}
-              >
-                <span className="tooltip">{color.name}</span>
-                <span className={`swatch-value ${color.colorClass}`} />
-                <Image
-                  className="lazyload"
-                  data-src={color.imgSrc}
-                  src={color.imgSrc}
-                  alt="image-product"
-                  width={720}
-                  height={1005}
+        <Link href={`/product/${product.ProductID}`} className="title link">
+          <span style={{ fontWeight: "bold", paddingTop: "10px" }}>
+            {product.ProductName}
+          </span>
+        </Link>
+        <div
+          style={{
+            color: "#888",
+            fontSize: "0.95em",
+            margin: "0px",
+            lineHeight: 1,
+          }}
+        >
+          Part Number: {product.PartNumber}
+        </div>
+        <span className="price">${parseFloat(product.Price).toFixed(2)}</span>
+        {shortDescription && <p className="description">{shortDescription}</p>}
+        {productColors.length > 0 && (
+          <div className="list-color-product">
+            {productColors.map((color) => (
+              <span key={color.ColorID} title={color.ColorName}>
+                <img
+                  src={`/images/colors/${color.ColorImg}`}
+                  alt={color.ColorName}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "15%",
+                    border: "1px solid #ccc",
+                    marginRight: 4,
+                  }}
                 />
-              </li>
+              </span>
             ))}
-          </ul>
+          </div>
         )}
         {product.sizes && (
           <div className="size-list">
@@ -75,61 +87,6 @@ export default function Productcard23({ product }) {
             ))}
           </div>
         )}
-        <div className="list-product-btn">
-          <a
-            href="#quick_add"
-            onClick={() => setQuickAddItem(product.id)}
-            data-bs-toggle="modal"
-            className="box-icon quick-add style-3 hover-tooltip"
-          >
-            <span className="icon icon-bag" />
-            <span className="tooltip">Quick add</span>
-          </a>
-          <a
-            onClick={() => addToWishlist(product.id)}
-            className="box-icon wishlist style-3 hover-tooltip"
-          >
-            <span
-              className={`icon icon-heart ${
-                isAddedtoWishlist(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {isAddedtoWishlist(product.id)
-                ? "Already Wishlisted"
-                : "Add to Wishlist"}
-            </span>
-          </a>
-
-          <a
-            href="#compare"
-            data-bs-toggle="offcanvas"
-            aria-controls="offcanvasLeft"
-            onClick={() => addToCompareItem(product.id)}
-            className="box-icon compare style-3 hover-tooltip"
-          >
-            <span
-              className={`icon icon-compare ${
-                isAddedtoCompareItem(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {" "}
-              {isAddedtoCompareItem(product.id)
-                ? "Already Compared"
-                : "Add to Compare"}
-            </span>
-          </a>
-          <a
-            href="#quick_view"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon quickview style-3 hover-tooltip"
-          >
-            <span className="icon icon-view" />
-            <span className="tooltip">Quick view</span>
-          </a>
-        </div>
       </div>
     </div>
   );

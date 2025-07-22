@@ -108,13 +108,13 @@ export default function Details6({ product }) {
                             {currentGrease.value}
                           </span>
                         </div>
-                        <a
+                        {/* <a
                           href="#find_size"
                           data-bs-toggle="modal"
                           className="find-size fw-6"
                         >
                           Product Fitment Guide
-                        </a>
+                        </a> */}
                       </div>
                       <form className="variant-picker-values">
                         {greaseOptions.map((grease) => (

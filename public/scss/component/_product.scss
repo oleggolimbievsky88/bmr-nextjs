@@ -1126,11 +1126,13 @@
     margin-bottom: 30px;
     li {
       color: var(--text-2);
-      line-height: 25px;
+      line-height: 24px !important;
       position: relative;
       padding-left: 20px;
+      color: black !important;
       &:not(:last-child) {
-        margin-bottom: 15px;
+        margin-bottom: 12px;
+        color: black !important;
       }
       &::before {
         position: absolute;
@@ -1220,6 +1222,8 @@
 // card product item
 .card-product {
   @include mixin.transition3;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
   .product-img {
     display: flex;
     width: 100%;
@@ -1284,9 +1288,9 @@
     }
     &:hover {
       .product-img {
-        .img-product {
-          opacity: 0;
-        }
+        // .img-product {
+        //   opacity: 0;
+        // }
         .img-hover {
           display: block;
           z-index: 1;
@@ -1399,9 +1403,10 @@
       -webkit-box-orient: vertical;
       display: -webkit-box;
       overflow: hidden;
+      padding-top: 10px;
     }
     .price {
-      font-size: 14px;
+      font-size: 16px;
       line-height: 14px;
       font-weight: 600;
       color: var(--primary);
@@ -1455,6 +1460,7 @@
     font-size: 14px;
     line-height: 22.4px;
     margin-top: 2px;
+    padding-right: 5px;
   }
   &.none-hover {
     .card-product-wrapper:hover {
@@ -2152,6 +2158,10 @@
       }
     }
   }
+}
+
+.grid-layout.wrapper-shop[data-grid="grid-4"] {
+  gap: 16px !important; // or whatever value you want
 }
 
 // .wrapper-shop {

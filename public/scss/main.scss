@@ -1,8 +1,9 @@
+@use "sass:meta";
 @import "/fonts/fonts.css";
 @import "/fonts/font-icons.css";
 @import "/css/bootstrap.min.css";
 @import "/css/swiper-bundle.min.css";
 @import "/css/animate.css";
-@import "./app.scss";
-@import "./custom.scss";
+@include meta.load-css("app.scss");
+@include meta.load-css("custom.scss");
 

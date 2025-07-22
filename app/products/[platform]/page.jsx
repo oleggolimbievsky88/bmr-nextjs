@@ -69,18 +69,14 @@ export default async function PlatformPage({ params }) {
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <div className="row">
-            <div className="col-md-12">
-              <ShopSidebarleft
-                platform={platformInfo}
-                isMainCategory={false}
-                mainCategories={mainCategories}
-              />
-            </div>
-            {/* <div className="col-md-9">
-              <ShopLoadmoreOnScroll platform={platform} />
-            </div> */}
-          </div>
+          <ShopSidebarleft
+            platform={platformInfo}
+            isMainCategory={true}
+            mainCategories={mainCategories}
+            categories={mainCategories}
+            selectedMainCatId={null}
+            selectedMainCatSlug={null}
+          />
         </section>
       </div>
     </div>

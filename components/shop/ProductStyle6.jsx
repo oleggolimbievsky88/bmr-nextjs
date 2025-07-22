@@ -1,11 +1,10 @@
 "use client";
-import { layouts, sortingOptions } from "@/data/shop";
+import { layouts } from "@/data/shop";
+import { Sorting } from "./Sorting";
 import { useState } from "react";
 import Pagination from "../common/Pagination";
-import { products1 } from "@/data/products";
 import { ProductCard25 } from "../shopCards/ProductCard25";
 import ShopFilter from "./ShopFilter";
-import SortiShopFilterng from "./Sorting";
 
 export default function ProductStyle6() {
   const [gridItems, setGridItems] = useState(4);

@@ -62,7 +62,7 @@ export default function ShopDetailsTab({ product }) {
                       style={{
                         fontSize: "16px !important",
                         color: "black !important",
-                        lineHeight: "20px !important",
+                        lineHeight: "25px !important",
                       }}
                     />
                     {featuresArr.length > 0 && (
@@ -72,7 +72,7 @@ export default function ShopDetailsTab({ product }) {
                             className="fs-16 fw-5"
                             style={{
                               fontFamily: "impact",
-                              color: "var(--primary)",
+                              color: "black !important",
                               letterSpacing: "1px",
                               fontSize: "16px !important",
                             }}
@@ -84,7 +84,7 @@ export default function ShopDetailsTab({ product }) {
                                   key={idx}
                                   style={{
                                     fontSize: "15px",
-                                    lineHeight: "15px",
+                                    lineHeight: "20px !important",
                                     color: "black !important",
                                   }}
                                 >
@@ -108,15 +108,7 @@ export default function ShopDetailsTab({ product }) {
                       {featuresArr.length > 0 && (
                         <div className="tf-product-des-demo">
                           <div className="right">
-                            <h2
-                              className="fs-16 fw-5"
-                              style={{
-                                fontFamily: "impact",
-                                color: "black",
-                                letterSpacing: "1px",
-                                fontSize: "20px",
-                              }}
-                            ></h2>
+                            <h2 className="fs-16 fw-5"></h2>
                             <div className="row">
                               <ul>
                                 {featuresArr.map((feature, idx) => (
@@ -147,7 +139,8 @@ export default function ShopDetailsTab({ product }) {
                   <div>
                     <Link
                       href={`https://www.bmrsuspension.com/siteart/install/${product?.Instructions}`}
-                      className="btn btn-primary"
+                      className="btn btn-danger install-btn"
+                      style={{ backgroundColor: "var(--primary) !important" }}
                     >
                       View / Download {product?.PartNumber} Installation
                       Instructions

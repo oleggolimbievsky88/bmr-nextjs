@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ShopSidebarleft from "./ShopSidebarleft";
+import { ProductCard } from "../shopCards/ProductCard";
+import Productcard23 from "../shopCards/Productcard23";
 
 export default function ProductGrid({
   platformName,
@@ -11,12 +13,14 @@ export default function ProductGrid({
   selectedCategory = null,
   selectedSubCategory = null,
   showCategories = true,
+  gridItems = 4,
 }) {
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [colorsMap, setColorsMap] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,8 +38,6 @@ export default function ProductGrid({
         if (!response.ok) throw new Error("Failed to fetch data");
 
         const data = await response.json();
-        console.log("Fetched Data:", data); // Debug log
-
         if (data.error) {
           throw new Error(data.error);
         }
@@ -43,7 +45,6 @@ export default function ProductGrid({
         setCategories(data.categories || []);
         setMainCategories(data.mainCategories || []);
       } catch (err) {
-        console.error("Error fetching data:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -53,11 +54,45 @@ export default function ProductGrid({
     fetchData();
   }, [platformName, showCategories]);
 
-  // Show loading state only when fetching categories
+  // Fetch colors list and build colorsMap
+  useEffect(() => {
+    async function fetchColors() {
+      try {
+        const res = await fetch("/api/colors");
+        if (!res.ok) throw new Error("Failed to fetch colors");
+        const data = await res.json();
+        // data.colors should be an array of { ColorID, ColorName, ColorImg }
+        const map = Object.fromEntries(
+          (data.colors || []).map((c) => [String(c.ColorID), c])
+        );
+        setColorsMap(map);
+      } catch (err) {
+        // fallback: empty map
+        setColorsMap({});
+      }
+    }
+    fetchColors();
+  }, []);
+
   if (loading && showCategories)
     return <div className="text-center p-4">Loading...</div>;
   if (error)
     return <div className="text-center text-danger p-4">Error: {error}</div>;
+
+  function getColClass(gridItems) {
+    switch (gridItems) {
+      case 1:
+        return "col-12";
+      case 2:
+        return "col-6";
+      case 3:
+        return "col-6 col-md-4";
+      case 4:
+        return "col-6 col-md-4 col-lg-3";
+      default:
+        return "col-6 col-md-4 col-lg-3";
+    }
+  }
 
   return (
     <div className="container-fluid">
@@ -84,7 +119,7 @@ export default function ProductGrid({
         </div>
       )}
 
-      {/* Categories Grid */}
+      {/* Categories Grid (commented out for now) */}
       {/* showCategories && categories.length > 0 && (
         <div className="row g-4 justify-content-center mt-4">
           {categories
@@ -119,65 +154,37 @@ export default function ProductGrid({
         </div>
       ) */}
 
-      {/* Products Grid */}
+      {/* Product Count */}
+      {/* <div
+        style={{
+          width: "fit-content",
+          margin: "0  auto",
+          fontSize: "17px",
+          marginBottom: "24px",
+        }}
+      >
+        {allproducts.length} product(s) found
+      </div> */}
 
-      {products && products.length > 0 && (
-        <div className="row g-4 mt-4">
-          {products.map((product) => (
-            <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
-              <div className="card h-100 product-card">
-                <Link
-                  href={`/product/${product.ProductID}`}
-                  className="text-decoration-none"
-                >
-                  <div
-                    className="position-relative"
-                    style={{ height: "200px" }}
-                  >
-                    <Image
-                      src={
-                        product.ImageSmall
-                          ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}`
-                          : "https://bmrsuspension.com/siteart/products/noimage.jpg"
-                      }
-                      alt={product.ProductName}
-                      fill
-                      className="card-img-top p-2"
-                      style={{ objectFit: "contain" }}
-                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                      unoptimized={true}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src =
-                          "https://bmrsuspension.com/siteart/products/noimage.jpg";
-                      }}
-                    />
-                  </div>
-                  <div className="card-body">
-                    <h3
-                      className="h6 mb-2 product-title"
-                      style={{ minHeight: "2.5rem" }}
-                    >
-                      {product.ProductName}
-                    </h3>
-                    <div>
-                      <div className="text-muted">
-                        Part #: {product.PartNumber}
-                      </div>
-                      <div className="fw-bold text-danger">
-                        ${parseFloat(product.Price).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* No Results Message */}
-      {!loading && !error && !categories.length && !products?.length && (
+      {/* Products Grid (list or grid) */}
+      {allproducts && allproducts.length > 0 ? (
+        gridItems == 1 ? (
+          <div className="grid-layout" data-grid="grid-list">
+            {allproducts.map((elm, i) => (
+              <Productcard23 product={elm} colorsMap={colorsMap} key={i} />
+            ))}
+          </div>
+        ) : (
+          <div
+            className="grid-layout wrapper-shop"
+            data-grid={`grid-${gridItems}`}
+          >
+            {allproducts.map((elm, i) => (
+              <ProductCard product={elm} colorsMap={colorsMap} key={i} />
+            ))}
+          </div>
+        )
+      ) : (
         <div className="text-center p-4">
           No items found {platformName ? `for ${platformName}` : ""}
         </div>

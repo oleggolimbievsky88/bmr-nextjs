@@ -115,6 +115,7 @@ export default function CategoryPage({ params }) {
               selectedMainCatId={mainCategory}
               selectedProductType={featuredProducts.catId}
               selectedMainCatSlug={mainCategory}
+              selectedCatSlug={category}
             />
           </section>
         )}

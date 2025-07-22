@@ -32,6 +32,8 @@ export async function GET(request) {
   const platform = searchParams.get("platform");
   const mainCategory = searchParams.get("mainCategory");
   const category = searchParams.get("category");
+  const colors = searchParams.get("colors"); // e.g. "Red,Black Hammertone"
+  const brands = searchParams.get("brands"); // e.g. "BMR Suspension,Qa1"
 
   let platformId, mainCategoryId, categoryId;
 
@@ -80,6 +82,9 @@ export async function GET(request) {
     categoryId,
     limit,
     offset,
+    colors: colors ? colors.split(",") : [],
+    brands: brands ? brands.split(",") : [],
+    // add more filters as needed
   });
 
   return NextResponse.json({ products: products || [] }, { status: 200 });

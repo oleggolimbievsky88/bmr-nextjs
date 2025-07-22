@@ -20,6 +20,13 @@ const nextConfig = {
     unoptimized: true,
   },
   output: "standalone",
+  logging: {
+    logging: {
+      fetches: {
+        fullUrl: true,
+      },
+    },
+  },
 };
 
 module.exports = nextConfig;

@@ -5,7 +5,7 @@ import ShopFilter from "./ShopFilter";
 import Sorting from "./Sorting";
 import { layouts } from "@/data/shop";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 4;
 
 export default function ShopLoadmoreOnScroll({
   platform,
@@ -18,6 +18,8 @@ export default function ShopLoadmoreOnScroll({
   const [loaded, setLoaded] = useState(false);
   const [gridItems, setGridItems] = useState(4);
   const [finalSorted, setFinalSorted] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
   const sentinelRef = useRef(null);
 
   // Fetch products with optional filters
@@ -32,6 +34,10 @@ export default function ShopLoadmoreOnScroll({
       if (platform) params.append("platform", platform);
       if (mainCategory) params.append("mainCategory", mainCategory);
       if (category) params.append("category", category);
+      if (selectedColors.length)
+        params.append("colors", selectedColors.join(","));
+      if (selectedBrands.length)
+        params.append("brands", selectedBrands.join(","));
 
       const res = await fetch(`/api/products?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch");
@@ -58,7 +64,7 @@ export default function ShopLoadmoreOnScroll({
     // Fetch first page
     fetchProducts(1);
     // eslint-disable-next-line
-  }, [platform, mainCategory, category]);
+  }, [platform, mainCategory, category, selectedColors, selectedBrands]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -135,13 +141,18 @@ export default function ShopLoadmoreOnScroll({
               <div className="text-center">No Items found</div>
             )}
             {loaded && products.length > 0 && (
-              <div className="text-center">Products Loaded.</div>
+              <div className="text-center">Products Loaded</div>
             )}
             <div className="tf-pagination-wrap view-more-button text-center tf-pagination-btn"></div>
           </div>
         </div>
       </section>
-      <ShopFilter products={products} setProducts={setProducts} />
+      <ShopFilter
+        products={products}
+        setProducts={setProducts}
+        setSelectedColors={setSelectedColors}
+        setSelectedBrands={setSelectedBrands}
+      />
     </>
   );
 }

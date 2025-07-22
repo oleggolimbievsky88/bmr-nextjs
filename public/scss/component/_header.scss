@@ -237,6 +237,7 @@
     .nav-icon-item {
       position: relative;
       display: inline-flex;
+      color: var(--white);
       &:hover {
         color: var(--primary);
       }

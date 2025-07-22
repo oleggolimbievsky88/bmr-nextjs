@@ -1,29 +1,11 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 const categories = [
   { id: 1, name: "Suspension", isActive: true, link: "/shop-default" },
-  // { id: 2, name: "Men", isActive: false, link: "/shop-men" },
-  // { id: 3, name: "Women", isActive: false, link: "/shop-women" },
-  // { id: 4, name: "Denim", isActive: false, link: "/shop-default" },
-  // { id: 5, name: "Dress", isActive: false, link: "/shop-default" },
 ];
-
 const filterColors = [
   { name: "Red", colorClass: "bg_orange-3" },
   { name: "Black Hammertone", colorClass: "bg_dark" },
-  // { name: "White", colorClass: "bg_white" },
-  // { name: "Brown", colorClass: "bg_brown" },
-  // { name: "Light Purple", colorClass: "bg_purple" },
-  // { name: "Light Green", colorClass: "bg_light-green" },
-  // { name: "Pink", colorClass: "bg_purple" },
-  // { name: "Blue", colorClass: "bg_blue-2" },
-  // { name: "Dark Blue", colorClass: "bg_dark-blue" },
-  // { name: "Light Grey", colorClass: "bg_light-grey" },
-  // { name: "Beige", colorClass: "bg_beige" },
-  // { name: "Light Blue", colorClass: "bg_light-blue" },
-  // { name: "Grey", colorClass: "bg_grey" },
-  // { name: "Light Pink", colorClass: "bg_light-pink" },
 ];
 const brands = ["BMR Suspension", "Qa1"];
 const availabilities = [
@@ -32,124 +14,62 @@ const availabilities = [
 ];
 const sizes = ["S", "M", "L", "XL"];
 import Slider from "rc-slider";
-import { products1 } from "@/data/products";
 import Link from "next/link";
-export default function ShopFilter({ setProducts, products = [] }) {
-  const [price, setPrice] = useState([10, 20]);
+export default function ShopFilter({
+  setSelectedColors,
+  setSelectedBrands,
+  setSelectedAvailabilities,
+  setSelectedSizes,
+  setPrice,
+  selectedColors = [],
+  selectedBrands = [],
+  selectedAvailabilities = [],
+  selectedSizes = [],
+  price = [10, 20],
+}) {
+  // Local state for UI only
+  const [localPrice, setLocalPrice] = useState(price);
   const handlePrice = (value) => {
-    setPrice(value);
+    setLocalPrice(value);
+    setPrice && setPrice(value);
   };
-  const [selectedColors, setSelectedColors] = useState([]);
   const handleSelectColor = (color) => {
-    if (selectedColors.includes(color)) {
-      setSelectedColors((pre) => [...pre.filter((el) => el != color)]);
-    } else {
-      setSelectedColors((pre) => [...pre, color]);
-    }
-  };
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const handleSelectBrand = (brand) => {
-    if (selectedBrands.includes(brand)) {
-      setSelectedBrands((pre) => [...pre.filter((el) => el != brand)]);
-    } else {
-      setSelectedBrands((pre) => [...pre, brand]);
-    }
-  };
-  const [selectedAvailabilities, setSelectedAvailabilities] = useState([]);
-  const handleSelectAvailabilities = (availability) => {
-    if (selectedAvailabilities.includes(availability)) {
-      setSelectedAvailabilities((pre) => [
-        ...pre.filter((el) => el != availability),
-      ]);
-    } else {
-      setSelectedAvailabilities((pre) => [...pre, availability]);
-    }
-  };
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const handleSelectSizes = (size) => {
-    if (selectedSizes.includes(size)) {
-      setSelectedSizes((pre) => [...pre.filter((el) => el != size)]);
-    } else {
-      setSelectedSizes((pre) => [...pre, size]);
-    }
-  };
-
-  useEffect(() => {
-    let filteredArrays = [];
-
-    filteredArrays = [
-      ...filteredArrays,
-      [
-        ...products.filter(
-          (elm) => elm.price >= price[0] && elm.price <= price[1]
-        ),
-      ],
-    ];
-    // console.log(filteredByPrice, "filteredByPrice");
-    if (selectedColors.length) {
-      filteredArrays = [
-        ...filteredArrays,
-        [
-          ...products.filter((elm) =>
-            elm.colors
-              ?.map((el2) => el2.name)
-              .some((el3) => selectedColors.includes(el3))
-          ),
-        ],
-      ];
-    }
-
-    // console.log(filteredByselectedColors, "filteredByselectedColors");
-    if (selectedBrands.length) {
-      filteredArrays = [
-        ...filteredArrays,
-        [...products.filter((elm) => selectedBrands.includes(elm.brand))],
-      ];
-    }
-
-    // console.log(filteredByselectedBrands, "filteredByselectedBrands");
-    if (selectedSizes.length) {
-      filteredArrays = [
-        ...filteredArrays,
-        [
-          ...products.filter((elm) =>
-            elm.sizes?.some((elm2) => selectedSizes.includes(elm2))
-          ),
-        ],
-      ];
-    }
-
-    // console.log(filteredByselectedSizes);
-    if (selectedAvailabilities.length) {
-      filteredArrays = [
-        ...filteredArrays,
-        [
-          ...products.filter((elm) =>
-            selectedAvailabilities
-              .map((elm3) => elm3.isAvailable)
-              .some((elm4) => elm4 == elm.isAvailable)
-          ),
-        ],
-      ];
-    }
-
-    const commonItems = products.filter((item) =>
-      filteredArrays.every((array) => array.includes(item))
+    if (!setSelectedColors) return;
+    setSelectedColors((prev) =>
+      prev.includes(color)
+        ? prev.filter((el) => el !== color)
+        : [...prev, color]
     );
-    setProducts(commonItems);
-  }, [
-    price,
-    selectedColors,
-    selectedBrands,
-    selectedAvailabilities,
-    selectedSizes,
-  ]);
+  };
+  const handleSelectBrand = (brand) => {
+    if (!setSelectedBrands) return;
+    setSelectedBrands((prev) =>
+      prev.includes(brand)
+        ? prev.filter((el) => el !== brand)
+        : [...prev, brand]
+    );
+  };
+  const handleSelectAvailabilities = (availability) => {
+    if (!setSelectedAvailabilities) return;
+    setSelectedAvailabilities((prev) =>
+      prev.includes(availability)
+        ? prev.filter((el) => el !== availability)
+        : [...prev, availability]
+    );
+  };
+  const handleSelectSizes = (size) => {
+    if (!setSelectedSizes) return;
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((el) => el !== size) : [...prev, size]
+    );
+  };
   const clearFilter = () => {
-    setSelectedColors([]);
-    setSelectedBrands([]);
-    setSelectedAvailabilities([]);
-    setSelectedSizes([]);
-    setPrice([10, 20]);
+    setSelectedColors && setSelectedColors([]);
+    setSelectedBrands && setSelectedBrands([]);
+    setSelectedAvailabilities && setSelectedAvailabilities([]);
+    setSelectedSizes && setSelectedSizes([]);
+    setPrice && setPrice([10, 20]);
+    setLocalPrice([10, 20]);
   };
   return (
     <div className="offcanvas offcanvas-start canvas-filter" id="filterShop">
@@ -224,20 +144,11 @@ export default function ShopFilter({ setProducts, products = [] }) {
                         type="radio"
                         className="tf-check"
                         readOnly
-                        checked={selectedAvailabilities.includes(availability)}
+                        checked={selectedAvailabilities?.includes(availability)}
                       />
                       <label className="label">
                         <span>{availability.text}</span>&nbsp;
-                        <span>
-                          (
-                          {
-                            products.filter(
-                              (elm) =>
-                                elm.isAvailable == availability.isAvailable
-                            ).length
-                          }
-                          )
-                        </span>
+                        <span>({availability.count})</span>
                       </label>
                     </li>
                   ))}
@@ -262,8 +173,9 @@ export default function ShopFilter({ setProducts, products = [] }) {
                     range
                     max={22}
                     min={5}
-                    defaultValue={price}
-                    onChange={(value) => handlePrice(value)}
+                    defaultValue={localPrice}
+                    value={localPrice}
+                    onChange={handlePrice}
                     id="slider"
                   />
                   <div className="box-title-price">
@@ -271,12 +183,12 @@ export default function ShopFilter({ setProducts, products = [] }) {
                     <div className="caption-price">
                       <div>
                         <span>$</span>
-                        <span className="min-price">{price[0]}</span>
+                        <span className="min-price">{localPrice[0]}</span>
                       </div>
                       <span>-</span>
                       <div>
                         <span>$</span>
-                        <span className="max-price">{price[1]}</span>
+                        <span className="max-price">{localPrice[1]}</span>
                       </div>
                     </div>
                   </div>
@@ -306,14 +218,11 @@ export default function ShopFilter({ setProducts, products = [] }) {
                         type="radio"
                         className="tf-check"
                         readOnly
-                        checked={selectedBrands.includes(brand)}
+                        checked={selectedBrands?.includes(brand)}
                       />
                       <label className="label">
                         <span>{brand}</span>&nbsp;
-                        <span>
-                          ({products.filter((elm) => elm.brand == brand).length}
-                          )
-                        </span>
+                        <span>{/* count not available here */}</span>
                       </label>
                     </li>
                   ))}
@@ -344,21 +253,11 @@ export default function ShopFilter({ setProducts, products = [] }) {
                         name="color"
                         className={`tf-check-color ${elm.colorClass}`}
                         readOnly
-                        checked={selectedColors.includes(elm.name)}
+                        checked={selectedColors?.includes(elm.name)}
                       />
                       <label className="label">
                         <span>{elm.name}</span>&nbsp;
-                        <span>
-                          (
-                          {
-                            products.filter((el) =>
-                              el.colors
-                                ?.map((col) => col?.name)
-                                ?.includes(elm.name)
-                            ).length
-                          }
-                          )
-                        </span>
+                        <span>{/* count not available here */}</span>
                       </label>
                     </li>
                   ))}
@@ -388,18 +287,11 @@ export default function ShopFilter({ setProducts, products = [] }) {
                         type="radio"
                         className="tf-check tf-check-size"
                         readOnly
-                        checked={selectedSizes.includes(elm)}
+                        checked={selectedSizes?.includes(elm)}
                       />
                       <label className="label">
                         <span>{elm}</span>&nbsp;
-                        <span>
-                          (
-                          {
-                            products.filter((el) => el.sizes?.includes(elm))
-                              .length
-                          }
-                          )
-                        </span>
+                        <span>{/* count not available here */}</span>
                       </label>
                     </li>
                   ))}
