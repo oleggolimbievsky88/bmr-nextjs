@@ -24,10 +24,10 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
 
   // Color swatch logic
   const colorIds = product.Color ? product.Color.split(",") : [];
-  console.log("Color IDs", colorIds);
+  // console.log("Color IDs", colorIds);
   const productColors = colorIds.map((id) => colorsMap[id]).filter(Boolean);
 
-  console.log("Product Colors", productColors);
+  // console.log("Product Colors", productColors);
 
   return (
     <Link

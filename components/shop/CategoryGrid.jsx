@@ -145,18 +145,17 @@ export default function CategoryGrid({
           // For main categories, use name property
           // For subcategories, use CatName or name property
           const categoryName = category.name || category.CatName;
-          const categoryId = category.MainCatID || category.CatID;
+          const categoryId = category.id || category.CatID;
           const categoryImage = category.image || category.CatImage;
+          const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+          const href = isSubCategory
+            ? `/products/${platform}/${mainCategory}/${categoryId}`
+            : `/products/${platform}/${categorySlug}`;
 
           if (!categoryName) {
             console.warn(`⚠️ Skipping category at index ${index}:`, category);
             return null;
           }
-
-          const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
-          const href = isSubCategory
-            ? `/products/${platform}/${mainCategory}/${categorySlug}`
-            : `/products/${platform}/${categorySlug}`;
 
           return (
             <div

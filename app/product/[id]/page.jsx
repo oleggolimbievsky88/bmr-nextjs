@@ -54,7 +54,7 @@ export default async function ProductDetails({ params }) {
       <Header2 />
       <div className="tf-breadcrumb">
         <div className="container">
-          <div className="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
+          <div className="tf-breadcrumb-wrap d-flex justify-content-center flex-wrap align-items-center text-center">
             <div className="tf-breadcrumb-list">
               <Link href="/" className="text">
                 Home
@@ -102,7 +102,7 @@ export default async function ProductDetails({ params }) {
       {/* <DetailsOuterZoom product={product} /> */}
       <Details6 product={product} />
       <ShopDetailsTab product={product} />
-      <Products product={product} />
+      {/* <Products product={product} /> */}
       {/* <RecentProducts /> */}
       <Footer1 />
     </>

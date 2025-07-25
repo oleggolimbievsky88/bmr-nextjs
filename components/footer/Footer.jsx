@@ -128,7 +128,7 @@ export default function Footer1({ bgColor = "background-black" }) {
                 </ul>
               </div>
               <div className="col-xl-3 col-md-6 col-12">
-                <FooterEmailForm />
+                {/* <FooterEmailForm /> */}
               </div>
             </div>
           </div>

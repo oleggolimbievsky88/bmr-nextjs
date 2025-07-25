@@ -84,8 +84,7 @@ export async function GET(request) {
     offset,
     colors: colors ? colors.split(",") : [],
     brands: brands ? brands.split(",") : [],
-    // add more filters as needed
   });
-
+  console.log("Products", products);
   return NextResponse.json({ products: products || [] }, { status: 200 });
 }

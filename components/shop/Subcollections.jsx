@@ -29,9 +29,7 @@ export default function Subcollections() {
           {mainCategories.map((category) => (
             <div key={category.id} className="col-md-3">
               <Link
-                href={`/shop/${category.name
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
+                href={`/shop/${category.id || category.CatID}`}
                 className="text-decoration-none"
               >
                 <div className="card category-card h-100">

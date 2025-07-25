@@ -17,16 +17,37 @@ export default function CategoryPage({ params }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    /*
+      This useEffect runs whenever the platform, mainCategory, or category changes.
+      It defines and calls an async function, fetchData, which does the following:
+
+      1. Fetches platform information and its main categories from `/api/platforms/${platform}`.
+         - If the fetch fails, it throws an error.
+         - On success, it updates the state with platform info and main categories.
+
+      2. Fetches subcategories for the selected main category from `/api/platforms/${platform}/${mainCategory}`.
+         - If the fetch fails, it throws an error.
+         - On success, it updates the state with the list of subcategories.
+
+      3. Fetches products for the current platform, mainCategory, and category from `/api/products` with query parameters.
+         - The query includes platform, mainCategory, catid, page=1, and limit=12.
+         - If the fetch fails, it throws an error.
+         - On success, it updates the state with the list of products.
+
+      4. If any error occurs during these fetches, it sets the error state.
+      5. Finally, it sets loading to false, regardless of success or error.
+    */
+
     const fetchData = async () => {
       try {
-        // Fetch platform info and main categories (for sidebar/header)
+        // 1. Fetch platform info and main categories
         const platformRes = await fetch(`/api/platforms/${platform}`);
         if (!platformRes.ok) throw new Error("Failed to fetch platform info");
         const platformData = await platformRes.json();
         setPlatformInfo(platformData.platformInfo || {});
         setMainCategories(platformData.mainCategories || []);
 
-        // Fetch subcategories for the selected main category (for sidebar)
+        // 2. Fetch subcategories for the selected main category
         const subcatRes = await fetch(
           `/api/platforms/${platform}/${mainCategory}`
         );
@@ -34,11 +55,11 @@ export default function CategoryPage({ params }) {
         const subcatData = await subcatRes.json();
         setCategories(subcatData.categories || []);
 
-        // Fetch products for this platform/mainCategory/category
+        // 3. Fetch products for this platform/mainCategory/category
         const query = new URLSearchParams({
           platform,
           mainCategory,
-          category, // this is the slug, e.g. "rear-cradle-bushing-kits"
+          catid: category, // use category param as catid for now
           page: 1,
           limit: 12,
         }).toString();
@@ -53,7 +74,6 @@ export default function CategoryPage({ params }) {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [platform, mainCategory, category]);
 

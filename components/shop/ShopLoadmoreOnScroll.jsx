@@ -32,7 +32,8 @@ export default function ShopLoadmoreOnScroll({
       });
       if (platform) params.append("platform", platform);
       if (mainCategory) params.append("mainCategory", mainCategory);
-      if (category) params.append("category", category);
+      if (category) params.append("catid", category); // use category as catid for now
+      // Only use platform, mainCategory, catid for now
 
       const res = await fetch(`/api/products?${params.toString()}`);
       const data = await res.json();

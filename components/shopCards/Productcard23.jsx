@@ -37,7 +37,7 @@ export default function Productcard23({ product, colorsMap = {} }) {
           <Image
             className="lazyload img-product"
             src={imageSrc}
-            alt={product.ProductName}
+            alt={product.ProductName || "Product image"}
             width={720}
             height={1005}
           />

@@ -7,16 +7,20 @@ export default function Topbar4() {
     <div className="tf-top-bar text-white bg_black">
       <div className="px_15 lg-px_40">
         <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
-        <div className="tf-top-bar_left">
+          <div className="tf-top-bar_left">
             <div className="d-inline-block">
               <span className="fw-7">
-                Call Us Today! 
+                Call Us Today!
                 <a
                   href="tel:+18001090"
-                  style={{ textDecoration: "none", marginLeft: "8px", color: "var(--white)" }}
+                  style={{
+                    textDecoration: "none",
+                    marginLeft: "8px",
+                    color: "var(--white)",
+                  }}
                   aria-describedby="external-message"
                 >
-                   (813) 986-9302
+                  (813) 986-9302
                 </a>
               </span>
             </div>
@@ -32,9 +36,11 @@ export default function Topbar4() {
             >
               <div className="swiper-wrapper">
                 <div className="swiper-slide">
-                  <p className="top-bar-text fw-5" style={{letterSpacing: "0px"}}>
-                   FREE SHIPPING THE THE 48 CONTIGUOUS US STATES FOR ALL BMR PRODUCTS!
-                    
+                  <p
+                    className="top-bar-text fw-5"
+                    style={{ letterSpacing: "0px" }}
+                  >
+                    FREE SHIPPING IN THE US STATES FOR ALL BMR PRODUCTS!
                   </p>
                 </div>
                 <div className="swiper-slide">
@@ -69,7 +75,6 @@ export default function Topbar4() {
               </li>
             </ul>
           </div>
-          
         </div>
       </div>
     </div>

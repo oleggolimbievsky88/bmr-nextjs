@@ -14,7 +14,7 @@ export default function MainCategoryPage({ params }) {
 
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
-  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [platformInfo, setPlatformInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ export default function MainCategoryPage({ params }) {
         if (!res.ok) throw new Error("Failed to fetch data");
         const { categories, products, platformInfo } = await res.json();
         setCategories(categories);
-        setFeaturedProducts(products);
+        setProducts(products);
         setPlatformInfo(platformInfo);
       } catch (err) {
         setError(err.message);
@@ -92,7 +92,7 @@ export default function MainCategoryPage({ params }) {
         </section>
 
         {/* Featured Products Section */}
-        {featuredProducts && featuredProducts.length > 0 && (
+        {products && products.length > 0 && (
           <section
             className="mb-5 mt-10"
             style={{
@@ -123,9 +123,9 @@ export default function MainCategoryPage({ params }) {
               platform={platformInfo}
               isMainCategory={false}
               mainCategories={mainCategories}
-              products={featuredProducts}
+              products={products}
               selectedMainCatId={mainCategory}
-              selectedProductType={featuredProducts.catId}
+              selectedProductType={products.catId}
               selectedMainCatSlug={mainCategory}
             />
           </section>

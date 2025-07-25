@@ -33,7 +33,7 @@ export default function ShopLoadmoreOnScroll({
       });
       if (platform) params.append("platform", platform);
       if (mainCategory) params.append("mainCategory", mainCategory);
-      if (category) params.append("category", category);
+      if (category) params.append("catid", category); // use category as catid for now
       if (selectedColors.length)
         params.append("colors", selectedColors.join(","));
       if (selectedBrands.length)

@@ -1,6 +1,6 @@
 "use client";
 import { layouts } from "@/data/shop";
-import { Sorting } from "./Sorting";
+import Sorting from "./Sorting";
 import { useState } from "react";
 import Pagination from "../common/Pagination";
 import { ProductCard25 } from "../shopCards/ProductCard25";

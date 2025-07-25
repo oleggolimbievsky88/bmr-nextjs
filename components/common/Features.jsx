@@ -36,7 +36,13 @@ export default function Features() {
           >
             {iconBoxData.map((elm, i) => (
               <SwiperSlide key={i} className="swiper-slide">
-                <div className="tf-icon-box style-border-line text-center">
+                <div
+                  className="tf-icon-box style-border-line text-center"
+                  style={{
+                    height: "180px",
+                    marginBottom: "0px",
+                  }}
+                >
                   <div className="icon">
                     <i className={elm.iconClass} />
                   </div>

@@ -1,5 +1,4 @@
 "use client";
-import { products1 } from "@/data/products";
 import { sortingOptions } from "@/data/shop";
 import React, { useEffect, useState } from "react";
 

@@ -16,6 +16,7 @@ import CollectionBanner from "@/components/homes/home/CollectionBanner";
 import ThreeColumnLayout from "@/components/homes/home/ThreeColumnLayout";
 import ProductsPage from "./products/page";
 import NewProductsPage from "./products/new/page";
+import LazyNewProducts from "@/components/homes/home/LazyNewProducts";
 import Topbar4 from "@/components/header/Topbar4";
 import Header18 from "@/components/header/Header18";
 import VideoPage from "@/components/common/Videos";
@@ -34,21 +35,21 @@ export default function page() {
       <Header18 />
       <Hero /> <br />
       {/* <ShopCategories /> <br /> <br /> */}
-      <ThreeColumnLayout />
+      {/* <ThreeColumnLayout /> */}
       {/* <Categories /> */}
       {/* <Products /> */}
-      <NewProductsPage scrachDent="0" />
-      <ShopCategories />
-      <NewProductsPage scrachDent="1" />
+      <LazyNewProducts scratchDent="0" />
+      {/* <ShopCategories /> */}
+      <LazyNewProducts scratchDent="1" />
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
       {/* <Collections /> */}
-      <Blogs />
+      {/* <Blogs /> */}
       <VideoPage />
       {/* <Marquee /> */}
       {/* <Testimonials /> */}
       {/* <Brands /> */}
-      <SocialMedia />
+      {/* <SocialMedia /> */}
       <Features />
       <Footer />
     </>

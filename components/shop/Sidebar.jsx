@@ -73,19 +73,17 @@ export default function ({
           <div id="product-types" className="collapse show">
             <ul className="list-categoris mb_36">
               {categories.map((category, index) => {
-                const catSlug = (category.name || category.CatName)
-                  .toLowerCase()
-                  .replace(/\s+/g, "-");
+                const catId = category.id || category.CatID;
                 return (
                   <li
-                    key={category.id || category.CatID || index}
+                    key={catId || index}
                     className={`cate-item${
-                      selectedCatSlug === catSlug.toLowerCase() ? " active" : ""
+                      selectedCatId === catId ? " active" : ""
                     }`}
-                    onClick={() => onCategorySelect(catSlug)}
+                    onClick={() => onCategorySelect(catId)}
                   >
                     <Link
-                      href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
+                      href={`/products/${platform.slug}/${selectedMainCatSlug}/${catId}`}
                     >
                       <span>{category.name || category.CatName}</span>&nbsp;
                       <span>({category.productCount || 0})</span>

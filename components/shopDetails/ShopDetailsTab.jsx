@@ -3,14 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const tabs = [
-  { title: "Description", active: true },
-  { title: "Features", active: false },
-  { title: "Installation", active: false },
-  { title: "Fitment", active: false },
-];
-
 export default function ShopDetailsTab({ product }) {
+  const tabs = [
+    { title: "Description", active: true },
+    { title: "Features", active: false },
+    ...(product?.Instructions &&
+    product?.Instructions !== "0" &&
+    product?.Instructions !== 0
+      ? [{ title: "Installation", active: false }]
+      : []),
+    { title: "Fitment", active: false },
+  ];
+
   const [currentTab, setCurrentTab] = useState(1);
   console.log("product", product);
   const descHtml = product?.Description || "";
@@ -137,14 +141,23 @@ export default function ShopDetailsTab({ product }) {
                   } `}
                 >
                   <div>
-                    <Link
-                      href={`https://www.bmrsuspension.com/siteart/install/${product?.Instructions}`}
-                      className="btn btn-danger install-btn"
-                      style={{ backgroundColor: "var(--primary) !important" }}
-                    >
-                      View / Download {product?.PartNumber} Installation
-                      Instructions
-                    </Link>
+                    {product?.Instructions &&
+                      product?.Instructions !== "0" &&
+                      product?.Instructions !== 0 && (
+                        <Link
+                          href={`https://www.bmrsuspension.com/siteart/install/${product?.Instructions}`}
+                          className="btn btn-danger install-btn"
+                          style={{
+                            backgroundColor: "var(--primary) !important",
+                            color: "white !important",
+                          }}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View / Download {product?.PartNumber} Installation
+                          Instructions
+                        </Link>
+                      )}
                   </div>
                 </div>
                 <div
