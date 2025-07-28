@@ -51,7 +51,7 @@ This application requires the following routes to function correctly:
 
 - `/api/menu`
 - `/api/products/new-products`
-- `/api/platforms/[platform]`
+- `/api/platforms/[bodyID]`
 - `/fitment/[id]`
 - `/video/[id]`
 - `/bmr-merchandise`

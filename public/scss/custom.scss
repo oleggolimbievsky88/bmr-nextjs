@@ -28,13 +28,139 @@
   display: block !important;
 }
 
+/* NEW: Horizontal Vehicle Grid Layout */
 .mega-menu-container {
   display: flex;
-  max-height: 770px;
+  flex-direction: column;
+  max-height: 700px;  /* Reduced from 800px for more compact layout */
   min-width: 1000px;
   width: 100%;
   overflow: hidden;
-  align-items: stretch;
+
+  /* Responsive height adjustments */
+  @media (max-height: 900px) {
+    max-height: 650px;  /* Reduced from 700px */
+  }
+
+  @media (max-height: 800px) {
+    max-height: 550px;  /* Reduced from 600px */
+  }
+}
+
+/* NEW: Vehicle Grid Section (Top) */
+.mega-menu-vehicles {
+  padding: 8px 15px;  /* Further reduced for less spacing */
+  border-bottom: 2px solid #e0e0e0;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;  /* Center the vehicle grid */
+}
+
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;  /* Reduced from 15px */
+  max-width: 1200px;
+  margin: 0 auto;
+
+  /* Responsive adjustments */
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;  /* Reduced from 12px */
+  }
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;  /* Reduced from 10px */
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;  /* Reduced from 8px */
+  }
+
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;  /* Reduced from 8px */
+  }
+}
+
+.vehicle-card {
+  padding: 6px 4px;
+  text-align: center;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  /* Responsive text sizing */
+  @media (max-width: 992px) {
+    font-size: 11px;
+    padding: 10px 6px;
+    min-height: 45px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 10px;
+    padding: 8px 4px;
+    min-height: 40px;
+  }
+}
+
+.vehicle-card:hover,
+.vehicle-card.active {
+  background-color: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+/* NEW: Categories Section (Bottom) */
+.mega-menu-categories {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 15px;  /* Further reduced top/bottom padding */
+  background-color: #fff;
+  max-height: 550px;  /* Reduced from 600px for more compact layout */
+  /* Hide scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.selected-vehicle-header {
+  text-align: center;
+  margin-bottom: 10px;  /* Further reduced since we removed text */
+  padding-bottom: 8px;  /* Further reduced */
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.selected-vehicle-name {
+  font-size: 18px;  /* Reduced from 20px */
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0;  /* No margin needed since details are removed */
+}
+
+.selected-vehicle-details {
+  font-size: 14px;
+  color: #666;
+}
+
+/* UPDATED: Old sidebar styles - keeping for compatibility but reduced */
+.mega-menu-sidebar {
+  display: none; /* Hide the old sidebar */
 }
 
 /* Left sidebar styling */
@@ -166,7 +292,7 @@
 .category-section {
   flex: 1;
   overflow-y: auto;
-  max-height: 550px;
+  max-height: 750px;  /* Increased from 550px */
   /* Hide scrollbar */
   &::-webkit-scrollbar {
     display: none;
@@ -178,27 +304,27 @@
 .main-categories-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px;  /* Reduced from 20px */
 }
 
 .main-category-group {
-  width: calc(33.33% - 14px);
-  margin-bottom: 20px;
+  width: calc(33.33% - 10px);  /* Adjusted for new gap */
+  margin-bottom: 15px;  /* Reduced from 20px */
 }
 
 .main-category-header {
   display: flex;
   align-items: center;
-  padding: 5px;
+  padding: 3px;  /* Reduced from 5px */
   border-radius: 4px;
-  margin-bottom: 10px;
-  height:80px;
+  margin-bottom: 8px;  /* Reduced from 10px */
+  height: 70px;  /* Reduced from 80px */
   border-bottom: 2px solid var(--primary);
 }
 
 .main-category-image {
-  width: 80px;
-  height: 80px;
+  width: 70px;  /* Reduced from 80px */
+  height: 70px;  /* Reduced from 80px */
   margin-right: 5px;
   display: flex;
   align-items: center;
@@ -218,11 +344,11 @@
 }
 
 .subcategories-list {
-  padding: 0 10px;
+  padding: 0 8px;  /* Reduced from 10px */
 }
 
 .subcategory-item {
-  margin-bottom: 8px;
+  margin-bottom: 6px;  /* Reduced from 8px */
 }
 
 .subcategory-link {
@@ -801,19 +927,19 @@
 
 .nav-item {
   position: static;
-  padding-right:20px;
-  height:40px;
+  padding-right: 15px;  /* Reduced from 20px */
+  height: 40px;
 }
 
 .nav-link {
   color: #fff !important;
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 15px;
-  padding: 10px 0px;
+  font-size: 13px;  /* Reduced from 15px */
+  padding: 10px 8px;  /* Reduced from 10px 0px */
   transition: all .3s ease;
   font-family: Arial, sans-serif;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;  /* Reduced from 1px */
 }
 
 .nav-link:hover,

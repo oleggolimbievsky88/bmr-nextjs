@@ -189,30 +189,28 @@ export default function MainMenu({ initialMenuData }) {
         }}
       >
         <div className="mega-menu-container">
-          {/* Left sidebar - Platforms/Vehicles */}
-          <div className="mega-menu-sidebar">
-            <ul className="vehicle-list">
+          {/* NEW: Horizontal Vehicle Grid at Top */}
+          <div className="mega-menu-vehicles">
+            <div className="vehicle-grid">
               {links.map((section, idx) => (
-                <li
+                <Link
                   key={idx}
-                  className={activeVehicle === section.slug ? "active" : ""}
+                  href={`/products/${section.slug}`}
+                  className={`vehicle-card ${
+                    activeVehicle === section.slug ? "active" : ""
+                  }`}
                   onMouseEnter={() =>
                     handleVehicleHover(section.slug, section.bodyId)
                   }
                 >
-                  <Link
-                    href={`/products/${section.slug}`}
-                    className="vehicle-link"
-                  >
-                    {section.heading}
-                  </Link>
-                </li>
+                  {section.heading}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Center - Categories */}
-          <div className="mega-menu-content">
+          {/* NEW: Categories Section at Bottom */}
+          <div className="mega-menu-categories">
             {error && (
               <div className="error-message">
                 <p>{error}</p>
@@ -220,7 +218,14 @@ export default function MainMenu({ initialMenuData }) {
             )}
 
             {!error && activeVehicle && selectedVehicle && (
-              <div className="mega-menu-body">
+              <>
+                {/* Header showing selected vehicle */}
+                <div className="selected-vehicle-header">
+                  <div className="selected-vehicle-name">
+                    {selectedVehicle.heading}
+                  </div>
+                </div>
+
                 {/* Main categories and subcategories */}
                 <div className="category-section">
                   {isLoading ? (
@@ -282,61 +287,14 @@ export default function MainMenu({ initialMenuData }) {
                     <div className="no-categories">No categories found</div>
                   )}
                 </div>
-              </div>
+              </>
             )}
 
             {/* If no vehicle is hovered, show a message */}
             {!error && !activeVehicle && (
               <div className="no-selection">
-                <p>Select a vehicle to see available products</p>
+                <p>Hover over a vehicle above to see available products</p>
               </div>
-            )}
-          </div>
-
-          {/* Right side - Fitment section */}
-          <div className="fitment-column">
-            {bodyDetails && selectedVehicle && (
-              <>
-                <div className="vehicle-image-container">
-                  {bodyDetails.Image && (
-                    <Image
-                      src={`https://bmrsuspension.com/siteart/cars/${bodyDetails.Image}`}
-                      alt={bodyDetails.Name}
-                      width={200}
-                      height={150}
-                      style={{
-                        objectFit: "contain",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
-                      onError={handleImageError}
-                      unoptimized={true}
-                      priority
-                    />
-                  )}
-                </div>
-
-                <h3 className="vehicle-title">{selectedVehicle.heading}</h3>
-
-                <div className="fitment-heading">
-                  <i className="vehicle-icon">🚗</i> Fitment
-                </div>
-
-                <ul className="vehicle-fitment-list">
-                  {isLoading ? (
-                    <li>Loading vehicles...</li>
-                  ) : vehicleList.length > 0 ? (
-                    vehicleList.map((vehicle, idx) => (
-                      <li key={idx}>
-                        {vehicle.StartYear}-{vehicle.EndYear} {vehicle.Make}{" "}
-                        {vehicle.Model}
-                      </li>
-                    ))
-                  ) : (
-                    <li className="no-vehicles">No vehicles found</li>
-                  )}
-                </ul>
-              </>
             )}
           </div>
         </div>

@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import {
   getMainCategories,
   getPlatformBySlug,
+  getPlatformById,
   getFeaturedProductsByPlatform,
+  getFeaturedProductsByBodyId,
   getMainCategoryProductCounts,
   getMainCategoriesWithProductCount,
+  getMainCategoriesWithProductCountByBodyId,
 } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -15,17 +18,32 @@ export async function GET(request, { params }) {
 
     if (!platform) {
       return NextResponse.json(
-        { error: "Platform slug is required" },
+        { error: "Platform slug or bodyid is required" },
         { status: 400 }
       );
     }
 
-    // Fetch platform info, main categories, and featured products
-    const [platformInfo, mainCategories, featuredProducts] = await Promise.all([
-      getPlatformBySlug(platform),
-      getMainCategoriesWithProductCount(platform),
-      getFeaturedProductsByPlatform(platform),
-    ]);
+    // Check if platform is a numeric ID or a slug
+    const isBodyId = /^\d+$/.test(platform);
+
+    let platformInfo, mainCategories, featuredProducts;
+
+    if (isBodyId) {
+      // Platform is a BodyID (numeric)
+      const bodyId = parseInt(platform);
+      [platformInfo, mainCategories, featuredProducts] = await Promise.all([
+        getPlatformById(bodyId),
+        getMainCategoriesWithProductCountByBodyId(bodyId),
+        getFeaturedProductsByBodyId(bodyId),
+      ]);
+    } else {
+      // Platform is a slug (string)
+      [platformInfo, mainCategories, featuredProducts] = await Promise.all([
+        getPlatformBySlug(platform),
+        getMainCategoriesWithProductCount(platform),
+        getFeaturedProductsByPlatform(platform),
+      ]);
+    }
 
     if (!platformInfo) {
       return NextResponse.json(
