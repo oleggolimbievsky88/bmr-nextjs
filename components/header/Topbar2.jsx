@@ -54,17 +54,28 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
             </Swiper>
           </div>
           <div className="top-bar-language tf-cur justify-content-end">
-            <div className="tf-currencies">
-              <CurrencySelect light topStart />
-            </div>
-            <div className="tf-languages">
-              <LanguageSelect
-                parentClassName={
-                  "image-select center style-default type-languages color-white"
-                }
-                topStart
-              />
-            </div>
+            <ul className="d-flex gap-20">
+              <li>
+                <Link href={`/contact-1`} className="text-white nav-text">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link href={`/about-us`} className="text-white nav-text">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href={`#`} className="text-white nav-text">
+                  My Account
+                </Link>
+              </li>
+              <li>
+                <Link href={`#`} className="text-white nav-text">
+                  Dealers
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

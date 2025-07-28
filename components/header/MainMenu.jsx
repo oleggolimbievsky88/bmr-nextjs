@@ -172,7 +172,22 @@ export default function MainMenu({ initialMenuData }) {
     );
 
     return (
-      <div className="dropdown-menu mega-menu" ref={megaMenuContainerRef}>
+      <div
+        className="dropdown-menu mega-menu show"
+        ref={megaMenuContainerRef}
+        style={{
+          display: "block !important",
+          position: "absolute",
+          top: "100%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "100vw",
+          maxWidth: "1400px",
+          zIndex: 9999,
+          opacity: 1,
+          visibility: "visible",
+        }}
+      >
         <div className="mega-menu-container">
           {/* Left sidebar - Platforms/Vehicles */}
           <div className="mega-menu-sidebar">
@@ -346,7 +361,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* Ford Dropdown */}
             <li
-              className="nav-item dropdown"
+              className="nav-item dropdown position-static"
               onMouseEnter={() => handlePlatformHover("ford")}
               onMouseLeave={handlePlatformLeave}
             >
@@ -359,7 +374,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* GM Late Model Dropdown */}
             <li
-              className="nav-item dropdown"
+              className="nav-item dropdown position-static"
               onMouseEnter={() => handlePlatformHover("gmLateModel")}
               onMouseLeave={handlePlatformLeave}
             >
@@ -372,7 +387,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* GM Mid Muscle Dropdown */}
             <li
-              className="nav-item dropdown"
+              className="nav-item dropdown position-static"
               onMouseEnter={() => handlePlatformHover("gmMidMuscle")}
               onMouseLeave={handlePlatformLeave}
             >
@@ -385,7 +400,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* GM Classic Muscle Dropdown */}
             <li
-              className="nav-item dropdown"
+              className="nav-item dropdown position-static"
               onMouseEnter={() => handlePlatformHover("gmClassicMuscle")}
               onMouseLeave={handlePlatformLeave}
             >
@@ -398,7 +413,7 @@ export default function MainMenu({ initialMenuData }) {
 
             {/* Mopar Dropdown */}
             <li
-              className="nav-item dropdown"
+              className="nav-item dropdown position-static"
               onMouseEnter={() => handlePlatformHover("mopar")}
               onMouseLeave={handlePlatformLeave}
             >

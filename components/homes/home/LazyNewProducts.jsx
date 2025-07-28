@@ -11,18 +11,38 @@ import "swiper/css/grid";
 import "swiper/css/navigation";
 
 export default function LazyNewProducts({ scratchDent = "0" }) {
+  const [products, setProducts] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
     rootMargin: "100px 0px", // Start loading 100px before the element is visible
   });
 
+  const {
+    setQuickViewItem,
+    setQuickAddItem,
+    addToWishlist,
+    isAddedtoWishlist,
+    addToCompareItem,
+    isAddedtoCompareItem,
+  } = useContextElement();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const title = scratchDent === "1" ? "Scratch & Dent" : "New Products";
   const description =
     scratchDent === "1"
       ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price."
       : "Check out the latest for your vehicle from BMR Suspension!";
+
+  if (!isClient) {
+    return <PlaceholderSection title={title} description={description} />;
+  }
 
   return (
     <div ref={ref}>
@@ -31,10 +51,25 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
           scratchDent={scratchDent}
           title={title}
           description={description}
-          onLoaded={() => setHasLoaded(true)}
+          onLoaded={(loadedProducts) => {
+            setProducts(loadedProducts);
+            setHasLoaded(true);
+          }}
         />
       ) : hasLoaded ? (
-        <div>Products loaded and cached</div>
+        <NewProductsSection
+          products={products}
+          title={title}
+          description={description}
+          contextFunctions={{
+            setQuickViewItem,
+            setQuickAddItem,
+            addToWishlist,
+            isAddedtoWishlist,
+            addToCompareItem,
+            isAddedtoCompareItem,
+          }}
+        />
       ) : (
         <PlaceholderSection title={title} description={description} />
       )}
@@ -107,10 +142,25 @@ function NewProductsLoader({ scratchDent, title, description, onLoaded }) {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.json();
-        setProducts(Array.isArray(data) ? data : []);
+
+        const text = await response.text();
+        if (!text) {
+          throw new Error("Empty response from server");
+        }
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+          console.error("Response text:", text);
+          throw new Error("Invalid JSON response from server");
+        }
+
+        const productsArray = Array.isArray(data) ? data : [];
+        setProducts(productsArray);
         setError(null);
-        onLoaded();
+        onLoaded(productsArray);
       } catch (error) {
         console.error("Error fetching products:", error);
         setError(error.message);

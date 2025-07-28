@@ -10,7 +10,7 @@ const { getPlatformById } = require("@/lib/queries");
  */
 async function GET(request, { params }) {
   const { id } = await params;
-
+  console.log("id", id);
   try {
     const platform = await getPlatformById(id);
     if (!platform) {
