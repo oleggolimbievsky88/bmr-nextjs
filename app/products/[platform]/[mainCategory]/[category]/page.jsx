@@ -9,6 +9,12 @@ import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function CategoryPage({ params }) {
   const { platform, mainCategory, category } = use(params);
+  console.log(
+    "DEBUG: URL params - category:",
+    category,
+    "type:",
+    typeof category
+  );
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -17,6 +23,8 @@ export default function CategoryPage({ params }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    setFeaturedProducts([]); // Clear immediately when category changes
+    setLoading(true);
     /*
       This useEffect runs whenever the platform, mainCategory, or category changes.
       It defines and calls an async function, fetchData, which does the following:
@@ -67,12 +75,24 @@ export default function CategoryPage({ params }) {
         const prodRes = await fetch(`/api/products?${query}`);
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const products = await prodRes.json();
+        console.log("API Response:", products);
+        console.log("Products array:", products.products);
         setFeaturedProducts(products.products || []);
+        console.log("Setting featuredProducts to:", products.products || []);
+        console.log(
+          "Current featuredProducts:",
+          featuredProducts.map((p) => ({ id: p.ProductID, catid: p.CatID }))
+        );
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
+
+      console.log(
+        "Current featuredProducts:",
+        featuredProducts.map((p) => ({ id: p.ProductID, catid: p.CatID }))
+      );
     };
     fetchData();
   }, [platform, mainCategory, category]);
@@ -136,7 +156,10 @@ export default function CategoryPage({ params }) {
               selectedProductType={featuredProducts.catId}
               selectedMainCatSlug={mainCategory}
               selectedCatSlug={category}
+              selectedCatId={Number(category)} // Convert string to number
             />
+            console.log("DEBUG: Passing selectedCatId to ShopSidebarleft:",
+            category);
           </section>
         )}
 

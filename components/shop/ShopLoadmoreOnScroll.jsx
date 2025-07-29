@@ -56,12 +56,19 @@ export default function ShopLoadmoreOnScroll({
 
   // Initial load
   useEffect(() => {
-    setAllproducts([]);
-    setPage(1);
-    setLoaded(false);
-    fetchProducts(1);
+    if (initialProducts && initialProducts.length > 0) {
+      // Use the products passed from parent
+      setAllproducts(initialProducts);
+      setLoaded(true); // Don't try to fetch more
+    } else {
+      // Fetch products if none provided
+      setAllproducts([]);
+      setPage(1);
+      setLoaded(false);
+      fetchProducts(1);
+    }
     // eslint-disable-next-line
-  }, [platform, mainCategory, category]);
+  }, [platform, mainCategory, category, initialProducts]);
 
   // Infinite scroll observer
   useEffect(() => {

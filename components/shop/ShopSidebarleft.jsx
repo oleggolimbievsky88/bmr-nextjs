@@ -17,7 +17,7 @@ export default function ShopSidebarleft({
   // Determine what to show in the sidebar and main content
   const sidebarMainCategories = mainCategories;
   const sidebarCategories = isMainCategory ? [] : categories;
-
+  console.log("selectedCatId", selectedCatId);
   return (
     <>
       <section className="flat-spacing-1">
@@ -31,7 +31,7 @@ export default function ShopSidebarleft({
               categories={sidebarCategories}
               products={products}
               selectedMainCatId={isMainCategory ? selectedMainCatId : null}
-              selectedCatId={!isMainCategory ? selectedCatId : null}
+              selectedCatId={selectedCatId}
               platform={platform}
               isMainCategory={isMainCategory}
               selectedMainCatSlug={selectedMainCatSlug}

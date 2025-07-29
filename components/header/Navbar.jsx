@@ -1,30 +1,17 @@
 "use client";
 
-
-
-
 import Link from "next/link";
 import React from "react";
 
-import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { products1 } from "@/data/products";
-import { ProductCard } from "../shopCards/ProductCard";
-import { Navigation } from "swiper/modules";
 import {
   allPagesLinks,
   blogLinks,
-  homePage,
   productDetailPages,
-  productsPages,
   fordLinks,
   moparLinks,
   gmLateModelLinks,
-  gmMidMuscleLinks,
-  gmClassicMuscleLinks
 } from "@/data/menu";
 import { usePathname } from "next/navigation";
-import { homedir } from "os";
 
 export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
   const pathname = usePathname();
@@ -70,7 +57,6 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
   };
   return (
     <>
-      {" "}
       <li className={`menu-item`}>
         <a href="/" className={`item-link  ${Linkfs}`}>
           Home
@@ -169,28 +155,28 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
         </a>
         <div className="sub-menu links-default">
           <ul className="menu-list">
-          {gmLateModelLinks.map((menuItem, index) => (
-                  <div key={index} className="col-lg-2">
-                    <div className="mega-menu-item">
-                      <div className="menu-heading">{menuItem.heading}</div>
-                      <ul className="menu-list">
-                        {menuItem.links.map((linkItem, linkIndex) => (
-                          <li key={linkIndex}>
-                            <Link
-                              href={linkItem.href}
-                              className={`menu-link-text link position-relative  ${
-                                isMenuActive(linkItem) ? "activeMenu" : ""
-                              }`}
-                            >
-                              {linkItem.text}
-                              {linkItem.extra}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                ))}
+            {gmLateModelLinks.map((menuItem, index) => (
+              <div key={index} className="col-lg-2">
+                <div className="mega-menu-item">
+                  <div className="menu-heading">{menuItem.heading}</div>
+                  <ul className="menu-list">
+                    {menuItem.links.map((linkItem, linkIndex) => (
+                      <li key={linkIndex}>
+                        <Link
+                          href={linkItem.href}
+                          className={`menu-link-text link position-relative  ${
+                            isMenuActive(linkItem) ? "activeMenu" : ""
+                          }`}
+                        >
+                          {linkItem.text}
+                          {linkItem.extra}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
           </ul>
         </div>
       </li>

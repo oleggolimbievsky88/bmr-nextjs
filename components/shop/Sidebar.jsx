@@ -11,15 +11,11 @@ export default function ({
   products = [],
   platform = "",
   selectedMainCatId = null,
-  selectedCatId = null,
   selectedMainCatSlug = null,
   selectedCatSlug = null, // NEW
+  selectedCatId = null,
   onCategorySelect = () => {}, // NEW
 }) {
-  console.log("selectedMainCatId", selectedMainCatId);
-  console.log("selectedCatId", selectedCatId);
-  console.log("Platform in Sidebar:", platform);
-  console.log("selectedMainCatSlug", selectedMainCatSlug);
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
       <div className="widget-facet wd-categories">
