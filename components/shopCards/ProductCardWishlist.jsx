@@ -20,24 +20,28 @@ export const ProductCardWishlist = ({ product }) => {
     <div className="card-product fl-item" key={product.id}>
       <div className="card-product-wrapper">
         <Link href={`/product-detail/${product.id}`} className="product-img">
-          <Image
-            className="lazyload img-product"
-            data-src={product.imgSrc}
-            src={currentImage}
-            alt="image-product"
-            width={720}
-            height={1005}
-          />
-          <Image
-            className="lazyload img-hover"
-            data-src={
-              product.imgHoverSrc ? product.imgHoverSrc : product.imgSrc
-            }
-            src={product.imgHoverSrc ? product.imgHoverSrc : product.imgSrc}
-            alt="image-product"
-            width={720}
-            height={1005}
-          />
+          {currentImage && (
+            <Image
+              className="lazyload img-product"
+              data-src={product.imgSrc}
+              src={currentImage}
+              alt="image-product"
+              width={720}
+              height={1005}
+            />
+          )}
+          {(product.imgHoverSrc || product.imgSrc) && (
+            <Image
+              className="lazyload img-hover"
+              data-src={
+                product.imgHoverSrc ? product.imgHoverSrc : product.imgSrc
+              }
+              src={product.imgHoverSrc ? product.imgHoverSrc : product.imgSrc}
+              alt="image-product"
+              width={720}
+              height={1005}
+            />
+          )}
         </Link>
         
 
@@ -74,14 +78,16 @@ export const ProductCardWishlist = ({ product }) => {
               >
                 <span className="tooltip">{color.name}</span>
                 <span className={`swatch-value ${color.colorClass}`} />
-                <Image
-                  className="lazyload"
-                  data-src={color.imgSrc}
-                  src={color.imgSrc}
-                  alt="image-product"
-                  width={720}
-                  height={1005}
-                />
+                {color.imgSrc && (
+                  <Image
+                    className="lazyload"
+                    data-src={color.imgSrc}
+                    src={color.imgSrc}
+                    alt="image-product"
+                    width={720}
+                    height={1005}
+                  />
+                )}
               </li>
             ))}
           </ul>

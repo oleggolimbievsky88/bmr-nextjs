@@ -22,28 +22,32 @@ export default function ProductCard6({ product }) {
     >
       <div className="card-product-wrapper">
         <Link href={`/product-detail/${product.id}`} className="product-img">
-          <Image
-            className="lazyload img-product"
-            src={currentImage}
-            alt="image-product"
-            width={533}
-            height={399}
-          />
-          <Image
-            className="lazyload img-hover"
-            src={product.imgHoverSrc}
-            alt="image-product"
-            width={533}
-            height={399}
-          />
+          {currentImage && (
+            <Image
+              className="lazyload img-product"
+              src={currentImage}
+              alt="image-product"
+              width={533}
+              height={399}
+            />
+          )}
+          {product.imgHoverSrc && (
+            <Image
+              className="lazyload img-hover"
+              src={product.imgHoverSrc}
+              alt="image-product"
+              width={533}
+              height={399}
+            />
+          )}
         </Link>
 
         <div className="on-sale-wrap text-end">
           <div
-            className={`on-sale-item 
-              ${product.populer ? "best-seller" : ""} 
-              ${product.new ? "new" : ""} 
-              ${product.recommend ? "recommend" : ""} 
+            className={`on-sale-item
+              ${product.populer ? "best-seller" : ""}
+              ${product.new ? "new" : ""}
+              ${product.recommend ? "recommend" : ""}
             `}
           >
             {" "}
@@ -64,7 +68,7 @@ export default function ProductCard6({ product }) {
           {product.title}
         </Link>
         <ul className="list-color-product">
-          {product.colors.map((color, idx) => (
+          {product.colors?.map((color, idx) => (
             <li
               key={idx}
               className={`list-color-item color-swatch ${
@@ -74,14 +78,16 @@ export default function ProductCard6({ product }) {
             >
               <span className="tooltip">{color.color}</span>
               <span className={`swatch-value ${color.bgColor}`} />
-              <Image
-                className="lazyload"
-                data-src={color.image}
-                src={color.image}
-                alt="image-product"
-                width={533}
-                height={399}
-              />
+              {color.image && (
+                <Image
+                  className="lazyload"
+                  data-src={color.image}
+                  src={color.image}
+                  alt="image-product"
+                  width={533}
+                  height={399}
+                />
+              )}
             </li>
           ))}
         </ul>
