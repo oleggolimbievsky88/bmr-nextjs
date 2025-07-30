@@ -40,7 +40,6 @@ export default function ProductCard10({ product }) {
             />
           )}
         </Link>
-        
       </div>
       <div className="card-product-info">
         <Link href={`/product-detail/${product.id}`} className="title link">

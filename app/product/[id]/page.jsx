@@ -24,7 +24,7 @@ export const metadata = {
 export default async function ProductDetails({ params }) {
   const { id } = await params;
 
-  const res = await fetch(`/api/product/${id}`, {
+  const res = await fetch(`/api/products/${id}`, {
     cache: "no-store",
   });
 
@@ -33,7 +33,8 @@ export default async function ProductDetails({ params }) {
     return <p>Product not found.</p>;
   }
 
-  const product = await res.json();
+  const data = await res.json();
+  const product = data.product;
 
   // Helper to slugify for URLs
   const slugify = (str) =>

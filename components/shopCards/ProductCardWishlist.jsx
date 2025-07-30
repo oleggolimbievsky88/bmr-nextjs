@@ -43,9 +43,7 @@ export const ProductCardWishlist = ({ product }) => {
             />
           )}
         </Link>
-        
 
-        
         {product.countdown && (
           <div className="countdown-box">
             <div className="js-countdown">

@@ -3,6 +3,8 @@
 import { NextResponse } from "next/server";
 import { getProductById } from "@/lib/queries"; // Import the query function
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request, context) {
   const { id } = await context.params;
   try {
@@ -47,7 +49,7 @@ export async function GET(request, context) {
     // Add the images array to the product object
     product.images = images;
 
-    return NextResponse.json(product); // Return the modified product object
+    return NextResponse.json({ product }); // Return the product wrapped in an object
   } catch (error) {
     console.error(`Failed to fetch product with id ${id}:`, error);
     return NextResponse.json({ error: "Product not found" }, { status: 500 });
