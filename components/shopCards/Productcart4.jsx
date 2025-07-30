@@ -40,53 +40,7 @@ export default function Productcard4({ product }) {
             height="1005"
           />
         </Link>
-        <div className="list-product-btn column-right">
-          <a
-            onClick={() => addToWishlist(product.id)}
-            className="box-icon bg_white wishlist btn-icon-action round"
-          >
-            <span
-              className={`icon icon-heart ${
-                isAddedtoWishlist(product.id) ? "added" : ""
-              }`}
-            ></span>
-            <span className="tooltip">
-              {isAddedtoWishlist(product.id)
-                ? "Already Wishlisted"
-                : "Add to Wishlist"}
-            </span>
-            <span className="icon icon-delete"></span>
-          </a>
-          <a
-            href="#compare"
-            onClick={() => addToCompareItem(product.id)}
-            data-bs-toggle="offcanvas"
-            aria-controls="offcanvasLeft"
-            className="box-icon bg_white compare btn-icon-action round"
-          >
-            <span
-              className={`icon icon-compare ${
-                isAddedtoCompareItem(product.id) ? "added" : ""
-              }`}
-            ></span>
-            <span className="tooltip">
-              {" "}
-              {isAddedtoCompareItem(product.id)
-                ? "Already Compared"
-                : "Add to Compare"}
-            </span>
-            <span className="icon icon-check"></span>
-          </a>
-          <a
-            href="#quick_view"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon bg_white quickview tf-btn-loading round"
-          >
-            <span className="icon icon-view"></span>
-            <span className="tooltip">Quick View</span>
-          </a>
-        </div>
+        
         {product.sizes && (
           <div className="size-list">
             {product.sizes.map((size) => (

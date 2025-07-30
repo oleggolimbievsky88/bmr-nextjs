@@ -38,53 +38,7 @@ export const ProductCard26 = ({ product }) => {
             height={1005}
           />
         </Link>
-        <div className="list-product-btn">
-          <a
-            onClick={() => addToWishlist(product.id)}
-            className="box-icon wishlist bg_white round btn-icon-action"
-          >
-            <span
-              className={`icon icon-heart ${
-                isAddedtoWishlist(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {isAddedtoWishlist(product.id)
-                ? "Already Wishlisted"
-                : "Add to Wishlist"}
-            </span>
-            <span className="icon icon-delete" />
-          </a>
-          <a
-            href="#compare"
-            data-bs-toggle="offcanvas"
-            aria-controls="offcanvasLeft"
-            onClick={() => addToCompareItem(product.id)}
-            className="box-icon wishlist bg_white round btn-icon-action"
-          >
-            <span
-              className={`icon icon-compare ${
-                isAddedtoCompareItem(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {" "}
-              {isAddedtoCompareItem(product.id)
-                ? "Already Compared"
-                : "Add to Compare"}
-            </span>
-            <span className="icon icon-check" />
-          </a>
-          <a
-            href="#quick_view"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon wishlist bg_white round btn-icon-action"
-          >
-            <span className="icon icon-view" />
-            <span className="tooltip">Quick View</span>
-          </a>
-        </div>
+        
         {product.countdown && (
           <div className="countdown-box">
             <div className="js-countdown">

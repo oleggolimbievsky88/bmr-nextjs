@@ -36,66 +36,7 @@ export default function ProductCard13({ product }) {
             height={765}
           />
         </Link>
-        <div className="list-product-btn absolute-2">
-          <a
-            href="#shoppingCart"
-            data-bs-toggle="modal"
-            className="box-icon bg_white quick-add tf-btn-loading"
-            onClick={() => addProductToCart(product.id)}
-          >
-            <span className="icon icon-bag" />
-            <span className="tooltip">
-              {isAddedToCartProducts(product.id)
-                ? "Already Added"
-                : "Add to cart"}
-            </span>
-          </a>
-          <a
-            onClick={() => addToWishlist(product.id)}
-            className="box-icon bg_white wishlist btn-icon-action"
-          >
-            <span
-              className={`icon icon-heart ${
-                isAddedtoWishlist(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {isAddedtoWishlist(product.id)
-                ? "Already Wishlisted"
-                : "Add to Wishlist"}
-            </span>
-            <span className="icon icon-delete" />
-          </a>
-          <a
-            href="#compare"
-            data-bs-toggle="offcanvas"
-            aria-controls="offcanvasLeft"
-            onClick={() => addToCompareItem(product.id)}
-            className="box-icon bg_white compare btn-icon-action"
-          >
-            <span
-              className={`icon icon-compare ${
-                isAddedtoCompareItem(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {" "}
-              {isAddedtoCompareItem(product.id)
-                ? "Already Compared"
-                : "Add to Compare"}
-            </span>
-            <span className="icon icon-check" />
-          </a>
-          <a
-            href="#quick_view"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon bg_white quickview tf-btn-loading"
-          >
-            <span className="icon icon-view" />
-            <span className="tooltip">Quick View</span>
-          </a>
-        </div>
+        
       </div>
       <div className="card-product-info">
         <Link href={`/product-detail/${product.id}`} className="title link">

@@ -37,62 +37,7 @@ export default function ProductCard27({ product }) {
             alt={product.alt}
           />
         </a>
-        <div className="list-product-btn absolute-2">
-          <a
-            href="#quick_add"
-            data-bs-toggle="modal"
-            className="box-icon bg_white quick-add tf-btn-loading"
-            onClick={() => setQuickAddItem(product.id)}
-          >
-            <span className="icon icon-bag" />
-            <span className="tooltip">Quick Add</span>
-          </a>
-          <a
-            onClick={() => addToWishlist(product.id)}
-            className="box-icon bg_white wishlist btn-icon-action"
-          >
-            <span
-              className={`icon icon-heart ${
-                isAddedtoWishlist(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {isAddedtoWishlist(product.id)
-                ? "Already Wishlisted"
-                : "Add to Wishlist"}
-            </span>
-            <span className="icon icon-delete" />
-          </a>
-          <a
-            href="#compare"
-            data-bs-toggle="offcanvas"
-            aria-controls="offcanvasLeft"
-            onClick={() => addToCompareItem(product.id)}
-            className="box-icon bg_white compare btn-icon-action"
-          >
-            <span
-              className={`icon icon-compare ${
-                isAddedtoCompareItem(product.id) ? "added" : ""
-              }`}
-            />
-            <span className="tooltip">
-              {" "}
-              {isAddedtoCompareItem(product.id)
-                ? "Already Compared"
-                : "Add to Compare"}
-            </span>
-            <span className="icon icon-check" />
-          </a>
-          <a
-            href="#quick_view"
-            data-bs-toggle="modal"
-            onClick={() => setQuickViewItem(product)}
-            className="box-icon bg_white quickview tf-btn-loading"
-          >
-            <span className="icon icon-view" />
-            <span className="tooltip">Quick View</span>
-          </a>
-        </div>
+        
       </div>
       <div className="card-product-info text-center">
         <a href={`/product-detail/${product.id}`} className="title link">

@@ -41,63 +41,8 @@ export default function Productcart3({ product }) {
             height="1005"
           />
         </Link>
-        <div className="list-product-btn column-right">
-          <a
-            onClick={() => addToWishlist(product.id)}
-            className="box-icon bg_white wishlist btn-icon-action"
-          >
-            <span
-              className={`icon icon-heart ${
-                isAddedtoWishlist(product.id) ? "added" : ""
-              }`}
-            ></span>
-            <span className="tooltip">
-              {isAddedtoWishlist(product.id)
-                ? "Already Wishlisted"
-                : "Add to Wishlist"}
-            </span>
-            <span className="icon icon-delete"></span>
-          </a>
-          <a
-            data-bs-toggle="offcanvas"
-            href="#compare"
-            aria-controls="offcanvasLeft"
-            onClick={() => addToCompareItem(product.id)}
-            className="box-icon bg_white compare btn-icon-action"
-          >
-            <span
-              className={`icon icon-compare ${
-                isAddedtoCompareItem(product.id) ? "added" : ""
-              }`}
-            ></span>
-            <span className="tooltip">
-              {isAddedtoCompareItem(product.id)
-                ? "Already Compared"
-                : "Add to Compare"}
-            </span>
-            <span className="icon icon-check"></span>
-          </a>
-          <a
-            href="#quick_view"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon bg_white quickview tf-btn-loading"
-          >
-            <span className="icon icon-view"></span>
-            <span className="tooltip">Quick View</span>
-          </a>
-        </div>
-        <div className="list-product-btn absolute-3">
-          <a
-            href="#quick_add"
-            onClick={() => setQuickAddItem(product.id)}
-            data-bs-toggle="modal"
-            className="box-icon quick-add style-2"
-          >
-            <span className="icon icon-bag"></span>
-            <span className="text">QUICK ADD</span>
-          </a>
-        </div>
+        
+        
         {product.sizes && (
           <div className="size-list style-2">
             {product.sizes.map((size) => (

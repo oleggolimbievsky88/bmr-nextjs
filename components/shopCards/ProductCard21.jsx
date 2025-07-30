@@ -34,60 +34,7 @@ export default function ProductCard21({ product }) {
           />
         </Link>
         {!product.preOrder && !product.soldOut && (
-          <div className="list-product-btn">
-            <a
-              href={product.quickAddLink}
-              data-bs-toggle="modal"
-              onClick={() => quickAddItem(product.id)}
-              className="box-icon bg_white quick-add tf-btn-loading"
-            >
-              <span className="icon icon-bag" />
-              <span className="tooltip">Quick Add</span>
-            </a>
-            <a
-              onClick={() => addToWishlist(product.id)}
-              className="box-icon bg_white wishlist btn-icon-action"
-            >
-              <span
-                className={`icon icon-heart ${
-                  isAddedtoWishlist(product.id) ? "added" : ""
-                }`}
-              />
-              <span className="tooltip">
-                {isAddedtoWishlist(product.id)
-                  ? "Already Wishlisted"
-                  : "Add to Wishlist"}
-              </span>
-              <span className="icon icon-delete" />
-            </a>
-            <a
-              href={product.compareLink}
-              data-bs-toggle="offcanvas"
-              aria-controls="offcanvasLeft"
-              className="box-icon bg_white compare btn-icon-action"
-            >
-              <span
-                className={`icon icon-compare ${
-                  isAddedtoCompareItem(product.id) ? "added" : ""
-                }`}
-              />
-              <span className="tooltip">
-                {" "}
-                {isAddedtoCompareItem(product.id)
-                  ? "Already Compared"
-                  : "Add to Compare"}
-              </span>
-            </a>
-            <a
-              href={product.quickViewLink}
-              onClick={() => setQuickViewItem(product)}
-              data-bs-toggle="modal"
-              className="box-icon bg_white quickview tf-btn-loading"
-            >
-              <span className="icon icon-view" />
-              <span className="tooltip">Quick View</span>
-            </a>
-          </div>
+          
         )}
         {product.sizes?.length > 0 ? (
           <div className="size-list">
