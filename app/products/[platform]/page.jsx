@@ -14,7 +14,7 @@ export default async function PlatformPage({ params }) {
   try {
     // Fetch platform info and main categories
     const platformRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/platforms/${platform}`,
+      `/api/platforms/${platform}`,
       { cache: "no-store" }
     );
     if (!platformRes.ok) throw new Error("Failed to fetch platform info");
@@ -24,9 +24,7 @@ export default async function PlatformPage({ params }) {
 
     // Fetch initial products for this platform
     const productsRes = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL || ""
-      }/api/products?page=1&limit=8&platform=${platform}`,
+      `/api/products?page=1&limit=8&platform=${platform}`,
       { cache: "no-store" }
     );
     if (productsRes.ok) {
