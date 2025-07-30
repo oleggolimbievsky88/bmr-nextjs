@@ -149,6 +149,8 @@ export default function CategoryGrid({
           const categoryImage = category.image || category.CatImage;
           const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
           const href = isSubCategory
+            ? `/products/${platform}/${mainCategory}/${categorySlug}`
+            : mainCategory
             ? `/products/${platform}/${mainCategory}/${categoryId}`
             : `/products/${platform}/${categorySlug}`;
 

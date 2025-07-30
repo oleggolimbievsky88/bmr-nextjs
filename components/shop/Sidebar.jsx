@@ -70,6 +70,7 @@ export default function ({
             <ul className="list-categoris mb_36">
               {categories.map((category, index) => {
                 const catId = category.id || category.CatID;
+                const catSlug = category.CatSlug || category.slug;
                 return (
                   <li
                     key={catId || index}
@@ -79,7 +80,7 @@ export default function ({
                     onClick={() => onCategorySelect(catId)}
                   >
                     <Link
-                      href={`/products/${platform.slug}/${selectedMainCatSlug}/${catId}`}
+                      href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
                     >
                       <span>{category.name || category.CatName}</span>&nbsp;
                       <span>({category.productCount || 0})</span>

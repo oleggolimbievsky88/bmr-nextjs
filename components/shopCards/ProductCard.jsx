@@ -69,7 +69,7 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
         </span>
         <div
           style={{
-            color: "#888",
+            color: "#202020",
             fontSize: "0.95em",
             margin: "2px 0 2px 0",
             lineHeight: 1,

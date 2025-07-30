@@ -8,6 +8,7 @@ export default async function PlatformPage({ params }) {
   const { platform } = await params;
   let platformInfo = null;
   let mainCategories = [];
+  let initialProducts = [];
   let error = null;
 
   try {
@@ -20,6 +21,18 @@ export default async function PlatformPage({ params }) {
     const platformData = await platformRes.json();
     platformInfo = platformData.platformInfo || {};
     mainCategories = platformData.mainCategories || [];
+
+    // Fetch initial products for this platform
+    const productsRes = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_API_URL || ""
+      }/api/products?page=1&limit=8&platform=${platform}`,
+      { cache: "no-store" }
+    );
+    if (productsRes.ok) {
+      const productsData = await productsRes.json();
+      initialProducts = productsData.products || [];
+    }
   } catch (err) {
     error = err.message;
   }
@@ -59,7 +72,7 @@ export default async function PlatformPage({ params }) {
           />
         </section>
 
-        {/* Sidebar and Infinite Scroll */}
+        {/* Sidebar and Products */}
         <section
           className="mb-5 mt-10"
           style={{
@@ -71,6 +84,7 @@ export default async function PlatformPage({ params }) {
         >
           <ShopSidebarleft
             platform={platformInfo}
+            products={initialProducts}
             isMainCategory={true}
             mainCategories={mainCategories}
             categories={mainCategories}

@@ -30,7 +30,10 @@ export default function PlatformHeader({
           <h1 className="platform-header-title">
             {yearDisplay}
             <br />
-            {platformData.Name}
+            {platformData.Name}{" "}
+            {platformData.mainCategory &&
+              platformData.mainCategory.charAt(0).toUpperCase() +
+                platformData.mainCategory.slice(1)}
           </h1>
         </div>
       </div>

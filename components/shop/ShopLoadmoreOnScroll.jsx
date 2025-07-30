@@ -59,16 +59,31 @@ export default function ShopLoadmoreOnScroll({
     if (initialProducts && initialProducts.length > 0) {
       // Use the products passed from parent
       setAllproducts(initialProducts);
-      setLoaded(true); // Don't try to fetch more
+      // If we have exactly PAGE_SIZE or more products initially, there might be more to load
+      // Only mark as loaded if we have fewer than PAGE_SIZE products
+      if (initialProducts.length < PAGE_SIZE) {
+        setLoaded(true);
+      } else {
+        // Start from the next page based on how many products we already have
+        const nextPageNum = Math.floor(initialProducts.length / PAGE_SIZE) + 1;
+        setPage(nextPageNum);
+        setLoaded(false);
+      }
     } else {
-      // Fetch products if none provided
-      setAllproducts([]);
-      setPage(1);
-      setLoaded(false);
-      fetchProducts(1);
+      // Only fetch if we don't have initial products and have specific filters
+      if (platform && (mainCategory || category)) {
+        setAllproducts([]);
+        setPage(1);
+        setLoaded(false);
+        fetchProducts(1);
+      } else if (platform && !mainCategory && !category) {
+        // Platform-only page without initial products - don't auto-fetch
+        setAllproducts([]);
+        setLoaded(true);
+      }
     }
     // eslint-disable-next-line
-  }, [platform, mainCategory, category, initialProducts]);
+  }, [initialProducts, platform, mainCategory, category]);
 
   // Infinite scroll observer
   useEffect(() => {

@@ -10,7 +10,6 @@ import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default function MainCategoryPage({ params }) {
   const { platform, mainCategory } = use(params);
-  console.log("🛠 Params received:", params);
 
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
@@ -29,7 +28,9 @@ export default function MainCategoryPage({ params }) {
 
         // Fetch subcategories and products for the selected main category
         const res = await fetch(`/api/platforms/${platform}/${mainCategory}`);
-        if (!res.ok) throw new Error("Failed to fetch data");
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
         const { categories, products, platformInfo } = await res.json();
         setCategories(categories);
         setProducts(products);
@@ -52,10 +53,8 @@ export default function MainCategoryPage({ params }) {
     return <div className="text-center py-5 text-danger">{error}</div>;
   }
 
-  console.log("platformInfo:", platformInfo);
-
   return (
-    <div className="p-0 m-0">
+    <div className="p-0 m-0 container-fluid">
       <PlatformHeader
         platformData={{
           HeaderImage: platformInfo?.headerImage,
@@ -64,6 +63,7 @@ export default function MainCategoryPage({ params }) {
           EndYear: platformInfo?.endYear,
           Image: platformInfo?.image,
           slug: platformInfo?.slug,
+          mainCategory: mainCategory ? mainCategory : null,
         }}
       />
 
@@ -103,19 +103,23 @@ export default function MainCategoryPage({ params }) {
             }}
           >
             {/* <div className="text-center mb-4">
-              <h2 className="display-6 position-relative d-inline-block header-main-title">
-                Featured Products
+              <h6 className="position-relative">
                 <div
-                  className="position-absolute start-0 end-0 bottom-0"
+                  className="pt-1 pb-0 mt-1 mb-0 fs-3"
                   style={{
-                    height: "4px",
-                    backgroundColor: "var(--bmr-red)",
-                    width: "80%",
+                    borderBottom: "1px solid #ccc",
+                    width: "20%",
+                    textAlign: "center",
                     margin: "0 auto",
-                    marginTop: "10px",
+                    color: "#202020",
                   }}
-                ></div>
-              </h2>
+                >
+                  <h6 className="position-relative  text-capitalize">
+                    {mainCategory}
+                  </h6>
+                </div>
+                <div className="position-absolute start-0 end-0 bottom-0"></div>
+              </h6>
             </div> */}
 
             <ShopSidebarleft

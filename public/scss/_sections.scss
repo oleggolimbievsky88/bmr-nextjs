@@ -2946,7 +2946,7 @@
 
 .cate-item.active > a {
 	font-weight: bold;
-	color: black;
+	color: var(--primary);
 	border-radius: 4px;
     text-decoration: underline;
 }

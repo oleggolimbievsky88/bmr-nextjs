@@ -9,6 +9,11 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+import {
+  getProductById,
+  getProductsByBodyAndCat,
+  getCategorySlugById,
+} from "@/lib/queries";
 
 export const metadata = {
   title:
@@ -81,17 +86,13 @@ export default async function ProductDetails({ params }) {
                   <i className="icon icon-arrow-right" />
                 </>
               )}
-              {product.CategoryName && (
-                <>
-                  <Link
-                    href={`/products/${platformSlug}/${mainCategorySlug}/${categorySlug}`}
-                    className="text"
-                  >
-                    {product.CategoryName}
-                  </Link>
-                  <i className="icon icon-arrow-right" />
-                </>
-              )}
+              <Link
+                href={`/products/${platformSlug}/${mainCategorySlug}/${categorySlug}`}
+                className="text"
+              >
+                {product.CategoryName || "Product Type"}
+              </Link>
+              <i className="icon icon-arrow-right" />
               <span className="text">
                 {product.ProductName ? product.ProductName : "Product Title"}
               </span>
