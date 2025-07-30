@@ -6,7 +6,12 @@ import { getProductById } from "@/lib/queries"; // Import the query function
 export const dynamic = "force-dynamic";
 
 export async function GET(request, context) {
-  const { id } = await context.params;
+  try {
+    const { id } = await context.params;
+    
+    if (!id) {
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+    }
   try {
     const product = await getProductById(id); // Fetch product by ID
 
@@ -53,5 +58,9 @@ export async function GET(request, context) {
   } catch (error) {
     console.error(`Failed to fetch product with id ${id}:`, error);
     return NextResponse.json({ error: "Product not found" }, { status: 500 });
+  }
+  } catch (error) {
+    console.error("API route error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
