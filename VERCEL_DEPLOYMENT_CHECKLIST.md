@@ -1,11 +1,13 @@
 # Vercel Deployment Checklist
 
 ## Environment Variables
-Ensure these are set in your Vercel project:
-- `MYSQL_HOST`
-- `MYSQL_USER`
-- `MYSQL_PASSWORD`
-- `MYSQL_DATABASE`
+Ensure these are set in your Vercel project for **Preview AND Production**:
+- `MYSQL_HOST` - Your database hostname
+- `MYSQL_USER` - Database username
+- `MYSQL_PASSWORD` - Database password
+- `MYSQL_DATABASE` - bmrsuspension
+- `MYSQL_PORT` - 3306 (if different)
+- `MYSQL_SSL` - true (for production databases)
 
 ## Database Configuration
 - ✅ Use connection pooling (already implemented)
@@ -17,6 +19,12 @@ Ensure these are set in your Vercel project:
 - ✅ Fixed async params destructuring
 - ✅ Consistent error handling with NextResponse
 - ✅ Proper parameter validation
+
+## Template Data Cleanup
+- ✅ Removed template demo data from Context provider
+- ✅ Updated cart functionality to use dynamic API calls
+- ✅ Fixed product ID references (ProductID vs id)
+- ✅ Enhanced individual product API route
 
 ## Common Vercel Issues & Solutions
 

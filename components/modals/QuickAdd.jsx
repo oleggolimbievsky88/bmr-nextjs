@@ -5,7 +5,7 @@ import Link from "next/link";
 import Quantity from "../shopDetails/Quantity";
 import { useContextElement } from "@/context/Context";
 
-import { allProducts } from "@/data/products";
+// Removed static product import
 import { colors, sizeOptions } from "@/data/singleProductOptions";
 export default function QuickAdd() {
   const {
@@ -15,11 +15,22 @@ export default function QuickAdd() {
     addToCompareItem,
     isAddedtoCompareItem,
   } = useContextElement();
-  const [item, setItem] = useState(allProducts[0]);
+  const [item, setItem] = useState({ id: 1, title: "Loading...", price: 0 });
   useEffect(() => {
-    const filtered = allProducts.filter((el) => el.id == quickAddItem);
-    if (filtered) {
-      setItem(filtered[0]);
+    if (quickAddItem) {
+      // Fetch product data from API
+      const fetchProduct = async () => {
+        try {
+          const response = await fetch(`/api/product/${quickAddItem}`);
+          if (response.ok) {
+            const data = await response.json();
+            setItem(data.product || data);
+          }
+        } catch (error) {
+          console.error("Error fetching product:", error);
+        }
+      };
+      fetchProduct();
     }
   }, [quickAddItem]);
   const [currentColor, setCurrentColor] = useState(colors[0]);

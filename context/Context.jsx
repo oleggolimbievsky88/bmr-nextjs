@@ -1,5 +1,4 @@
 "use client";
-import { allProducts } from "@/data/products";
 import { openCartModal } from "@/utlis/openCartModal";
 // import { openCart } from "@/utlis/toggleCart";
 import React, { useEffect } from "react";
@@ -11,9 +10,13 @@ export const useContextElement = () => {
 
 export default function Context({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
-  const [wishList, setWishList] = useState([1, 2, 3]);
-  const [compareItem, setCompareItem] = useState([1, 2, 3]);
-  const [quickViewItem, setQuickViewItem] = useState(allProducts[0]);
+  const [wishList, setWishList] = useState([]);
+  const [compareItem, setCompareItem] = useState([]);
+  const [quickViewItem, setQuickViewItem] = useState({
+    ProductID: 1,
+    ProductName: "Loading...",
+    Price: "0.00"
+  });
   const [quickAddItem, setQuickAddItem] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
@@ -23,20 +26,27 @@ export default function Context({ children }) {
     setTotalPrice(subtotal);
   }, [cartProducts]);
 
-  const addProductToCart = (id, qty) => {
-    if (!cartProducts.filter((elm) => elm.id == id)[0]) {
-      const item = {
-        ...allProducts.filter((elm) => elm.id == id)[0],
-        quantity: qty ? qty : 1,
-      };
-      setCartProducts((pre) => [...pre, item]);
-      openCartModal();
-
-      // openCart();
+  const addProductToCart = async (productId, qty = 1) => {
+    if (!cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
+      try {
+        // Fetch product data from API
+        const response = await fetch(`/api/product/${productId}`);
+        if (response.ok) {
+          const productData = await response.json();
+          const item = {
+            ...productData.product,
+            quantity: qty,
+          };
+          setCartProducts((pre) => [...pre, item]);
+          openCartModal();
+        }
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+      }
     }
   };
-  const isAddedToCartProducts = (id) => {
-    if (cartProducts.filter((elm) => elm.id == id)[0]) {
+  const isAddedToCartProducts = (productId) => {
+    if (cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
       return true;
     }
     return false;

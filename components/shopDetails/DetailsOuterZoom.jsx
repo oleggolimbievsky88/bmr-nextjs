@@ -12,10 +12,10 @@ import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
 
 import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
-import { allProducts } from "@/data/products";
+// Removed static product import
 import { useContextElement } from "@/context/Context";
 
-export default function DetailsOuterZoom({ product = allProducts[0] }) {
+export default function DetailsOuterZoom({ product = { id: 1, title: "Loading...", price: 0, images: [] } }) {
   const [currentColor, setCurrentColor] = useState(colors[1]);
   const [currentSize, setCurrentSize] = useState(sizeOptions[1]);
 
