@@ -94,7 +94,11 @@ export default function QuickView() {
                   <h5>
                     <Link
                       className="link"
-                      href={`/product-detail/${quickViewItem.ProductID || quickViewItem.ProductID || quickViewItem.id}`}
+                      href={`/product-detail/${
+                        quickViewItem.ProductID ||
+                        quickViewItem.ProductID ||
+                        quickViewItem.id
+                      }`}
                     >
                       {quickViewItem.title}
                     </Link>
@@ -110,7 +114,7 @@ export default function QuickView() {
                   </div>
                 </div>
                 <div className="tf-product-info-price">
-                  <div className="price">${quickViewItem.price.toFixed(2)}</div>
+                  <div className="price">${quickViewItem.Price || quickViewItem.price || "0.00"}</div>
                 </div>
                 <div className="tf-product-description">
                   <p>
@@ -199,28 +203,48 @@ export default function QuickView() {
                     <a
                       href="#"
                       className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
-                      onClick={() => addProductToCart(quickViewItem.ProductID || quickViewItem.ProductID || quickViewItem.id)}
+                      onClick={() =>
+                        addProductToCart(
+                          quickViewItem.ProductID ||
+                            quickViewItem.ProductID ||
+                            quickViewItem.id
+                        )
+                      }
                     >
                       <span>
-                        {isAddedToCartProducts(quickViewItem.ProductID || quickViewItem.ProductID || quickViewItem.id)
+                        {isAddedToCartProducts(
+                          quickViewItem.ProductID ||
+                            quickViewItem.ProductID ||
+                            quickViewItem.id
+                        )
                           ? "Already Added - "
                           : "Add to cart - "}
                       </span>
                       <span className="tf-qty-price">
-                        ${quickViewItem.price.toFixed(2)}
+                        ${quickViewItem.Price || quickViewItem.price || "0.00"}
                       </span>
                     </a>
                     <a
-                      onClick={() => addToWishlist(quickViewItem.ProductID || quickViewItem.id)}
+                      onClick={() =>
+                        addToWishlist(
+                          quickViewItem.ProductID || quickViewItem.id
+                        )
+                      }
                       className="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist btn-icon-action"
                     >
                       <span
                         className={`icon icon-heart ${
-                          isAddedtoWishlist(quickViewItem.ProductID || quickViewItem.id) ? "added" : ""
+                          isAddedtoWishlist(
+                            quickViewItem.ProductID || quickViewItem.id
+                          )
+                            ? "added"
+                            : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoWishlist(quickViewItem.ProductID || quickViewItem.id)
+                        {isAddedtoWishlist(
+                          quickViewItem.ProductID || quickViewItem.id
+                        )
                           ? "Already Wishlisted"
                           : "Add to Wishlist"}
                       </span>
@@ -230,17 +254,27 @@ export default function QuickView() {
                       href="#compare"
                       data-bs-toggle="offcanvas"
                       aria-controls="offcanvasLeft"
-                      onClick={() => addToCompareItem(quickViewItem.ProductID || quickViewItem.id)}
+                      onClick={() =>
+                        addToCompareItem(
+                          quickViewItem.ProductID || quickViewItem.id
+                        )
+                      }
                       className="tf-product-btn-wishlist hover-tooltip box-icon bg_white compare btn-icon-action"
                     >
                       <span
                         className={`icon icon-compare ${
-                          isAddedtoCompareItem(quickViewItem.ProductID || quickViewItem.id) ? "added" : ""
+                          isAddedtoCompareItem(
+                            quickViewItem.ProductID || quickViewItem.id
+                          )
+                            ? "added"
+                            : ""
                         }`}
                       />
                       <span className="tooltip">
                         {" "}
-                        {isAddedtoCompareItem(quickViewItem.ProductID || quickViewItem.id)
+                        {isAddedtoCompareItem(
+                          quickViewItem.ProductID || quickViewItem.id
+                        )
                           ? "Already Compared"
                           : "Add to Compare"}
                       </span>
@@ -264,7 +298,11 @@ export default function QuickView() {
                 </div>
                 <div>
                   <Link
-                    href={`/product-detail/${quickViewItem.ProductID || quickViewItem.ProductID || quickViewItem.id}`}
+                    href={`/product-detail/${
+                      quickViewItem.ProductID ||
+                      quickViewItem.ProductID ||
+                      quickViewItem.id
+                    }`}
                     className="tf-btn fw-6 btn-line"
                   >
                     View full details
