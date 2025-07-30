@@ -1,13 +1,25 @@
 import { getCategoriesByMainCatId } from "@/lib/queries";
+import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
-  const { mainCatId } = params;
+export const dynamic = "force-dynamic";
+
+export async function GET(request, { params }) {
   try {
-    const categories = await getCategoriesByMainCatId(mainCatId);
-    return new Response(JSON.stringify(categories), { status: 200 });
+    const { catId } = await params;
+
+    if (!catId) {
+      return NextResponse.json(
+        { error: "Category ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const categories = await getCategoriesByMainCatId(catId);
+    return NextResponse.json(categories, { status: 200 });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ message: "Failed to load categories." }),
+    console.error("Error fetching categories:", error);
+    return NextResponse.json(
+      { error: "Failed to load categories" },
       { status: 500 }
     );
   }
