@@ -13,6 +13,8 @@ import {
 } from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
+import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
+
 export default function Details6({ product }) {
   const [currentColor, setCurrentColor] = useState(colors[0]);
   const [currentGrease, setCurrentGrease] = useState(greaseOptions[0]);
@@ -26,8 +28,8 @@ export default function Details6({ product }) {
           <div className="row">
             <div className="col-md-6">
               <div className="tf-product-media-wrap thumbs-bottom sticky-top">
-                <div className="thumbs-slider">
-                  <Slider3 productId={product.ProductID} />
+                <div className="thumbs-slider" style={{ maxHeight: 600 }}>
+                  <Slider3BottomThumbs productId={product.ProductID} />
                 </div>
               </div>
             </div>
@@ -39,8 +41,18 @@ export default function Details6({ product }) {
                     <h5>{product?.ProductName}</h5>
                   </div>
                   <div className="tf-breadcrumb-list">
-                    <span className="text">
-                      Part Number: {product.PartNumber}
+                    <span>
+                      <h6
+                        style={{
+                          fontSize: 15,
+                          marginBottom: 0,
+                          marginTop: 0,
+                          pt: 0,
+                          pb: 0,
+                        }}
+                      >
+                        Part Number: {product.PartNumber}
+                      </h6>
                     </span>
                   </div>
 
@@ -169,7 +181,7 @@ export default function Details6({ product }) {
           </div>
         </div>
       </div>
-      {/* + */}
+      {/* <StickyItem /> */}
     </section>
   );
 }

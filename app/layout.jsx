@@ -142,10 +142,10 @@ export default function RootLayout({ children }) {
       <body className="preload-wrapper popup-loader">
         <Context>
           <div id="wrapper">{children}</div>
-          <QuickView />
-          <QuickAdd />
+          {/* <QuickView /> */}
+          {/* <QuickAdd /> */}
           <ProductSidebar />
-          <Compare />
+          {/* <Compare /> */}
           <ShopCart />
           <AskQuestion />
           <BlogSidebar />

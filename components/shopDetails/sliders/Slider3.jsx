@@ -17,7 +17,7 @@ export default function Slider3({ productId }) {
         if (!response.ok) throw new Error("Failed to fetch product");
 
         const data = await response.json();
-        setProduct(data);
+        setProduct(data.product);
       } catch (error) {
         console.error("Error fetching product:", error);
       }
@@ -27,6 +27,27 @@ export default function Slider3({ productId }) {
   }, [productId]);
 
   if (!product) return <p>Loading...</p>; // Show loading state until data is fetched
+
+  // Ensure images array exists and has content
+  const images = product.images || [];
+
+  if (images.length === 0) {
+    return (
+      <div className="tf-product-media-wrap">
+        <div className="tf-product-media-main">
+          <div className="item">
+            <Image
+              src="/images/shop/products/placeholder.jpg"
+              alt="No image available"
+              width={770}
+              height={1075}
+              className="tf-image-zoom"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -41,7 +62,7 @@ export default function Slider3({ productId }) {
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs, Navigation]}
       >
-        {product.images.map((slide, index) => (
+        {images.map((slide, index) => (
           <SwiperSlide key={index}>
             <a
               className="item"
@@ -70,7 +91,7 @@ export default function Slider3({ productId }) {
         onSwiper={setThumbsSwiper}
         modules={[Thumbs]}
       >
-        {product.images.map((slide, index) => (
+        {images.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">
             <div className="item">
               <Image

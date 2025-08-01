@@ -1,6 +1,6 @@
 "use client";
 import { openCartModal } from "@/utlis/openCartModal";
-// import { openCart } from "@/utlis/toggleCart";
+//import { openCart } from "@/utlis/toggleCart";
 import React, { useEffect } from "react";
 import { useContext, useState } from "react";
 const dataContext = React.createContext();
@@ -15,7 +15,7 @@ export default function Context({ children }) {
   const [quickViewItem, setQuickViewItem] = useState({
     ProductID: 1,
     ProductName: "Loading...",
-    Price: "0.00"
+    Price: "0.00",
   });
   const [quickAddItem, setQuickAddItem] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -30,7 +30,7 @@ export default function Context({ children }) {
     if (!cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
       try {
         // Fetch product data from API
-        const response = await fetch(`/api/product/${productId}`);
+        const response = await fetch(`/api/products/${productId}`);
         if (response.ok) {
           const productData = await response.json();
           const item = {

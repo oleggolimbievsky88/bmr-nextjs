@@ -1551,4 +1551,61 @@
   padding: 24px 32px;
 }
 
+.tf-product-media-main {
+	margin-bottom: 0 !important; // Remove bottom margin if present
+}
+
+.tf-product-media-thumbs {
+	margin-top: 8px !important; // Reduce top margin, adjust as needed
+}
+
+.swiper {
+	margin-bottom: 0 !important;
+}
+
+.swiper + .tf-product-media-thumbs {
+	margin-top: 8px !important; // Reduce gap between main and thumbs
+}
+
+/* Product Image Slider Spacing Fix - More Specific */
+.tf-product-media-wrap .tf-product-media-main {
+	margin-bottom: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+.tf-product-media-wrap .tf-product-media-thumbs {
+	margin-top: 8px !important;
+	padding-top: 0 !important;
+}
+
+.tf-product-media-wrap .swiper {
+	margin-bottom: 0 !important;
+}
+
+.tf-product-media-wrap .swiper + .tf-product-media-thumbs {
+	margin-top: 8px !important;
+}
+
+/* Additional specificity for the container */
+.thumbs-bottom .tf-product-media-main {
+	margin-bottom: 0 !important;
+}
+
+.thumbs-bottom .tf-product-media-thumbs {
+	margin-top: 8px !important;
+}
+
+/* Force override any template styles */
+.tf-product-media-main,
+.tf-product-media-main.swiper {
+	margin-bottom: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+.tf-product-media-thumbs,
+.tf-product-media-thumbs.swiper {
+	margin-top: 8px !important;
+	padding-top: 0 !important;
+}
+
 
