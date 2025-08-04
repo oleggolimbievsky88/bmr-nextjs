@@ -27,6 +27,7 @@ export async function GET(request, { params }) {
     const isBodyId = /^\d+$/.test(platform);
 
     let platformInfo, mainCategories, featuredProducts;
+    console.log("platform", platform);
 
     if (isBodyId) {
       // Platform is a BodyID (numeric)

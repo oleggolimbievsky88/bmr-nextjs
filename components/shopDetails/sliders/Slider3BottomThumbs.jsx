@@ -95,9 +95,9 @@ export default function Slider3BottomThumbs({ productId }) {
             <Image
               src="/images/shop/products/placeholder.jpg"
               alt="No image available"
-              width={770}
-              height={1075}
+              fill
               className="tf-image-zoom"
+              style={{ objectFit: "contain" }}
             />
           </div>
         </div>

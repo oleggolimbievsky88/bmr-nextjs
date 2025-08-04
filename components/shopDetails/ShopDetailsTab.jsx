@@ -162,10 +162,23 @@ export default function ShopDetailsTab({ product }) {
                 </div>
                 <div
                   className={`widget-content-inner ${
-                    currentTab == 4 ? "active" : ""
+                    currentTab == 4 || currentTab == 3 ? "active" : ""
                   } `}
                 >
-                  Platform ID: {product?.BodyID}
+                  <div>
+                    <div>
+                      <h2>Vehicles</h2>
+                    </div>
+                    <div className="row">
+                      <div className="col-3">
+                        <div className="vehicle-item">
+                          <h3>Vehicle 1</h3>
+                        </div>
+                      </div>
+                      <div className="col-3"></div>
+                      <div className="col-3"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

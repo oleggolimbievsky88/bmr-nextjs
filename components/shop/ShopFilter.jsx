@@ -25,7 +25,7 @@ export default function ShopFilter({
   selectedBrands = [],
   selectedAvailabilities = [],
   selectedSizes = [],
-  price = [10, 20],
+  price = [10, 10000],
 }) {
   // Local state for UI only
   const [localPrice, setLocalPrice] = useState(price);

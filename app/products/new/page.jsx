@@ -10,7 +10,6 @@ import { Navigation, Grid } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/grid";
 import "swiper/css/navigation";
-import styles from "./NewProducts.module.css";
 
 export default function NewProductsPage({ scrachDent = "0" }) {
   const [newProducts, setNewProducts] = useState([]);
@@ -127,8 +126,8 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                             product.ImageLarge || product.ImageSmall
                           }`}
                           alt="image-product"
-                          width={1200}
-                          height={1200}
+                          width={350}
+                          height={350}
                         />
                         <Image
                           className="lazyload img-hover"

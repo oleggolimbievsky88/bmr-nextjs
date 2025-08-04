@@ -2,7 +2,6 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
-import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 export default async function PlatformPage({ params }) {
   const { platform } = await params;
@@ -13,7 +12,7 @@ export default async function PlatformPage({ params }) {
 
   try {
     // Fetch platform info and main categories
-    const platformRes = await fetch(`/api/platforms/${platform}`, {
+    const platformRes = await fetch(`/api/platform/${platform}`, {
       cache: "no-store",
     });
     if (!platformRes.ok) throw new Error("Failed to fetch platform info");
