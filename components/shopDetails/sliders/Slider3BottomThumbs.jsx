@@ -178,10 +178,11 @@ export default function Slider3BottomThumbs({ productId }) {
             <div className="item">
               <Image
                 className="lazyload"
-                src={slide.imgSrc}
+                src={slide.smallImgSrc || slide.imgSrc} // Use small image for thumbnails, fallback to large if small doesn't exist
                 alt={slide.alt}
-                width={slide.width}
-                height={slide.height}
+                width={133}
+                height={100}
+                style={{ objectFit: "cover" }}
               />
             </div>
           </SwiperSlide>

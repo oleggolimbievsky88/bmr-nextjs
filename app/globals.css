@@ -1,5 +1,11 @@
 /* Add your global styles here */
 
+/* Swiper CSS imports */
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/grid';
+
 :root {
   --primary: #cc0000;
   --white: #ffffff;
