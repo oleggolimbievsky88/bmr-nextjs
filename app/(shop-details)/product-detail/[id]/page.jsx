@@ -20,7 +20,9 @@ export default async function ProductPage({ params }) {
   const { id } = await params;
 
   // Fetch product data from API
-  const res = await fetch(`/api/product/${id}/`, { cache: "no-store" });
+  const res = await fetch(`/api/product-detail?id=${id}`, {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     // Handle product not found or server error

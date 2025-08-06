@@ -13,7 +13,9 @@ export default async function PlatformPage({ params }) {
   try {
     // Fetch platform info and main categories
     // Fetch main categories for the platform
-    const platformRes = await fetch(`/api/platforms/${platform}/`);
+    const platformRes = await fetch(
+      `/api/platform-by-slug?platform=${platform}`
+    );
     const platformData = await platformRes.json();
 
     platformInfo = platformData.platformInfo || {};
