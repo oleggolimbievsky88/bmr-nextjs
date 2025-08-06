@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import pool from "@/lib/db";
 import {
   getMainCategories,
   getPlatformBySlug,
@@ -48,8 +49,17 @@ export async function GET(request) {
     }
 
     if (!platformInfo) {
+      // Try to find similar platforms
+      const [similarPlatforms] = await pool.query(
+        "SELECT BodyID, Name, slug FROM bodies WHERE slug IS NOT NULL LIMIT 5"
+      );
+
       return NextResponse.json(
-        { error: "Platform not found" },
+        {
+          error: "Platform not found",
+          message: `Platform with slug '${platform}' not found. Available platforms:`,
+          availablePlatforms: similarPlatforms,
+        },
         { status: 404 }
       );
     }

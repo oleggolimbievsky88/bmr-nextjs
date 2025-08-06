@@ -77,10 +77,9 @@ export async function GET(request) {
         product.ImageLarge && product.ImageLarge.trim() !== "0"
           ? {
               imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
-              smallImgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim().replace(
-                /\.(jpg|jpeg|png|gif|webp)$/i,
-                "_small.$1"
-              )}`,
+              smallImgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()
+                .replace(/\.(jpg|jpeg|png|gif|webp)$/i, "_small.$1")
+                .replace(/_large_small\./, "_small.")}`,
               alt: `Main image for ${product?.ProductName}`,
               width: 770,
               height: 1075,

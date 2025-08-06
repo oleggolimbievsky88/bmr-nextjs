@@ -125,13 +125,13 @@ export default function Slider3BottomThumbs({ productId }) {
                 original={slide.imgSrc}
                 thumbnail={slide.imgSrc}
                 width={slide.width}
-                height={slide.height}
+                height="auto"
               >
                 {({ ref, open }) => (
                   <a
                     className="item"
                     data-pswp-width={slide.width}
-                    data-pswp-height={slide.height}
+                    data-pswp-height="auto"
                     onClick={open}
                   >
                     <Image
@@ -171,7 +171,7 @@ export default function Slider3BottomThumbs({ productId }) {
             slidesPerView: 5,
           },
         }}
-        style={{ marginTop: 8 }}
+        style={{ marginTop: 0 }}
       >
         {images.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">

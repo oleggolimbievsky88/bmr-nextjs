@@ -1,38 +1,54 @@
+"use client";
+
+import { useEffect, useState, use } from "react";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
-export default async function PlatformPage({ params }) {
-  const { platform } = await params;
-  let platformInfo = null;
-  let mainCategories = [];
-  let initialProducts = [];
-  let error = null;
+export default function PlatformPage({ params }) {
+  const { platform } = use(params);
+  const [platformInfo, setPlatformInfo] = useState(null);
+  const [mainCategories, setMainCategories] = useState([]);
+  const [initialProducts, setInitialProducts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  try {
-    // Fetch platform info and main categories
-    // Fetch main categories for the platform
-    const platformRes = await fetch(
-      `/api/platform-by-slug?platform=${platform}`
-    );
-    const platformData = await platformRes.json();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Fetch platform info and main categories
+        const platformRes = await fetch(
+          `/api/platform-by-slug?platform=${platform}`
+        );
+        const platformData = await platformRes.json();
 
-    platformInfo = platformData.platformInfo || {};
-    mainCategories = platformData.mainCategories || [];
-    console.log("mainCategories", mainCategories);
+        setPlatformInfo(platformData.platformInfo || {});
+        setMainCategories(platformData.mainCategories || []);
+        console.log("mainCategories", platformData.mainCategories || []);
 
-    // Fetch initial products for this platform
-    const productsRes = await fetch(
-      `/api/products?page=1&limit=8&platform=${platform}`,
-      { cache: "no-store" }
-    );
-    if (productsRes.ok) {
-      const productsData = await productsRes.json();
-      initialProducts = productsData.products || [];
-    }
-  } catch (err) {
-    error = err.message;
+        // Fetch initial products for this platform
+        const productsRes = await fetch(
+          `/api/products?page=1&limit=8&platform=${platform}`,
+          { cache: "no-store" }
+        );
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          setInitialProducts(productsData.products || []);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [platform]);
+
+  if (loading) {
+    return <div className="text-center py-5">Loading...</div>;
   }
 
   if (error) {

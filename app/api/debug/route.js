@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
  * Debug API Route - Use this to test database connectivity on Vercel
  * Remove this route in production for security!
  */
-export async function GET() {
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const testSlug = searchParams.get("test");
+  const slug = searchParams.get("slug");
   try {
     const envCheck = {
       NODE_ENV: process.env.NODE_ENV,
@@ -25,6 +28,7 @@ export async function GET() {
 
     // Try a simple query if connected
     let queryResult = null;
+    let platformTest = null;
     if (dbConnected) {
       try {
         const pool = (await import("@/lib/db")).default;
@@ -32,6 +36,24 @@ export async function GET() {
           "SELECT COUNT(*) as count FROM products LIMIT 1"
         );
         queryResult = rows[0];
+
+        // Test platform slug if requested
+        if (testSlug === "platform" && slug) {
+          const [platformRows] = await pool.query(
+            "SELECT BodyID, Name, slug FROM bodies WHERE slug = ?",
+            [slug]
+          );
+          platformTest = {
+            slug,
+            found: platformRows.length > 0,
+            data: platformRows[0] || null,
+            allSlugs: (
+              await pool.query(
+                "SELECT slug FROM bodies WHERE slug IS NOT NULL LIMIT 5"
+              )
+            )[0],
+          };
+        }
       } catch (queryError) {
         queryResult = { error: queryError.message };
       }
@@ -43,6 +65,7 @@ export async function GET() {
       database: {
         connected: dbConnected,
         queryTest: queryResult,
+        platformTest,
         timestamp: new Date().toISOString(),
       },
     });

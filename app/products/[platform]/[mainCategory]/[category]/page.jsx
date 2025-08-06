@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 import Header2 from "@/components/header/Header";
@@ -34,7 +34,12 @@ export default function CategoryPage({ params }) {
         const platformRes = await fetch(
           `/api/platform-by-slug?platform=${platform}`
         );
-        if (!platformRes.ok) throw new Error("Failed to fetch platform info");
+        if (!platformRes.ok) {
+          const errorData = await platformRes.json();
+          throw new Error(
+            `Platform '${platform}' not found. Please check the URL or try a different platform.`
+          );
+        }
         const platformData = await platformRes.json();
         setPlatformInfo(platformData.platformInfo || {});
         setMainCategories(platformData.mainCategories || []);
@@ -82,7 +87,34 @@ export default function CategoryPage({ params }) {
   }, [platform, mainCategory, category]);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger">
+          <h4>Platform Not Found</h4>
+          <p>{error}</p>
+          <p>Available platforms:</p>
+          <ul>
+            <li>
+              <a href="/products/1970-1981-f-body">1970-1981 F-Body</a>
+            </li>
+            <li>
+              <a href="/products/1967-1969-f-body">1967-1969 F-Body</a>
+            </li>
+            <li>
+              <a href="/products/1964-1972-a-body">1964-1972 A-Body</a>
+            </li>
+            <li>
+              <a href="/products/1967-1972-chevy-c10">1967-1972 Chevy C10</a>
+            </li>
+            <li>
+              <a href="/products/1968-1974-x-body">1968-1974 X-Body</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-0 m-0 container-fluid">

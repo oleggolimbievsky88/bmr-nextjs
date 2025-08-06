@@ -67,7 +67,7 @@ export default function Slider3({ productId }) {
             <a
               className="item"
               data-pswp-width={slide.width}
-              data-pswp-height={slide.height}
+              data-pswp-height="auto"
             >
               <Image
                 className="tf-image-zoom lazyload"
