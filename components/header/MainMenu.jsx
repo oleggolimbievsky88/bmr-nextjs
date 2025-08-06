@@ -127,11 +127,15 @@ export default function MainMenu({ initialMenuData }) {
       setIsLoading(true);
       console.log("🔍 Making API calls for bodyId:", bodyId);
 
-      const platformUrl = `/api/platform/${bodyId}/`;
+      const platformUrl = `/api/platform-by-id?bodyId=${bodyId}`;
       const categoriesUrl = `/api/categories?bodyId=${bodyId}`;
       const vehiclesUrl = `/api/vehicles?bodyId=${bodyId}`;
 
       console.log("🔍 API URLs:", { platformUrl, categoriesUrl, vehiclesUrl });
+      console.log(
+        "🔍 Full platform URL:",
+        `${window.location.origin}${platformUrl}`
+      );
 
       const [platformResponse, catResponse, vehiclesResponse] =
         await Promise.all([
