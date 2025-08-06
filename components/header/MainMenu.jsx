@@ -121,7 +121,7 @@ export default function MainMenu({ initialMenuData }) {
       setIsLoading(true);
       const [platformResponse, catResponse, vehiclesResponse] =
         await Promise.all([
-          fetch(`/api/platform/${bodyId}`),
+          fetch(`/api/platform/${bodyId}/`),
           fetch(`/api/categories?bodyId=${bodyId}`),
           fetch(`/api/vehicles?bodyId=${bodyId}`),
         ]);

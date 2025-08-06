@@ -30,7 +30,7 @@ export default function Context({ children }) {
     if (!cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
       try {
         // Fetch product data from API
-        const response = await fetch(`/api/products/${productId}`);
+        const response = await fetch(`/api/products/${productId}/`);
         if (response.ok) {
           const productData = await response.json();
           const item = {

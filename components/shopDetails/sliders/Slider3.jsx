@@ -13,7 +13,7 @@ export default function Slider3({ productId }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/products/${productId}`);
+        const response = await fetch(`/api/products/${productId}/`);
         if (!response.ok) throw new Error("Failed to fetch product");
 
         const data = await response.json();

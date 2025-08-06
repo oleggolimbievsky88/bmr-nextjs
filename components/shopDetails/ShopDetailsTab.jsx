@@ -162,7 +162,7 @@ export default function ShopDetailsTab({ product }) {
                 </div>
                 <div
                   className={`widget-content-inner ${
-                    currentTab == 4 || currentTab == 3 ? "active" : ""
+                    currentTab == 4 ? "active" : ""
                   } `}
                 >
                   <div>

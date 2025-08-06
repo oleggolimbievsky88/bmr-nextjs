@@ -21,7 +21,7 @@ export default function QuickAdd() {
       // Fetch product data from API
       const fetchProduct = async () => {
         try {
-          const response = await fetch(`/api/products/${quickAddItem}`);
+          const response = await fetch(`/api/products/${quickAddItem}/`);
           if (response.ok) {
             const data = await response.json();
             setItem(data.product || data);

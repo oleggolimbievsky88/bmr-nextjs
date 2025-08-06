@@ -22,12 +22,12 @@ export default function MainCategoryPage({ params }) {
     const fetchData = async () => {
       try {
         // Fetch main categories for the platform
-        const mainCatRes = await fetch(`/api/platforms/${platform}`);
+        const mainCatRes = await fetch(`/api/platforms/${platform}/`);
         const mainCatData = await mainCatRes.json();
         setMainCategories(mainCatData.mainCategories || []);
 
         // Fetch subcategories and products for the selected main category
-        const res = await fetch(`/api/platforms/${platform}/${mainCategory}`);
+        const res = await fetch(`/api/platforms/${platform}/${mainCategory}/`);
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }

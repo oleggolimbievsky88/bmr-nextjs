@@ -12,13 +12,13 @@ export default async function PlatformPage({ params }) {
 
   try {
     // Fetch platform info and main categories
-    const platformRes = await fetch(`/api/platform/${platform}`, {
-      cache: "no-store",
-    });
-    if (!platformRes.ok) throw new Error("Failed to fetch platform info");
+    // Fetch main categories for the platform
+    const platformRes = await fetch(`/api/platforms/${platform}/`);
     const platformData = await platformRes.json();
+
     platformInfo = platformData.platformInfo || {};
     mainCategories = platformData.mainCategories || [];
+    console.log("mainCategories", mainCategories);
 
     // Fetch initial products for this platform
     const productsRes = await fetch(

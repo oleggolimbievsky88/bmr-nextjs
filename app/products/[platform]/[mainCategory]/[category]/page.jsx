@@ -31,7 +31,7 @@ export default function CategoryPage({ params }) {
     async function fetchData() {
       try {
         // 1. Fetch platform info and main categories
-        const platformRes = await fetch(`/api/platforms/${platform}`);
+        const platformRes = await fetch(`/api/platforms/${platform}/`);
         if (!platformRes.ok) throw new Error("Failed to fetch platform info");
         const platformData = await platformRes.json();
         setPlatformInfo(platformData.platformInfo || {});
