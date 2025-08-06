@@ -47,8 +47,8 @@ export default function Details6({ product }) {
                           fontSize: 15,
                           marginBottom: 0,
                           marginTop: 0,
-                          pt: 0,
-                          pb: 0,
+                          paddingTop: 0,
+                          paddingBottom: 0,
                         }}
                       >
                         Part Number: {product.PartNumber}
