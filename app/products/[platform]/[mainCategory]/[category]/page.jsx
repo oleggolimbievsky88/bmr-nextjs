@@ -41,7 +41,7 @@ export default function CategoryPage({ params }) {
 
         // 2. Fetch subcategories for the selected main category
         const subcatRes = await fetch(
-          `/api/platforms/${platform}/${mainCategory}`
+          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`
         );
         if (!subcatRes.ok) throw new Error("Failed to fetch subcategories");
         const subcatData = await subcatRes.json();
