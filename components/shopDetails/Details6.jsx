@@ -506,6 +506,7 @@ export default function Details6({ product, initialColor, searchParams }) {
                             console.log("Rendering color option:", color);
                             return (
                               <React.Fragment key={color.ColorID || color.id}>
+                                {color.ColorName}
                                 <input
                                   type="radio"
                                   name="color"
@@ -551,6 +552,12 @@ export default function Details6({ product, initialColor, searchParams }) {
                                     );
                                     if (radioButton) {
                                       radioButton.checked = true;
+                                      // Set the current color to the full color object
+                                      setCurrentColor(color);
+                                      console.log(
+                                        "Radio button checked:",
+                                        radioButton
+                                      );
                                     }
                                   }}
                                 >
