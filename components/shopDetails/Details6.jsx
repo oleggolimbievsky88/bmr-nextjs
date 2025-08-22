@@ -511,7 +511,10 @@ export default function Details6({ product, initialColor, searchParams }) {
                                   type="radio"
                                   name="color"
                                   id={`color-${color.ColorID || color.id}`}
-                                  checked={false} // Explicitly set to false
+                                  checked={
+                                    currentColor?.ColorID === color.ColorID ||
+                                    currentColor?.id === color.id
+                                  }
                                   onChange={() => {
                                     console.log(
                                       "=== COLOR SELECTION DEBUG ==="
@@ -538,6 +541,11 @@ export default function Details6({ product, initialColor, searchParams }) {
                                 <label
                                   className={`hover-tooltip radius-60 ${
                                     errors.color ? "error" : ""
+                                  } ${
+                                    currentColor?.ColorID === color.ColorID ||
+                                    currentColor?.id === color.id
+                                      ? "selected"
+                                      : ""
                                   }`}
                                   htmlFor={`color-${color.ColorID || color.id}`}
                                   data-value={color.ColorName || color.value}
