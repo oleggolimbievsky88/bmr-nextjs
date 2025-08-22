@@ -104,11 +104,11 @@ export default function MainMenu({ initialMenuData }) {
     bodyId,
     prefetchOnly = false
   ) => {
-    console.log("🔍 handleVehicleHover called with:", {
-      vehicleSlug,
-      bodyId,
-      prefetchOnly,
-    });
+    // console.log("🔍 handleVehicleHover called with:", {
+    //   vehicleSlug,
+    //   bodyId,
+    //   prefetchOnly,
+    // });
     setActiveVehicle(vehicleSlug);
     if (!bodyId) return;
     // Use cache if available
@@ -125,17 +125,17 @@ export default function MainMenu({ initialMenuData }) {
     }
     try {
       setIsLoading(true);
-      console.log("🔍 Making API calls for bodyId:", bodyId);
+      // console.log("🔍 Making API calls for bodyId:", bodyId);
 
       const platformUrl = `/api/platform-by-id?bodyId=${bodyId}`;
       const categoriesUrl = `/api/categories?bodyId=${bodyId}`;
       const vehiclesUrl = `/api/vehicles?bodyId=${bodyId}`;
 
-      console.log("🔍 API URLs:", { platformUrl, categoriesUrl, vehiclesUrl });
-      console.log(
-        "🔍 Full platform URL:",
-        `${window.location.origin}${platformUrl}`
-      );
+      // console.log("🔍 API URLs:", { platformUrl, categoriesUrl, vehiclesUrl });
+      // console.log(
+      //   "🔍 Full platform URL:",
+      //   `${window.location.origin}${platformUrl}`
+      // );
 
       const [platformResponse, catResponse, vehiclesResponse] =
         await Promise.all([
@@ -144,11 +144,11 @@ export default function MainMenu({ initialMenuData }) {
           fetch(vehiclesUrl),
         ]);
 
-      console.log("🔍 API Responses:", {
-        platform: { ok: platformResponse.ok, status: platformResponse.status },
-        categories: { ok: catResponse.ok, status: catResponse.status },
-        vehicles: { ok: vehiclesResponse.ok, status: vehiclesResponse.status },
-      });
+      // console.log("🔍 API Responses:", {
+      //   platform: { ok: platformResponse.ok, status: platformResponse.status },
+      //   categories: { ok: catResponse.ok, status: catResponse.status },
+      //   vehicles: { ok: vehiclesResponse.ok, status: vehiclesResponse.status },
+      // });
 
       if (!platformResponse.ok || !catResponse.ok || !vehiclesResponse.ok) {
         console.error("❌ API call failed:", {
@@ -169,11 +169,11 @@ export default function MainMenu({ initialMenuData }) {
       const catData = await catResponse.json();
       const vehiclesData = await vehiclesResponse.json();
 
-      console.log("🔍 API Data received:", {
-        platform: platformData,
-        categories: catData,
-        vehicles: vehiclesData,
-      });
+      // console.log("🔍 API Data received:", {
+      //   platform: platformData,
+      //   categories: catData,
+      //   vehicles: vehiclesData,
+      // });
 
       const cacheObj = {
         bodyDetails: platformData.platformInfo,

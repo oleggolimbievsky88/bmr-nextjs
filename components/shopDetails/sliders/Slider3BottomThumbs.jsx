@@ -6,9 +6,22 @@ import { Gallery, Item } from "react-photoswipe-gallery";
 import { Navigation, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-export default function Slider3BottomThumbs({ productId }) {
+export default function Slider3BottomThumbs({ productId, selectedColor }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [product, setProduct] = useState(null);
+  const [mainSwiper, setMainSwiper] = useState(null);
+
+  console.log("Slider3BottomThumbs rendered with:", {
+    productId,
+    selectedColor: selectedColor
+      ? {
+          ColorID: selectedColor.ColorID,
+          ColorName: selectedColor.ColorName,
+        }
+      : null,
+    mainSwiper: !!mainSwiper,
+    product: !!product,
+  });
 
   // Fetch product data from the API
   useEffect(() => {
@@ -18,6 +31,7 @@ export default function Slider3BottomThumbs({ productId }) {
         if (!response.ok) throw new Error("Failed to fetch product");
 
         const data = await response.json();
+        console.log("Product data fetched:", data.product);
         setProduct(data.product);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -27,22 +41,85 @@ export default function Slider3BottomThumbs({ productId }) {
     fetchProduct();
   }, [productId]);
 
+  // Effect to handle image switching when color changes
+  useEffect(() => {
+    console.log("Image switching effect triggered:", {
+      selectedColor: selectedColor
+        ? {
+            ColorID: selectedColor.ColorID,
+            ColorName: selectedColor.ColorName,
+          }
+        : null,
+      productImages: product?.images?.length,
+      mainSwiper: !!mainSwiper,
+      productExists: !!product,
+    });
+
+    if (product?.images?.length > 0 && mainSwiper) {
+      // Default to first image
+      let imageIndex = 0;
+
+      // If a color is provided, try to match it
+      if (selectedColor) {
+        console.log("Selected color details:", {
+          ColorID: selectedColor.ColorID,
+          ColorName: selectedColor.ColorName,
+        });
+
+        console.log("Product images:", product.images);
+
+        if (selectedColor.ColorID === 1) {
+          // Black Hammertone - show second image if available
+          imageIndex = Math.min(1, product.images.length - 1);
+          console.log(
+            "Black Hammertone selected, switching to image index:",
+            imageIndex
+          );
+        } else if (selectedColor.ColorID === 2) {
+          // Red - show first image
+          imageIndex = 0;
+          console.log("Red selected, switching to image index:", imageIndex);
+        }
+
+        console.log(
+          `Switching to image ${imageIndex} for color: ${selectedColor.ColorName} (ColorID: ${selectedColor.ColorID})`
+        );
+
+        try {
+          console.log("Attempting to slide to image index:", imageIndex);
+          console.log("Main swiper object:", mainSwiper);
+          mainSwiper.slideTo(imageIndex);
+          console.log("Image switch successful");
+        } catch (error) {
+          console.error("Error in image switch:", error);
+        }
+      }
+    }
+  }, [selectedColor, product, mainSwiper]);
+
   useEffect(() => {
     // Function to initialize Drift
     const imageZoom = () => {
       const driftAll = document.querySelectorAll(".tf-image-zoom");
       const pane = document.querySelector(".tf-zoom-main");
 
-      driftAll.forEach((el) => {
-        new Drift(el, {
-          zoomFactor: 2,
-          paneContainer: pane,
-          inlinePane: false,
-          handleTouch: false,
-          hoverBoundingBox: true,
-          containInline: true,
+      // Check if both elements exist before initializing Drift
+      if (driftAll.length > 0 && pane) {
+        driftAll.forEach((el) => {
+          try {
+            new Drift(el, {
+              zoomFactor: 2,
+              paneContainer: pane,
+              inlinePane: false,
+              handleTouch: false,
+              hoverBoundingBox: true,
+              containInline: true,
+            });
+          } catch (error) {
+            console.warn("Drift initialization failed:", error);
+          }
         });
-      });
+      }
     };
 
     if (product?.images?.length > 0) {
@@ -91,13 +168,29 @@ export default function Slider3BottomThumbs({ productId }) {
     return (
       <div className="tf-product-media-wrap">
         <div className="tf-product-media-main">
-          <div className="item">
+          <div
+            className="item"
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "500px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
             <Image
               src="/images/shop/products/placeholder.jpg"
               alt="No image available"
               fill
               className="tf-image-zoom"
-              style={{ objectFit: "contain" }}
+              style={{
+                objectFit: "contain",
+                objectPosition: "center",
+                maxWidth: "100%",
+                maxHeight: "100%",
+              }}
             />
           </div>
         </div>
@@ -118,6 +211,10 @@ export default function Slider3BottomThumbs({ productId }) {
           className="tf-product-media-main"
           thumbs={{ swiper: thumbsSwiper }}
           modules={[Thumbs, Navigation]}
+          onSwiper={(swiper) => {
+            console.log("Main swiper initialized:", swiper);
+            setMainSwiper(swiper);
+          }}
         >
           {images.map((slide, index) => (
             <SwiperSlide key={index}>
@@ -133,15 +230,24 @@ export default function Slider3BottomThumbs({ productId }) {
                     data-pswp-width={slide.width}
                     data-pswp-height="auto"
                     onClick={open}
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "500px",
+                      display: "block",
+                    }}
                   >
                     <Image
                       className="tf-image-zoom lazyload"
                       data-zoom={slide.imgSrc}
                       src={slide.imgSrc}
                       alt={slide.alt}
-                      width={slide.width}
-                      height={slide.height}
+                      fill
                       ref={ref}
+                      style={{
+                        objectFit: "contain",
+                        objectPosition: "center",
+                      }}
                     />
                   </a>
                 )}

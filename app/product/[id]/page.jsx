@@ -9,11 +9,8 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
-import {
-  getProductById,
-  getProductsByBodyAndCat,
-  getCategorySlugById,
-} from "@/lib/queries";
+import { getProductById, getRelatedProducts } from "@/lib/queries";
+import pool from "@/lib/db";
 
 export const metadata = {
   title:
@@ -21,105 +18,34 @@ export const metadata = {
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 
-export default async function ProductDetails({ params }) {
+export default async function ProductDetails({ params, searchParams }) {
+  // Await params and searchParams
   const { id } = await params;
+  const awaitedSearchParams = await searchParams;
+  const color = awaitedSearchParams?.color
+    ? String(awaitedSearchParams.color)
+    : null;
 
   console.log("ProductDetailid", id);
+  console.log("Color query param:", color);
 
-  try {
-    // Use the database query directly instead of fetch
-    const product = await getProductById(id);
+  // Fetch product details
+  const product = await getProductById(id);
 
-    // Helper to slugify for URLs
-    const slugify = (str) =>
-      str
-        ? str
-            .toString()
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9\-]/g, "")
-        : "";
+  // Fetch related products
+  const relatedProducts = await getRelatedProducts(id);
 
-    const platformSlug = `${product.StartAppYear}-${
-      product.EndAppYear
-    }-${slugify(product.PlatformName)}`;
-    const mainCategorySlug = slugify(product.MainCategoryName);
-    const categorySlug = slugify(product.CategoryName);
-
-    console.log("Product:", product);
-    return (
-      <>
-        <Header2 />
-        <div className="tf-breadcrumb">
-          <div className="container">
-            <div className="tf-breadcrumb-wrap d-flex justify-content-center flex-wrap align-items-center text-center">
-              <div className="tf-breadcrumb-list">
-                <Link href="/" className="text">
-                  Home
-                </Link>
-                <i className="icon icon-arrow-right" />
-                <Link href="/products" className="text">
-                  Products
-                </Link>
-                <i className="icon icon-arrow-right" />
-                <Link href={`/products/${platformSlug}`} className="text">
-                  {product.StartAppYear && product.EndAppYear
-                    ? `${product.StartAppYear}-${product.EndAppYear} ${product.PlatformName}`
-                    : product.PlatformName || "Platform"}
-                </Link>
-                <i className="icon icon-arrow-right" />
-                {product.MainCategoryName && (
-                  <>
-                    <Link
-                      href={`/products/${platformSlug}/${mainCategorySlug}`}
-                      className="text"
-                    >
-                      {product.MainCategoryName}
-                    </Link>
-                    <i className="icon icon-arrow-right" />
-                  </>
-                )}
-                <Link
-                  href={`/products/${platformSlug}/${mainCategorySlug}/${categorySlug}`}
-                  className="text"
-                >
-                  {product.CategoryName || "Product Type"}
-                </Link>
-                <i className="icon icon-arrow-right" />
-                <span className="text">
-                  {product.ProductName ? product.ProductName : "Product Title"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* <DetailsOuterZoom product={product} /> */}
-        <Details6 product={product} />
-        <ShopDetailsTab product={product} />
-        {/* <Products product={product} /> */}
-        {/* <RecentProducts /> */}
-        <Footer1 />
-      </>
-    );
-  } catch (error) {
-    console.error(`Failed to fetch product ${id}:`, error);
-    return (
-      <>
-        <Header2 />
-        <div className="container mt-5">
-          <div className="row">
-            <div className="col-12">
-              <h1>Product Not Found</h1>
-              <p>The product you're looking for could not be found.</p>
-              <Link href="/products" className="btn btn-primary">
-                Back to Products
-              </Link>
-            </div>
-          </div>
-        </div>
-        <Footer1 />
-      </>
-    );
-  }
+  return (
+    <div>
+      <Details6
+        product={product}
+        initialColor={color}
+        searchParams={awaitedSearchParams || {}}
+      />
+      <ShopDetailsTab product={product} />
+      {relatedProducts && relatedProducts.length > 0 && (
+        <Products products={relatedProducts} />
+      )}
+    </div>
+  );
 }

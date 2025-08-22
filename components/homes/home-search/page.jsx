@@ -1,14 +1,18 @@
 import Footer2 from "@/components/footers/Footer2";
 import Header2 from "@/components/headers/Header2";
 import Topbar2 from "@/components/headers/Topbar2";
-import Products from "@/components/homes/home-search/Products";
+
 import React from "react";
 
 export const metadata = {
   title: "Home Search || Ecomus - Ultimate Nextjs Ecommerce Template",
   description: "Ecomus - Ultimate Nextjs Ecommerce Template",
 };
-export default function page() {
+
+//get search results from the database
+
+export default async function page() {
+  const searchResults = await getSearchResults();
   return (
     <>
       <Topbar2 />

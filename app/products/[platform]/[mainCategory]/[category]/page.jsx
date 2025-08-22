@@ -71,8 +71,8 @@ export default function CategoryPage({ params }) {
         const prodRes = await fetch(`/api/products?${query}`);
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const products = await prodRes.json();
-        console.log("API Response:", products);
-        console.log("Products array:", products.products);
+        // console.log("API Response:", products);
+        // console.log("Products array:", products.products);
         setFeaturedProducts(products.products || []);
         console.log("Setting featuredProducts to:", products.products || []);
       } catch (error) {
@@ -189,7 +189,6 @@ export default function CategoryPage({ params }) {
           </section>
         )}
       </div>
-      <Footer1 />
     </div>
   );
 }
