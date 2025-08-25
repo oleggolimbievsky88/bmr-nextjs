@@ -93,24 +93,6 @@ export default function CategoryPage({ params }) {
         <div className="alert alert-danger">
           <h4>Platform Not Found</h4>
           <p>{error}</p>
-          <p>Available platforms:</p>
-          <ul>
-            <li>
-              <a href="/products/1970-1981-f-body">1970-1981 F-Body</a>
-            </li>
-            <li>
-              <a href="/products/1967-1969-f-body">1967-1969 F-Body</a>
-            </li>
-            <li>
-              <a href="/products/1964-1972-a-body">1964-1972 A-Body</a>
-            </li>
-            <li>
-              <a href="/products/1967-1972-chevy-c10">1967-1972 Chevy C10</a>
-            </li>
-            <li>
-              <a href="/products/1968-1974-x-body">1968-1974 X-Body</a>
-            </li>
-          </ul>
         </div>
       </div>
     );

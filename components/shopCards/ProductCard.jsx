@@ -14,6 +14,12 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
     addToCompareItem,
     isAddedtoCompareItem,
   } = useContextElement();
+
+  // Debug logging
+  console.log("ProductCard received product:", product);
+  console.log("ProductCard PartNumber:", product?.PartNumber);
+  console.log("ProductCard Price:", product?.Price);
+
   useEffect(() => {
     setCurrentImage(product.imgSrc);
   }, [product]);
@@ -95,7 +101,7 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
               marginBottom: 0,
             }}
           >
-            ${parseFloat(product.Price).toFixed(2)}
+            ${product.Price ? parseFloat(product.Price).toFixed(2) : "0.00"}
           </span>
           {productColors.length > 0 && (
             <div

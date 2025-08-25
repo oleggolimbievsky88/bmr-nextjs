@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function ShopDetailsTab({ product }) {
+export default function ShopDetailsTab({ product, vehicles = [] }) {
   const tabs = [
     { title: "Description", active: true },
     { title: "Features", active: false },
@@ -17,6 +17,16 @@ export default function ShopDetailsTab({ product }) {
 
   const [currentTab, setCurrentTab] = useState(1);
   console.log("product", product);
+  console.log("vehicles data:", vehicles);
+  console.log("vehicles length:", vehicles.length);
+
+  // Calculate the fitment tab number dynamically
+  const fitmentTabNumber =
+    product?.Instructions &&
+    product?.Instructions !== "0" &&
+    product?.Instructions !== 0
+      ? 4
+      : 3;
   const descHtml = product?.Description || "";
   const lines = descHtml.split(/\r?\n/);
   const bulletIndex = lines.findIndex((line) => /^\s*[-•*]\s+/.test(line));
@@ -162,21 +172,40 @@ export default function ShopDetailsTab({ product }) {
                 </div>
                 <div
                   className={`widget-content-inner ${
-                    currentTab == 4 ? "active" : ""
+                    currentTab == fitmentTabNumber ? "active" : ""
                   } `}
                 >
                   <div>
                     <div>
-                      <h2>Vehicles</h2>
+                      <h2>Vehicle Fitment</h2>
+                      <p>
+                        Debug: Current tab is {currentTab}, fitment tab is{" "}
+                        {fitmentTabNumber}, vehicles count: {vehicles.length}
+                      </p>
                     </div>
                     <div className="row">
-                      <div className="col-3">
-                        <div className="vehicle-item">
-                          <h3>Vehicle 1</h3>
+                      {vehicles.length > 0 ? (
+                        vehicles.map((vehicle, index) => (
+                          <div key={index} className="col-md-4 col-sm-6 mb-3">
+                            <div className="vehicle-item p-3 border rounded">
+                              <h4 className="mb-2">
+                                {vehicle.Make} {vehicle.Model}
+                              </h4>
+                              <p className="mb-1">
+                                <strong>Years:</strong> {vehicle.StartYear} -{" "}
+                                {vehicle.EndYear}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="col-12">
+                          <p>
+                            No vehicle fitment data available for this product.
+                          </p>
+                          <p>Debug: vehicles array is empty or undefined</p>
                         </div>
-                      </div>
-                      <div className="col-3"></div>
-                      <div className="col-3"></div>
+                      )}
                     </div>
                   </div>
                 </div>

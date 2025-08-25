@@ -5,7 +5,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { ProductCard } from "../shopCards/ProductCard";
 import { Navigation, Pagination } from "swiper/modules";
 
-export default function Products() {
+export default function Products({ products = [] }) {
+  // Use the passed products prop, or fall back to static data if no products provided
+  const displayProducts =
+    products.length > 0 ? products : products1.slice(0, 8);
+
   return (
     <section className="flat-spacing-1 pt_0">
       <div className="container">
@@ -36,7 +40,7 @@ export default function Products() {
             }}
             pagination={{ clickable: true, el: ".spd307" }}
           >
-            {products1.slice(0, 8).map((product, i) => (
+            {displayProducts.map((product, i) => (
               <SwiperSlide key={i} className="swiper-slide">
                 <ProductCard product={product} />
               </SwiperSlide>

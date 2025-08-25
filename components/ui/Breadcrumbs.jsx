@@ -3,8 +3,44 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Breadcrumbs({ params }) {
+export default function Breadcrumbs({ items, params }) {
   const pathname = usePathname();
+
+  // If items are provided, use them; otherwise fall back to URL parsing
+  if (items && items.length > 0) {
+    return (
+      <div className="tf-breadcrumb">
+        <div className="container">
+          <div className="tf-breadcrumb-wrap d-flex justify-content-center flex-wrap align-items-center">
+            <div className="tf-breadcrumb-list">
+              {items.map((item, index) => {
+                const isLast = index === items.length - 1;
+                return (
+                  <span
+                    key={index}
+                    className="d-inline-flex align-items-center"
+                  >
+                    {index > 0 && <i className="icon icon-arrow-right mx-2" />}
+                    {isLast ? (
+                      <span className="text breadcrumb-item active">
+                        {item.label}
+                      </span>
+                    ) : (
+                      <Link href={item.href} className="text breadcrumb-item">
+                        {item.label}
+                      </Link>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback to URL parsing (original logic)
   const parts = pathname
     .split("/")
     .filter(Boolean)
