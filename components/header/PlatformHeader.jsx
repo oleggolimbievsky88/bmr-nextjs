@@ -14,8 +14,12 @@ export default function PlatformHeader({
       ? platformData.StartYear
       : `${platformData.StartYear}-${platformData.EndYear}`;
 
-  // Use local image from public/images/platform-headers
-  const imageUrl = `/images/platformHeaders/${platformData.slug}_Banner.jpg`;
+  // Use the HeaderImage from platformData if available, otherwise fall back to local image
+  const imageUrl =
+    platformData.HeaderImage ||
+    `/images/platformHeaders/${platformData.slug}_Banner.jpg`;
+
+  console.log("Platform Header Image URL:", imageUrl);
 
   return (
     <div className="container-fluid px-0 m-0 p-0">

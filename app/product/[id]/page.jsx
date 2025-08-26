@@ -95,7 +95,10 @@ export default async function ProductDetails({ params, searchParams }) {
           StartYear: platformInfo?.startYear || "",
           EndYear: platformInfo?.endYear || "",
           Image: platformInfo?.platformImage || "",
-          slug: platformInfo?.name?.toLowerCase().replace(/\s+/g, "-") || "",
+          slug:
+            platformInfo?.slug ||
+            platformInfo?.name?.toLowerCase().replace(/\s+/g, "-") ||
+            "",
           mainCategory: mainCategory?.MainCatName || null,
         }}
       />

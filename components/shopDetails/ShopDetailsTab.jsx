@@ -176,28 +176,34 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                   } `}
                 >
                   <div>
-                    <div>
-                      <h2>Vehicle Fitment</h2>
-                      <p>
-                        Debug: Current tab is {currentTab}, fitment tab is{" "}
-                        {fitmentTabNumber}, vehicles count: {vehicles.length}
-                      </p>
-                    </div>
                     <div className="row">
                       {vehicles.length > 0 ? (
-                        vehicles.map((vehicle, index) => (
-                          <div key={index} className="col-md-4 col-sm-6 mb-3">
-                            <div className="vehicle-item p-3 border rounded">
-                              <h4 className="mb-2">
-                                {vehicle.Make} {vehicle.Model}
-                              </h4>
-                              <p className="mb-1">
-                                <strong>Years:</strong> {vehicle.StartYear} -{" "}
-                                {vehicle.EndYear}
-                              </p>
-                            </div>
+                        <div className="col-12">
+                          <div className="table-responsive">
+                            <table className="table table-striped table-hover">
+                              <thead className="table-dark">
+                                <tr>
+                                  <th scope="col">Make</th>
+                                  <th scope="col">Model</th>
+                                  <th scope="col">Year Range</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {vehicles.map((vehicle, index) => (
+                                  <tr key={index}>
+                                    <td>
+                                      <strong>{vehicle.Make}</strong>
+                                    </td>
+                                    <td>{vehicle.Model}</td>
+                                    <td>
+                                      {vehicle.StartYear} - {vehicle.EndYear}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
                           </div>
-                        ))
+                        </div>
                       ) : (
                         <div className="col-12">
                           <p>

@@ -234,8 +234,19 @@ export default function Details6({ product, initialColor, searchParams }) {
               setCurrentColor(null);
             }
           } else {
-            // No color in URL
-            setCurrentColor(null);
+            // No color in URL - auto-select if only one option
+            if (filteredColors.length === 1) {
+              console.log(
+                "Only one color option available, auto-selecting:",
+                filteredColors[0]
+              );
+              setCurrentColor(filteredColors[0]);
+            } else {
+              console.log(
+                "Multiple color options available, requiring selection"
+              );
+              setCurrentColor(null);
+            }
           }
         } else {
           console.log(
@@ -250,7 +261,9 @@ export default function Details6({ product, initialColor, searchParams }) {
         if (
           greaseData.success &&
           greaseData.grease &&
-          greaseData.grease.length > 0
+          greaseData.grease.length > 0 &&
+          product.Grease &&
+          product.Grease !== "0"
         ) {
           console.log("Using database grease:", greaseData.grease);
           // Remove any default selections
@@ -275,17 +288,20 @@ export default function Details6({ product, initialColor, searchParams }) {
           setCurrentGrease(null);
         } else {
           console.log(
-            "No database grease available, using static data with no defaults"
+            "No database grease available or product doesn't support grease, hiding grease options"
           );
           console.log("Grease API response:", greaseData);
-          setGreaseOptions(removeDefaultSelections(greaseOptions));
+          console.log("Product Grease field:", product.Grease);
+          setGreaseOptions([]);
           setCurrentGrease(null);
         }
 
         if (
           anglefinderData.success &&
           anglefinderData.anglefinder &&
-          anglefinderData.anglefinder.length > 0
+          anglefinderData.anglefinder.length > 0 &&
+          product.AngleFinder &&
+          product.AngleFinder !== "0"
         ) {
           console.log(
             "Using database anglefinder:",
@@ -293,19 +309,27 @@ export default function Details6({ product, initialColor, searchParams }) {
           );
           setAnglefinderOptions(anglefinderData.anglefinder);
         } else {
-          console.log("No database anglefinder options");
+          console.log(
+            "No database anglefinder options or product doesn't support angle finder, hiding angle finder options"
+          );
+          console.log("Product AngleFinder field:", product.AngleFinder);
           setAnglefinderOptions([]);
         }
 
         if (
           hardwareData.success &&
           hardwareData.hardware &&
-          hardwareData.hardware.length > 0
+          hardwareData.hardware.length > 0 &&
+          product.Hardware &&
+          product.Hardware !== "0"
         ) {
           console.log("Using database hardware:", hardwareData.hardware);
           setHardwareOptions(hardwareData.hardware);
         } else {
-          console.log("No database hardware options");
+          console.log(
+            "No database hardware options or product doesn't support hardware, hiding hardware options"
+          );
+          console.log("Product Hardware field:", product.Hardware);
           setHardwareOptions([]);
         }
       } catch (error) {
@@ -327,11 +351,12 @@ export default function Details6({ product, initialColor, searchParams }) {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!currentColor) {
+    // Only require color selection if there are multiple options or no color is selected
+    if (colorOptions.length > 1 && !currentColor) {
       newErrors.color = "Please select a color";
     }
 
-    if (!currentGrease) {
+    if (greaseOptions.length > 0 && !currentGrease) {
       newErrors.grease = "Please select a grease option";
     }
 
