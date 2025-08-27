@@ -21,12 +21,14 @@ export default function Context({ children }) {
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
     const subtotal = cartProducts.reduce((accumulator, product) => {
-      return accumulator + product.quantity * product.price;
+      const price = parseFloat(product.Price || product.price || 0);
+      const quantity = parseInt(product.quantity || 1);
+      return accumulator + quantity * price;
     }, 0);
     setTotalPrice(subtotal);
   }, [cartProducts]);
 
-  const addProductToCart = async (productId, qty = 1) => {
+  const addProductToCart = async (productId, qty = 1, options = {}) => {
     if (!cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
       try {
         // Fetch product data from API
@@ -36,6 +38,10 @@ export default function Context({ children }) {
           const item = {
             ...productData.product,
             quantity: qty,
+            selectedColor: options.selectedColor || null,
+            selectedGrease: options.selectedGrease || null,
+            selectedAnglefinder: options.selectedAnglefinder || null,
+            selectedHardware: options.selectedHardware || null,
           };
           setCartProducts((pre) => [...pre, item]);
           openCartModal();
@@ -50,6 +56,11 @@ export default function Context({ children }) {
       return true;
     }
     return false;
+  };
+
+  const clearCart = () => {
+    setCartProducts([]);
+    localStorage.removeItem("cartList");
   };
 
   const addToWishlist = (id) => {
@@ -89,7 +100,15 @@ export default function Context({ children }) {
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartList"));
     if (items?.length) {
-      setCartProducts(items);
+      // Filter out any invalid items and ensure proper structure
+      const validItems = items.filter(
+        (item) =>
+          item &&
+          item.ProductID &&
+          item.ProductName &&
+          (item.Price || item.price)
+      );
+      setCartProducts(validItems);
     }
   }, []);
 
@@ -113,6 +132,7 @@ export default function Context({ children }) {
     totalPrice,
     addProductToCart,
     isAddedToCartProducts,
+    clearCart,
     removeFromWishlist,
     addToWishlist,
     isAddedtoWishlist,

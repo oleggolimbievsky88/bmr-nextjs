@@ -103,6 +103,14 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
       const driftAll = document.querySelectorAll(".tf-image-zoom");
       const pane = document.querySelector(".tf-zoom-main");
 
+      console.log("Drift initialization:", {
+        driftElements: driftAll.length,
+        paneFound: !!pane,
+        paneElement: pane,
+        paneDisplay: pane ? pane.style.display : "N/A",
+        paneVisibility: pane ? pane.style.visibility : "N/A",
+      });
+
       // Check if both elements exist before initializing Drift
       if (driftAll.length > 0 && pane) {
         driftAll.forEach((el) => {
@@ -114,6 +122,17 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
               handleTouch: false,
               hoverBoundingBox: true,
               containInline: true,
+              showWhitespaceAtEdges: false,
+              touchDelay: 500,
+              boundingBoxContainer: document.body,
+              onShow: function () {
+                console.log("Drift zoom pane shown");
+                pane.style.display = "block";
+              },
+              onHide: function () {
+                console.log("Drift zoom pane hidden");
+                pane.style.display = "none";
+              },
             });
           } catch (error) {
             console.warn("Drift initialization failed:", error);
@@ -123,10 +142,10 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
     };
 
     if (product?.images?.length > 0) {
-      // Small delay to ensure DOM is ready
+      // Longer delay to ensure DOM is ready and zoom pane is rendered
       setTimeout(() => {
         imageZoom();
-      }, 100);
+      }, 500);
     }
 
     const zoomElements = document.querySelectorAll(".tf-image-zoom");

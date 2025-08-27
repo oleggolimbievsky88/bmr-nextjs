@@ -15,10 +15,13 @@ import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
 import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useContextElement } from "@/context/Context";
 
 export default function Details6({ product, initialColor, searchParams }) {
   const router = useRouter();
   const searchParamsHook = useSearchParams();
+  const { addProductToCart, isAddedToCartProducts, clearCart } =
+    useContextElement();
 
   console.log("Details6 component rendered with product:", product);
   console.log("Product Color field:", product?.Color);
@@ -243,7 +246,7 @@ export default function Details6({ product, initialColor, searchParams }) {
               setCurrentColor(filteredColors[0]);
             } else {
               console.log(
-                "Multiple color options available, requiring selection"
+                "Multiple color options available, requiring selection - setting currentColor to null"
               );
               setCurrentColor(null);
             }
@@ -390,12 +393,29 @@ export default function Details6({ product, initialColor, searchParams }) {
       return;
     }
 
-    // Proceed with add to cart logic
+    // Add product to cart with selected options
     console.log("Adding to cart with options:", {
       color: currentColor,
       grease: currentGrease,
       anglefinder: currentAnglefinder,
       hardware: currentHardware,
+    });
+
+    // Create a product object with selected options
+    const productWithOptions = {
+      ...product,
+      selectedColor: currentColor,
+      selectedGrease: currentGrease,
+      selectedAnglefinder: currentAnglefinder,
+      selectedHardware: currentHardware,
+    };
+
+    // Call the context function to add product to cart with selected options
+    addProductToCart(product.ProductID, 1, {
+      selectedColor: currentColor,
+      selectedGrease: currentGrease,
+      selectedAnglefinder: currentAnglefinder,
+      selectedHardware: currentHardware,
     });
   };
 
@@ -469,7 +489,10 @@ export default function Details6({ product, initialColor, searchParams }) {
               </div>
             </div>
             <div className="col-md-6">
-              <div className="tf-product-info-wrap position-relative">
+              <div
+                className="tf-product-info-wrap position-relative"
+                style={{ overflow: "visible" }}
+              >
                 <div className="tf-zoom-main" />
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
@@ -527,8 +550,23 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
+                          {/* Hidden radio button for when no color is selected */}
+                          <input
+                            type="radio"
+                            name="color"
+                            id="color-none"
+                            checked={!currentColor}
+                            onChange={() => {}}
+                            style={{ display: "none" }}
+                          />
                           {colorOptions.map((color) => {
                             console.log("Rendering color option:", color);
+                            console.log("Current color state:", currentColor);
+                            const isSelected =
+                              currentColor &&
+                              (currentColor.ColorID === color.ColorID ||
+                                currentColor.id === color.id);
+                            console.log("Is this color selected?", isSelected);
                             return (
                               <React.Fragment key={color.ColorID || color.id}>
                                 {color.ColorName}
@@ -536,10 +574,7 @@ export default function Details6({ product, initialColor, searchParams }) {
                                   type="radio"
                                   name="color"
                                   id={`color-${color.ColorID || color.id}`}
-                                  checked={
-                                    currentColor?.ColorID === color.ColorID ||
-                                    currentColor?.id === color.id
-                                  }
+                                  checked={isSelected}
                                   onChange={() => {
                                     console.log(
                                       "=== COLOR SELECTION DEBUG ==="
@@ -561,17 +596,11 @@ export default function Details6({ product, initialColor, searchParams }) {
                                       "=== END COLOR SELECTION DEBUG ==="
                                     );
                                   }}
-                                  required
                                 />
                                 <label
                                   className={`hover-tooltip radius-60 ${
                                     errors.color ? "error" : ""
-                                  } ${
-                                    currentColor?.ColorID === color.ColorID ||
-                                    currentColor?.id === color.id
-                                      ? "selected"
-                                      : ""
-                                  }`}
+                                  } ${isSelected ? "selected" : ""}`}
                                   htmlFor={`color-${color.ColorID || color.id}`}
                                   data-value={color.ColorName || color.value}
                                   onClick={() => {
@@ -644,7 +673,6 @@ export default function Details6({ product, initialColor, searchParams }) {
                                   setCurrentGrease(grease);
                                   clearError("grease");
                                 }}
-                                required
                               />
                               <label
                                 className={`style-text ${
@@ -701,7 +729,6 @@ export default function Details6({ product, initialColor, searchParams }) {
                                   setCurrentAnglefinder(anglefinder);
                                   clearError("anglefinder");
                                 }}
-                                required
                               />
                               <label
                                 className={`style-text ${
@@ -754,7 +781,6 @@ export default function Details6({ product, initialColor, searchParams }) {
                                   setCurrentHardware(hardware);
                                   clearError("hardware");
                                 }}
-                                required
                               />
                               <label
                                 className={`style-text ${
@@ -788,10 +814,47 @@ export default function Details6({ product, initialColor, searchParams }) {
                         type="submit"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
                       >
-                        <span>Add to cart -&nbsp;</span>
+                        <span>
+                          {isAddedToCartProducts(product.ProductID)
+                            ? "Already Added - "
+                            : "Add to cart - "}
+                        </span>
                         <span className="tf-qty-price">${product.Price}</span>
                       </button>
                     </form>
+                    {/* Temporary debug buttons - remove after testing */}
+                    <div className="d-flex gap-2 mt-2">
+                      <button
+                        onClick={() => {
+                          clearCart();
+                          console.log("Cart cleared");
+                        }}
+                        className="btn btn-sm btn-outline-danger"
+                        style={{ fontSize: "12px" }}
+                      >
+                        Clear Cart (Debug)
+                      </button>
+                      <button
+                        onClick={() => {
+                          const zoomPane =
+                            document.querySelector(".tf-zoom-main");
+                          if (zoomPane) {
+                            zoomPane.style.display =
+                              zoomPane.style.display === "block"
+                                ? "none"
+                                : "block";
+                            console.log(
+                              "Zoom pane display toggled:",
+                              zoomPane.style.display
+                            );
+                          }
+                        }}
+                        className="btn btn-sm btn-outline-info"
+                        style={{ fontSize: "12px" }}
+                      >
+                        Toggle Zoom (Debug)
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

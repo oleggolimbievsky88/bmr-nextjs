@@ -25,7 +25,7 @@ export default function Cart() {
               <p className="mb_24">You may check out all the available products and buy some in the shop</p>
               <Link href={`/shop-default`} className="tf-btn btn-sm radius-3 btn-fill btn-icon animate-hover-btn">Return to shop<i className="icon icon-arrow1-top-left"></i></Link>
           </div> */}
-        <div className="tf-cart-countdown">
+        {/* <div className="tf-cart-countdown">
           <div className="title-left">
             <svg
               className="d-inline-block"
@@ -48,7 +48,7 @@ export default function Cart() {
             data-timer={600}
             data-labels="d:,h:,m:,s"
           />
-        </div>
+        </div> */}
         <div className="tf-page-cart-wrap">
           <div className="tf-page-cart-item">
             <form onSubmit={(e) => e.preventDefault()}>
@@ -194,7 +194,7 @@ export default function Cart() {
           </div>
           <div className="tf-page-cart-footer">
             <div className="tf-cart-footer-inner">
-              <div className="tf-free-shipping-bar">
+              {/* <div className="tf-free-shipping-bar">
                 <div className="tf-progress-bar">
                   <span style={{ width: "50%" }}>
                     <div className="progress-car">
@@ -218,7 +218,7 @@ export default function Cart() {
                   Buy <span className="price fw-6">$75.00</span> more to enjoy{" "}
                   <span className="fw-6">Free Shipping</span>
                 </div>
-              </div>
+              </div> */}
               <div className="tf-page-cart-checkout">
                 <div className="shipping-calculator">
                   <summary

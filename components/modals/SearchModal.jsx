@@ -45,26 +45,31 @@ export default function SearchModal() {
           <div className="tf-search-content">
             <div className="tf-cart-hide-has-results">
               <div className="tf-col-quicklink">
-                <div className="tf-search-content-title fw-5">Quick link</div>
+                <div className="tf-search-content-title fw-5">Quick links</div>
                 <ul className="tf-quicklink-list">
                   <li className="tf-quicklink-item">
                     <Link href={`/shop-default`} className="">
-                      Fashion
+                      Ford
                     </Link>
                   </li>
                   <li className="tf-quicklink-item">
                     <Link href={`/shop-default`} className="">
-                      Men
+                      GM Late Model
                     </Link>
                   </li>
                   <li className="tf-quicklink-item">
                     <Link href={`/shop-default`} className="">
-                      Women
+                      GM Early Model
                     </Link>
                   </li>
                   <li className="tf-quicklink-item">
                     <Link href={`/shop-default`} className="">
-                      Accessories
+                      Chevy Late Model
+                    </Link>
+                  </li>
+                  <li className="tf-quicklink-item">
+                    <Link href={`/shop-default`} className="">
+                      Mopar
                     </Link>
                   </li>
                 </ul>
