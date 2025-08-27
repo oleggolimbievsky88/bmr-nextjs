@@ -224,8 +224,11 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
           showHideOpacity: true,
           bgOpacity: 0.9,
           spacing: 0.1,
-          allowPanToNext: true,
           maxSpreadZoom: 3,
+          closeOnScroll: false,
+          closeOnVerticalDrag: false,
+          allowPanToNext: true,
+          allowPanToPrev: true,
           getThumbBoundsFn: function (index) {
             const thumbnail = document.querySelectorAll(
               ".tf-product-media-thumbs .item img"

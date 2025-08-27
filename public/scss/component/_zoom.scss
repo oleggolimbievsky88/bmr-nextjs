@@ -101,3 +101,9 @@
         }
     }
 }
+
+/* PhotoSwipe image height fixes - only override image sizing */
+.pswp__img {
+    max-height: 80vh !important;
+    object-fit: contain !important;
+}
