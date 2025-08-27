@@ -219,7 +219,29 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
 
   return (
     <>
-      <Gallery>
+      <Gallery
+        options={{
+          showHideOpacity: true,
+          bgOpacity: 0.9,
+          spacing: 0.1,
+          allowPanToNext: true,
+          maxSpreadZoom: 3,
+          getThumbBoundsFn: function (index) {
+            const thumbnail = document.querySelectorAll(
+              ".tf-product-media-thumbs .item img"
+            )[index];
+            if (thumbnail) {
+              const rect = thumbnail.getBoundingClientRect();
+              return {
+                x: rect.left,
+                y: rect.top,
+                w: rect.width,
+              };
+            }
+            return { x: 0, y: 0, w: 0 };
+          },
+        }}
+      >
         <Swiper
           spaceBetween={10}
           slidesPerView={1}
@@ -241,18 +263,18 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
                 original={slide.imgSrc}
                 thumbnail={slide.imgSrc}
                 width={slide.width}
-                height="auto"
+                height={slide.height || 500}
               >
                 {({ ref, open }) => (
                   <a
                     className="item"
                     data-pswp-width={slide.width}
-                    data-pswp-height="auto"
+                    data-pswp-height={slide.height || 500}
                     onClick={open}
                     style={{
                       position: "relative",
                       width: "100%",
-                      height: "500px",
+                      height: "auto",
                       display: "block",
                     }}
                   >
@@ -261,9 +283,12 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
                       data-zoom={slide.imgSrc}
                       src={slide.imgSrc}
                       alt={slide.alt}
-                      fill
+                      width={slide.width}
+                      height={slide.height || 500}
                       ref={ref}
                       style={{
+                        width: "100%",
+                        height: "auto",
                         objectFit: "contain",
                         objectPosition: "center",
                       }}

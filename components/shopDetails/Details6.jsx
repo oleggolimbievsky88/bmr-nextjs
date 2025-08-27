@@ -29,9 +29,9 @@ export default function Details6({ product, initialColor, searchParams }) {
   console.log("Current searchParams:", searchParams);
 
   const [currentColor, setCurrentColor] = useState(null);
-  const [currentGrease, setCurrentGrease] = useState(null);
-  const [currentAnglefinder, setCurrentAnglefinder] = useState(null);
-  const [currentHardware, setCurrentHardware] = useState(null);
+  const [currentGrease, setCurrentGrease] = useState(undefined);
+  const [currentAnglefinder, setCurrentAnglefinder] = useState(undefined);
+  const [currentHardware, setCurrentHardware] = useState(undefined);
   const [colorOptions, setColorOptions] = useState([]);
   const [greaseOptions, setGreaseOptions] = useState([]);
   const [anglefinderOptions, setAnglefinderOptions] = useState([]);
@@ -359,15 +359,15 @@ export default function Details6({ product, initialColor, searchParams }) {
       newErrors.color = "Please select a color";
     }
 
-    if (greaseOptions.length > 0 && !currentGrease) {
+    if (greaseOptions.length > 0 && currentGrease === undefined) {
       newErrors.grease = "Please select a grease option";
     }
 
-    if (anglefinderOptions.length > 0 && !currentAnglefinder) {
+    if (anglefinderOptions.length > 0 && currentAnglefinder === undefined) {
       newErrors.anglefinder = "Please select an angle finder option";
     }
 
-    if (hardwareOptions.length > 0 && !currentHardware) {
+    if (hardwareOptions.length > 0 && currentHardware === undefined) {
       newErrors.hardware = "Please select a hardware option";
     }
 
@@ -662,13 +662,37 @@ export default function Details6({ product, initialColor, searchParams }) {
                           </div>
                         </div>
                         <form className="variant-picker-values">
+                          {/* No Thanks option */}
+                          <React.Fragment key="grease-none">
+                            <input
+                              type="radio"
+                              name="grease"
+                              id="grease-none"
+                              checked={currentGrease === undefined}
+                              onChange={() => {
+                                setCurrentGrease(undefined);
+                                clearError("grease");
+                              }}
+                            />
+                            <label
+                              className={`style-text ${
+                                errors.grease ? "error" : ""
+                              }`}
+                              htmlFor="grease-none"
+                              data-value="No Thanks"
+                            >
+                              <p>No Thanks</p>
+                            </label>
+                          </React.Fragment>
                           {greaseOptions.map((grease) => (
                             <React.Fragment key={grease.GreaseID || grease.id}>
                               <input
                                 type="radio"
                                 name="grease"
                                 id={`grease-${grease.GreaseID || grease.id}`}
-                                checked={false} // Explicitly set to false
+                                checked={
+                                  currentGrease?.GreaseID === grease.GreaseID
+                                }
                                 onChange={() => {
                                   setCurrentGrease(grease);
                                   clearError("grease");
@@ -715,6 +739,28 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
+                          {/* No Thanks option */}
+                          <React.Fragment key="anglefinder-none">
+                            <input
+                              type="radio"
+                              name="anglefinder"
+                              id="anglefinder-none"
+                              checked={currentAnglefinder === undefined}
+                              onChange={() => {
+                                setCurrentAnglefinder(undefined);
+                                clearError("anglefinder");
+                              }}
+                            />
+                            <label
+                              className={`style-text ${
+                                errors.anglefinder ? "error" : ""
+                              }`}
+                              htmlFor="anglefinder-none"
+                              data-value="No Thanks"
+                            >
+                              <p>No Thanks</p>
+                            </label>
+                          </React.Fragment>
                           {anglefinderOptions.map((anglefinder) => (
                             <React.Fragment key={anglefinder.AngleID}>
                               <input
@@ -767,6 +813,28 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
+                          {/* No Thanks option */}
+                          <React.Fragment key="hardware-none">
+                            <input
+                              type="radio"
+                              name="hardware"
+                              id="hardware-none"
+                              checked={currentHardware === undefined}
+                              onChange={() => {
+                                setCurrentHardware(undefined);
+                                clearError("hardware");
+                              }}
+                            />
+                            <label
+                              className={`style-text ${
+                                errors.hardware ? "error" : ""
+                              }`}
+                              htmlFor="hardware-none"
+                              data-value="No Thanks"
+                            >
+                              <p>No Thanks</p>
+                            </label>
+                          </React.Fragment>
                           {hardwareOptions.map((hardware) => (
                             <React.Fragment key={hardware.HardwareID}>
                               <input
