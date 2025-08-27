@@ -81,6 +81,13 @@ export default async function ProductDetails({ params, searchParams }) {
 
   // Extract platform slug and category names for breadcrumbs
   const platform = platformInfo?.name || "Platform";
+  const platformSlug = platformInfo?.slug || "Platform";
+  const platformNameFormatted =
+    platformInfo?.startYear +
+    "-" +
+    platformInfo?.endYear +
+    " " +
+    platformInfo?.name;
   const category = currentCategory?.CatName || "Category";
 
   return (
@@ -108,19 +115,21 @@ export default async function ProductDetails({ params, searchParams }) {
           items={[
             { label: "Home", href: "/" },
             {
-              label: platform,
-              href: `/products/${platform.toLowerCase().replace(/\s+/g, "-")}`,
+              label: platformNameFormatted,
+              href: `/products/${platformSlug
+                .toLowerCase()
+                .replace(/\s+/g, "-")}`,
             },
             {
               label: mainCategory?.MainCatName || "Category",
-              href: `/products/${platform.toLowerCase().replace(/\s+/g, "-")}/${
+              href: `/products/${platformSlug}/${
                 mainCategory?.MainCatName?.toLowerCase().replace(/\s+/g, "-") ||
                 "category"
               }`,
             },
             {
               label: currentCategory?.CatName || category,
-              href: `/products/${platform.toLowerCase().replace(/\s+/g, "-")}/${
+              href: `/products/${platformSlug}/${
                 mainCategory?.MainCatName?.toLowerCase().replace(/\s+/g, "-") ||
                 "category"
               }/${

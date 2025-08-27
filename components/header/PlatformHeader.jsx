@@ -14,19 +14,21 @@ export default function PlatformHeader({
       ? platformData.StartYear
       : `${platformData.StartYear}-${platformData.EndYear}`;
 
-  // Use the HeaderImage from platformData if available, otherwise fall back to local image
-  const imageUrl =
-    platformData.HeaderImage ||
-    `/images/platformHeaders/${platformData.slug}_Banner.jpg`;
+  // Use local platform header images with the naming convention: platform-slug_Banner.jpg
+  const imageUrl = `/images/platformHeaders/${platformData.slug}_Banner.jpg`;
+
+  // URL encode the image URL to handle spaces and special characters
+  const encodedImageUrl = imageUrl ? encodeURI(imageUrl) : imageUrl;
 
   console.log("Platform Header Image URL:", imageUrl);
+  console.log("Encoded Platform Header Image URL:", encodedImageUrl);
 
   return (
     <div className="container-fluid px-0 m-0 p-0">
       <div
         className="platform-header-container"
         style={{
-          backgroundImage: `url(${imageUrl})`,
+          backgroundImage: `url(${encodedImageUrl})`,
         }}
       >
         <div className="platform-header-overlay" />
