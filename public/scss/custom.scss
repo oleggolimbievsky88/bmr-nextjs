@@ -1263,7 +1263,7 @@
   margin-bottom: 0px;
   position: relative;
   padding: 0 15px;
-  margin-top: 50px;
+  margin-top: 0px;
 
   &::before,
   &::after {
@@ -1304,6 +1304,15 @@
   position: relative;
 }
 
+/* Tighter spacing for product platform landing pages */
+.product-page .home-title {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+.product-page .home-title + p {
+  margin-top: 6px;
+}
+
 /* Search dropdown styling */
 .search-wrapper {
   position: relative;
@@ -1317,6 +1326,26 @@
 
 .three-column-layout {
   margin-top: 50px !important;
+}
+
+/* Platform cards grid */
+.platform-card {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.platform-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  border-color: var(--primary);
+}
+.platform-card:hover .card-body {
+  border-top-color: var(--primary) !important;
+}
+.platform-card .card-body .fw-semibold {
+  transition: color 160ms ease;
+}
+.platform-card:hover .card-body .fw-semibold {
+  color: var(--primary) !important;
 }
 
 

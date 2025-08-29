@@ -2326,3 +2326,67 @@
     }
   }
 }
+
+// Improved thumbnail positioning for product details
+.thumbs-bottom {
+  .thumbs-slider {
+    .tf-product-media-thumbs {
+      margin-top: 10px !important;
+      margin-bottom: 0 !important;
+      padding: 0;
+
+      .swiper-slide {
+        .item {
+          img {
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+
+            &:hover {
+              border-color: var(--main, #007bff);
+            }
+          }
+        }
+
+        &.swiper-slide-thumb-active {
+          .item {
+            img {
+              border-color: var(--main, #007bff);
+            }
+          }
+        }
+      }
+    }
+
+    .tf-product-media-main {
+      margin-bottom: 10px !important;
+      min-height: 450px;
+    }
+  }
+}
+
+// Additional spacing for product media container
+.tf-product-media-wrap {
+  &.thumbs-bottom {
+    .thumbs-slider {
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+  }
+}
+
+// Override any conflicting styles from custom.scss
+.tf-product-media-wrap.thumbs-bottom .thumbs-slider {
+  .tf-product-media-main {
+    margin-bottom: 10px !important;
+    padding-bottom: 0 !important;
+  }
+
+  .tf-product-media-thumbs {
+    margin-top: 10px !important;
+    padding-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}

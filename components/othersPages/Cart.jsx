@@ -66,27 +66,33 @@ export default function Cart() {
                     <tr key={i} className="tf-cart-item file-delete">
                       <td className="tf-cart-item_product">
                         <Link
-                          href={`/product-detail/${elm.id}`}
+                          href={`/product/${elm.ProductID}`}
                           className="img-box"
                         >
                           <Image
-                            alt="img-product"
-                            src={elm.imgSrc}
+                            alt={elm.ProductName || "Product"}
+                            src={
+                              elm.images?.[0]?.imgSrc || elm.ImageLarge
+                                ? `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`
+                                : "/images/logo/bmr_logo_square_small.webp"
+                            }
                             width={668}
                             height={932}
                           />
                         </Link>
                         <div className="cart-info">
                           <Link
-                            href={`/product-detail/${elm.id}`}
+                            href={`/product/${elm.ProductID}`}
                             className="cart-title link"
                           >
-                            {elm.title}
+                            {elm.ProductName || "Product"}
                           </Link>
-                          <div className="cart-meta-variant">White / M</div>
+                          <div className="cart-meta-variant">
+                            {elm.selectedColor || "Default"}
+                          </div>
                           <span
                             className="remove-cart link remove"
-                            onClick={() => removeItem(elm.id)}
+                            onClick={() => removeItem(elm.ProductID)}
                           >
                             Remove
                           </span>
@@ -97,7 +103,7 @@ export default function Cart() {
                         cart-data-title="Price"
                       >
                         <div className="cart-price">
-                          ${elm.price.toFixed(2)}
+                          ${elm.Price?.toFixed(2) || "0.00"}
                         </div>
                       </td>
                       <td
@@ -109,7 +115,7 @@ export default function Cart() {
                             <span
                               className="btn-quantity minus-btn"
                               onClick={() =>
-                                setQuantity(elm.id, elm.quantity - 1)
+                                setQuantity(elm.ProductID, elm.quantity - 1)
                               }
                             >
                               <svg
@@ -128,13 +134,13 @@ export default function Cart() {
                               value={elm.quantity}
                               min={1}
                               onChange={(e) =>
-                                setQuantity(elm.id, e.target.value / 1)
+                                setQuantity(elm.ProductID, e.target.value / 1)
                               }
                             />
                             <span
                               className="btn-quantity plus-btn"
                               onClick={() =>
-                                setQuantity(elm.id, elm.quantity + 1)
+                                setQuantity(elm.ProductID, elm.quantity + 1)
                               }
                             >
                               <svg
@@ -158,7 +164,7 @@ export default function Cart() {
                           className="cart-total"
                           style={{ minWidth: "60px" }}
                         >
-                          ${(elm.price * elm.quantity).toFixed(2)}
+                          ${(elm.Price * elm.quantity).toFixed(2)}
                         </div>
                       </td>
                     </tr>

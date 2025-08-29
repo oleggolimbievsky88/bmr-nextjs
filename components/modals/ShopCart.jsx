@@ -1,31 +1,60 @@
 "use client";
 import { useContextElement } from "@/context/Context";
-import { products1 } from "@/data/products";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+
 export default function ShopCart() {
   const { cartProducts, totalPrice, setCartProducts, setQuickViewItem } =
     useContextElement();
-  const setQuantity = (id, quantity) => {
+  const [recommendations, setRecommendations] = useState([]);
+
+  // Debug logging
+  console.log("ShopCart rendered with cartProducts:", cartProducts);
+  console.log("Total price:", totalPrice);
+
+  const setQuantity = (item, quantity) => {
     if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.id == id)[0];
       const items = [...cartProducts];
       const itemIndex = items.indexOf(item);
-      item.quantity = quantity;
-      items[itemIndex] = item;
+      items[itemIndex].quantity = quantity;
       setCartProducts(items);
     }
   };
-  const removeItem = (id) => {
-    setCartProducts((pre) => [...pre.filter((elm) => elm.id != id)]);
+  const removeItem = (item) => {
+    setCartProducts((pre) => [...pre.filter((elm) => elm !== item)]);
   };
 
   const addNoteRef = useRef();
   const addGiftRef = useRef();
   const addShipingRef = useRef();
+
+  // Fetch recommendations when cart changes
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (cartProducts.length > 0) {
+        try {
+          // Get recommendations based on the first product in cart
+          const firstProduct = cartProducts[0];
+          const response = await fetch(
+            `/api/related-products?productId=${firstProduct.ProductID}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendations(data.products || []);
+          }
+        } catch (error) {
+          console.error("Error fetching recommendations:", error);
+        }
+      } else {
+        setRecommendations([]);
+      }
+    };
+
+    fetchRecommendations();
+  }, [cartProducts]);
 
   return (
     <div className="modal fullRight fade modal-shopping-cart" id="shoppingCart">
@@ -47,12 +76,13 @@ export default function ShopCart() {
                     {cartProducts.map((elm, i) => (
                       <div key={i} className="tf-mini-cart-item">
                         <div className="tf-mini-cart-image">
-                          <Link href={`/product-detail/${elm.id}`}>
+                          <Link href={`/product/${elm.ProductID}`}>
                             <Image
-                              alt=""
+                              alt={elm.ProductName || "Product"}
                               src={
-                                elm.imgSrc ||
-                                "/images/logo/bmr_logo_square_small.webp"
+                                elm.images?.[0]?.imgSrc || elm.ImageLarge
+                                  ? `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`
+                                  : "/images/logo/bmr_logo_square_small.webp"
                               }
                               width={135}
                               height={135}
@@ -63,20 +93,127 @@ export default function ShopCart() {
                         <div className="tf-mini-cart-info">
                           <Link
                             className="title link"
-                            href={`/product-detail/${elm.id}`}
+                            href={`/product/${elm.ProductID}`}
                           >
-                            {elm.title}
+                            {elm.ProductName || "Product"}
                           </Link>
-                          <div className="meta-variant">Light gray</div>
+                          <div className="meta-variant">
+                            {elm.selectedColor && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "#333",
+                                    minWidth: "fit-content",
+                                  }}
+                                >
+                                  Color:
+                                </span>{" "}
+                                {elm.selectedColor.ColorName ||
+                                  elm.selectedColor}
+                              </div>
+                            )}
+                            {elm.selectedGrease && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "#333",
+                                    minWidth: "fit-content",
+                                  }}
+                                >
+                                  Grease:
+                                </span>{" "}
+                                {elm.selectedGrease.GreaseName ||
+                                  elm.selectedGrease}
+                              </div>
+                            )}
+                            {elm.selectedAnglefinder && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "#333",
+                                    minWidth: "fit-content",
+                                  }}
+                                >
+                                  Angle Finder:
+                                </span>{" "}
+                                {elm.selectedAnglefinder.AngleName ||
+                                  elm.selectedAnglefinder}
+                              </div>
+                            )}
+                            {elm.selectedHardware && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "#333",
+                                    minWidth: "fit-content",
+                                  }}
+                                >
+                                  Hardware:
+                                </span>{" "}
+                                {elm.selectedHardware.HardwareName ||
+                                  elm.selectedHardware}
+                              </div>
+                            )}
+                            {!elm.selectedColor &&
+                              !elm.selectedGrease &&
+                              !elm.selectedAnglefinder &&
+                              !elm.selectedHardware && (
+                                <div
+                                  style={{ fontSize: "12px", color: "#666" }}
+                                >
+                                  Default Options
+                                </div>
+                              )}
+                          </div>
                           <div className="price fw-6">
-                            ${elm.price?.toFixed(2)}
+                            ${elm.Price?.toFixed(2) || "0.00"}
                           </div>
                           <div className="tf-mini-cart-btns">
                             <div className="wg-quantity small">
                               <span
                                 className="btn-quantity minus-btn"
                                 onClick={() =>
-                                  setQuantity(elm.id, elm.quantity - 1)
+                                  setQuantity(elm, elm.quantity - 1)
                                 }
                               >
                                 -
@@ -87,13 +224,13 @@ export default function ShopCart() {
                                 value={elm.quantity}
                                 min={1}
                                 onChange={(e) =>
-                                  setQuantity(elm.id, e.target.value / 1)
+                                  setQuantity(elm, e.target.value / 1)
                                 }
                               />
                               <span
                                 className="btn-quantity plus-btn"
                                 onClick={() =>
-                                  setQuantity(elm.id, elm.quantity + 1)
+                                  setQuantity(elm, elm.quantity + 1)
                                 }
                               >
                                 +
@@ -102,7 +239,7 @@ export default function ShopCart() {
                             <div
                               className="tf-mini-cart-remove"
                               style={{ cursor: "pointer" }}
-                              onClick={() => removeItem(elm.id)}
+                              onClick={() => removeItem(elm)}
                             >
                               Remove
                             </div>
@@ -146,14 +283,18 @@ export default function ShopCart() {
                       }}
                       className="swiper tf-cart-slide"
                     >
-                      {products1.slice(0, 2).map((elm, i) => (
+                      {recommendations.slice(0, 2).map((elm, i) => (
                         <SwiperSlide key={i} className="swiper-slide">
                           <div className="tf-minicart-recommendations-item">
                             <div className="tf-minicart-recommendations-item-image">
-                              <Link href={`/product-detail/${elm.id}`}>
+                              <Link href={`/product/${elm.ProductID}`}>
                                 <Image
-                                  alt=""
-                                  src={elm.imgSrc}
+                                  alt={elm.ProductName || "Product"}
+                                  src={
+                                    elm.ImageLarge
+                                      ? `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`
+                                      : "/images/logo/bmr_logo_square_small.webp"
+                                  }
                                   width={720}
                                   height={1005}
                                 />
@@ -162,12 +303,12 @@ export default function ShopCart() {
                             <div className="tf-minicart-recommendations-item-infos flex-grow-1">
                               <Link
                                 className="title"
-                                href={`/product-detail/${1}`}
+                                href={`/product/${elm.ProductID}`}
                               >
-                                {elm.title}
+                                {elm.ProductName || "Product"}
                               </Link>
                               <div className="price">
-                                ${elm.price.toFixed(2)}
+                                ${elm.Price?.toFixed(2) || "0.00"}
                               </div>
                             </div>
                             <div className="tf-minicart-recommendations-item-quickview">

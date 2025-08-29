@@ -20,42 +20,88 @@ export default function Context({ children }) {
   const [quickAddItem, setQuickAddItem] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
+    console.log("Cart products changed:", cartProducts);
     const subtotal = cartProducts.reduce((accumulator, product) => {
-      const price = parseFloat(product.Price || product.price || 0);
+      const price = parseFloat(product.Price || 0);
       const quantity = parseInt(product.quantity || 1);
+      console.log(
+        `Product ${product.ProductID}: price=${price}, quantity=${quantity}`
+      );
       return accumulator + quantity * price;
     }, 0);
+    console.log("Calculated subtotal:", subtotal);
     setTotalPrice(subtotal);
   }, [cartProducts]);
 
   const addProductToCart = async (productId, qty = 1, options = {}) => {
-    if (!cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
-      try {
-        // Fetch product data from API
-        const response = await fetch(`/api/product-by-id?id=${productId}`);
-        if (response.ok) {
-          const productData = await response.json();
-          const item = {
-            ...productData.product,
-            quantity: qty,
-            selectedColor: options.selectedColor || null,
-            selectedGrease: options.selectedGrease || null,
-            selectedAnglefinder: options.selectedAnglefinder || null,
-            selectedHardware: options.selectedHardware || null,
-          };
-          setCartProducts((pre) => [...pre, item]);
-          openCartModal();
+    console.log("addProductToCart called with:", { productId, qty, options });
+
+    try {
+      // Fetch product data from API
+      const response = await fetch(`/api/product-by-id?id=${productId}`);
+      if (response.ok) {
+        const productData = await response.json();
+        console.log("Product data from API:", productData);
+
+        const newItem = {
+          ...productData.product,
+          quantity: qty,
+          selectedColor: options.selectedColor || null,
+          selectedGrease: options.selectedGrease || null,
+          selectedAnglefinder: options.selectedAnglefinder || null,
+          selectedHardware: options.selectedHardware || null,
+        };
+
+        // Check if exact same product with same options already exists
+        const existingItemIndex = cartProducts.findIndex((item) => {
+          return (
+            item.ProductID === productId &&
+            JSON.stringify(item.selectedColor) ===
+              JSON.stringify(newItem.selectedColor) &&
+            JSON.stringify(item.selectedGrease) ===
+              JSON.stringify(newItem.selectedGrease) &&
+            JSON.stringify(item.selectedAnglefinder) ===
+              JSON.stringify(newItem.selectedAnglefinder) &&
+            JSON.stringify(item.selectedHardware) ===
+              JSON.stringify(newItem.selectedHardware)
+          );
+        });
+
+        if (existingItemIndex !== -1) {
+          // Same product with same options - increase quantity
+          const updatedCart = [...cartProducts];
+          updatedCart[existingItemIndex].quantity += qty;
+          setCartProducts(updatedCart);
+          console.log("Increased quantity of existing item");
+        } else {
+          // Different product or different options - add as new item
+          setCartProducts((pre) => [...pre, newItem]);
+          console.log("Added new item to cart");
         }
-      } catch (error) {
-        console.error("Error adding product to cart:", error);
+
+        openCartModal();
       }
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
     }
   };
-  const isAddedToCartProducts = (productId) => {
-    if (cartProducts.filter((elm) => elm.ProductID == productId)[0]) {
-      return true;
-    }
-    return false;
+  const isAddedToCartProducts = (productId, options = {}) => {
+    // Check if exact same product with same options already exists
+    const existingItem = cartProducts.find((item) => {
+      return (
+        item.ProductID === productId &&
+        JSON.stringify(item.selectedColor) ===
+          JSON.stringify(options.selectedColor || null) &&
+        JSON.stringify(item.selectedGrease) ===
+          JSON.stringify(options.selectedGrease || null) &&
+        JSON.stringify(item.selectedAnglefinder) ===
+          JSON.stringify(options.selectedAnglefinder || null) &&
+        JSON.stringify(item.selectedHardware) ===
+          JSON.stringify(options.selectedHardware || null)
+      );
+    });
+
+    return existingItem ? true : false;
   };
 
   const clearCart = () => {
@@ -99,20 +145,19 @@ export default function Context({ children }) {
   };
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartList"));
+    console.log("Loading cart from localStorage:", items);
     if (items?.length) {
       // Filter out any invalid items and ensure proper structure
       const validItems = items.filter(
-        (item) =>
-          item &&
-          item.ProductID &&
-          item.ProductName &&
-          (item.Price || item.price)
+        (item) => item && item.ProductID && item.ProductName && item.Price
       );
+      console.log("Valid items from localStorage:", validItems);
       setCartProducts(validItems);
     }
   }, []);
 
   useEffect(() => {
+    console.log("Saving cart to localStorage:", cartProducts);
     localStorage.setItem("cartList", JSON.stringify(cartProducts));
   }, [cartProducts]);
   useEffect(() => {

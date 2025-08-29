@@ -324,7 +324,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
             slidesPerView: 5,
           },
         }}
-        style={{ marginTop: 0 }}
+        style={{ marginTop: 0, marginBottom: 0 }}
       >
         {images.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">

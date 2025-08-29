@@ -430,7 +430,17 @@ export default function Details6({ product, initialColor, searchParams }) {
             <div className="row">
               <div className="col-md-6">
                 <div className="tf-product-media-wrap thumbs-bottom sticky-top">
-                  <div className="thumbs-slider" style={{ maxHeight: 600 }}>
+                  <div
+                    className="thumbs-slider"
+                    style={{
+                      height: "auto",
+                      minHeight: 500,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                      paddingBottom: 0,
+                    }}
+                  >
                     <Slider3BottomThumbs
                       productId={product.ProductID}
                       selectedColor={currentColor}
@@ -480,7 +490,17 @@ export default function Details6({ product, initialColor, searchParams }) {
           <div className="row">
             <div className="col-md-6">
               <div className="tf-product-media-wrap thumbs-bottom sticky-top">
-                <div className="thumbs-slider" style={{ maxHeight: 600 }}>
+                <div
+                  className="thumbs-slider"
+                  style={{
+                    height: "auto",
+                    minHeight: 500,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    paddingBottom: 0,
+                  }}
+                >
                   <Slider3BottomThumbs
                     productId={product.ProductID}
                     selectedColor={currentColor}
@@ -882,16 +902,12 @@ export default function Details6({ product, initialColor, searchParams }) {
                         type="submit"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
                       >
-                        <span>
-                          {isAddedToCartProducts(product.ProductID)
-                            ? "Already Added - "
-                            : "Add to cart - "}
-                        </span>
+                        <span>Add to cart -</span>
                         <span className="tf-qty-price">${product.Price}</span>
                       </button>
                     </form>
                     {/* Temporary debug buttons - remove after testing */}
-                    <div className="d-flex gap-2 mt-2">
+                    {/* <div className="d-flex gap-2 mt-2">
                       <button
                         onClick={() => {
                           clearCart();
@@ -902,27 +918,7 @@ export default function Details6({ product, initialColor, searchParams }) {
                       >
                         Clear Cart (Debug)
                       </button>
-                      <button
-                        onClick={() => {
-                          const zoomPane =
-                            document.querySelector(".tf-zoom-main");
-                          if (zoomPane) {
-                            zoomPane.style.display =
-                              zoomPane.style.display === "block"
-                                ? "none"
-                                : "block";
-                            console.log(
-                              "Zoom pane display toggled:",
-                              zoomPane.style.display
-                            );
-                          }
-                        }}
-                        className="btn btn-sm btn-outline-info"
-                        style={{ fontSize: "12px" }}
-                      >
-                        Toggle Zoom (Debug)
-                      </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
