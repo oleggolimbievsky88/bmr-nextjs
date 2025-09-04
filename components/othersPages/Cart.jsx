@@ -8,7 +8,7 @@ export default function Cart() {
   const [termsAgreed, setTermsAgreed] = useState(false);
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.id == id)[0];
+      const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
       const items = [...cartProducts];
       const itemIndex = items.indexOf(item);
       item.quantity = quantity;
@@ -17,7 +17,7 @@ export default function Cart() {
     }
   };
   const removeItem = (id) => {
-    setCartProducts((pre) => [...pre.filter((elm) => elm.id != id)]);
+    setCartProducts((pre) => [...pre.filter((elm) => elm.ProductID != id)]);
   };
   return (
     <section className="flat-spacing-11">
