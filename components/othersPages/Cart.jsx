@@ -2,8 +2,10 @@
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 export default function Cart() {
   const { cartProducts, setCartProducts, totalPrice } = useContextElement();
+  const [termsAgreed, setTermsAgreed] = useState(false);
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
       const item = cartProducts.filter((elm) => elm.id == id)[0];
@@ -71,11 +73,59 @@ export default function Cart() {
                         >
                           <Image
                             alt={elm.ProductName || "Product"}
-                            src={
-                              elm.images?.[0]?.imgSrc || elm.ImageLarge
-                                ? `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`
-                                : "/images/logo/bmr_logo_square_small.webp"
-                            }
+                            src={(() => {
+                              // Use color-specific product image from the product's image array
+                              if (
+                                elm.selectedColor &&
+                                elm.images &&
+                                elm.images.length > 0
+                              ) {
+                                // Determine which image to show based on color
+                                let imageIndex = 0; // Default to first image
+
+                                if (elm.selectedColor.ColorID === 1) {
+                                  // Black Hammertone - show second image if available
+                                  imageIndex = Math.min(
+                                    1,
+                                    elm.images.length - 1
+                                  );
+                                } else if (elm.selectedColor.ColorID === 2) {
+                                  // Red - show first image
+                                  imageIndex = 0;
+                                }
+                                // Add more color mappings as needed
+
+                                const colorImageSrc =
+                                  elm.images[imageIndex]?.imgSrc ||
+                                  elm.images[0]?.imgSrc;
+                                if (
+                                  colorImageSrc &&
+                                  colorImageSrc.trim() !== ""
+                                ) {
+                                  return colorImageSrc;
+                                }
+                              }
+
+                              // Fallback to main product image
+                              if (
+                                elm.images?.[0]?.imgSrc &&
+                                elm.images[0].imgSrc.trim() !== ""
+                              ) {
+                                return elm.images[0].imgSrc;
+                              }
+
+                              // Fallback to external BMR image
+                              if (
+                                elm.ImageLarge &&
+                                elm.ImageLarge.trim() !== "" &&
+                                elm.ImageLarge !== "0"
+                              ) {
+                                return `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`;
+                              }
+
+                              // Final fallback to BMR logo
+                              return "/images/logo/bmr_logo_square_small.webp";
+                            })()}
                             width={668}
                             height={932}
                           />
@@ -88,7 +138,38 @@ export default function Cart() {
                             {elm.ProductName || "Product"}
                           </Link>
                           <div className="cart-meta-variant">
-                            {elm.selectedColor || "Default"}
+                            {/* Part Number with color suffix */}
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                marginBottom: "2px",
+                                color: "#333",
+                                fontWeight: "600",
+                              }}
+                            >
+                              Part #: {elm.PartNumber || "N/A"}
+                              {elm.selectedColor && (
+                                <>
+                                  {elm.selectedColor.ColorName &&
+                                  elm.selectedColor.ColorName.toLowerCase().includes(
+                                    "red"
+                                  )
+                                    ? "R"
+                                    : elm.selectedColor.ColorName &&
+                                      elm.selectedColor.ColorName.toLowerCase().includes(
+                                        "black"
+                                      )
+                                    ? "H"
+                                    : ""}
+                                </>
+                              )}
+                            </div>
+                            {/* Color */}
+                            <div>
+                              {elm.selectedColor
+                                ? elm.selectedColor.ColorName
+                                : "Default"}
+                            </div>
                           </div>
                           <span
                             className="remove-cart link remove"
@@ -103,7 +184,7 @@ export default function Cart() {
                         cart-data-title="Price"
                       >
                         <div className="cart-price">
-                          ${elm.Price?.toFixed(2) || "0.00"}
+                          ${(parseFloat(elm.Price) || 0).toFixed(2)}
                         </div>
                       </td>
                       <td
@@ -164,7 +245,10 @@ export default function Cart() {
                           className="cart-total"
                           style={{ minWidth: "60px" }}
                         >
-                          ${(elm.Price * elm.quantity).toFixed(2)}
+                          $
+                          {(
+                            (parseFloat(elm.Price) || 0) * elm.quantity
+                          ).toFixed(2)}
                         </div>
                       </td>
                     </tr>
@@ -392,21 +476,10 @@ export default function Cart() {
                     </div>
                   </div>
                 </div>
-                <div className="cart-checkbox">
-                  <input
-                    type="checkbox"
-                    className="tf-check"
-                    id="cart-gift-checkbox"
-                  />
-                  <label htmlFor="cart-gift-checkbox" className="fw-4">
-                    <span>Do you want a gift wrap?</span> Only
-                    <span className="fw-5">$5.00</span>
-                  </label>
-                </div>
                 <div className="tf-cart-totals-discounts">
                   <h3>Subtotal</h3>
                   <span className="total-value">
-                    ${totalPrice.toFixed(2)} USD
+                    ${(parseFloat(totalPrice) || 0).toFixed(2)} USD
                   </span>
                 </div>
                 <p className="tf-cart-tax">
@@ -419,19 +492,40 @@ export default function Cart() {
                     type="checkbox"
                     className="tf-check"
                     id="check-agree"
+                    checked={termsAgreed}
+                    onChange={(e) => setTermsAgreed(e.target.checked)}
+                    required
                   />
                   <label htmlFor="check-agree" className="fw-4">
-                    I agree with the
-                    <Link href={`/terms-conditions`}>terms and conditions</Link>
+                    I agree with the{" "}
+                    <Link
+                      href={`/terms-conditions`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      terms and conditions
+                    </Link>
+                    <span className="text-danger">*</span>
                   </label>
                 </div>
                 <div className="cart-checkout-btn">
-                  <Link
-                    href={`/checkout`}
-                    className="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center"
-                  >
-                    <span>Check out</span>
-                  </Link>
+                  {termsAgreed ? (
+                    <Link
+                      href={`/checkout`}
+                      className="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center"
+                    >
+                      <span>Check out</span>
+                    </Link>
+                  ) : (
+                    <button
+                      className="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center"
+                      disabled
+                      style={{ opacity: 0.5, cursor: "not-allowed" }}
+                      title="Please agree to terms and conditions"
+                    >
+                      <span>Check out</span>
+                    </button>
+                  )}
                 </div>
                 <div className="tf-page-cart_imgtrust">
                   <p className="text-center fw-6">Guarantee Safe Checkout</p>

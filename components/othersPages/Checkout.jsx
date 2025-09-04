@@ -226,7 +226,10 @@ export default function Checkout() {
                           <span className="variant">Brown / M</span>
                         </div>
                         <span className="price">
-                          ${(elm.price * elm.quantity).toFixed(2)}
+                          $
+                          {(
+                            (parseFloat(elm.price) || 0) * elm.quantity
+                          ).toFixed(2)}
                         </span>
                       </div>
                     </li>

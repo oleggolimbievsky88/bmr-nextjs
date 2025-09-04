@@ -113,15 +113,21 @@ export default function Header18({ initialMenuData }) {
                               {product.hasOldPrice ? (
                                 <div className="d-flex gap-10">
                                   <span className="old-price">
-                                    ${product.oldPrice.toFixed(2)}
+                                    $
+                                    {(
+                                      parseFloat(product.oldPrice) || 0
+                                    ).toFixed(2)}
                                   </span>
                                   <span className="new-price">
-                                    ${product.price.toFixed(2)}
+                                    $
+                                    {(parseFloat(product.price) || 0).toFixed(
+                                      2
+                                    )}
                                   </span>
                                 </div>
                               ) : (
                                 <div className="price">
-                                  ${product.price.toFixed(2)}
+                                  ${(parseFloat(product.price) || 0).toFixed(2)}
                                 </div>
                               )}
                             </div>

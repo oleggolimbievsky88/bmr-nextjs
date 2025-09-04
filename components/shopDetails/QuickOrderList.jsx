@@ -263,7 +263,7 @@ export default function QuickOrderList() {
                         <p>Product subtotal</p>
                       </div>
                       <p>
-                        Taxes and <a href="#">shipping</a> calculated at
+                        Taxes and <a href="#"> shipping</a> calculated at
                         checkout
                       </p>
                     </div>

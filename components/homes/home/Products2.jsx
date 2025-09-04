@@ -149,7 +149,7 @@ export default function Products2() {
                         {item.title}
                       </Link>
                       <span className="price text_white">
-                        ${item.price.toFixed(2)}
+                        ${(parseFloat(item.price) || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

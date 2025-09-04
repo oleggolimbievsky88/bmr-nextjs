@@ -42,10 +42,12 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const handleScroll = () => {
       const header = document.querySelector("header");
-      if (window.scrollY > 100) {
-        header.classList.add("header-bg");
-      } else {
-        header.classList.remove("header-bg");
+      if (header) {
+        if (window.scrollY > 100) {
+          header.classList.add("header-bg");
+        } else {
+          header.classList.remove("header-bg");
+        }
       }
     };
 

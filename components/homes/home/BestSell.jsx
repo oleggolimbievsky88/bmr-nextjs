@@ -85,7 +85,10 @@ export default function BestSell() {
                       </div>
                       <div className="tf-product-info-price">
                         <div className="price">
-                          ${productBestcell[0].price.toFixed(2)}
+                          $
+                          {(parseFloat(productBestcell[0].price) || 0).toFixed(
+                            2
+                          )}
                         </div>
                       </div>
                       <div className="tf-product-info-liveview">
@@ -243,7 +246,10 @@ export default function BestSell() {
                                 : "Add to cart -"}
                             </span>
                             <span className="tf-qty-price">
-                              ${productBestcell[0].price.toFixed(2)}
+                              $
+                              {(
+                                parseFloat(productBestcell[0].price) || 0
+                              ).toFixed(2)}
                             </span>
                           </a>
                           <a
@@ -351,26 +357,27 @@ export default function BestSell() {
                           <div className="text fw-6">Share</div>
                         </a>
                       </div>
-                      
+
                       <div className="tf-product-info-trust-seal">
                         <div className="tf-product-trust-mess">
                           <i className="icon-safe" />
                           <p className="fw-6">
-                            Guarantee Safe asdf<br />
+                            Guarantee Safe asdf
+                            <br />
                             Checkout
                           </p>
                         </div>
                         <div className="tf-payment">
-                        {paymentImages.map((image, index) => (
-                          <Image
-                            key={index}
-                            src={image.src}
-                            width={image.width}
-                            height={image.height}
-                            alt={image.alt}
-                          />
-                        ))}
-                      </div>
+                          {paymentImages.map((image, index) => (
+                            <Image
+                              key={index}
+                              src={image.src}
+                              width={image.width}
+                              height={image.height}
+                              alt={image.alt}
+                            />
+                          ))}
+                        </div>
                       </div>
                       <div>
                         <Link

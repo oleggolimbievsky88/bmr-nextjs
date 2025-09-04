@@ -594,7 +594,7 @@ export default function Details6({ product, initialColor, searchParams }) {
                                   type="radio"
                                   name="color"
                                   id={`color-${color.ColorID || color.id}`}
-                                  checked={isSelected}
+                                  checked={isSelected || false}
                                   onChange={() => {
                                     console.log(
                                       "=== COLOR SELECTION DEBUG ==="
@@ -711,7 +711,8 @@ export default function Details6({ product, initialColor, searchParams }) {
                                 name="grease"
                                 id={`grease-${grease.GreaseID || grease.id}`}
                                 checked={
-                                  currentGrease?.GreaseID === grease.GreaseID
+                                  currentGrease?.GreaseID === grease.GreaseID ||
+                                  false
                                 }
                                 onChange={() => {
                                   setCurrentGrease(grease);
@@ -789,7 +790,7 @@ export default function Details6({ product, initialColor, searchParams }) {
                                 id={`anglefinder-${anglefinder.AngleID}`}
                                 checked={
                                   currentAnglefinder?.AngleID ===
-                                  anglefinder.AngleID
+                                    anglefinder.AngleID || false
                                 }
                                 onChange={() => {
                                   setCurrentAnglefinder(anglefinder);
@@ -863,7 +864,7 @@ export default function Details6({ product, initialColor, searchParams }) {
                                 id={`hardware-${hardware.HardwareID}`}
                                 checked={
                                   currentHardware?.HardwareID ===
-                                  hardware.HardwareID
+                                    hardware.HardwareID || false
                                 }
                                 onChange={() => {
                                   setCurrentHardware(hardware);
