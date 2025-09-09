@@ -19,6 +19,9 @@ export default function Context({ children }) {
   });
   const [quickAddItem, setQuickAddItem] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [freeShipping, setFreeShipping] = useState(false);
   useEffect(() => {
     console.log("Cart products changed:", cartProducts);
     const subtotal = cartProducts.reduce((accumulator, product) => {
@@ -106,7 +109,45 @@ export default function Context({ children }) {
 
   const clearCart = () => {
     setCartProducts([]);
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setFreeShipping(false);
     localStorage.removeItem("cartList");
+  };
+
+  const applyCoupon = async (couponCode) => {
+    try {
+      const response = await fetch("/api/validate-coupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          couponCode,
+          cartItems: cartProducts,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.valid) {
+        setAppliedCoupon(result.coupon);
+        setCouponDiscount(result.coupon.discountAmount);
+        setFreeShipping(result.coupon.freeShipping);
+        return { success: true, coupon: result.coupon };
+      } else {
+        return { success: false, message: result.message };
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      return { success: false, message: "Error applying coupon" };
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setFreeShipping(false);
   };
 
   const addToWishlist = (id) => {
@@ -191,6 +232,11 @@ export default function Context({ children }) {
     removeFromCompareItem,
     compareItem,
     setCompareItem,
+    appliedCoupon,
+    couponDiscount,
+    freeShipping,
+    applyCoupon,
+    removeCoupon,
   };
   return (
     <dataContext.Provider value={contextElement}>

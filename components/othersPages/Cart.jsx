@@ -4,8 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 export default function Cart() {
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
+  const {
+    cartProducts,
+    setCartProducts,
+    totalPrice,
+    appliedCoupon,
+    couponDiscount,
+    freeShipping,
+    applyCoupon,
+    removeCoupon,
+  } = useContextElement();
   const [termsAgreed, setTermsAgreed] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
       const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
@@ -19,6 +31,42 @@ export default function Cart() {
   const removeItem = (id) => {
     setCartProducts((pre) => [...pre.filter((elm) => elm.ProductID != id)]);
   };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const result = await applyCoupon(couponCode.trim());
+      if (result.success) {
+        setCouponCode("");
+        setCouponError("");
+      } else {
+        setCouponError(result.message);
+      }
+    } catch (error) {
+      setCouponError("Error applying coupon");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    removeCoupon();
+    setCouponCode("");
+    setCouponError("");
+  };
+
+  // Calculate totals
+  const subtotal = totalPrice;
+  const shipping = freeShipping ? 0 : 0; // You can add shipping calculation logic here
+  const tax = 0; // You can add tax calculation logic here
+  const grandTotal = subtotal - couponDiscount + shipping + tax;
   return (
     <section className="flat-spacing-11">
       <div className="container">
@@ -476,17 +524,94 @@ export default function Cart() {
                     </div>
                   </div>
                 </div>
-                <div className="tf-cart-totals-discounts">
-                  <h3>Subtotal</h3>
-                  <span className="total-value">
-                    ${(parseFloat(totalPrice) || 0).toFixed(2)} USD
-                  </span>
+                {/* Coupon Code Section */}
+                <div className="tf-cart-coupon-section mb-4">
+                  <h3 className="mb-3">Have a coupon code? Enter it here!</h3>
+
+                  {!appliedCoupon ? (
+                    // Before coupon applied state
+                    <div className="coupon-input-group">
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Type here..."
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleApplyCoupon()
+                          }
+                        />
+                        <button
+                          className="btn btn-danger"
+                          type="button"
+                          onClick={handleApplyCoupon}
+                          disabled={couponLoading}
+                        >
+                          {couponLoading ? "Applying..." : "Apply"}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <div className="text-danger mt-2 small">
+                          {couponError}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    // After coupon applied state
+                    <div className="coupon-applied">
+                      <div className="alert alert-success d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong>{appliedCoupon.name}</strong> -{" "}
+                          {appliedCoupon.valueType === "percentage"
+                            ? `${appliedCoupon.value}%`
+                            : `$${appliedCoupon.value}`}{" "}
+                          off
+                          {appliedCoupon.freeShipping && " and FREE shipping"}
+                        </div>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={handleRemoveCoupon}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <p className="tf-cart-tax">
-                  Taxes and
-                  <Link href={`/shipping-delivery`}>shipping</Link> calculated
-                  at checkout
-                </p>
+
+                {/* Order Summary */}
+                <div className="tf-cart-order-summary">
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <span>
+                      {freeShipping ? "FREE" : `$${shipping.toFixed(2)}`}
+                    </span>
+                  </div>
+                  {appliedCoupon && (
+                    <div className="d-flex justify-content-between mb-2 text-danger">
+                      <span>Coupon ({appliedCoupon.code}):</span>
+                      <span>-${couponDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Gift Certificate:</span>
+                    <span>$0.00</span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Tax:</span>
+                    <span>${tax.toFixed(2)}</span>
+                  </div>
+                  <hr />
+                  <div className="d-flex justify-content-between mb-3">
+                    <strong>Grand Total:</strong>
+                    <strong>${grandTotal.toFixed(2)}</strong>
+                  </div>
+                </div>
                 <div className="cart-checkbox">
                   <input
                     type="checkbox"

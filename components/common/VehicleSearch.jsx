@@ -152,7 +152,7 @@ export default function VehicleSearch() {
       <span
         className="fw-5"
         style={{
-          fontSize: "20px",
+          fontSize: "19px",
           fontFamily: "Impact",
           textAlign: "center",
           display: "block",

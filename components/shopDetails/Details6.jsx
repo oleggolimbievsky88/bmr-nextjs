@@ -237,19 +237,11 @@ export default function Details6({ product, initialColor, searchParams }) {
               setCurrentColor(null);
             }
           } else {
-            // No color in URL - auto-select if only one option
-            if (filteredColors.length === 1) {
-              console.log(
-                "Only one color option available, auto-selecting:",
-                filteredColors[0]
-              );
-              setCurrentColor(filteredColors[0]);
-            } else {
-              console.log(
-                "Multiple color options available, requiring selection - setting currentColor to null"
-              );
-              setCurrentColor(null);
-            }
+            // No color in URL - require selection for all options
+            console.log(
+              "No color in URL - requiring selection for all color options"
+            );
+            setCurrentColor(null);
           }
         } else {
           console.log(
@@ -354,19 +346,22 @@ export default function Details6({ product, initialColor, searchParams }) {
   const validateForm = () => {
     const newErrors = {};
 
-    // Only require color selection if there are multiple options or no color is selected
-    if (colorOptions.length > 1 && !currentColor) {
+    // Require color selection if there are any color options available
+    if (colorOptions.length > 0 && !currentColor) {
       newErrors.color = "Please select a color";
     }
 
+    // Require grease selection if there are any grease options available
     if (greaseOptions.length > 0 && currentGrease === undefined) {
       newErrors.grease = "Please select a grease option";
     }
 
+    // Require angle finder selection if there are any angle finder options available
     if (anglefinderOptions.length > 0 && currentAnglefinder === undefined) {
       newErrors.anglefinder = "Please select an angle finder option";
     }
 
+    // Require hardware selection if there are any hardware options available
     if (hardwareOptions.length > 0 && currentHardware === undefined) {
       newErrors.hardware = "Please select a hardware option";
     }
@@ -422,7 +417,7 @@ export default function Details6({ product, initialColor, searchParams }) {
   if (isLoading) {
     return (
       <section
-        className="flat-spacing-4 pt_0"
+        className="pt-1 pb-2"
         style={{ maxWidth: "100vw", overflow: "clip" }}
       >
         <div className="tf-main-product section-image-zoom">
@@ -482,7 +477,7 @@ export default function Details6({ product, initialColor, searchParams }) {
 
   return (
     <section
-      className="flat-spacing-4 pt_0"
+      className="pt-1 pb-2"
       style={{ maxWidth: "100vw", overflow: "clip" }}
     >
       <div className="tf-main-product section-image-zoom">
@@ -682,28 +677,6 @@ export default function Details6({ product, initialColor, searchParams }) {
                           </div>
                         </div>
                         <form className="variant-picker-values">
-                          {/* No Thanks option */}
-                          <React.Fragment key="grease-none">
-                            <input
-                              type="radio"
-                              name="grease"
-                              id="grease-none"
-                              checked={currentGrease === undefined}
-                              onChange={() => {
-                                setCurrentGrease(undefined);
-                                clearError("grease");
-                              }}
-                            />
-                            <label
-                              className={`style-text ${
-                                errors.grease ? "error" : ""
-                              }`}
-                              htmlFor="grease-none"
-                              data-value="No Thanks"
-                            >
-                              <p>No Thanks</p>
-                            </label>
-                          </React.Fragment>
                           {greaseOptions.map((grease) => (
                             <React.Fragment key={grease.GreaseID || grease.id}>
                               <input
@@ -760,28 +733,6 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
-                          {/* No Thanks option */}
-                          <React.Fragment key="anglefinder-none">
-                            <input
-                              type="radio"
-                              name="anglefinder"
-                              id="anglefinder-none"
-                              checked={currentAnglefinder === undefined}
-                              onChange={() => {
-                                setCurrentAnglefinder(undefined);
-                                clearError("anglefinder");
-                              }}
-                            />
-                            <label
-                              className={`style-text ${
-                                errors.anglefinder ? "error" : ""
-                              }`}
-                              htmlFor="anglefinder-none"
-                              data-value="No Thanks"
-                            >
-                              <p>No Thanks</p>
-                            </label>
-                          </React.Fragment>
                           {anglefinderOptions.map((anglefinder) => (
                             <React.Fragment key={anglefinder.AngleID}>
                               <input
@@ -834,28 +785,6 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
-                          {/* No Thanks option */}
-                          <React.Fragment key="hardware-none">
-                            <input
-                              type="radio"
-                              name="hardware"
-                              id="hardware-none"
-                              checked={currentHardware === undefined}
-                              onChange={() => {
-                                setCurrentHardware(undefined);
-                                clearError("hardware");
-                              }}
-                            />
-                            <label
-                              className={`style-text ${
-                                errors.hardware ? "error" : ""
-                              }`}
-                              htmlFor="hardware-none"
-                              data-value="No Thanks"
-                            >
-                              <p>No Thanks</p>
-                            </label>
-                          </React.Fragment>
                           {hardwareOptions.map((hardware) => (
                             <React.Fragment key={hardware.HardwareID}>
                               <input

@@ -110,7 +110,7 @@ export default async function ProductDetails({ params, searchParams }) {
         }}
       />
 
-      <div className="container">
+      <div className="container" style={{ paddingTop: "10px" }}>
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
@@ -147,7 +147,7 @@ export default async function ProductDetails({ params, searchParams }) {
           product={product}
           initialColor={color}
           searchParams={awaitedSearchParams || {}}
-          className="mt-5"
+          className=""
         />
         <ShopDetailsTab product={product} vehicles={vehicles} />
         {relatedProducts && relatedProducts.length > 0 && (
