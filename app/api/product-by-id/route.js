@@ -23,14 +23,16 @@ export async function GET(request) {
         `SELECT
         p.*,
         CONCAT(b.StartYear, '-', b.EndYear) AS YearRange,
-        b.Name AS PlatformName,
+        CONCAT(b.StartYear, '-', b.EndYear, ' ', b.Name) AS PlatformName,
         c.CatName AS CategoryName,
-        mc.MainCatName AS MainCategoryName
+        mc.MainCatName AS MainCategoryName,
+        m.ManName AS ManufacturerName
       FROM products p
       JOIN bodies b ON p.BodyID = b.BodyID
       LEFT JOIN categories c ON p.CatID = c.CatID
       LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
-      WHERE p.ProductID = ?
+      LEFT JOIN mans m ON p.ManID = m.ManID
+      WHERE p.ProductID = ? AND p.EndProduct != 1
       LIMIT 1`,
         [id]
       );

@@ -1984,6 +1984,9 @@
         opacity: 0;
     }
 }
+
+
+/* Cart Table */
 .tf-table-page-cart{
     border-spacing: 0;
     border-collapse: collapse;
@@ -1991,12 +1994,14 @@
     width: 100%;
     line-height: 1.4;
     th{
-        font-size: 16px;
+        font-size: 19px;
         font-weight: 600;
-        border-bottom: 1px solid var(--line);
+        font-family: "Impact", sans-serif;
+        letter-spacing: 1.0px;
+        border-bottom: 3px solid var(--primary);
         color: var(--main);
         text-align: center;
-        padding: 18px 0px;
+        padding: 0px 10px;
         &:first-child{
             text-align: start;
         }
@@ -2005,7 +2010,8 @@
         }
     }
     tr{
-        border-bottom: 1px dashed var(--line);
+        border-bottom: 2px solid #a7a7a7;
+        margin:0px 30px;
         &:last-child{
             border-bottom-style: solid;
         }
@@ -2028,9 +2034,17 @@
         display: flex;
         .cart-info{
             .cart-title{
-                font-size: 14px;
+                font-size: 20px;
+
                 line-height: 19.6px;
                 display: block;
+
+                .link{
+                    font-size:22px;
+                    font-weight: 600;
+                    line-height: 28px;
+                    color: var(--main);
+                }
             }
             .cart-meta-variant{
                 display: block;
@@ -2070,20 +2084,25 @@
         }
         .cart-total{
             justify-content: flex-end;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 20px;
         }
         .wg-quantity{
             min-width: 86px;
-            width: 86px;
-            height: 30px;
+            width: 100px;
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            padding: 0 10px;
+            background-color: #fff;
             .btn-quantity{
                 width: 25px;
-                height: 30px;
+                height: 40px;
                 line-height: 25px;
             }
             input{
                 width: 30px;
-                height: 30px;
+                height: 40px;
                 font-size: 12px;
                 font-weight: 500;
                 line-height: 16.8px;
@@ -2104,7 +2123,7 @@
 .tf-page-cart-checkout{
     padding: 30px;
     background-color: var(--bg-11);
-    border-radius: 2.5px;
+    border-radius: 10px;
     .shipping-calculator{
         padding-bottom: 18px;
         border-bottom: 1px solid var(--line);

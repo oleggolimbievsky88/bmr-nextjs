@@ -1052,27 +1052,32 @@
 }
 
 .wg-quantity {
-  width: 127px;
+  width: 100px;
+  height: 40px;
   display: flex;
   justify-content: space-between;
-  background-color: rgb(242, 242, 242);
   border-radius: 3px;
   overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 0 10px;
+  background-color: #fff;
   input {
     width: 51px;
-    height: 46px;
+    height: 40px;
     padding: 0;
-    background-color: transparent;
+    background-color: white;
     border: 0;
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     line-height: 26px;
     color: var(--main);
+
   }
   .btn-quantity {
     width: 38px;
-    height: 46px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1085,8 +1090,12 @@
     }
   }
   &.small {
-    width: 109px;
+    width: 100px;
     height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 0 10px;
+    background-color: #fff;
     .btn-quantity {
       width: 27px;
       height: 30px;

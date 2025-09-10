@@ -664,7 +664,9 @@ export default function Details6({ product, initialColor, searchParams }) {
                           <div className="variant-picker-label">
                             Grease:{" "}
                             <span className="fw-6 variant-picker-label-value">
-                              {currentGrease
+                              {currentGrease === null
+                                ? "No Thanks"
+                                : currentGrease
                                 ? currentGrease.GreaseName ||
                                   currentGrease.value
                                 : "Please select"}
@@ -677,6 +679,28 @@ export default function Details6({ product, initialColor, searchParams }) {
                           </div>
                         </div>
                         <form className="variant-picker-values">
+                          {/* No Thanks option */}
+                          <React.Fragment key="grease-none">
+                            <input
+                              type="radio"
+                              name="grease"
+                              id="grease-none"
+                              checked={currentGrease === null}
+                              onChange={() => {
+                                setCurrentGrease(null);
+                                clearError("grease");
+                              }}
+                            />
+                            <label
+                              className={`style-text ${
+                                errors.grease ? "error" : ""
+                              }`}
+                              htmlFor="grease-none"
+                              data-value="No Thanks"
+                            >
+                              <p>No Thanks</p>
+                            </label>
+                          </React.Fragment>
                           {greaseOptions.map((grease) => (
                             <React.Fragment key={grease.GreaseID || grease.id}>
                               <input
@@ -722,7 +746,9 @@ export default function Details6({ product, initialColor, searchParams }) {
                         <div className="variant-picker-label">
                           Angle Finder:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentAnglefinder
+                            {currentAnglefinder === null
+                              ? "No Thanks"
+                              : currentAnglefinder
                               ? currentAnglefinder.AngleName
                               : "Please select"}
                           </span>
@@ -733,6 +759,28 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
+                          {/* No Thanks option */}
+                          <React.Fragment key="anglefinder-none">
+                            <input
+                              type="radio"
+                              name="anglefinder"
+                              id="anglefinder-none"
+                              checked={currentAnglefinder === null}
+                              onChange={() => {
+                                setCurrentAnglefinder(null);
+                                clearError("anglefinder");
+                              }}
+                            />
+                            <label
+                              className={`style-text ${
+                                errors.anglefinder ? "error" : ""
+                              }`}
+                              htmlFor="anglefinder-none"
+                              data-value="No Thanks"
+                            >
+                              <p>No Thanks</p>
+                            </label>
+                          </React.Fragment>
                           {anglefinderOptions.map((anglefinder) => (
                             <React.Fragment key={anglefinder.AngleID}>
                               <input
@@ -774,7 +822,9 @@ export default function Details6({ product, initialColor, searchParams }) {
                         <div className="variant-picker-label">
                           Hardware:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentHardware
+                            {currentHardware === null
+                              ? "No Thanks"
+                              : currentHardware
                               ? currentHardware.HardwareName
                               : "Please select"}
                           </span>
@@ -785,6 +835,28 @@ export default function Details6({ product, initialColor, searchParams }) {
                           )}
                         </div>
                         <form className="variant-picker-values">
+                          {/* No Thanks option */}
+                          <React.Fragment key="hardware-none">
+                            <input
+                              type="radio"
+                              name="hardware"
+                              id="hardware-none"
+                              checked={currentHardware === null}
+                              onChange={() => {
+                                setCurrentHardware(null);
+                                clearError("hardware");
+                              }}
+                            />
+                            <label
+                              className={`style-text ${
+                                errors.hardware ? "error" : ""
+                              }`}
+                              htmlFor="hardware-none"
+                              data-value="No Thanks"
+                            >
+                              <p>No Thanks</p>
+                            </label>
+                          </React.Fragment>
                           {hardwareOptions.map((hardware) => (
                             <React.Fragment key={hardware.HardwareID}>
                               <input

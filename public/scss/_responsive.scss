@@ -2611,8 +2611,9 @@
   .tf-cart-item {
     .cart-info {
       .cart-title {
-        font-size: 16px;
-        list-style: 22.4px;
+        font-size: 18px;
+        font-weight: 600;
+
       }
     }
   }
@@ -5038,7 +5039,7 @@
       padding: 10px 0;
       margin: 0;
       &:not(:last-child) {
-        border-bottom: 1px dashed var(--line);
+        border-bottom: 2px solid #707070;
       }
     }
     .img-box {

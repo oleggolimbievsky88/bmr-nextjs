@@ -16,7 +16,7 @@ const testCoupon = async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        couponCode: "PEACOCK7",
+        couponCode: "TEST15",
         cartItems: testCartItems,
       }),
     });

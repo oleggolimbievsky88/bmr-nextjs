@@ -200,6 +200,16 @@ export default function Context({ children }) {
   useEffect(() => {
     console.log("Saving cart to localStorage:", cartProducts);
     localStorage.setItem("cartList", JSON.stringify(cartProducts));
+
+    // Also save to cookies for server-side access
+    try {
+      const cartData = JSON.stringify(cartProducts);
+      document.cookie = `cartList=${encodeURIComponent(
+        cartData
+      )}; path=/; max-age=86400`; // 24 hours
+    } catch (error) {
+      console.error("Error saving cart to cookies:", error);
+    }
   }, [cartProducts]);
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("wishlist"));

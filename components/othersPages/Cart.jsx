@@ -105,10 +105,10 @@ export default function Cart() {
               <table className="tf-table-page-cart">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
+                    <th className="Coupon-Code-Header">PRODUCT</th>
+                    {/* <th className="Coupon-Code-Header">PRICE</th> */}
+                    <th className="Coupon-Code-Header">QUANTITY</th>
+                    <th className="Coupon-Code-Header">PRICE</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -179,6 +179,16 @@ export default function Cart() {
                           />
                         </Link>
                         <div className="cart-info">
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              marginBottom: "2px",
+                              color: "#666666",
+                              fontWeight: "400",
+                            }}
+                          >
+                            Mfg: {elm.ManufacturerName || elm.ManID || "N/A"}
+                          </div>
                           <Link
                             href={`/product/${elm.ProductID}`}
                             className="cart-title link"
@@ -191,8 +201,8 @@ export default function Cart() {
                               style={{
                                 fontSize: "12px",
                                 marginBottom: "2px",
-                                color: "#333",
-                                fontWeight: "600",
+                                color: "#666666",
+                                fontWeight: "400",
                               }}
                             >
                               Part #: {elm.PartNumber || "N/A"}
@@ -212,12 +222,78 @@ export default function Cart() {
                                 </>
                               )}
                             </div>
+                            {/* Platform */}
+                            {elm.PlatformName && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666666",
+                                  fontWeight: "400",
+                                }}
+                              >
+                                Platform: {elm.PlatformName}
+                              </div>
+                            )}
                             {/* Color */}
-                            <div>
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                marginBottom: "2px",
+                                color: "#666666",
+                                fontWeight: "400",
+                              }}
+                            >
+                              Color:{" "}
                               {elm.selectedColor
                                 ? elm.selectedColor.ColorName
                                 : "Default"}
                             </div>
+                            {/* Add-ons (Grease, Hardware, etc.) */}
+                            {elm.selectedGrease &&
+                              elm.selectedGrease.GreaseName && (
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    marginBottom: "2px",
+                                    color: "#666666",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Add Grease: {elm.selectedGrease.GreaseName}{" "}
+                                  (+${elm.selectedGrease.GreasePrice})
+                                </div>
+                              )}
+                            {elm.selectedHardware &&
+                              elm.selectedHardware.HardwareName && (
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    marginBottom: "2px",
+                                    color: "#666666",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Add Hardware:{" "}
+                                  {elm.selectedHardware.HardwareName} (+$
+                                  {elm.selectedHardware.HardwarePrice})
+                                </div>
+                              )}
+                            {elm.selectedAngleFinder &&
+                              elm.selectedAngleFinder.AngleName && (
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    marginBottom: "2px",
+                                    color: "#666666",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Add Angle Finder:{" "}
+                                  {elm.selectedAngleFinder.AngleName} (+$
+                                  {elm.selectedAngleFinder.AnglePrice})
+                                </div>
+                              )}
                           </div>
                           <span
                             className="remove-cart link remove"
@@ -227,14 +303,14 @@ export default function Cart() {
                           </span>
                         </div>
                       </td>
-                      <td
+                      {/* <td
                         className="tf-cart-item_price"
                         cart-data-title="Price"
                       >
                         <div className="cart-price">
                           ${(parseFloat(elm.Price) || 0).toFixed(2)}
                         </div>
-                      </td>
+                      </td> */}
                       <td
                         className="tf-cart-item_quantity"
                         cart-data-title="Quantity"

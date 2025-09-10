@@ -19,11 +19,15 @@ export async function POST(request) {
       );
     }
 
+    console.log("API: Validating coupon:", couponCode);
+
     const validation = await validateCouponForCart(
       couponCode,
       cartItems,
       customerId
     );
+
+    console.log("API: Validation result:", validation);
 
     return NextResponse.json(validation);
   } catch (error) {
