@@ -709,6 +709,21 @@ export default function Cart() {
                     <span className="text-danger">*</span>
                   </label>
                 </div>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="consent"
+                    defaultChecked
+                  />
+                  <label
+                    className="form-check-label"
+                    htmlFor="consent"
+                    className="fw-4"
+                  >
+                    I consent to emails and text messages from BMR Suspension
+                  </label>
+                </div>
                 <div className="cart-checkout-btn">
                   {termsAgreed ? (
                     <Link
