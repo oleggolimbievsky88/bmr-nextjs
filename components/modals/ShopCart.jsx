@@ -503,7 +503,7 @@ export default function ShopCart() {
                   <textarea
                     name="note"
                     id="Cart-note"
-                    placeholder="How can we help you?"
+                    placeholder="Order notes (optional)"
                     defaultValue={""}
                   />
                   <div className="tf-cart-tool-btns justify-content-center">

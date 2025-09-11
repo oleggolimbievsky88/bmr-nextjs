@@ -2050,14 +2050,14 @@
                 display: block;
                 margin-top: 6px;
                 font-size: 12px;
-                line-height: 16.8px;
+                line-height: 14px;
                 color: var(--text);
             }
             .remove-cart{
                 display: block;
                 margin-top: 6px;
                 font-size: 12px;
-                line-height: 16.8px;
+                line-height: 14px;
                 text-decoration: underline;
                 cursor: pointer;
             }
@@ -2090,22 +2090,22 @@
         .wg-quantity{
             min-width: 86px;
             width: 100px;
-            height: 40px;
+            height: 30px;
             border: 1px solid #ccc;
             border-radius: 15px;
             padding: 0 10px;
             background-color: #fff;
             .btn-quantity{
                 width: 25px;
-                height: 40px;
-                line-height: 25px;
+                height: 35px;
+                line-height: 14px;
             }
             input{
-                width: 30px;
-                height: 40px;
+                width: 25px;
+                height: 35px;
                 font-size: 12px;
                 font-weight: 500;
-                line-height: 16.8px;
+                line-height: 14px;
             }
         }
 }
@@ -2269,19 +2269,19 @@
 }
 .tf-page-cart-note{
     label{
-        margin-bottom: 20px;
+        margin-bottom: 5px;
         display: block;
     }
 
 }
 #cart-note{
     min-height: 126px;
-    border: 1px solid var(--line);
+    border: 1px solid #a0a0a0;
     padding: 15px 20px;
     width: 100%;
     max-width: 460px;
     resize: none;
-    border-radius: 3px;
+    border-radius: 5px;
     outline: none;
 }
 

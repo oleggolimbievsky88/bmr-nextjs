@@ -400,7 +400,7 @@ export default function Cart() {
                 <textarea
                   name="note"
                   id="cart-note"
-                  placeholder="How can we help you?"
+                  placeholder="Order notes (optional)"
                   defaultValue={""}
                 />
               </div>

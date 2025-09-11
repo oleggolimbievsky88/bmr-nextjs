@@ -252,7 +252,7 @@ export default function Details6({ product, initialColor, searchParams }) {
           setCurrentColor(null);
         }
 
-        // No default grease selection
+        // No default grease selection - always require selection
         if (
           greaseData.success &&
           greaseData.grease &&
@@ -267,20 +267,9 @@ export default function Details6({ product, initialColor, searchParams }) {
             defaultChecked: false,
           }));
 
-          // Check if initial grease from URL matches any options
-          const urlGreaseSlug = searchParamsHook.get("grease");
-          console.log("URL Grease Slug:", urlGreaseSlug);
-          const greaseFromUrl = urlGreaseSlug
-            ? processedGreaseOptions.find(
-                (g) => slugifyColor(g.GreaseName) === urlGreaseSlug
-              )
-            : null;
-
-          console.log("Grease from URL:", greaseFromUrl);
-
           setGreaseOptions(processedGreaseOptions);
-          // Explicitly set current grease to null
-          setCurrentGrease(null);
+          // Always start with undefined - no pre-selection
+          setCurrentGrease(undefined);
         } else {
           console.log(
             "No database grease available or product doesn't support grease, hiding grease options"
@@ -288,7 +277,7 @@ export default function Details6({ product, initialColor, searchParams }) {
           console.log("Grease API response:", greaseData);
           console.log("Product Grease field:", product.Grease);
           setGreaseOptions([]);
-          setCurrentGrease(null);
+          setCurrentGrease(undefined);
         }
 
         if (
@@ -303,12 +292,15 @@ export default function Details6({ product, initialColor, searchParams }) {
             anglefinderData.anglefinder
           );
           setAnglefinderOptions(anglefinderData.anglefinder);
+          // Always start with undefined - no pre-selection
+          setCurrentAnglefinder(undefined);
         } else {
           console.log(
             "No database anglefinder options or product doesn't support angle finder, hiding angle finder options"
           );
           console.log("Product AngleFinder field:", product.AngleFinder);
           setAnglefinderOptions([]);
+          setCurrentAnglefinder(undefined);
         }
 
         if (
@@ -320,12 +312,15 @@ export default function Details6({ product, initialColor, searchParams }) {
         ) {
           console.log("Using database hardware:", hardwareData.hardware);
           setHardwareOptions(hardwareData.hardware);
+          // Always start with undefined - no pre-selection
+          setCurrentHardware(undefined);
         } else {
           console.log(
             "No database hardware options or product doesn't support hardware, hiding hardware options"
           );
           console.log("Product Hardware field:", product.Hardware);
           setHardwareOptions([]);
+          setCurrentHardware(undefined);
         }
       } catch (error) {
         console.error("Error fetching options:", error);
@@ -333,7 +328,7 @@ export default function Details6({ product, initialColor, searchParams }) {
         setColorOptions(removeDefaultSelections(colors));
         setGreaseOptions(removeDefaultSelections(greaseOptions));
         setCurrentColor(null);
-        setCurrentGrease(null);
+        setCurrentGrease(undefined);
       } finally {
         setIsLoading(false);
       }
@@ -664,7 +659,9 @@ export default function Details6({ product, initialColor, searchParams }) {
                           <div className="variant-picker-label">
                             Grease:{" "}
                             <span className="fw-6 variant-picker-label-value">
-                              {currentGrease === null
+                              {currentGrease === undefined
+                                ? "Please select"
+                                : currentGrease === null
                                 ? "No Thanks"
                                 : currentGrease
                                 ? currentGrease.GreaseName ||
@@ -746,7 +743,9 @@ export default function Details6({ product, initialColor, searchParams }) {
                         <div className="variant-picker-label">
                           Angle Finder:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentAnglefinder === null
+                            {currentAnglefinder === undefined
+                              ? "Please select"
+                              : currentAnglefinder === null
                               ? "No Thanks"
                               : currentAnglefinder
                               ? currentAnglefinder.AngleName
@@ -822,7 +821,9 @@ export default function Details6({ product, initialColor, searchParams }) {
                         <div className="variant-picker-label">
                           Hardware:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentHardware === null
+                            {currentHardware === undefined
+                              ? "Please select"
+                              : currentHardware === null
                               ? "No Thanks"
                               : currentHardware
                               ? currentHardware.HardwareName

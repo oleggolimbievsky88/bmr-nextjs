@@ -16,7 +16,7 @@ export default function page() {
   return (
     <>
       <Header2 />
-      <div className="tf-page-title">
+      <div className="tf-page-title" style={{ paddingBottom: "0px" }}>
         <div className="container-full">
           <div className="Impact-Heading text-center">
             Your Cart (<CartCount />)
