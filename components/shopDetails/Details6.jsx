@@ -17,7 +17,7 @@ import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 
-export default function Details6({ product, initialColor, searchParams }) {
+export default function ou({ product, initialColor, searchParams }) {
   const router = useRouter();
   const searchParamsHook = useSearchParams();
   const { addProductToCart, isAddedToCartProducts, clearCart } =

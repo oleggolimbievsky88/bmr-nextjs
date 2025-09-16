@@ -2,327 +2,987 @@
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+
 export default function Checkout() {
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
+  const {
+    cartProducts,
+    setCartProducts,
+    totalPrice,
+    appliedCoupon,
+    couponDiscount,
+    freeShipping,
+    applyCoupon,
+    removeCoupon,
+  } = useContextElement();
+
+  const [activeStep, setActiveStep] = useState("billing");
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [sameAsBilling, setSameAsBilling] = useState(true);
+
+  // Form data states
+  const [billingData, setBillingData] = useState({
+    firstName: "",
+    lastName: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "United States",
+    phone: "",
+    email: "",
+  });
+
+  const [shippingData, setShippingData] = useState({
+    firstName: "",
+    lastName: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "United States",
+    phone: "",
+    email: "",
+  });
+
+  const [paymentData, setPaymentData] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    nameOnCard: "",
+  });
+
+  const handleCouponApply = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    const result = await applyCoupon(couponCode);
+    if (result.success) {
+      setCouponError("");
+    } else {
+      setCouponError(result.message);
+    }
+  };
+
+  const handleContinue = () => {
+    if (activeStep === "billing") {
+      setActiveStep("shipping");
+    } else if (activeStep === "shipping") {
+      setActiveStep("payment");
+    }
+  };
+
+  const handleBack = () => {
+    if (activeStep === "shipping") {
+      setActiveStep("billing");
+    } else if (activeStep === "payment") {
+      setActiveStep("shipping");
+    }
+  };
+
+  const calculateSubtotal = () => {
+    return cartProducts.reduce((total, item) => {
+      const basePrice = parseFloat(item.Price || 0);
+      const quantity = parseInt(item.quantity || 1);
+
+      let addOnPrice = 0;
+      if (item.selectedGrease?.GreasePrice) {
+        addOnPrice += parseFloat(item.selectedGrease.GreasePrice);
+      }
+      if (item.selectedAnglefinder?.AnglePrice) {
+        addOnPrice += parseFloat(item.selectedAnglefinder.AnglePrice);
+      }
+      if (item.selectedHardware?.HardwarePrice) {
+        addOnPrice += parseFloat(item.selectedHardware.HardwarePrice);
+      }
+
+      return total + (basePrice + addOnPrice) * quantity;
+    }, 0);
+  };
+
+  const calculateGrandTotal = () => {
+    const subtotal = calculateSubtotal();
+    const shipping = freeShipping ? 0 : 0; // Free shipping for BMR products
+    const tax = 0; // No tax for now
+    return subtotal + shipping + tax - couponDiscount;
+  };
+
   return (
     <section className="flat-spacing-11">
       <div className="container">
-        <div className="tf-page-cart-wrap layout-2">
-          <div className="tf-page-cart-item">
-            <h5 className="fw-5 mb_20">Billing details</h5>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="form-checkout"
+        <div className="row">
+          <div className="col-12">
+            <h2
+              className="text-center mb-5 mt-0"
+              style={{
+                fontFamily: "Impact",
+                fontWeight: "600",
+                color: "#000000",
+                letterSpacing: "1.5px",
+              }}
             >
-              <div className="box grid-2">
-                <fieldset className="fieldset">
-                  <label htmlFor="first-name">First Name</label>
-                  <input
-                    required
-                    type="text"
-                    id="first-name"
-                    placeholder="Themesflat"
-                  />
-                </fieldset>
-                <fieldset className="fieldset">
-                  <label htmlFor="last-name">Last Name</label>
-                  <input required type="text" id="last-name" />
-                </fieldset>
-              </div>
-              <fieldset className="box fieldset">
-                <label htmlFor="country">Country/Region</label>
-                <div className="select-custom">
-                  <select
-                    required
-                    className="tf-select w-100"
-                    id="country"
-                    name="address[country]"
-                    data-default=""
-                  >
-                    <option value="---" data-provinces="[]">
-                      ---
-                    </option>
-                    <option
-                      value="Australia"
-                      data-provinces="[['Australian Capital Territory','Australian Capital Territory'],['New South Wales','New South Wales'],['Northern Territory','Northern Territory'],['Queensland','Queensland'],['South Australia','South Australia'],['Tasmania','Tasmania'],['Victoria','Victoria'],['Western Australia','Western Australia']]"
-                    >
-                      Australia
-                    </option>
-                    <option value="Austria" data-provinces="[]">
-                      Austria
-                    </option>
-                    <option value="Belgium" data-provinces="[]">
-                      Belgium
-                    </option>
-                    <option
-                      value="Canada"
-                      data-provinces="[['Alberta','Alberta'],['British Columbia','British Columbia'],['Manitoba','Manitoba'],['New Brunswick','New Brunswick'],['Newfoundland and Labrador','Newfoundland and Labrador'],['Northwest Territories','Northwest Territories'],['Nova Scotia','Nova Scotia'],['Nunavut','Nunavut'],['Ontario','Ontario'],['Prince Edward Island','Prince Edward Island'],['Quebec','Quebec'],['Saskatchewan','Saskatchewan'],['Yukon','Yukon']]"
-                    >
-                      Canada
-                    </option>
-                    <option value="Czech Republic" data-provinces="[]">
-                      Czechia
-                    </option>
-                    <option value="Denmark" data-provinces="[]">
-                      Denmark
-                    </option>
-                    <option value="Finland" data-provinces="[]">
-                      Finland
-                    </option>
-                    <option value="France" data-provinces="[]">
-                      France
-                    </option>
-                    <option value="Germany" data-provinces="[]">
-                      Germany
-                    </option>
-                    <option
-                      value="Hong Kong"
-                      data-provinces="[['Hong Kong Island','Hong Kong Island'],['Kowloon','Kowloon'],['New Territories','New Territories']]"
-                    >
-                      Hong Kong SAR
-                    </option>
-                    <option
-                      value="Ireland"
-                      data-provinces="[['Carlow','Carlow'],['Cavan','Cavan'],['Clare','Clare'],['Cork','Cork'],['Donegal','Donegal'],['Dublin','Dublin'],['Galway','Galway'],['Kerry','Kerry'],['Kildare','Kildare'],['Kilkenny','Kilkenny'],['Laois','Laois'],['Leitrim','Leitrim'],['Limerick','Limerick'],['Longford','Longford'],['Louth','Louth'],['Mayo','Mayo'],['Meath','Meath'],['Monaghan','Monaghan'],['Offaly','Offaly'],['Roscommon','Roscommon'],['Sligo','Sligo'],['Tipperary','Tipperary'],['Waterford','Waterford'],['Westmeath','Westmeath'],['Wexford','Wexford'],['Wicklow','Wicklow']]"
-                    >
-                      Ireland
-                    </option>
-                    <option value="Israel" data-provinces="[]">
-                      Israel
-                    </option>
-                    <option
-                      value="Italy"
-                      data-provinces="[['Agrigento','Agrigento'],['Alessandria','Alessandria'],['Ancona','Ancona'],['Aosta','Aosta Valley'],['Arezzo','Arezzo'],['Ascoli Piceno','Ascoli Piceno'],['Asti','Asti'],['Avellino','Avellino'],['Bari','Bari'],['Barletta-Andria-Trani','Barletta-Andria-Trani'],['Belluno','Belluno'],['Benevento','Benevento'],['Bergamo','Bergamo'],['Biella','Biella'],['Bologna','Bologna'],['Bolzano','South Tyrol'],['Brescia','Brescia'],['Brindisi','Brindisi'],['Cagliari','Cagliari'],['Caltanissetta','Caltanissetta'],['Campobasso','Campobasso'],['Carbonia-Iglesias','Carbonia-Iglesias'],['Caserta','Caserta'],['Catania','Catania'],['Catanzaro','Catanzaro'],['Chieti','Chieti'],['Como','Como'],['Cosenza','Cosenza'],['Cremona','Cremona'],['Crotone','Crotone'],['Cuneo','Cuneo'],['Enna','Enna'],['Fermo','Fermo'],['Ferrara','Ferrara'],['Firenze','Florence'],['Foggia','Foggia'],['Forlì-Cesena','Forlì-Cesena'],['Frosinone','Frosinone'],['Genova','Genoa'],['Gorizia','Gorizia'],['Grosseto','Grosseto'],['Imperia','Imperia'],['Isernia','Isernia'],['L'Aquila','L’Aquila'],['La Spezia','La Spezia'],['Latina','Latina'],['Lecce','Lecce'],['Lecco','Lecco'],['Livorno','Livorno'],['Lodi','Lodi'],['Lucca','Lucca'],['Macerata','Macerata'],['Mantova','Mantua'],['Massa-Carrara','Massa and Carrara'],['Matera','Matera'],['Medio Campidano','Medio Campidano'],['Messina','Messina'],['Milano','Milan'],['Modena','Modena'],['Monza e Brianza','Monza and Brianza'],['Napoli','Naples'],['Novara','Novara'],['Nuoro','Nuoro'],['Ogliastra','Ogliastra'],['Olbia-Tempio','Olbia-Tempio'],['Oristano','Oristano'],['Padova','Padua'],['Palermo','Palermo'],['Parma','Parma'],['Pavia','Pavia'],['Perugia','Perugia'],['Pesaro e Urbino','Pesaro and Urbino'],['Pescara','Pescara'],['Piacenza','Piacenza'],['Pisa','Pisa'],['Pistoia','Pistoia'],['Pordenone','Pordenone'],['Potenza','Potenza'],['Prato','Prato'],['Ragusa','Ragusa'],['Ravenna','Ravenna'],['Reggio Calabria','Reggio Calabria'],['Reggio Emilia','Reggio Emilia'],['Rieti','Rieti'],['Rimini','Rimini'],['Roma','Rome'],['Rovigo','Rovigo'],['Salerno','Salerno'],['Sassari','Sassari'],['Savona','Savona'],['Siena','Siena'],['Siracusa','Syracuse'],['Sondrio','Sondrio'],['Taranto','Taranto'],['Teramo','Teramo'],['Terni','Terni'],['Torino','Turin'],['Trapani','Trapani'],['Trento','Trentino'],['Treviso','Treviso'],['Trieste','Trieste'],['Udine','Udine'],['Varese','Varese'],['Venezia','Venice'],['Verbano-Cusio-Ossola','Verbano-Cusio-Ossola'],['Vercelli','Vercelli'],['Verona','Verona'],['Vibo Valentia','Vibo Valentia'],['Vicenza','Vicenza'],['Viterbo','Viterbo']]"
-                    >
-                      Italy
-                    </option>
-                    <option
-                      value="Japan"
-                      data-provinces="[['Aichi','Aichi'],['Akita','Akita'],['Aomori','Aomori'],['Chiba','Chiba'],['Ehime','Ehime'],['Fukui','Fukui'],['Fukuoka','Fukuoka'],['Fukushima','Fukushima'],['Gifu','Gifu'],['Gunma','Gunma'],['Hiroshima','Hiroshima'],['Hokkaidō','Hokkaido'],['Hyōgo','Hyogo'],['Ibaraki','Ibaraki'],['Ishikawa','Ishikawa'],['Iwate','Iwate'],['Kagawa','Kagawa'],['Kagoshima','Kagoshima'],['Kanagawa','Kanagawa'],['Kumamoto','Kumamoto'],['Kyōto','Kyoto'],['Kōchi','Kochi'],['Mie','Mie'],['Miyagi','Miyagi'],['Miyazaki','Miyazaki'],['Nagano','Nagano'],['Nagasaki','Nagasaki'],['Nara','Nara'],['Niigata','Niigata'],['Okayama','Okayama'],['Okinawa','Okinawa'],['Saga','Saga'],['Saitama','Saitama'],['Shiga','Shiga'],['Shimane','Shimane'],['Shizuoka','Shizuoka'],['Tochigi','Tochigi'],['Tokushima','Tokushima'],['Tottori','Tottori'],['Toyama','Toyama'],['Tōkyō','Tokyo'],['Wakayama','Wakayama'],['Yamagata','Yamagata'],['Yamaguchi','Yamaguchi'],['Yamanashi','Yamanashi'],['Ōita','Oita'],['Ōsaka','Osaka']]"
-                    >
-                      Japan
-                    </option>
-                    <option
-                      value="Malaysia"
-                      data-provinces="[['Johor','Johor'],['Kedah','Kedah'],['Kelantan','Kelantan'],['Kuala Lumpur','Kuala Lumpur'],['Labuan','Labuan'],['Melaka','Malacca'],['Negeri Sembilan','Negeri Sembilan'],['Pahang','Pahang'],['Penang','Penang'],['Perak','Perak'],['Perlis','Perlis'],['Putrajaya','Putrajaya'],['Sabah','Sabah'],['Sarawak','Sarawak'],['Selangor','Selangor'],['Terengganu','Terengganu']]"
-                    >
-                      Malaysia
-                    </option>
-                    <option value="Netherlands" data-provinces="[]">
-                      Netherlands
-                    </option>
-                    <option
-                      value="New Zealand"
-                      data-provinces="[['Auckland','Auckland'],['Bay of Plenty','Bay of Plenty'],['Canterbury','Canterbury'],['Chatham Islands','Chatham Islands'],['Gisborne','Gisborne'],['Hawke's Bay','Hawke’s Bay'],['Manawatu-Wanganui','Manawatū-Whanganui'],['Marlborough','Marlborough'],['Nelson','Nelson'],['Northland','Northland'],['Otago','Otago'],['Southland','Southland'],['Taranaki','Taranaki'],['Tasman','Tasman'],['Waikato','Waikato'],['Wellington','Wellington'],['West Coast','West Coast']]"
-                    >
-                      New Zealand
-                    </option>
-                    <option value="Norway" data-provinces="[]">
-                      Norway
-                    </option>
-                    <option value="Poland" data-provinces="[]">
-                      Poland
-                    </option>
-                    <option
-                      value="Portugal"
-                      data-provinces="[['Aveiro','Aveiro'],['Açores','Azores'],['Beja','Beja'],['Braga','Braga'],['Bragança','Bragança'],['Castelo Branco','Castelo Branco'],['Coimbra','Coimbra'],['Faro','Faro'],['Guarda','Guarda'],['Leiria','Leiria'],['Lisboa','Lisbon'],['Madeira','Madeira'],['Portalegre','Portalegre'],['Porto','Porto'],['Santarém','Santarém'],['Setúbal','Setúbal'],['Viana do Castelo','Viana do Castelo'],['Vila Real','Vila Real'],['Viseu','Viseu'],['Évora','Évora']]"
-                    >
-                      Portugal
-                    </option>
-                    <option value="Singapore" data-provinces="[]">
-                      Singapore
-                    </option>
-                    <option
-                      value="South Korea"
-                      data-provinces="[['Busan','Busan'],['Chungbuk','North Chungcheong'],['Chungnam','South Chungcheong'],['Daegu','Daegu'],['Daejeon','Daejeon'],['Gangwon','Gangwon'],['Gwangju','Gwangju City'],['Gyeongbuk','North Gyeongsang'],['Gyeonggi','Gyeonggi'],['Gyeongnam','South Gyeongsang'],['Incheon','Incheon'],['Jeju','Jeju'],['Jeonbuk','North Jeolla'],['Jeonnam','South Jeolla'],['Sejong','Sejong'],['Seoul','Seoul'],['Ulsan','Ulsan']]"
-                    >
-                      South Korea
-                    </option>
-                    <option
-                      value="Spain"
-                      data-provinces="[['A Coruña','A Coruña'],['Albacete','Albacete'],['Alicante','Alicante'],['Almería','Almería'],['Asturias','Asturias Province'],['Badajoz','Badajoz'],['Balears','Balears Province'],['Barcelona','Barcelona'],['Burgos','Burgos'],['Cantabria','Cantabria Province'],['Castellón','Castellón'],['Ceuta','Ceuta'],['Ciudad Real','Ciudad Real'],['Cuenca','Cuenca'],['Cáceres','Cáceres'],['Cádiz','Cádiz'],['Córdoba','Córdoba'],['Girona','Girona'],['Granada','Granada'],['Guadalajara','Guadalajara'],['Guipúzcoa','Gipuzkoa'],['Huelva','Huelva'],['Huesca','Huesca'],['Jaén','Jaén'],['La Rioja','La Rioja Province'],['Las Palmas','Las Palmas'],['León','León'],['Lleida','Lleida'],['Lugo','Lugo'],['Madrid','Madrid Province'],['Melilla','Melilla'],['Murcia','Murcia'],['Málaga','Málaga'],['Navarra','Navarra'],['Ourense','Ourense'],['Palencia','Palencia'],['Pontevedra','Pontevedra'],['Salamanca','Salamanca'],['Santa Cruz de Tenerife','Santa Cruz de Tenerife'],['Segovia','Segovia'],['Sevilla','Seville'],['Soria','Soria'],['Tarragona','Tarragona'],['Teruel','Teruel'],['Toledo','Toledo'],['Valencia','Valencia'],['Valladolid','Valladolid'],['Vizcaya','Biscay'],['Zamora','Zamora'],['Zaragoza','Zaragoza'],['Álava','Álava'],['Ávila','Ávila']]"
-                    >
-                      Spain
-                    </option>
-                    <option value="Sweden" data-provinces="[]">
-                      Sweden
-                    </option>
-                    <option value="Switzerland" data-provinces="[]">
-                      Switzerland
-                    </option>
-                    <option
-                      value="United Arab Emirates"
-                      data-provinces="[['Abu Dhabi','Abu Dhabi'],['Ajman','Ajman'],['Dubai','Dubai'],['Fujairah','Fujairah'],['Ras al-Khaimah','Ras al-Khaimah'],['Sharjah','Sharjah'],['Umm al-Quwain','Umm al-Quwain']]"
-                    >
-                      United Arab Emirates
-                    </option>
-                    <option
-                      value="United Kingdom"
-                      data-provinces="[['British Forces','British Forces'],['England','England'],['Northern Ireland','Northern Ireland'],['Scotland','Scotland'],['Wales','Wales']]"
-                    >
-                      United Kingdom
-                    </option>
-                    <option
-                      value="United States"
-                      data-provinces="[['Alabama','Alabama'],['Alaska','Alaska'],['American Samoa','American Samoa'],['Arizona','Arizona'],['Arkansas','Arkansas'],['Armed Forces Americas','Armed Forces Americas'],['Armed Forces Europe','Armed Forces Europe'],['Armed Forces Pacific','Armed Forces Pacific'],['California','California'],['Colorado','Colorado'],['Connecticut','Connecticut'],['Delaware','Delaware'],['District of Columbia','Washington DC'],['Federated States of Micronesia','Micronesia'],['Florida','Florida'],['Georgia','Georgia'],['Guam','Guam'],['Hawaii','Hawaii'],['Idaho','Idaho'],['Illinois','Illinois'],['Indiana','Indiana'],['Iowa','Iowa'],['Kansas','Kansas'],['Kentucky','Kentucky'],['Louisiana','Louisiana'],['Maine','Maine'],['Marshall Islands','Marshall Islands'],['Maryland','Maryland'],['Massachusetts','Massachusetts'],['Michigan','Michigan'],['Minnesota','Minnesota'],['Mississippi','Mississippi'],['Missouri','Missouri'],['Montana','Montana'],['Nebraska','Nebraska'],['Nevada','Nevada'],['New Hampshire','New Hampshire'],['New Jersey','New Jersey'],['New Mexico','New Mexico'],['New York','New York'],['North Carolina','North Carolina'],['North Dakota','North Dakota'],['Northern Mariana Islands','Northern Mariana Islands'],['Ohio','Ohio'],['Oklahoma','Oklahoma'],['Oregon','Oregon'],['Palau','Palau'],['Pennsylvania','Pennsylvania'],['Puerto Rico','Puerto Rico'],['Rhode Island','Rhode Island'],['South Carolina','South Carolina'],['South Dakota','South Dakota'],['Tennessee','Tennessee'],['Texas','Texas'],['Utah','Utah'],['Vermont','Vermont'],['Virgin Islands','U.S. Virgin Islands'],['Virginia','Virginia'],['Washington','Washington'],['West Virginia','West Virginia'],['Wisconsin','Wisconsin'],['Wyoming','Wyoming']]"
-                    >
-                      United States
-                    </option>
-                    <option value="Vietnam" data-provinces="[]">
-                      Vietnam
-                    </option>
-                  </select>
-                </div>
-              </fieldset>
-              <fieldset className="box fieldset">
-                <label htmlFor="city">Town/City</label>
-                <input required type="text" id="city" />
-              </fieldset>
-              <fieldset className="box fieldset">
-                <label htmlFor="address">Address</label>
-                <input required type="text" id="address" />
-              </fieldset>
-              <fieldset className="box fieldset">
-                <label htmlFor="phone">Phone Number</label>
-                <input required type="number" id="phone" />
-              </fieldset>
-              <fieldset className="box fieldset">
-                <label htmlFor="email">Email</label>
-                <input
-                  required
-                  type="email"
-                  autoComplete="abc@xyz.com"
-                  id="email"
-                />
-              </fieldset>
-              <fieldset className="box fieldset">
-                <label htmlFor="note">Order notes (optional)</label>
-                <textarea name="note" id="note" defaultValue={""} />
-              </fieldset>
-            </form>
+              CHECKOUT
+            </h2>
           </div>
-          <div className="tf-page-cart-footer">
-            <div className="tf-cart-footer-inner">
-              <h5 className="fw-5 mb_20">Your order</h5>
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="tf-page-cart-checkout widget-wrap-checkout"
+        </div>
+
+        <div className="row">
+          {/* Left Column - Checkout Steps */}
+          <div className="col-lg-8">
+            <div className="checkout-steps">
+              {/* Billing Section */}
+              <div
+                className={`checkout-step ${
+                  activeStep === "billing" ? "active" : ""
+                }`}
               >
-                <ul className="wrap-checkout-product">
-                  {cartProducts.map((elm, i) => (
-                    <li key={i} className="checkout-product-item">
-                      <figure className="img-product">
-                        <Image
-                          alt="product"
-                          src={elm.imgSrc}
-                          width={720}
-                          height={1005}
-                        />
-                        <span className="quantity">{elm.quantity}</span>
-                      </figure>
-                      <div className="content">
-                        <div className="info">
-                          <p className="name">{elm.title}</p>
-                          <span className="variant">Brown / M</span>
+                <div className="step-header">
+                  <h3>Billing</h3>
+                  <div className="step-line"></div>
+                </div>
+
+                {activeStep === "billing" && (
+                  <div className="step-content">
+                    <form className="checkout-form">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="billing-first-name">
+                              First Name
+                            </label>
+                            <input
+                              type="text"
+                              id="billing-first-name"
+                              value={billingData.firstName}
+                              onChange={(e) =>
+                                setBillingData({
+                                  ...billingData,
+                                  firstName: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
                         </div>
-                        <span className="price">
-                          $
-                          {(
-                            (parseFloat(elm.price) || 0) * elm.quantity
-                          ).toFixed(2)}
-                        </span>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="billing-last-name">Last Name</label>
+                            <input
+                              type="text"
+                              id="billing-last-name"
+                              value={billingData.lastName}
+                              onChange={(e) =>
+                                setBillingData({
+                                  ...billingData,
+                                  lastName: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-                {!cartProducts.length && (
-                  <div className="container">
-                    <div className="row align-items-center mt-5 mb-5">
-                      <div className="col-12 fs-18">
-                        Your shop cart is empty
+
+                      <div className="form-group">
+                        <label htmlFor="billing-address1">Address Line 1</label>
+                        <input
+                          type="text"
+                          id="billing-address1"
+                          value={billingData.address1}
+                          onChange={(e) =>
+                            setBillingData({
+                              ...billingData,
+                              address1: e.target.value,
+                            })
+                          }
+                          required
+                        />
                       </div>
-                      <div className="col-12 mt-3">
-                        <Link
-                          href={`/shop-default`}
-                          className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
-                          style={{ width: "fit-content" }}
+
+                      <div className="form-group">
+                        <label htmlFor="billing-address2">Address Line 2</label>
+                        <input
+                          type="text"
+                          id="billing-address2"
+                          value={billingData.address2}
+                          onChange={(e) =>
+                            setBillingData({
+                              ...billingData,
+                              address2: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="billing-city">City</label>
+                        <input
+                          type="text"
+                          id="billing-city"
+                          value={billingData.city}
+                          onChange={(e) =>
+                            setBillingData({
+                              ...billingData,
+                              city: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="billing-country">Country</label>
+                        <select
+                          id="billing-country"
+                          value={billingData.country}
+                          onChange={(e) =>
+                            setBillingData({
+                              ...billingData,
+                              country: e.target.value,
+                            })
+                          }
+                          required
                         >
-                          Explore Products!
-                        </Link>
+                          <option value="United States">United States</option>
+                          <option value="Canada">Canada</option>
+                        </select>
                       </div>
-                    </div>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="billing-zip">Zip Code</label>
+                            <input
+                              type="text"
+                              id="billing-zip"
+                              value={billingData.zip}
+                              onChange={(e) =>
+                                setBillingData({
+                                  ...billingData,
+                                  zip: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="billing-state">State</label>
+                            <select
+                              id="billing-state"
+                              value={billingData.state}
+                              onChange={(e) =>
+                                setBillingData({
+                                  ...billingData,
+                                  state: e.target.value,
+                                })
+                              }
+                              required
+                            >
+                              <option value="">Select State</option>
+                              <option value="AL">Alabama</option>
+                              <option value="AK">Alaska</option>
+                              <option value="AZ">Arizona</option>
+                              <option value="AR">Arkansas</option>
+                              <option value="CA">California</option>
+                              <option value="CO">Colorado</option>
+                              <option value="CT">Connecticut</option>
+                              <option value="DE">Delaware</option>
+                              <option value="FL">Florida</option>
+                              <option value="GA">Georgia</option>
+                              <option value="HI">Hawaii</option>
+                              <option value="ID">Idaho</option>
+                              <option value="IL">Illinois</option>
+                              <option value="IN">Indiana</option>
+                              <option value="IA">Iowa</option>
+                              <option value="KS">Kansas</option>
+                              <option value="KY">Kentucky</option>
+                              <option value="LA">Louisiana</option>
+                              <option value="ME">Maine</option>
+                              <option value="MD">Maryland</option>
+                              <option value="MA">Massachusetts</option>
+                              <option value="MI">Michigan</option>
+                              <option value="MN">Minnesota</option>
+                              <option value="MS">Mississippi</option>
+                              <option value="MO">Missouri</option>
+                              <option value="MT">Montana</option>
+                              <option value="NE">Nebraska</option>
+                              <option value="NV">Nevada</option>
+                              <option value="NH">New Hampshire</option>
+                              <option value="NJ">New Jersey</option>
+                              <option value="NM">New Mexico</option>
+                              <option value="NY">New York</option>
+                              <option value="NC">North Carolina</option>
+                              <option value="ND">North Dakota</option>
+                              <option value="OH">Ohio</option>
+                              <option value="OK">Oklahoma</option>
+                              <option value="OR">Oregon</option>
+                              <option value="PA">Pennsylvania</option>
+                              <option value="RI">Rhode Island</option>
+                              <option value="SC">South Carolina</option>
+                              <option value="SD">South Dakota</option>
+                              <option value="TN">Tennessee</option>
+                              <option value="TX">Texas</option>
+                              <option value="UT">Utah</option>
+                              <option value="VT">Vermont</option>
+                              <option value="VA">Virginia</option>
+                              <option value="WA">Washington</option>
+                              <option value="WV">West Virginia</option>
+                              <option value="WI">Wisconsin</option>
+                              <option value="WY">Wyoming</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="billing-phone">Phone Number</label>
+                            <input
+                              type="tel"
+                              id="billing-phone"
+                              value={billingData.phone}
+                              onChange={(e) =>
+                                setBillingData({
+                                  ...billingData,
+                                  phone: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="billing-email">Email Address</label>
+                            <input
+                              type="email"
+                              id="billing-email"
+                              value={billingData.email}
+                              onChange={(e) =>
+                                setBillingData({
+                                  ...billingData,
+                                  email: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-center mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-lg"
+                          onClick={handleContinue}
+                        >
+                          Continue
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 )}
-                <div className="coupon-box">
-                  <input required type="text" placeholder="Discount code" />
-                  <a
-                    href="#"
-                    className="tf-btn btn-sm radius-3 btn-fill btn-icon animate-hover-btn"
+              </div>
+
+              {/* Shipping Section */}
+              <div
+                className={`checkout-step ${
+                  activeStep === "shipping" ? "active" : ""
+                }`}
+              >
+                <div className="step-header">
+                  <h3>Shipping</h3>
+                  <div className="step-line"></div>
+                </div>
+
+                {activeStep === "shipping" && (
+                  <div className="step-content">
+                    <form className="checkout-form">
+                      <div className="form-group mb-3">
+                        <label className="checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={sameAsBilling}
+                            onChange={(e) => setSameAsBilling(e.target.checked)}
+                          />
+                          Same as billing address?
+                        </label>
+                      </div>
+
+                      {!sameAsBilling && (
+                        <>
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="shipping-first-name">
+                                  First Name
+                                </label>
+                                <input
+                                  type="text"
+                                  id="shipping-first-name"
+                                  value={shippingData.firstName}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      firstName: e.target.value,
+                                    })
+                                  }
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="shipping-last-name">
+                                  Last Name
+                                </label>
+                                <input
+                                  type="text"
+                                  id="shipping-last-name"
+                                  value={shippingData.lastName}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      lastName: e.target.value,
+                                    })
+                                  }
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="shipping-address1">
+                              Address Line 1
+                            </label>
+                            <input
+                              type="text"
+                              id="shipping-address1"
+                              value={shippingData.address1}
+                              onChange={(e) =>
+                                setShippingData({
+                                  ...shippingData,
+                                  address1: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="shipping-address2">
+                              Address Line 2
+                            </label>
+                            <input
+                              type="text"
+                              id="shipping-address2"
+                              value={shippingData.address2}
+                              onChange={(e) =>
+                                setShippingData({
+                                  ...shippingData,
+                                  address2: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="shipping-city">City</label>
+                            <input
+                              type="text"
+                              id="shipping-city"
+                              value={shippingData.city}
+                              onChange={(e) =>
+                                setShippingData({
+                                  ...shippingData,
+                                  city: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="shipping-country">Country</label>
+                            <select
+                              id="shipping-country"
+                              value={shippingData.country}
+                              onChange={(e) =>
+                                setShippingData({
+                                  ...shippingData,
+                                  country: e.target.value,
+                                })
+                              }
+                              required
+                            >
+                              <option value="United States">
+                                United States
+                              </option>
+                              <option value="Canada">Canada</option>
+                            </select>
+                          </div>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="shipping-zip">Zip Code</label>
+                                <input
+                                  type="text"
+                                  id="shipping-zip"
+                                  value={shippingData.zip}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      zip: e.target.value,
+                                    })
+                                  }
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="shipping-state">State</label>
+                                <select
+                                  id="shipping-state"
+                                  value={shippingData.state}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      state: e.target.value,
+                                    })
+                                  }
+                                  required
+                                >
+                                  <option value="">Select State</option>
+                                  <option value="AL">Alabama</option>
+                                  <option value="AK">Alaska</option>
+                                  <option value="AZ">Arizona</option>
+                                  <option value="AR">Arkansas</option>
+                                  <option value="CA">California</option>
+                                  <option value="CO">Colorado</option>
+                                  <option value="CT">Connecticut</option>
+                                  <option value="DE">Delaware</option>
+                                  <option value="FL">Florida</option>
+                                  <option value="GA">Georgia</option>
+                                  <option value="HI">Hawaii</option>
+                                  <option value="ID">Idaho</option>
+                                  <option value="IL">Illinois</option>
+                                  <option value="IN">Indiana</option>
+                                  <option value="IA">Iowa</option>
+                                  <option value="KS">Kansas</option>
+                                  <option value="KY">Kentucky</option>
+                                  <option value="LA">Louisiana</option>
+                                  <option value="ME">Maine</option>
+                                  <option value="MD">Maryland</option>
+                                  <option value="MA">Massachusetts</option>
+                                  <option value="MI">Michigan</option>
+                                  <option value="MN">Minnesota</option>
+                                  <option value="MS">Mississippi</option>
+                                  <option value="MO">Missouri</option>
+                                  <option value="MT">Montana</option>
+                                  <option value="NE">Nebraska</option>
+                                  <option value="NV">Nevada</option>
+                                  <option value="NH">New Hampshire</option>
+                                  <option value="NJ">New Jersey</option>
+                                  <option value="NM">New Mexico</option>
+                                  <option value="NY">New York</option>
+                                  <option value="NC">North Carolina</option>
+                                  <option value="ND">North Dakota</option>
+                                  <option value="OH">Ohio</option>
+                                  <option value="OK">Oklahoma</option>
+                                  <option value="OR">Oregon</option>
+                                  <option value="PA">Pennsylvania</option>
+                                  <option value="RI">Rhode Island</option>
+                                  <option value="SC">South Carolina</option>
+                                  <option value="SD">South Dakota</option>
+                                  <option value="TN">Tennessee</option>
+                                  <option value="TX">Texas</option>
+                                  <option value="UT">Utah</option>
+                                  <option value="VT">Vermont</option>
+                                  <option value="VA">Virginia</option>
+                                  <option value="WA">Washington</option>
+                                  <option value="WV">West Virginia</option>
+                                  <option value="WI">Wisconsin</option>
+                                  <option value="WY">Wyoming</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="shipping-phone">
+                                  Phone Number
+                                </label>
+                                <input
+                                  type="tel"
+                                  id="shipping-phone"
+                                  value={shippingData.phone}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      phone: e.target.value,
+                                    })
+                                  }
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="shipping-email">
+                                  Email Address
+                                </label>
+                                <input
+                                  type="email"
+                                  id="shipping-email"
+                                  value={shippingData.email}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      email: e.target.value,
+                                    })
+                                  }
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      <div className="form-group">
+                        <label htmlFor="shipping-options">
+                          Shipping Options
+                        </label>
+                        <select id="shipping-options" className="form-control">
+                          <option value="free">
+                            FREE SHIPPING - UPS Ground
+                          </option>
+                        </select>
+                      </div>
+
+                      <div className="d-flex justify-content-between mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          onClick={handleBack}
+                        >
+                          Back
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-lg"
+                          onClick={handleContinue}
+                        >
+                          Continue
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+
+              {/* Payment Section */}
+              <div
+                className={`checkout-step ${
+                  activeStep === "payment" ? "active" : ""
+                }`}
+              >
+                <div className="step-header">
+                  <h3>Payment</h3>
+                  <div className="step-line"></div>
+                </div>
+
+                {activeStep === "payment" && (
+                  <div className="step-content">
+                    <form className="checkout-form">
+                      <div className="form-group">
+                        <label htmlFor="card-number">Card Number</label>
+                        <input
+                          type="text"
+                          id="card-number"
+                          placeholder="1234 5678 9012 3456"
+                          value={paymentData.cardNumber}
+                          onChange={(e) =>
+                            setPaymentData({
+                              ...paymentData,
+                              cardNumber: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="expiry-date">Expiry Date</label>
+                            <input
+                              type="text"
+                              id="expiry-date"
+                              placeholder="MM/YY"
+                              value={paymentData.expiryDate}
+                              onChange={(e) =>
+                                setPaymentData({
+                                  ...paymentData,
+                                  expiryDate: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="cvv">CVV</label>
+                            <input
+                              type="text"
+                              id="cvv"
+                              placeholder="123"
+                              value={paymentData.cvv}
+                              onChange={(e) =>
+                                setPaymentData({
+                                  ...paymentData,
+                                  cvv: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="name-on-card">Name on Card</label>
+                        <input
+                          type="text"
+                          id="name-on-card"
+                          value={paymentData.nameOnCard}
+                          onChange={(e) =>
+                            setPaymentData({
+                              ...paymentData,
+                              nameOnCard: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+
+                      <div className="d-flex justify-content-between mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          onClick={handleBack}
+                        >
+                          Back
+                        </button>
+                        <button type="button" className="btn btn-danger btn-lg">
+                          Place Order
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Order Summary */}
+          <div className="col-lg-4">
+            <div className="order-summary">
+              <div className="summary-header">
+                <h5>ORDER SUMMARY</h5>
+                <Link href="/view-cart" className="edit-cart-link">
+                  EDIT CART
+                </Link>
+              </div>
+
+              <div className="summary-items">
+                {cartProducts.map((item, index) => (
+                  <div key={index} className="summary-item">
+                    <div className="item-image">
+                      <Image
+                        alt={item.ProductName || "Product"}
+                        src={(() => {
+                          if (
+                            item.selectedColor &&
+                            item.images &&
+                            item.images.length > 0
+                          ) {
+                            let imageIndex = 0;
+                            if (item.selectedColor.ColorID === 1) {
+                              imageIndex = Math.min(1, item.images.length - 1);
+                            } else if (item.selectedColor.ColorID === 2) {
+                              imageIndex = 0;
+                            }
+                            const colorImageSrc =
+                              item.images[imageIndex]?.imgSrc ||
+                              item.images[0]?.imgSrc;
+                            if (colorImageSrc && colorImageSrc.trim() !== "") {
+                              return colorImageSrc;
+                            }
+                          }
+                          if (
+                            item.images?.[0]?.imgSrc &&
+                            item.images[0].imgSrc.trim() !== ""
+                          ) {
+                            return item.images[0].imgSrc;
+                          }
+                          if (
+                            item.ImageLarge &&
+                            item.ImageLarge.trim() !== "" &&
+                            item.ImageLarge !== "0"
+                          ) {
+                            return `https://bmrsuspension.com/siteart/products/${item.ImageLarge}`;
+                          }
+                          return "/images/logo/bmr_logo_square_small.webp";
+                        })()}
+                        width={80}
+                        height={80}
+                      />
+                    </div>
+                    <div className="item-details">
+                      <h6>{item.ProductName}</h6>
+                      <p className="item-part">Part #: {item.PartNumber}</p>
+                      <p className="item-platform">{item.PlatformName}</p>
+                      <p className="item-color">
+                        {item.selectedColor
+                          ? item.selectedColor.ColorName
+                          : "Default"}
+                      </p>
+                      <div className="quantity-controls">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (item.quantity > 1) {
+                              const updatedCart = cartProducts.map(
+                                (cartItem, i) =>
+                                  i === index
+                                    ? {
+                                        ...cartItem,
+                                        quantity: cartItem.quantity - 1,
+                                      }
+                                    : cartItem
+                              );
+                              setCartProducts(updatedCart);
+                            }
+                          }}
+                        >
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updatedCart = cartProducts.map(
+                              (cartItem, i) =>
+                                i === index
+                                  ? {
+                                      ...cartItem,
+                                      quantity: cartItem.quantity + 1,
+                                    }
+                                  : cartItem
+                            );
+                            setCartProducts(updatedCart);
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="item-price">
+                      $
+                      {((parseFloat(item.Price) || 0) * item.quantity).toFixed(
+                        2
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {cartProducts.length === 0 && (
+                <div className="empty-cart">
+                  <p>Your shop cart is empty</p>
+                  <Link href="/shop-default" className="btn btn-primary">
+                    Explore Products!
+                  </Link>
+                </div>
+              )}
+
+              <div className="coupon-section">
+                <p>Have a coupon code? Enter it here!</p>
+                <div className="coupon-input">
+                  <input
+                    type="text"
+                    placeholder="Type here..."
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCouponApply}
+                    className="btn btn-sm btn-primary"
                   >
                     Apply
-                  </a>
+                  </button>
                 </div>
-                <div className="d-flex justify-content-between line pb_20">
-                  <h6 className="fw-5">Total</h6>
-                  <h6 className="total fw-5">$122.00</h6>
+                {couponError && <p className="text-danger">{couponError}</p>}
+              </div>
+
+              <div className="order-totals">
+                <div className="total-line">
+                  <span>Subtotal:</span>
+                  <span>${calculateSubtotal().toFixed(2)}</span>
                 </div>
-                <div className="wd-check-payment">
-                  <div className="fieldset-radio mb_20">
-                    <input
-                      required
-                      type="radio"
-                      name="payment"
-                      id="bank"
-                      className="tf-check"
-                      defaultChecked
-                    />
-                    <label htmlFor="bank">Direct bank transfer</label>
-                  </div>
-                  <div className="fieldset-radio mb_20">
-                    <input
-                      required
-                      type="radio"
-                      name="payment"
-                      id="delivery"
-                      className="tf-check"
-                    />
-                    <label htmlFor="delivery">Cash on delivery</label>
-                  </div>
-                  <p className="text_black-2 mb_20">
-                    Your personal data will be used to process your order,
-                    support your experience throughout this website, and for
-                    other purposes described in our
-                    <Link
-                      href={`/privacy-policy`}
-                      className="text-decoration-underline"
-                    >
-                      privacy policy
-                    </Link>
-                    .
-                  </p>
-                  <div className="box-checkbox fieldset-radio mb_20">
-                    <input
-                      required
-                      type="checkbox"
-                      id="check-agree"
-                      className="tf-check"
-                    />
-                    <label htmlFor="check-agree" className="text_black-2">
-                      I have read and agree to the website
-                      <Link
-                        href={`/terms-conditions`}
-                        className="text-decoration-underline"
-                      >
-                        terms and conditions
-                      </Link>
-                      .
-                    </label>
-                  </div>
+                <div className="total-line">
+                  <span>Shipping:</span>
+                  <span>$0.00</span>
                 </div>
-                <button className="tf-btn radius-3 btn-fill btn-icon animate-hover-btn justify-content-center">
-                  Place order
-                </button>
-              </form>
+                {appliedCoupon && (
+                  <div className="total-line coupon-discount">
+                    <span>Coupon ({appliedCoupon.CouponCode}):</span>
+                    <span>-${couponDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="total-line">
+                  <span>Gift Certificate:</span>
+                  <span>$0.00</span>
+                </div>
+                <div className="total-line">
+                  <span>Tax:</span>
+                  <span>$0.00</span>
+                </div>
+                <div className="total-line grand-total">
+                  <span>Grand Total:</span>
+                  <span>${calculateGrandTotal().toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="terms-checkbox">
+                <label>
+                  <input type="checkbox" required />I agree to BMR Suspension's{" "}
+                  <Link href="/terms-conditions">Terms & Conditions</Link>
+                </label>
+              </div>
+
+              <button
+                className="btn btn-primary btn-lg w-100 place-order-btn"
+                disabled={activeStep !== "payment"}
+              >
+                PLACE ORDER
+              </button>
             </div>
           </div>
         </div>

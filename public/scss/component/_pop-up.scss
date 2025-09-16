@@ -947,7 +947,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
         font-size: 16px;
-        white-space: nowrap;
+        white-space: wrap;
       }
       .price {
         margin-top: 4px;

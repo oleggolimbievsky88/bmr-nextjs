@@ -254,7 +254,45 @@ export default function ShopCart() {
                               )}
                           </div>
                           <div className="price fw-6">
-                            ${(parseFloat(elm.Price) || 0).toFixed(2)}
+                            $
+                            {(() => {
+                              const basePrice = parseFloat(elm.Price) || 0;
+                              let addOnPrice = 0;
+
+                              // Add grease price if selected
+                              if (
+                                elm.selectedGrease &&
+                                elm.selectedGrease.GreasePrice
+                              ) {
+                                addOnPrice += parseFloat(
+                                  elm.selectedGrease.GreasePrice || 0
+                                );
+                              }
+
+                              // Add angle finder price if selected
+                              if (
+                                elm.selectedAnglefinder &&
+                                elm.selectedAnglefinder.AnglePrice
+                              ) {
+                                addOnPrice += parseFloat(
+                                  elm.selectedAnglefinder.AnglePrice || 0
+                                );
+                              }
+
+                              // Add hardware price if selected
+                              if (
+                                elm.selectedHardware &&
+                                elm.selectedHardware.HardwarePrice
+                              ) {
+                                addOnPrice += parseFloat(
+                                  elm.selectedHardware.HardwarePrice || 0
+                                );
+                              }
+
+                              const totalItemPrice =
+                                (basePrice + addOnPrice) * elm.quantity;
+                              return totalItemPrice.toFixed(2);
+                            })()}
                           </div>
                           <div className="tf-mini-cart-btns">
                             <div className="wg-quantity small">
@@ -315,7 +353,11 @@ export default function ShopCart() {
                       </div>
                     )}
                   </div>
-                  <div className="tf-minicart-recommendations">
+                  <div
+                    className="mt-5"
+                    style={{ borderTop: "1px solid var(--line)" }}
+                  ></div>
+                  <div className="tf-minicart-recommendations mt-5">
                     <div className="tf-minicart-recommendations-heading">
                       <div className="tf-minicart-recommendations-title">
                         You may also like
@@ -377,7 +419,7 @@ export default function ShopCart() {
                 </div>
               </div>
               <div className="tf-mini-cart-bottom">
-                <div className="tf-mini-cart-tool">
+                {/* <div className="tf-mini-cart-tool">
                   <div
                     className="tf-mini-cart-tool-btn btn-add-note"
                     onClick={() => addNoteRef.current.classList.add("open")}
@@ -429,7 +471,7 @@ export default function ShopCart() {
                       />
                     </svg>
                   </div>
-                </div>
+                </div> */}
                 <div className="tf-mini-cart-bottom-wrap">
                   <div className="tf-cart-totals-discounts">
                     <div className="tf-cart-total">Subtotal</div>
@@ -441,7 +483,7 @@ export default function ShopCart() {
                     Taxes and <a href="#"> shipping</a> calculated at checkout
                   </div>
                   <div className="tf-mini-cart-line" />
-                  <div className="tf-cart-checkbox">
+                  {/* <div className="tf-cart-checkbox">
                     <div className="tf-checkbox-wrapp">
                       <input
                         className=""
@@ -459,7 +501,7 @@ export default function ShopCart() {
                         terms and conditions
                       </a>
                     </label>
-                  </div>
+                  </div> */}
                   <div className="tf-mini-cart-view-checkout">
                     <Link
                       href={`/view-cart`}

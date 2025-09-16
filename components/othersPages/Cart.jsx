@@ -15,6 +15,7 @@ export default function Cart() {
     removeCoupon,
   } = useContextElement();
   const [termsAgreed, setTermsAgreed] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
@@ -370,9 +371,44 @@ export default function Cart() {
                           style={{ minWidth: "60px" }}
                         >
                           $
-                          {(
-                            (parseFloat(elm.Price) || 0) * elm.quantity
-                          ).toFixed(2)}
+                          {(() => {
+                            const basePrice = parseFloat(elm.Price) || 0;
+                            let addOnPrice = 0;
+
+                            // Add grease price if selected
+                            if (
+                              elm.selectedGrease &&
+                              elm.selectedGrease.GreasePrice
+                            ) {
+                              addOnPrice += parseFloat(
+                                elm.selectedGrease.GreasePrice || 0
+                              );
+                            }
+
+                            // Add angle finder price if selected
+                            if (
+                              elm.selectedAnglefinder &&
+                              elm.selectedAnglefinder.AnglePrice
+                            ) {
+                              addOnPrice += parseFloat(
+                                elm.selectedAnglefinder.AnglePrice || 0
+                              );
+                            }
+
+                            // Add hardware price if selected
+                            if (
+                              elm.selectedHardware &&
+                              elm.selectedHardware.HardwarePrice
+                            ) {
+                              addOnPrice += parseFloat(
+                                elm.selectedHardware.HardwarePrice || 0
+                              );
+                            }
+
+                            const totalItemPrice =
+                              (basePrice + addOnPrice) * elm.quantity;
+                            return totalItemPrice.toFixed(2);
+                          })()}
                         </div>
                       </td>
                     </tr>
@@ -709,18 +745,17 @@ export default function Cart() {
                     <span className="text-danger">*</span>
                   </label>
                 </div>
-                <div className="form-check">
+
+                <div className="cart-checkbox">
                   <input
-                    className="form-check-input"
+                    className="tf-check"
                     type="checkbox"
                     id="consent"
-                    defaultChecked
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                    required
                   />
-                  <label
-                    className="form-check-label"
-                    htmlFor="consent"
-                    className="fw-4"
-                  >
+                  <label className="fw-4" htmlFor="consent">
                     I consent to emails and text messages from BMR Suspension
                   </label>
                 </div>

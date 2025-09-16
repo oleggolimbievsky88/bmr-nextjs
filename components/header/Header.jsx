@@ -80,14 +80,14 @@ export default function Header({
                   <i className="icon icon-account" />
                 </a>
               </li>
-              <li className="nav-wishlist">
+              {/* <li className="nav-wishlist">
                 <Link href={`/wishlist`} className="nav-icon-item">
                   <i className="icon icon-heart" />
                   <span className={`count-box ${bgColor} ${textClass}`}>
                     <WishlistLength />
                   </span>
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-cart">
                 <a
                   href="#shoppingCart"

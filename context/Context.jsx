@@ -25,12 +25,37 @@ export default function Context({ children }) {
   useEffect(() => {
     console.log("Cart products changed:", cartProducts);
     const subtotal = cartProducts.reduce((accumulator, product) => {
-      const price = parseFloat(product.Price || 0);
+      const basePrice = parseFloat(product.Price || 0);
       const quantity = parseInt(product.quantity || 1);
+
+      // Calculate add-on prices
+      let addOnPrice = 0;
+
+      // Add grease price if selected
+      if (product.selectedGrease && product.selectedGrease.GreasePrice) {
+        addOnPrice += parseFloat(product.selectedGrease.GreasePrice || 0);
+      }
+
+      // Add angle finder price if selected
+      if (
+        product.selectedAnglefinder &&
+        product.selectedAnglefinder.AnglePrice
+      ) {
+        addOnPrice += parseFloat(product.selectedAnglefinder.AnglePrice || 0);
+      }
+
+      // Add hardware price if selected
+      if (product.selectedHardware && product.selectedHardware.HardwarePrice) {
+        addOnPrice += parseFloat(product.selectedHardware.HardwarePrice || 0);
+      }
+
+      const totalItemPrice = (basePrice + addOnPrice) * quantity;
+
       console.log(
-        `Product ${product.ProductID}: price=${price}, quantity=${quantity}`
+        `Product ${product.ProductID}: basePrice=${basePrice}, addOnPrice=${addOnPrice}, quantity=${quantity}, totalItemPrice=${totalItemPrice}`
       );
-      return accumulator + quantity * price;
+
+      return accumulator + totalItemPrice;
     }, 0);
     console.log("Calculated subtotal:", subtotal);
     setTotalPrice(subtotal);
