@@ -2,7 +2,10 @@
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AddressAutocomplete from "@/components/common/AddressAutocomplete";
+import { useAddressValidation } from "@/hooks/useAddressValidation";
+import { useShippingRates } from "@/hooks/useShippingRates";
 
 export default function Checkout() {
   const {
@@ -20,6 +23,8 @@ export default function Checkout() {
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
   const [sameAsBilling, setSameAsBilling] = useState(true);
+  const [billingAddressValid, setBillingAddressValid] = useState(false);
+  const [shippingAddressValid, setShippingAddressValid] = useState(false);
 
   // Form data states
   const [billingData, setBillingData] = useState({
@@ -55,6 +60,16 @@ export default function Checkout() {
     nameOnCard: "",
   });
 
+  // Shipping rates hook
+  const {
+    calculateShippingRates,
+    isLoading: shippingLoading,
+    shippingOptions,
+    selectedOption,
+    selectShippingOption,
+    error: shippingError,
+  } = useShippingRates();
+
   const handleCouponApply = async () => {
     if (!couponCode.trim()) {
       setCouponError("Please enter a coupon code");
@@ -71,10 +86,44 @@ export default function Checkout() {
 
   const handleContinue = () => {
     if (activeStep === "billing") {
-      setActiveStep("shipping");
+      if (billingAddressValid) {
+        setActiveStep("shipping");
+        // Calculate shipping rates when moving to shipping step
+        calculateShippingRatesForCurrentAddress();
+      } else {
+        alert("Please ensure your billing address is valid before continuing.");
+      }
     } else if (activeStep === "shipping") {
-      setActiveStep("payment");
+      if (shippingAddressValid || sameAsBilling) {
+        setActiveStep("payment");
+      } else {
+        alert(
+          "Please ensure your shipping address is valid before continuing."
+        );
+      }
     }
+  };
+
+  const calculateShippingRatesForCurrentAddress = async () => {
+    const fromAddress = {
+      address1: "1033 Pine Chase Ave",
+      city: "Lakeland",
+      state: "FL",
+      zip: "33815",
+      country: "US",
+    };
+
+    const toAddress = sameAsBilling ? billingData : shippingData;
+
+    // Create packages based on cart items
+    const packages = cartProducts.map((item) => ({
+      weight: 1, // Default weight, could be calculated from product data
+      length: 10,
+      width: 10,
+      height: 10,
+    }));
+
+    await calculateShippingRates(fromAddress, toAddress, packages);
   };
 
   const handleBack = () => {
@@ -107,7 +156,7 @@ export default function Checkout() {
 
   const calculateGrandTotal = () => {
     const subtotal = calculateSubtotal();
-    const shipping = freeShipping ? 0 : 0; // Free shipping for BMR products
+    const shipping = selectedOption ? selectedOption.cost : 0;
     const tax = 0; // No tax for now
     return subtotal + shipping + tax - couponDiscount;
   };
@@ -188,36 +237,16 @@ export default function Checkout() {
                         </div>
                       </div>
 
-                      <div className="form-group">
-                        <label htmlFor="billing-address1">Address Line 1</label>
-                        <input
-                          type="text"
-                          id="billing-address1"
-                          value={billingData.address1}
-                          onChange={(e) =>
-                            setBillingData({
-                              ...billingData,
-                              address1: e.target.value,
-                            })
-                          }
-                          required
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="billing-address2">Address Line 2</label>
-                        <input
-                          type="text"
-                          id="billing-address2"
-                          value={billingData.address2}
-                          onChange={(e) =>
-                            setBillingData({
-                              ...billingData,
-                              address2: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+                      <AddressAutocomplete
+                        address={billingData}
+                        onAddressChange={setBillingData}
+                        onValidationComplete={(result) => {
+                          setBillingAddressValid(result.isValid);
+                        }}
+                        label="Address"
+                        placeholder="Enter your billing address"
+                        required={true}
+                      />
 
                       <div className="form-group">
                         <label htmlFor="billing-city">City</label>
@@ -666,11 +695,72 @@ export default function Checkout() {
                         <label htmlFor="shipping-options">
                           Shipping Options
                         </label>
-                        <select id="shipping-options" className="form-control">
-                          <option value="free">
-                            FREE SHIPPING - UPS Ground
-                          </option>
-                        </select>
+                        {shippingLoading ? (
+                          <div className="text-center py-3">
+                            <div
+                              className="spinner-border text-primary"
+                              role="status"
+                            >
+                              <span className="sr-only">
+                                Loading shipping rates...
+                              </span>
+                            </div>
+                            <p className="mt-2">
+                              Calculating shipping rates...
+                            </p>
+                          </div>
+                        ) : shippingOptions.length > 0 ? (
+                          <div className="shipping-options">
+                            {shippingOptions.map((option, index) => (
+                              <div key={index} className="shipping-option">
+                                <label className="shipping-option-label">
+                                  <input
+                                    type="radio"
+                                    name="shipping-option"
+                                    value={option.code}
+                                    checked={
+                                      selectedOption?.code === option.code
+                                    }
+                                    onChange={() =>
+                                      selectShippingOption(option)
+                                    }
+                                    className="me-2"
+                                  />
+                                  <div className="shipping-option-details">
+                                    <div className="shipping-service">
+                                      {option.service}
+                                      {option.cost === 0 && (
+                                        <span className="text-success ms-2">
+                                          FREE
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="shipping-details">
+                                      {option.description} •{" "}
+                                      {option.deliveryDays}
+                                    </div>
+                                    {option.cost > 0 && (
+                                      <div className="shipping-cost">
+                                        ${option.cost.toFixed(2)}
+                                      </div>
+                                    )}
+                                  </div>
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-3">
+                            <p className="text-muted">
+                              Free shipping on all BMR products
+                            </p>
+                          </div>
+                        )}
+                        {shippingError && (
+                          <div className="alert alert-warning mt-2">
+                            {shippingError}
+                          </div>
+                        )}
                       </div>
 
                       <div className="d-flex justify-content-between mt-4">
@@ -948,7 +1038,9 @@ export default function Checkout() {
                 </div>
                 <div className="total-line">
                   <span>Shipping:</span>
-                  <span>$0.00</span>
+                  <span>
+                    ${selectedOption ? selectedOption.cost.toFixed(2) : "0.00"}
+                  </span>
                 </div>
                 {appliedCoupon && (
                   <div className="total-line coupon-discount">

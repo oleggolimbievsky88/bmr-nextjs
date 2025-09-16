@@ -324,6 +324,98 @@
   }
 }
 
+// Shipping Options Styles
+.shipping-options {
+  .shipping-option {
+    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #dc3545;
+      background-color: #f8f9fa;
+    }
+
+    .shipping-option-label {
+      display: flex;
+      align-items: flex-start;
+      cursor: pointer;
+      margin: 0;
+
+      input[type="radio"] {
+        margin-top: 0.2rem;
+        margin-right: 0.75rem;
+      }
+
+      .shipping-option-details {
+        flex: 1;
+
+        .shipping-service {
+          font-weight: 600;
+          font-size: 1rem;
+          color: #333;
+          margin-bottom: 0.25rem;
+
+          .text-success {
+            color: #28a745 !important;
+            font-weight: 700;
+          }
+        }
+
+        .shipping-details {
+          font-size: 0.9rem;
+          color: #666;
+          margin-bottom: 0.5rem;
+        }
+
+        .shipping-cost {
+          font-weight: 600;
+          color: #dc3545;
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    &:has(input:checked) {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+
+      .shipping-service {
+        color: #dc3545;
+      }
+    }
+  }
+}
+
+// Address Validation Styles
+.form-group {
+  .form-control {
+    &.border-yellow-400 {
+      border-color: #fbbf24 !important;
+      box-shadow: 0 0 0 0.2rem rgba(251, 191, 36, 0.25);
+    }
+
+    &.border-green-400 {
+      border-color: #10b981 !important;
+      box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+    }
+
+    &.border-red-400 {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+    }
+  }
+}
+
+// Loading Spinner
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 0.2em;
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .checkout-steps {
