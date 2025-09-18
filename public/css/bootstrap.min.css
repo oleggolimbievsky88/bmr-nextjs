@@ -3636,7 +3636,7 @@ fieldset:disabled .btn {
 
 .btn-danger {
   --bs-btn-color: #fff;
-  --bs-btn-bg: #dc3545;
+  --bs-btn-bg: #cc0000;
   --bs-btn-border-color: #dc3545;
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #bb2d3b;

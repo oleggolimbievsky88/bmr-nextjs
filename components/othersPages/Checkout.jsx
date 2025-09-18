@@ -202,7 +202,7 @@ export default function Checkout() {
                         <div className="col-md-6">
                           <div className="form-group">
                             <label htmlFor="billing-first-name">
-                              First Name
+                              First Name*
                             </label>
                             <input
                               type="text"
@@ -220,7 +220,9 @@ export default function Checkout() {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="billing-last-name">Last Name</label>
+                            <label htmlFor="billing-last-name">
+                              Last Name*
+                            </label>
                             <input
                               type="text"
                               id="billing-last-name"
@@ -249,7 +251,7 @@ export default function Checkout() {
                       />
 
                       <div className="form-group">
-                        <label htmlFor="billing-city">City</label>
+                        <label htmlFor="billing-city">City*</label>
                         <input
                           type="text"
                           id="billing-city"
@@ -265,7 +267,7 @@ export default function Checkout() {
                       </div>
 
                       <div className="form-group">
-                        <label htmlFor="billing-country">Country</label>
+                        <label htmlFor="billing-country">Country*</label>
                         <select
                           id="billing-country"
                           value={billingData.country}
@@ -285,7 +287,7 @@ export default function Checkout() {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="billing-zip">Zip Code</label>
+                            <label htmlFor="billing-zip">Zip Code*</label>
                             <input
                               type="text"
                               id="billing-zip"
@@ -302,7 +304,7 @@ export default function Checkout() {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="billing-state">State</label>
+                            <label htmlFor="billing-state">State*</label>
                             <select
                               id="billing-state"
                               value={billingData.state}
@@ -373,7 +375,7 @@ export default function Checkout() {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="billing-phone">Phone Number</label>
+                            <label htmlFor="billing-phone">Phone Number*</label>
                             <input
                               type="tel"
                               id="billing-phone"
@@ -390,7 +392,9 @@ export default function Checkout() {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="billing-email">Email Address</label>
+                            <label htmlFor="billing-email">
+                              Email Address*
+                            </label>
                             <input
                               type="email"
                               id="billing-email"
@@ -452,7 +456,7 @@ export default function Checkout() {
                             <div className="col-md-6">
                               <div className="form-group">
                                 <label htmlFor="shipping-first-name">
-                                  First Name
+                                  First Name*
                                 </label>
                                 <input
                                   type="text"
@@ -471,7 +475,7 @@ export default function Checkout() {
                             <div className="col-md-6">
                               <div className="form-group">
                                 <label htmlFor="shipping-last-name">
-                                  Last Name
+                                  Last Name*
                                 </label>
                                 <input
                                   type="text"
@@ -491,7 +495,7 @@ export default function Checkout() {
 
                           <div className="form-group">
                             <label htmlFor="shipping-address1">
-                              Address Line 1
+                              Address Line 1*
                             </label>
                             <input
                               type="text"
@@ -525,7 +529,7 @@ export default function Checkout() {
                           </div>
 
                           <div className="form-group">
-                            <label htmlFor="shipping-city">City</label>
+                            <label htmlFor="shipping-city">City*</label>
                             <input
                               type="text"
                               id="shipping-city"
@@ -541,7 +545,7 @@ export default function Checkout() {
                           </div>
 
                           <div className="form-group">
-                            <label htmlFor="shipping-country">Country</label>
+                            <label htmlFor="shipping-country">Country*</label>
                             <select
                               id="shipping-country"
                               value={shippingData.country}
@@ -563,7 +567,7 @@ export default function Checkout() {
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-zip">Zip Code</label>
+                                <label htmlFor="shipping-zip">Zip Code*</label>
                                 <input
                                   type="text"
                                   id="shipping-zip"
@@ -580,7 +584,7 @@ export default function Checkout() {
                             </div>
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-state">State</label>
+                                <label htmlFor="shipping-state">State*</label>
                                 <select
                                   id="shipping-state"
                                   value={shippingData.state}
@@ -652,7 +656,7 @@ export default function Checkout() {
                             <div className="col-md-6">
                               <div className="form-group">
                                 <label htmlFor="shipping-phone">
-                                  Phone Number
+                                  Phone Number*
                                 </label>
                                 <input
                                   type="tel"
@@ -671,7 +675,7 @@ export default function Checkout() {
                             <div className="col-md-6">
                               <div className="form-group">
                                 <label htmlFor="shipping-email">
-                                  Email Address
+                                  Email Address*
                                 </label>
                                 <input
                                   type="email"
@@ -799,7 +803,7 @@ export default function Checkout() {
                   <div className="step-content">
                     <form className="checkout-form">
                       <div className="form-group">
-                        <label htmlFor="card-number">Card Number</label>
+                        <label htmlFor="card-number">Card Number*</label>
                         <input
                           type="text"
                           id="card-number"
@@ -818,7 +822,7 @@ export default function Checkout() {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="expiry-date">Expiry Date</label>
+                            <label htmlFor="expiry-date">Expiry Date*</label>
                             <input
                               type="text"
                               id="expiry-date"
@@ -836,7 +840,7 @@ export default function Checkout() {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="cvv">CVV</label>
+                            <label htmlFor="cvv">CVV*</label>
                             <input
                               type="text"
                               id="cvv"
@@ -855,7 +859,7 @@ export default function Checkout() {
                       </div>
 
                       <div className="form-group">
-                        <label htmlFor="name-on-card">Name on Card</label>
+                        <label htmlFor="name-on-card">Name on Card*</label>
                         <input
                           type="text"
                           id="name-on-card"
