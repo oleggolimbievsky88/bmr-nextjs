@@ -1,4 +1,19 @@
 // Simple test script to verify Google Maps API key
+const fs = require("fs");
+const path = require("path");
+
+// Load .env.local manually
+const envPath = path.join(__dirname, ".env.local");
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, "utf8");
+  envContent.split("\n").forEach((line) => {
+    const [key, ...valueParts] = line.split("=");
+    if (key && valueParts.length > 0) {
+      process.env[key.trim()] = valueParts.join("=").trim();
+    }
+  });
+}
+
 const testAddress = {
   address1: "123 Main St",
   city: "New York",

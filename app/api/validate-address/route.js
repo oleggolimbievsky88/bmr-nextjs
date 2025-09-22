@@ -46,11 +46,18 @@ export async function POST(request) {
 
     const data = await response.json();
 
-    // Check if address is valid
+    // Stricter validity rules
+    // Require a complete address at premise/sub-premise granularity with no
+    // unconfirmed components. This prevents obviously bad inputs from passing.
+    const verdict = data.result?.verdict || {};
+    const granularity = verdict.inputGranularity;
+    const addressComplete = verdict.addressComplete === true;
+    const hasUnconfirmed = verdict.hasUnconfirmedComponents === true;
+
     const isValid =
-      data.result?.verdict?.inputGranularity === "SUB_PREMISE" ||
-      data.result?.verdict?.inputGranularity === "PREMISE" ||
-      data.result?.verdict?.inputGranularity === "ROUTE";
+      addressComplete &&
+      (granularity === "PREMISE" || granularity === "SUB_PREMISE") &&
+      !hasUnconfirmed;
 
     const correctedAddress = data.result?.address;
 
@@ -67,7 +74,10 @@ export async function POST(request) {
           }
         : null,
       suggestions: data.result?.address?.addressLines || [],
-      confidence: data.result?.verdict?.addressComplete,
+      // expose raw signal for UI messaging
+      confidence: addressComplete,
+      granularity,
+      hasUnconfirmed,
       geocode: data.result?.geocode,
     });
   } catch (error) {

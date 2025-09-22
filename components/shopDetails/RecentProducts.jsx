@@ -1,11 +1,47 @@
 "use client";
 
-import { products1 } from "@/data/products";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ProductCard } from "../shopCards/ProductCard";
 import { Navigation, Pagination } from "swiper/modules";
 
 export default function RecentProducts() {
+  const [recent, setRecent] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/products/recently-viewed")
+      .then((r) => r.json())
+      .then(async ({ items }) => {
+        console.log("recently-viewed ids", items);
+        if (!mounted || !items?.length) return setRecent([]);
+        // Resolve product cards via existing API route for product-by-id
+        const resolved = await Promise.all(
+          items.slice(0, 12).map(async (id) => {
+            try {
+              const res = await fetch(`/api/product-by-id?id=${id}`);
+              if (!res.ok) return null;
+              const data = await res.json();
+              return data.product;
+            } catch (e) {
+              return null;
+            }
+          })
+        );
+        console.log("recently-viewed products", resolved);
+        setRecent(resolved.filter(Boolean));
+      })
+      .catch(() => setRecent([]));
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  console.log(recent);
+
+  if (!recent.length) return null;
+
   return (
     <section className="flat-spacing-4 pt_0">
       <div className="container">
@@ -36,7 +72,7 @@ export default function RecentProducts() {
             }}
             pagination={{ clickable: true, el: ".spd308" }}
           >
-            {products1.slice(4, 12).map((product, i) => (
+            {recent.map((product, i) => (
               <SwiperSlide key={i} className="swiper-slide">
                 <ProductCard product={product} />
               </SwiperSlide>

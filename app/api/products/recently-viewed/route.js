@@ -1,84 +1,66 @@
-import { cookies } from "next/headers";
-import { mcp_MySQL_MCP_connect_db, mcp_MySQL_MCP_query } from "@/lib/db";
 import { NextResponse } from "next/server";
-import mysql from "mysql2/promise";
 
-export async function GET() {
-  try {
-    // Create MySQL connection
-    const connection = await mysql.createConnection({
-      host: process.env.MYSQL_HOST,
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-    });
+// Store up to N recent product ids in an httpOnly cookie
+const COOKIE_NAME = "recentlyViewed";
+const MAX_ITEMS = 20;
+const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
-    // Get recently viewed products (for now, just get the latest 8 products)
-    const [products] = await connection.execute(
-      `SELECT ProductID, ProductName, Price, Qty, ImageSmall, Description
-       FROM products
-       WHERE Display = 1
-       ORDER BY ProductID DESC
-       LIMIT 8`
-    );
-
-    await connection.end();
-
-    return NextResponse.json({ products });
-  } catch (error) {
-    console.error("Database error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch recently viewed products" },
-      { status: 500 }
-    );
-  }
+function parseCookie(cookieHeader) {
+  if (!cookieHeader) return {};
+  return Object.fromEntries(
+    cookieHeader
+      .split(/;\s*/)
+      .map((c) => c.split("=", 2))
+      .map(([k, v]) => [k, decodeURIComponent(v || "")])
+  );
 }
 
 export async function POST(request) {
   try {
     const { productId } = await request.json();
-
-    if (!productId || isNaN(parseInt(productId))) {
-      return Response.json({ error: "Invalid product ID" }, { status: 400 });
+    if (!productId) {
+      return NextResponse.json(
+        { error: "productId required" },
+        { status: 400 }
+      );
     }
 
-    const cookieStore = cookies();
-    const recentlyViewed = cookieStore.get("recently_viewed");
+    const cookies = parseCookie(request.headers.get("cookie"));
+    const current = cookies[COOKIE_NAME]
+      ? JSON.parse(currentSafe(cookies[COOKIE_NAME]))
+      : [];
 
-    let productIds = [];
-    if (recentlyViewed && recentlyViewed.value) {
-      try {
-        productIds = JSON.parse(recentlyViewed.value);
-      } catch (e) {
-        console.error("Error parsing recently viewed cookie:", e);
-      }
-    }
+    // Put new id at front, de-dupe, clamp length
+    const next = [
+      String(productId),
+      ...current.filter((id) => id !== String(productId)),
+    ].slice(0, MAX_ITEMS);
 
-    if (!Array.isArray(productIds)) {
-      productIds = [];
-    }
-
-    // Remove if exists and add to front
-    productIds = productIds.filter((id) => id !== productId);
-    productIds.unshift(productId);
-
-    // Keep only last 12 viewed products
-    productIds = productIds.slice(0, 12);
-
-    // Set cookie that expires in 30 days
-    cookies().set("recently_viewed", JSON.stringify(productIds), {
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-    });
-
-    return Response.json({ success: true });
-  } catch (error) {
-    console.error("Error updating recently viewed products:", error);
-    return Response.json(
-      { error: "Failed to update recently viewed products" },
-      { status: 500 }
+    const res = NextResponse.json({ success: true, items: next });
+    res.headers.set(
+      "Set-Cookie",
+      `${COOKIE_NAME}=${encodeURIComponent(
+        JSON.stringify(next)
+      )}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`
     );
+    return res;
+  } catch (e) {
+    return NextResponse.json({ error: "failed" }, { status: 500 });
   }
+}
+
+function currentSafe(val) {
+  try {
+    return val;
+  } catch (e) {
+    return "[]";
+  }
+}
+
+export async function GET(request) {
+  const cookies = parseCookie(request.headers.get("cookie"));
+  const items = cookies[COOKIE_NAME]
+    ? JSON.parse(currentSafe(cookies[COOKIE_NAME]))
+    : [];
+  return NextResponse.json({ items });
 }

@@ -9,6 +9,7 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+import TrackView from "@/components/shopDetails/TrackView";
 import {
   getProductById,
   getRelatedProducts,
@@ -143,6 +144,7 @@ export default async function ProductDetails({ params, searchParams }) {
             },
           ]}
         />
+        <TrackView productId={product?.ProductID} />
         <Details6
           product={product}
           initialColor={color}
