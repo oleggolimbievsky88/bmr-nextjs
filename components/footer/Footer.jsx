@@ -1,8 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import FooterEmailForm from "./FooterEmailForm";
 import { aboutLinks, footerLinks, paymentImages } from "@/data/footerLinks";
+import FooterNewsletter from "./FooterNewsletter";
 
 export default function Footer1({ bgColor = "background-black" }) {
   return (
@@ -128,7 +128,7 @@ export default function Footer1({ bgColor = "background-black" }) {
                 </ul>
               </div>
               <div className="col-xl-3 col-md-6 col-12">
-                {/* <FooterEmailForm /> */}
+                <FooterNewsletter />
               </div>
             </div>
           </div>
