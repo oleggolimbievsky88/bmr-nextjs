@@ -10,10 +10,12 @@ This guide will help you set up address validation and UPS shipping rate calcula
 2. Create a new project or select existing one
 3. Enable billing for the project
 
-### Step 2: Enable Address Validation API
+### Step 2: Enable Required APIs
 1. Navigate to [API Library](https://console.cloud.google.com/apis/library)
-2. Search for "Address Validation API"
-3. Click "Enable"
+2. Enable the following APIs:
+   - **Address Validation API** (for address validation)
+   - **Places API** (for address autocomplete)
+3. Click "Enable" for each API
 
 ### Step 3: Get API Key
 1. Go to [Credentials page](https://console.cloud.google.com/apis/credentials)
@@ -57,12 +59,15 @@ UPS_ACCOUNT_NUMBER=your_ups_account_number
 
 ## 3. Features Implemented
 
-### Address Validation
+### Address Validation & Autocomplete
 - ✅ Real-time address validation using Google Address Validation API
+- ✅ Address autocomplete with Google Places API
 - ✅ Visual feedback with color-coded borders (yellow=validating, green=valid, red=invalid)
 - ✅ Address correction suggestions
 - ✅ One-click address correction
 - ✅ Prevents checkout progression with invalid addresses
+- ✅ Debounced autocomplete suggestions (300ms delay)
+- ✅ Click outside to close suggestions
 
 ### UPS Shipping Rates
 - ✅ Real-time shipping rate calculation
@@ -86,6 +91,16 @@ UPS_ACCOUNT_NUMBER=your_ups_account_number
 - Returns validation status and corrected addresses
 - Handles errors gracefully
 
+### `/api/places-autocomplete`
+- Provides address suggestions using Google Places API
+- Debounced requests for better performance
+- Returns structured address predictions
+
+### `/api/place-details`
+- Fetches detailed address information from Google Places API
+- Parses address components (street, city, state, zip)
+- Returns formatted address data
+
 ### `/api/ups-shipping-rates`
 - Calculates UPS shipping rates
 - Uses OAuth 2.0 authentication
@@ -107,19 +122,25 @@ UPS_ACCOUNT_NUMBER=your_ups_account_number
 ## 6. Components Created
 
 ### `AddressAutocomplete`
-- Address input with validation
+- Address input with validation and autocomplete
 - Visual feedback indicators
 - Address correction suggestions
-- Debounced validation
+- Debounced validation and autocomplete
+- Google Places API integration
+- Click outside to close suggestions
 
 ## 7. Testing
 
-### Address Validation Testing
-1. Enter invalid addresses (e.g., "123 Fake Street")
-2. Verify red border and error message
-3. Enter valid addresses
-4. Verify green border and success message
-5. Test address correction suggestions
+### Address Validation & Autocomplete Testing
+1. Start typing an address (e.g., "123 Main St")
+2. Verify autocomplete suggestions appear after 3+ characters
+3. Click on a suggestion to auto-fill the address
+4. Enter invalid addresses (e.g., "123 Fake Street")
+5. Verify red border and error message
+6. Enter valid addresses
+7. Verify green border and success message
+8. Test address correction suggestions
+9. Test clicking outside to close suggestions
 
 ### Shipping Rates Testing
 1. Complete billing information
@@ -130,10 +151,10 @@ UPS_ACCOUNT_NUMBER=your_ups_account_number
 
 ## 8. Cost Considerations
 
-### Google Address Validation API
-- First 1,000 requests per month: Free
-- Additional requests: $0.50 per 1,000 requests
-- Typical usage: ~$5-20/month for small to medium sites
+### Google APIs
+- **Address Validation API**: First 1,000 requests per month: Free, Additional: $0.50 per 1,000 requests
+- **Places API**: First 1,000 requests per month: Free, Additional: $2.83 per 1,000 requests
+- Typical usage: ~$10-30/month for small to medium sites
 
 ### UPS API
 - Free to use (no per-request charges)
@@ -148,7 +169,8 @@ UPS_ACCOUNT_NUMBER=your_ups_account_number
 3. **Address validation slow**: Check network connection and API limits
 
 ### Fallback Behavior
-- If Google API fails: Address validation is skipped
+- If Google Places API fails: Autocomplete suggestions are hidden
+- If Google Address Validation API fails: Address validation is skipped
 - If UPS API fails: Free shipping is used as fallback
 - All errors are logged for debugging
 
@@ -161,8 +183,10 @@ UPS_ACCOUNT_NUMBER=your_ups_account_number
 
 ## 11. Future Enhancements
 
-- Google Places Autocomplete for address suggestions
+- ✅ Google Places Autocomplete for address suggestions (COMPLETED)
 - Multiple carrier support (FedEx, USPS)
 - Package weight/dimension calculation from product data
 - Address validation for international addresses
 - Shipping insurance options
+- Keyboard navigation for autocomplete suggestions
+- Recent addresses history

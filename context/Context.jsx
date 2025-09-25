@@ -10,6 +10,7 @@ export const useContextElement = () => {
 
 export default function Context({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
+  const [cartLoading, setCartLoading] = useState(true);
   const [wishList, setWishList] = useState([]);
   const [compareItem, setCompareItem] = useState([]);
   const [quickViewItem, setQuickViewItem] = useState({
@@ -220,6 +221,7 @@ export default function Context({ children }) {
       console.log("Valid items from localStorage:", validItems);
       setCartProducts(validItems);
     }
+    setCartLoading(false);
   }, []);
 
   useEffect(() => {
@@ -250,6 +252,7 @@ export default function Context({ children }) {
   const contextElement = {
     cartProducts,
     setCartProducts,
+    cartLoading,
     totalPrice,
     addProductToCart,
     isAddedToCartProducts,

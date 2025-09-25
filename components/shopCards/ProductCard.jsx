@@ -48,6 +48,7 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
         flexDirection: "column",
         justifyContent: "flex-start",
         minHeight: 220,
+        borderRadius: "8px",
       }}
     >
       <div className="card-product-wrapper">
@@ -68,6 +69,7 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
+          borderRadius: "8px",
         }}
       >
         <span style={{ fontWeight: "bold", color: "#222", fontSize: "1rem" }}>

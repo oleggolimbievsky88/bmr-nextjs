@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
+import CartSkeleton from "@/components/common/CartSkeleton";
 import { useAddressValidation } from "@/hooks/useAddressValidation";
 import { useShippingRates } from "@/hooks/useShippingRates";
 
@@ -11,6 +12,7 @@ export default function Checkout() {
   const {
     cartProducts,
     setCartProducts,
+    cartLoading,
     totalPrice,
     appliedCoupon,
     couponDiscount,
@@ -904,109 +906,119 @@ export default function Checkout() {
               </div>
 
               <div className="summary-items">
-                {cartProducts.map((item, index) => (
-                  <div key={index} className="summary-item">
-                    <div className="item-image">
-                      <Image
-                        alt={item.ProductName || "Product"}
-                        src={(() => {
-                          if (
-                            item.selectedColor &&
-                            item.images &&
-                            item.images.length > 0
-                          ) {
-                            let imageIndex = 0;
-                            if (item.selectedColor.ColorID === 1) {
-                              imageIndex = Math.min(1, item.images.length - 1);
-                            } else if (item.selectedColor.ColorID === 2) {
-                              imageIndex = 0;
+                {cartLoading ? (
+                  <CartSkeleton />
+                ) : (
+                  cartProducts.map((item, index) => (
+                    <div key={index} className="summary-item">
+                      <div className="item-image">
+                        <Image
+                          alt={item.ProductName || "Product"}
+                          src={(() => {
+                            if (
+                              item.selectedColor &&
+                              item.images &&
+                              item.images.length > 0
+                            ) {
+                              let imageIndex = 0;
+                              if (item.selectedColor.ColorID === 1) {
+                                imageIndex = Math.min(
+                                  1,
+                                  item.images.length - 1
+                                );
+                              } else if (item.selectedColor.ColorID === 2) {
+                                imageIndex = 0;
+                              }
+                              const colorImageSrc =
+                                item.images[imageIndex]?.imgSrc ||
+                                item.images[0]?.imgSrc;
+                              if (
+                                colorImageSrc &&
+                                colorImageSrc.trim() !== ""
+                              ) {
+                                return colorImageSrc;
+                              }
                             }
-                            const colorImageSrc =
-                              item.images[imageIndex]?.imgSrc ||
-                              item.images[0]?.imgSrc;
-                            if (colorImageSrc && colorImageSrc.trim() !== "") {
-                              return colorImageSrc;
+                            if (
+                              item.images?.[0]?.imgSrc &&
+                              item.images[0].imgSrc.trim() !== ""
+                            ) {
+                              return item.images[0].imgSrc;
                             }
-                          }
-                          if (
-                            item.images?.[0]?.imgSrc &&
-                            item.images[0].imgSrc.trim() !== ""
-                          ) {
-                            return item.images[0].imgSrc;
-                          }
-                          if (
-                            item.ImageLarge &&
-                            item.ImageLarge.trim() !== "" &&
-                            item.ImageLarge !== "0"
-                          ) {
-                            return `https://bmrsuspension.com/siteart/products/${item.ImageLarge}`;
-                          }
-                          return "/images/logo/bmr_logo_square_small.webp";
-                        })()}
-                        width={80}
-                        height={80}
-                      />
-                    </div>
-                    <div className="item-details">
-                      <h6>{item.ProductName}</h6>
-                      <p className="item-part">Part #: {item.PartNumber}</p>
-                      <p className="item-platform">{item.PlatformName}</p>
-                      <p className="item-color">
-                        {item.selectedColor
-                          ? item.selectedColor.ColorName
-                          : "Default"}
-                      </p>
-                      <div className="quantity-controls">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (item.quantity > 1) {
+                            if (
+                              item.ImageLarge &&
+                              item.ImageLarge.trim() !== "" &&
+                              item.ImageLarge !== "0"
+                            ) {
+                              return `https://bmrsuspension.com/siteart/products/${item.ImageLarge}`;
+                            }
+                            return "/images/logo/bmr_logo_square_small.webp";
+                          })()}
+                          width={80}
+                          height={80}
+                        />
+                      </div>
+                      <div className="item-details">
+                        <h6>{item.ProductName}</h6>
+                        <p className="item-part">Part #: {item.PartNumber}</p>
+                        <p className="item-platform">{item.PlatformName}</p>
+                        <p className="item-color">
+                          {item.selectedColor
+                            ? item.selectedColor.ColorName
+                            : "Default"}
+                        </p>
+                        <div className="quantity-controls">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (item.quantity > 1) {
+                                const updatedCart = cartProducts.map(
+                                  (cartItem, i) =>
+                                    i === index
+                                      ? {
+                                          ...cartItem,
+                                          quantity: cartItem.quantity - 1,
+                                        }
+                                      : cartItem
+                                );
+                                setCartProducts(updatedCart);
+                              }
+                            }}
+                          >
+                            -
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
                               const updatedCart = cartProducts.map(
                                 (cartItem, i) =>
                                   i === index
                                     ? {
                                         ...cartItem,
-                                        quantity: cartItem.quantity - 1,
+                                        quantity: cartItem.quantity + 1,
                                       }
                                     : cartItem
                               );
                               setCartProducts(updatedCart);
-                            }
-                          }}
-                        >
-                          -
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updatedCart = cartProducts.map(
-                              (cartItem, i) =>
-                                i === index
-                                  ? {
-                                      ...cartItem,
-                                      quantity: cartItem.quantity + 1,
-                                    }
-                                  : cartItem
-                            );
-                            setCartProducts(updatedCart);
-                          }}
-                        >
-                          +
-                        </button>
+                            }}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="item-price">
+                        $
+                        {(
+                          (parseFloat(item.Price) || 0) * item.quantity
+                        ).toFixed(2)}
                       </div>
                     </div>
-                    <div className="item-price">
-                      $
-                      {((parseFloat(item.Price) || 0) * item.quantity).toFixed(
-                        2
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
 
-              {cartProducts.length === 0 && (
+              {!cartLoading && cartProducts.length === 0 && (
                 <div className="empty-cart">
                   <p>Your shop cart is empty</p>
                   <Link href="/shop-default" className="btn btn-primary">

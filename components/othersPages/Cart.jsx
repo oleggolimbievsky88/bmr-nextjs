@@ -1,5 +1,6 @@
 "use client";
 import { useContextElement } from "@/context/Context";
+import CartSkeleton from "@/components/common/CartSkeleton";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,6 +8,7 @@ export default function Cart() {
   const {
     cartProducts,
     setCartProducts,
+    cartLoading,
     totalPrice,
     appliedCoupon,
     couponDiscount,
@@ -113,91 +115,80 @@ export default function Cart() {
                   </tr>
                 </thead>
                 <tbody>
-                  {cartProducts.map((elm, i) => (
-                    <tr key={i} className="tf-cart-item file-delete">
-                      <td className="tf-cart-item_product">
-                        <Link
-                          href={`/product/${elm.ProductID}`}
-                          className="img-box"
-                        >
-                          <Image
-                            alt={elm.ProductName || "Product"}
-                            src={(() => {
-                              // Use color-specific product image from the product's image array
-                              if (
-                                elm.selectedColor &&
-                                elm.images &&
-                                elm.images.length > 0
-                              ) {
-                                // Determine which image to show based on color
-                                let imageIndex = 0; // Default to first image
-
-                                if (elm.selectedColor.ColorID === 1) {
-                                  // Black Hammertone - show second image if available
-                                  imageIndex = Math.min(
-                                    1,
-                                    elm.images.length - 1
-                                  );
-                                } else if (elm.selectedColor.ColorID === 2) {
-                                  // Red - show first image
-                                  imageIndex = 0;
-                                }
-                                // Add more color mappings as needed
-
-                                const colorImageSrc =
-                                  elm.images[imageIndex]?.imgSrc ||
-                                  elm.images[0]?.imgSrc;
-                                if (
-                                  colorImageSrc &&
-                                  colorImageSrc.trim() !== ""
-                                ) {
-                                  return colorImageSrc;
-                                }
-                              }
-
-                              // Fallback to main product image
-                              if (
-                                elm.images?.[0]?.imgSrc &&
-                                elm.images[0].imgSrc.trim() !== ""
-                              ) {
-                                return elm.images[0].imgSrc;
-                              }
-
-                              // Fallback to external BMR image
-                              if (
-                                elm.ImageLarge &&
-                                elm.ImageLarge.trim() !== "" &&
-                                elm.ImageLarge !== "0"
-                              ) {
-                                return `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`;
-                              }
-
-                              // Final fallback to BMR logo
-                              return "/images/logo/bmr_logo_square_small.webp";
-                            })()}
-                            width={668}
-                            height={932}
-                          />
-                        </Link>
-                        <div className="cart-info">
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              marginBottom: "2px",
-                              color: "#666666",
-                              fontWeight: "400",
-                            }}
-                          >
-                            Mfg: {elm.ManufacturerName || elm.ManID || "N/A"}
-                          </div>
+                  {cartLoading ? (
+                    <tr>
+                      <td colSpan="6" className="text-center p-4">
+                        <CartSkeleton />
+                      </td>
+                    </tr>
+                  ) : (
+                    cartProducts.map((elm, i) => (
+                      <tr key={i} className="tf-cart-item file-delete">
+                        <td className="tf-cart-item_product">
                           <Link
                             href={`/product/${elm.ProductID}`}
-                            className="cart-title link"
+                            className="img-box"
                           >
-                            {elm.ProductName || "Product"}
+                            <Image
+                              alt={elm.ProductName || "Product"}
+                              src={(() => {
+                                // Use color-specific product image from the product's image array
+                                if (
+                                  elm.selectedColor &&
+                                  elm.images &&
+                                  elm.images.length > 0
+                                ) {
+                                  // Determine which image to show based on color
+                                  let imageIndex = 0; // Default to first image
+
+                                  if (elm.selectedColor.ColorID === 1) {
+                                    // Black Hammertone - show second image if available
+                                    imageIndex = Math.min(
+                                      1,
+                                      elm.images.length - 1
+                                    );
+                                  } else if (elm.selectedColor.ColorID === 2) {
+                                    // Red - show first image
+                                    imageIndex = 0;
+                                  }
+                                  // Add more color mappings as needed
+
+                                  const colorImageSrc =
+                                    elm.images[imageIndex]?.imgSrc ||
+                                    elm.images[0]?.imgSrc;
+                                  if (
+                                    colorImageSrc &&
+                                    colorImageSrc.trim() !== ""
+                                  ) {
+                                    return colorImageSrc;
+                                  }
+                                }
+
+                                // Fallback to main product image
+                                if (
+                                  elm.images?.[0]?.imgSrc &&
+                                  elm.images[0].imgSrc.trim() !== ""
+                                ) {
+                                  return elm.images[0].imgSrc;
+                                }
+
+                                // Fallback to external BMR image
+                                if (
+                                  elm.ImageLarge &&
+                                  elm.ImageLarge.trim() !== "" &&
+                                  elm.ImageLarge !== "0"
+                                ) {
+                                  return `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`;
+                                }
+
+                                // Final fallback to BMR logo
+                                return "/images/logo/bmr_logo_square_small.webp";
+                              })()}
+                              width={668}
+                              height={932}
+                            />
                           </Link>
-                          <div className="cart-meta-variant">
-                            {/* Part Number with color suffix */}
+                          <div className="cart-info">
                             <div
                               style={{
                                 fontSize: "12px",
@@ -206,25 +197,16 @@ export default function Cart() {
                                 fontWeight: "400",
                               }}
                             >
-                              Part #: {elm.PartNumber || "N/A"}
-                              {elm.selectedColor && (
-                                <>
-                                  {elm.selectedColor.ColorName &&
-                                  elm.selectedColor.ColorName.toLowerCase().includes(
-                                    "red"
-                                  )
-                                    ? "R"
-                                    : elm.selectedColor.ColorName &&
-                                      elm.selectedColor.ColorName.toLowerCase().includes(
-                                        "black"
-                                      )
-                                    ? "H"
-                                    : ""}
-                                </>
-                              )}
+                              Mfg: {elm.ManufacturerName || elm.ManID || "N/A"}
                             </div>
-                            {/* Platform */}
-                            {elm.PlatformName && (
+                            <Link
+                              href={`/product/${elm.ProductID}`}
+                              className="cart-title link"
+                            >
+                              {elm.ProductName || "Product"}
+                            </Link>
+                            <div className="cart-meta-variant">
+                              {/* Part Number with color suffix */}
                               <div
                                 style={{
                                   fontSize: "12px",
@@ -233,78 +215,105 @@ export default function Cart() {
                                   fontWeight: "400",
                                 }}
                               >
-                                Platform: {elm.PlatformName}
+                                Part #: {elm.PartNumber || "N/A"}
+                                {elm.selectedColor && (
+                                  <>
+                                    {elm.selectedColor.ColorName &&
+                                    elm.selectedColor.ColorName.toLowerCase().includes(
+                                      "red"
+                                    )
+                                      ? "R"
+                                      : elm.selectedColor.ColorName &&
+                                        elm.selectedColor.ColorName.toLowerCase().includes(
+                                          "black"
+                                        )
+                                      ? "H"
+                                      : ""}
+                                  </>
+                                )}
                               </div>
-                            )}
-                            {/* Color */}
-                            <div
-                              style={{
-                                fontSize: "12px",
-                                marginBottom: "2px",
-                                color: "#666666",
-                                fontWeight: "400",
-                              }}
-                            >
-                              Color:{" "}
-                              {elm.selectedColor
-                                ? elm.selectedColor.ColorName
-                                : "Default"}
+                              {/* Platform */}
+                              {elm.PlatformName && (
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    marginBottom: "2px",
+                                    color: "#666666",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Platform: {elm.PlatformName}
+                                </div>
+                              )}
+                              {/* Color */}
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666666",
+                                  fontWeight: "400",
+                                }}
+                              >
+                                Color:{" "}
+                                {elm.selectedColor
+                                  ? elm.selectedColor.ColorName
+                                  : "Default"}
+                              </div>
+                              {/* Add-ons (Grease, Hardware, etc.) */}
+                              {elm.selectedGrease &&
+                                elm.selectedGrease.GreaseName && (
+                                  <div
+                                    style={{
+                                      fontSize: "12px",
+                                      marginBottom: "2px",
+                                      color: "#666666",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    Add Grease: {elm.selectedGrease.GreaseName}{" "}
+                                    (+${elm.selectedGrease.GreasePrice})
+                                  </div>
+                                )}
+                              {elm.selectedHardware &&
+                                elm.selectedHardware.HardwareName && (
+                                  <div
+                                    style={{
+                                      fontSize: "12px",
+                                      marginBottom: "2px",
+                                      color: "#666666",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    Add Hardware:{" "}
+                                    {elm.selectedHardware.HardwareName} (+$
+                                    {elm.selectedHardware.HardwarePrice})
+                                  </div>
+                                )}
+                              {elm.selectedAngleFinder &&
+                                elm.selectedAngleFinder.AngleName && (
+                                  <div
+                                    style={{
+                                      fontSize: "12px",
+                                      marginBottom: "2px",
+                                      color: "#666666",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    Add Angle Finder:{" "}
+                                    {elm.selectedAngleFinder.AngleName} (+$
+                                    {elm.selectedAngleFinder.AnglePrice})
+                                  </div>
+                                )}
                             </div>
-                            {/* Add-ons (Grease, Hardware, etc.) */}
-                            {elm.selectedGrease &&
-                              elm.selectedGrease.GreaseName && (
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    marginBottom: "2px",
-                                    color: "#666666",
-                                    fontWeight: "400",
-                                  }}
-                                >
-                                  Add Grease: {elm.selectedGrease.GreaseName}{" "}
-                                  (+${elm.selectedGrease.GreasePrice})
-                                </div>
-                              )}
-                            {elm.selectedHardware &&
-                              elm.selectedHardware.HardwareName && (
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    marginBottom: "2px",
-                                    color: "#666666",
-                                    fontWeight: "400",
-                                  }}
-                                >
-                                  Add Hardware:{" "}
-                                  {elm.selectedHardware.HardwareName} (+$
-                                  {elm.selectedHardware.HardwarePrice})
-                                </div>
-                              )}
-                            {elm.selectedAngleFinder &&
-                              elm.selectedAngleFinder.AngleName && (
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    marginBottom: "2px",
-                                    color: "#666666",
-                                    fontWeight: "400",
-                                  }}
-                                >
-                                  Add Angle Finder:{" "}
-                                  {elm.selectedAngleFinder.AngleName} (+$
-                                  {elm.selectedAngleFinder.AnglePrice})
-                                </div>
-                              )}
+                            <span
+                              className="remove-cart link remove"
+                              onClick={() => removeItem(elm.ProductID)}
+                            >
+                              Remove
+                            </span>
                           </div>
-                          <span
-                            className="remove-cart link remove"
-                            onClick={() => removeItem(elm.ProductID)}
-                          >
-                            Remove
-                          </span>
-                        </div>
-                      </td>
-                      {/* <td
+                        </td>
+                        {/* <td
                         className="tf-cart-item_price"
                         cart-data-title="Price"
                       >
@@ -312,110 +321,111 @@ export default function Cart() {
                           ${(parseFloat(elm.Price) || 0).toFixed(2)}
                         </div>
                       </td> */}
-                      <td
-                        className="tf-cart-item_quantity"
-                        cart-data-title="Quantity"
-                      >
-                        <div className="cart-quantity">
-                          <div className="wg-quantity">
-                            <span
-                              className="btn-quantity minus-btn"
-                              onClick={() =>
-                                setQuantity(elm.ProductID, elm.quantity - 1)
-                              }
-                            >
-                              <svg
-                                className="d-inline-block"
-                                width={9}
-                                height={1}
-                                viewBox="0 0 9 1"
-                                fill="currentColor"
-                              >
-                                <path d="M9 1H5.14286H3.85714H0V1.50201e-05H3.85714L5.14286 0L9 1.50201e-05V1Z" />
-                              </svg>
-                            </span>
-                            <input
-                              type="text"
-                              name="number"
-                              value={elm.quantity}
-                              min={1}
-                              onChange={(e) =>
-                                setQuantity(elm.ProductID, e.target.value / 1)
-                              }
-                            />
-                            <span
-                              className="btn-quantity plus-btn"
-                              onClick={() =>
-                                setQuantity(elm.ProductID, elm.quantity + 1)
-                              }
-                            >
-                              <svg
-                                className="d-inline-block"
-                                width={9}
-                                height={9}
-                                viewBox="0 0 9 9"
-                                fill="currentColor"
-                              >
-                                <path d="M9 5.14286H5.14286V9H3.85714V5.14286H0V3.85714H3.85714V0H5.14286V3.85714H9V5.14286Z" />
-                              </svg>
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td
-                        className="tf-cart-item_total"
-                        cart-data-title="Total"
-                      >
-                        <div
-                          className="cart-total"
-                          style={{ minWidth: "60px" }}
+                        <td
+                          className="tf-cart-item_quantity"
+                          cart-data-title="Quantity"
                         >
-                          $
-                          {(() => {
-                            const basePrice = parseFloat(elm.Price) || 0;
-                            let addOnPrice = 0;
+                          <div className="cart-quantity">
+                            <div className="wg-quantity">
+                              <span
+                                className="btn-quantity minus-btn"
+                                onClick={() =>
+                                  setQuantity(elm.ProductID, elm.quantity - 1)
+                                }
+                              >
+                                <svg
+                                  className="d-inline-block"
+                                  width={9}
+                                  height={1}
+                                  viewBox="0 0 9 1"
+                                  fill="currentColor"
+                                >
+                                  <path d="M9 1H5.14286H3.85714H0V1.50201e-05H3.85714L5.14286 0L9 1.50201e-05V1Z" />
+                                </svg>
+                              </span>
+                              <input
+                                type="text"
+                                name="number"
+                                value={elm.quantity}
+                                min={1}
+                                onChange={(e) =>
+                                  setQuantity(elm.ProductID, e.target.value / 1)
+                                }
+                              />
+                              <span
+                                className="btn-quantity plus-btn"
+                                onClick={() =>
+                                  setQuantity(elm.ProductID, elm.quantity + 1)
+                                }
+                              >
+                                <svg
+                                  className="d-inline-block"
+                                  width={9}
+                                  height={9}
+                                  viewBox="0 0 9 9"
+                                  fill="currentColor"
+                                >
+                                  <path d="M9 5.14286H5.14286V9H3.85714V5.14286H0V3.85714H3.85714V0H5.14286V3.85714H9V5.14286Z" />
+                                </svg>
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td
+                          className="tf-cart-item_total"
+                          cart-data-title="Total"
+                        >
+                          <div
+                            className="cart-total"
+                            style={{ minWidth: "60px" }}
+                          >
+                            $
+                            {(() => {
+                              const basePrice = parseFloat(elm.Price) || 0;
+                              let addOnPrice = 0;
 
-                            // Add grease price if selected
-                            if (
-                              elm.selectedGrease &&
-                              elm.selectedGrease.GreasePrice
-                            ) {
-                              addOnPrice += parseFloat(
-                                elm.selectedGrease.GreasePrice || 0
-                              );
-                            }
+                              // Add grease price if selected
+                              if (
+                                elm.selectedGrease &&
+                                elm.selectedGrease.GreasePrice
+                              ) {
+                                addOnPrice += parseFloat(
+                                  elm.selectedGrease.GreasePrice || 0
+                                );
+                              }
 
-                            // Add angle finder price if selected
-                            if (
-                              elm.selectedAnglefinder &&
-                              elm.selectedAnglefinder.AnglePrice
-                            ) {
-                              addOnPrice += parseFloat(
-                                elm.selectedAnglefinder.AnglePrice || 0
-                              );
-                            }
+                              // Add angle finder price if selected
+                              if (
+                                elm.selectedAnglefinder &&
+                                elm.selectedAnglefinder.AnglePrice
+                              ) {
+                                addOnPrice += parseFloat(
+                                  elm.selectedAnglefinder.AnglePrice || 0
+                                );
+                              }
 
-                            // Add hardware price if selected
-                            if (
-                              elm.selectedHardware &&
-                              elm.selectedHardware.HardwarePrice
-                            ) {
-                              addOnPrice += parseFloat(
-                                elm.selectedHardware.HardwarePrice || 0
-                              );
-                            }
+                              // Add hardware price if selected
+                              if (
+                                elm.selectedHardware &&
+                                elm.selectedHardware.HardwarePrice
+                              ) {
+                                addOnPrice += parseFloat(
+                                  elm.selectedHardware.HardwarePrice || 0
+                                );
+                              }
 
-                            const totalItemPrice =
-                              (basePrice + addOnPrice) * elm.quantity;
-                            return totalItemPrice.toFixed(2);
-                          })()}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                              const totalItemPrice =
+                                (basePrice + addOnPrice) * elm.quantity;
+                              return totalItemPrice.toFixed(2);
+                            })()}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
-              {!cartProducts.length && (
+              {!cartLoading && !cartProducts.length && (
                 <>
                   <div className="row align-items-center mb-5">
                     <div className="col-6 fs-18">Your shop cart is empty</div>
@@ -753,14 +763,13 @@ export default function Cart() {
                     id="consent"
                     checked={consent}
                     onChange={(e) => setConsent(e.target.checked)}
-                    required
                   />
                   <label className="fw-4" htmlFor="consent">
                     I consent to emails and text messages from BMR Suspension
                   </label>
                 </div>
                 <div className="cart-checkout-btn">
-                  {termsAgreed && consent ? (
+                  {termsAgreed ? (
                     <Link
                       href={`/checkout`}
                       className="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center"

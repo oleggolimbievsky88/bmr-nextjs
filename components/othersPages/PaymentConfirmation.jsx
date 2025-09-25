@@ -10,31 +10,31 @@ export default function PaymentConfirmation() {
             <div className="tf-page-cart-checkout">
               <div className="d-flex align-items-center justify-content-between mb_15">
                 <div className="fs-18">Date</div>
-                <p>01/01/2024</p>
+                <p>{new Date().toLocaleDateString()}</p>
               </div>
               <div className="d-flex align-items-center justify-content-between mb_15">
                 <div className="fs-18">Payment method</div>
-                <p>Visa</p>
+                <p>Credit Card</p>
               </div>
               <div className="d-flex align-items-center justify-content-between mb_15">
                 <div className="fs-18">Card number</div>
-                <p>**** **** **** 9999</p>
+                <p>**** **** **** 1234</p>
               </div>
               <div className="d-flex align-items-center justify-content-between mb_15">
                 <div className="fs-18">Cardholder name</div>
-                <p>Themesflat</p>
+                <p>John Doe</p>
               </div>
               <div className="d-flex align-items-center justify-content-between mb_15">
                 <div className="fs-18">Email</div>
-                <p>info@fashionshop.com</p>
+                <p>john.doe@example.com</p>
               </div>
               <div className="d-flex align-items-center justify-content-between mb_15">
                 <div className="fs-18">Phone</div>
-                <p>(212) 555-1234</p>
+                <p>(123) 456-7890</p>
               </div>
               <div className="d-flex align-items-center justify-content-between mb_24">
                 <div className="fs-22 fw-6">Subtotal</div>
-                <span className="total-value">$188.00 USD</span>
+                <span className="total-value">$123.00 USD</span>
               </div>
               <div className="d-flex gap-10">
                 <Link
