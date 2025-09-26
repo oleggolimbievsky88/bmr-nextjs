@@ -50,7 +50,7 @@ export default function Topbar4() {
             <div className="top-bar-language tf-cur justify-content-end">
               <ul className="d-flex gap-20">
                 <li>
-                  <Link href={`/contact-1`} className="text-white nav-text">
+                  <Link href={`/contact`} className="text-white nav-text">
                     Contact Us
                   </Link>
                 </li>

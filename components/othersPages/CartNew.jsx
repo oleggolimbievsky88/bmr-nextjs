@@ -402,7 +402,7 @@ export default function CartNew() {
                   <div className="col-6 fs-18">Your shop cart is empty</div>
                   <div className="col-6">
                     <Link
-                      href={`/shop-default`}
+                      href={`/products`}
                       className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
                       style={{ width: "fit-content" }}
                     >

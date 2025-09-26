@@ -1021,7 +1021,7 @@ export default function Checkout() {
               {!cartLoading && cartProducts.length === 0 && (
                 <div className="empty-cart">
                   <p>Your shop cart is empty</p>
-                  <Link href="/shop-default" className="btn btn-primary">
+                  <Link href="/products" className="btn btn-primary">
                     Explore Products!
                   </Link>
                 </div>

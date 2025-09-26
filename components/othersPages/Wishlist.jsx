@@ -36,7 +36,7 @@ export default function Wishlist() {
               </div>
               <div className="col-lg-3  col-md-6">
                 <Link
-                  href={`/shop-default`}
+                  href={`/products`}
                   className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
                 >
                   Explore Products!

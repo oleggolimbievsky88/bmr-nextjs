@@ -56,7 +56,7 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
           <div className="top-bar-language tf-cur justify-content-end">
             <ul className="d-flex gap-20">
               <li>
-                <Link href={`/contact-1`} className="text-white nav-text">
+                <Link href={`/contact`} className="text-white nav-text">
                   Contact Us
                 </Link>
               </li>
