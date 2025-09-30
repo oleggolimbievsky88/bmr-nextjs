@@ -11,11 +11,41 @@ export async function POST(request) {
     const upsAccountNumber = process.env.UPS_ACCOUNT_NUMBER;
 
     if (!upsUsername || !upsPassword || !upsAccessKey) {
+      console.error("Missing UPS credentials:", {
+        hasUsername: !!upsUsername,
+        hasPassword: !!upsPassword,
+        hasAccessKey: !!upsAccessKey,
+      });
       return NextResponse.json(
         { error: "UPS API credentials not configured" },
         { status: 500 }
       );
     }
+
+    // Temporary: Skip UPS API and use free shipping while credentials are being resolved
+    console.log("UPS API temporarily disabled - using free shipping fallback");
+    return NextResponse.json({
+      success: true,
+      shippingOptions: [
+        {
+          service: "FREE SHIPPING",
+          code: "FREE",
+          cost: 0,
+          currency: "USD",
+          deliveryDays: "1-5 business days",
+          description: "Free shipping on all BMR products",
+        },
+      ],
+      error: "UPS API credentials need activation - using free shipping",
+    });
+
+    console.log("UPS OAuth request with credentials:", {
+      username: upsUsername,
+      accessKey: upsAccessKey,
+      passwordLength: upsPassword?.length,
+      accessKeyPreview: upsAccessKey?.substring(0, 10) + "...",
+      passwordPreview: upsPassword?.substring(0, 10) + "...",
+    });
 
     // Calculate total weight and dimensions
     const totalWeight = packages.reduce(
@@ -100,44 +130,62 @@ export async function POST(request) {
       },
     };
 
-    // Get OAuth token first
-    const tokenResponse = await fetch(
-      "https://onlinetools.ups.com/security/v1/oauth/token",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "x-merchant-id": upsUsername,
-        },
-        body: new URLSearchParams({
-          grant_type: "client_credentials",
-          client_id: upsAccessKey,
-          client_secret: upsPassword,
-        }),
-      }
+    // Determine if we're in test mode
+    const isTestMode =
+      process.env.NODE_ENV === "development" ||
+      process.env.UPS_TEST_MODE === "true";
+    const baseUrl = isTestMode
+      ? "https://wwwcie.ups.com"
+      : "https://onlinetools.ups.com";
+
+    console.log(
+      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`
     );
 
+    // Get OAuth token first
+    const basicAuth = Buffer.from(`${upsAccessKey}:${upsPassword}`).toString(
+      "base64"
+    );
+
+    console.log("Basic Auth header:", {
+      credentials: `${upsAccessKey}:${upsPassword}`,
+      basicAuth: basicAuth,
+      basicAuthPreview: basicAuth.substring(0, 20) + "...",
+    });
+
+    const tokenResponse = await fetch(`${baseUrl}/security/v1/oauth/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${basicAuth}`,
+      },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+      }),
+    });
+
     if (!tokenResponse.ok) {
-      throw new Error(`UPS OAuth error: ${tokenResponse.status}`);
+      const errorText = await tokenResponse.text();
+      console.error("UPS OAuth error details:", errorText);
+      throw new Error(
+        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`
+      );
     }
 
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
     // Make rate request
-    const rateResponse = await fetch(
-      "https://onlinetools.ups.com/api/rating/v1/Rate",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          transId: "BMR-Rate-" + Date.now(),
-          transactionSrc: "BMR Suspension",
-        },
-        body: JSON.stringify(rateRequest),
-      }
-    );
+    const rateResponse = await fetch(`${baseUrl}/api/rating/v1/Rate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        transId: "BMR-Rate-" + Date.now(),
+        transactionSrc: "BMR Suspension",
+      },
+      body: JSON.stringify(rateRequest),
+    });
 
     if (!rateResponse.ok) {
       const errorText = await rateResponse.text();
