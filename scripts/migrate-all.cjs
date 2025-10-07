@@ -39,8 +39,7 @@ async function migrateAll() {
     for (const cat of categories) {
       try {
         await connection.execute(
-          `INSERT INTO categories (
-            id, name, slug, parent_id, attributes,
+          `INSAutes,
             created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
           [
@@ -69,7 +68,7 @@ async function migrateAll() {
       try {
         await connection.execute(
           `INSERT INTO platforms (
-            id, name, start_year, end_year, image, header_image, 
+            id, name, start_year, end_year, image, header_image,
             \`order\`, category_id, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
           [
@@ -114,8 +113,8 @@ async function migrateAll() {
 
         await connection.execute(
           `INSERT INTO products (
-            id, part_number, name, description_short, description_long, 
-            features, instructions, category_id, platform_id, 
+            id, part_number, name, description_short, description_long,
+            features, instructions, category_id, platform_id,
             is_new, is_active, is_blem, attributes,
             created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,

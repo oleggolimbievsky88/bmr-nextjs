@@ -4,17 +4,16 @@ export async function POST(request) {
   try {
     const { fromAddress, toAddress, packages } = await request.json();
 
-    // UPS API credentials
-    const upsUsername = process.env.UPS_USERNAME;
-    const upsPassword = process.env.UPS_PASSWORD;
-    const upsAccessKey = process.env.UPS_ACCESS_KEY;
+    // UPS API credentials - Client Credentials flow only needs Client ID and Client Secret
+    const upsClientId = process.env.UPS_CLIENT_ID || process.env.UPS_ACCESS_KEY;
+    const upsClientSecret =
+      process.env.UPS_CLIENT_SECRET || process.env.UPS_PASSWORD;
     const upsAccountNumber = process.env.UPS_ACCOUNT_NUMBER;
 
-    if (!upsUsername || !upsPassword || !upsAccessKey) {
+    if (!upsClientId || !upsClientSecret) {
       console.error("Missing UPS credentials:", {
-        hasUsername: !!upsUsername,
-        hasPassword: !!upsPassword,
-        hasAccessKey: !!upsAccessKey,
+        hasClientId: !!upsClientId,
+        hasClientSecret: !!upsClientSecret,
       });
       return NextResponse.json(
         { error: "UPS API credentials not configured" },
@@ -22,29 +21,11 @@ export async function POST(request) {
       );
     }
 
-    // Temporary: Skip UPS API and use free shipping while credentials are being resolved
-    console.log("UPS API temporarily disabled - using free shipping fallback");
-    return NextResponse.json({
-      success: true,
-      shippingOptions: [
-        {
-          service: "FREE SHIPPING",
-          code: "FREE",
-          cost: 0,
-          currency: "USD",
-          deliveryDays: "1-5 business days",
-          description: "Free shipping on all BMR products",
-        },
-      ],
-      error: "UPS API credentials need activation - using free shipping",
-    });
-
     console.log("UPS OAuth request with credentials:", {
-      username: upsUsername,
-      accessKey: upsAccessKey,
-      passwordLength: upsPassword?.length,
-      accessKeyPreview: upsAccessKey?.substring(0, 10) + "...",
-      passwordPreview: upsPassword?.substring(0, 10) + "...",
+      clientId: upsClientId,
+      clientSecretLength: upsClientSecret?.length,
+      clientIdPreview: upsClientId?.substring(0, 10) + "...",
+      clientSecretPreview: upsClientSecret?.substring(0, 10) + "...",
     });
 
     // Calculate total weight and dimensions
@@ -142,13 +123,13 @@ export async function POST(request) {
       `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`
     );
 
-    // Get OAuth token first
-    const basicAuth = Buffer.from(`${upsAccessKey}:${upsPassword}`).toString(
+    // Get OAuth token using Client Credentials flow
+    const basicAuth = Buffer.from(`${upsClientId}:${upsClientSecret}`).toString(
       "base64"
     );
 
     console.log("Basic Auth header:", {
-      credentials: `${upsAccessKey}:${upsPassword}`,
+      credentials: `${upsClientId}:${upsClientSecret}`,
       basicAuth: basicAuth,
       basicAuthPreview: basicAuth.substring(0, 20) + "...",
     });
