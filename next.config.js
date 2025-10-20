@@ -1,83 +1,44 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "www.bmrsuspension.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "bmrsuspension.com",
-        port: "",
-        pathname: "/**",
-      },
-    ],
-    domains: ["i.ytimg.com", "img.youtube.com"],
-    unoptimized: true,
-  },
-  output: "standalone",
-  logging: {
-    logging: {
-      fetches: {
-        fullUrl: true,
-      },
-    },
-  },
-  // Reduce file watching to prevent EMFILE errors
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.watchOptions = {
-        poll: 2000, // Slower polling to reduce load
-        aggregateTimeout: 500,
-        followSymlinks: false,
-        ignored: [
-          "**/node_modules/**",
-          "**/.git/**",
-          "**/.next/**",
-          "**/.vercel/**",
-          "**/tmp/**",
-          "**/scripts/**",
-          "**/.cursor/**",
-          "**/.vscode/**",
-          "**/prisma/**",
-          "**/public/images/**",
-          "**/data/**",
-          "**/.pnpm/**",
-          "**/coverage/**",
-          "**/dist/**",
-          "**/build/**",
-        ],
-      };
+  // External packages for server components (updated syntax for Next.js 15)
+  serverExternalPackages: ["mysql2"],
 
-      // Force webpack to only watch project directory, not parent directories
-      config.resolve = config.resolve || {};
-      config.resolve.symlinks = false;
+  // Disable static optimization for API routes that use database
+  async rewrites() {
+    return [];
+  },
 
-      // Reduce the scope of what webpack watches
-      config.snapshot = {
-        managedPaths: [/^(.+?[\\/]node_modules[\\/])/],
-        immutablePaths: [],
-        buildDependencies: {
-          hash: true,
-          timestamp: true,
-        },
-        module: {
-          timestamp: true,
-        },
-        resolve: {
-          timestamp: true,
-        },
-        resolveBuildDependencies: {
-          hash: true,
-          timestamp: true,
-        },
-      };
+  // Add webpack configuration to handle database connections
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Don't bundle mysql2 for server-side rendering
+      config.externals.push("mysql2");
     }
     return config;
+  },
+
+  // Disable static generation for specific pages that use database
+  async headers() {
+    return [
+      {
+        source: "/confirmation",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, max-age=0",
+          },
+        ],
+      },
+      {
+        source: "/checkout",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, max-age=0",
+          },
+        ],
+      },
+    ];
   },
 };
 

@@ -3,6 +3,9 @@ import Header2 from "@/components/header/Header";
 import Checkout from "@/components/othersPages/Checkout";
 import React from "react";
 
+// Force dynamic rendering to prevent build-time issues
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title:
     "Checkout | BMR Suspension - Performance Racing Suspension & Chassis Parts",

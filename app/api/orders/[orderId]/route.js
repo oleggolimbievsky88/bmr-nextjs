@@ -3,6 +3,14 @@ import { query } from "@/lib/db";
 
 export async function GET(request, { params }) {
   try {
+    // Check if database connection is available
+    if (!process.env.MYSQL_HOST) {
+      return NextResponse.json(
+        { success: false, message: "Database configuration missing" },
+        { status: 500 }
+      );
+    }
+
     const { orderId } = params;
 
     // Fetch order details

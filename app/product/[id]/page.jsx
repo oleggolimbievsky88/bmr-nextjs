@@ -23,6 +23,9 @@ import pool from "@/lib/db";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
+// Force dynamic rendering to prevent build-time database access
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title:
     "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
