@@ -1,0 +1,339 @@
+"use client";
+import { useContextElement } from "@/context/Context";
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+export default function OrderConfirmation({ orderData }) {
+  const { cartProducts } = useContextElement();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // If orderData is passed as prop, use it directly
+    if (orderData) {
+      setOrder(orderData);
+      setLoading(false);
+    } else {
+      // Otherwise, try to get order from URL params or localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get("orderId");
+
+      if (orderId) {
+        // Fetch order details from API
+        fetchOrderDetails(orderId);
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [orderData]);
+
+  const fetchOrderDetails = async (orderId) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}`);
+      if (response.ok) {
+        const orderData = await response.json();
+        setOrder(orderData);
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-3">Loading order details...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="alert alert-warning text-center">
+              <h4>Order Not Found</h4>
+              <p>
+                We couldn't find your order details. Please contact us if you
+                need assistance.
+              </p>
+              <Link href="/contact" className="btn btn-primary">
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const calculateSubtotal = () => {
+    return order.items.reduce((total, item) => {
+      return total + parseFloat(item.price) * item.quantity;
+    }, 0);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const shipping = parseFloat(order.shippingCost || 0);
+    const tax = parseFloat(order.tax || 0);
+    const discount = parseFloat(order.discount || 0);
+    return subtotal + shipping + tax - discount;
+  };
+
+  return (
+    <div className="container py-5 order-confirmation-page">
+      <div className="row justify-content-center">
+        <div className="col-lg-10">
+          {/* Success Header */}
+          <div className="text-center mb-5">
+            <div className="success-icon mb-3">
+              <i
+                className="fas fa-check-circle text-success"
+                style={{ fontSize: "4rem" }}
+              ></i>
+            </div>
+            <h1 className="display-4 text-success mb-3">Order Confirmed!</h1>
+            <p className="lead text-muted">
+              Thank you for your purchase! Your order has been successfully
+              placed.
+            </p>
+          </div>
+
+          {/* Order Summary Card */}
+          <div className="card order-summary-card mb-4">
+            <div className="card-header bg-primary text-white">
+              <h3 className="mb-0">
+                <i className="fas fa-receipt me-2"></i>
+                Order #{order.orderNumber}
+              </h3>
+              <small>Placed on {formatDate(order.orderDate)}</small>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6">
+                  <h5>Billing Information</h5>
+                  <address>
+                    {order.billing.firstName} {order.billing.lastName}
+                    <br />
+                    {order.billing.address1}
+                    <br />
+                    {order.billing.address2 && (
+                      <>
+                        {order.billing.address2}
+                        <br />
+                      </>
+                    )}
+                    {order.billing.city}, {order.billing.state}{" "}
+                    {order.billing.zip}
+                    <br />
+                    {order.billing.country}
+                  </address>
+                </div>
+                <div className="col-md-6">
+                  <h5>Shipping Information</h5>
+                  <address>
+                    {order.shipping.firstName} {order.shipping.lastName}
+                    <br />
+                    {order.shipping.address1}
+                    <br />
+                    {order.shipping.address2 && (
+                      <>
+                        {order.shipping.address2}
+                        <br />
+                      </>
+                    )}
+                    {order.shipping.city}, {order.shipping.state}{" "}
+                    {order.shipping.zip}
+                    <br />
+                    {order.shipping.country}
+                  </address>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Order Items */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-header">
+              <h4 className="mb-0">Order Items</h4>
+            </div>
+            <div className="card-body p-0">
+              <div className="table-responsive">
+                <table className="table table-hover mb-0 order-items-table">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Product</th>
+                      <th>Part Number</th>
+                      <th>Color</th>
+                      <th>Quantity</th>
+                      <th className="text-end">Price</th>
+                      <th className="text-end">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.items.map((item, index) => (
+                      <tr key={index}>
+                        <td>
+                          <div className="d-flex align-items-center product-info">
+                            {item.image && (
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                width={50}
+                                height={50}
+                                className="me-3 rounded"
+                              />
+                            )}
+                            <div className="product-details">
+                              <h6 className="mb-1">{item.name}</h6>
+                              <small className="text-muted">
+                                {item.platform} ({item.yearRange})
+                              </small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <code className="part-number">{item.partNumber}</code>
+                        </td>
+                        <td>
+                          <span className="badge bg-secondary color-badge">
+                            {item.color}
+                          </span>
+                        </td>
+                        <td>{item.quantity}</td>
+                        <td className="text-end">
+                          ${parseFloat(item.price).toFixed(2)}
+                        </td>
+                        <td className="text-end fw-bold">
+                          ${(parseFloat(item.price) * item.quantity).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Order Totals */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <div className="row justify-content-end">
+                <div className="col-md-6">
+                  <div className="order-totals">
+                    <div className="d-flex justify-content-between mb-2">
+                      <span>Subtotal:</span>
+                      <span>${calculateSubtotal().toFixed(2)}</span>
+                    </div>
+                    {order.discount > 0 && (
+                      <div className="d-flex justify-content-between mb-2 text-success">
+                        <span>Discount ({order.couponCode}):</span>
+                        <span>-${parseFloat(order.discount).toFixed(2)}</span>
+                      </div>
+                    )}
+                    {order.shippingCost > 0 && (
+                      <div className="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>
+                          ${parseFloat(order.shippingCost).toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                    {order.tax > 0 && (
+                      <div className="d-flex justify-content-between mb-2">
+                        <span>Tax:</span>
+                        <span>${parseFloat(order.tax).toFixed(2)}</span>
+                      </div>
+                    )}
+                    <hr />
+                    <div className="d-flex justify-content-between mb-3">
+                      <strong>Total:</strong>
+                      <strong className="text-primary">
+                        ${calculateTotal().toFixed(2)}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Customer Message */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body customer-message">
+              <h4 className="card-title mb-3">
+                <i className="fas fa-envelope me-2"></i>
+                What's Next?
+              </h4>
+              <div className="alert alert-info">
+                <p className="mb-3">
+                  Thank you for your purchase! We have received your order and
+                  will work on shipping it out as soon as possible. Once your
+                  order is processed through our system, you will receive
+                  tracking information. Please note, we will not charge your
+                  card until your part(s) are ready to ship out.
+                </p>
+                <p className="mb-3">
+                  All orders are manually entered to ensure all information is
+                  correct before shipment.
+                </p>
+                <p className="mb-0">
+                  If you have any questions or would like to change any part of
+                  your order, simply send us an email at{" "}
+                  <a
+                    href="mailto:WebSales@bmrsuspension.com"
+                    className="text-decoration-none"
+                  >
+                    WebSales@bmrsuspension.com
+                  </a>{" "}
+                  or call us at{" "}
+                  <a href="tel:+18139869302" className="text-decoration-none">
+                    (813) 986-9302
+                  </a>{" "}
+                  between 8:30 - 5:00 pm Eastern time, Monday through Friday. We
+                  thank you for continuing to support American manufacturing!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="text-center action-buttons">
+            <Link href="/" className="btn btn-primary btn-lg me-3">
+              <i className="fas fa-home me-2"></i>
+              Continue Shopping
+            </Link>
+            <Link href="/contact" className="btn btn-outline-primary btn-lg">
+              <i className="fas fa-envelope me-2"></i>
+              Contact Us
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,159 @@
+// Credit Card Input Styles
+.card-input-wrapper {
+	position: relative;
+
+	.card-icons {
+		position: absolute;
+		right: 12px;
+		top: 50%;
+		transform: translateY(-50%);
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		pointer-events: none;
+		z-index: 2;
+	}
+
+	input {
+		padding-right: 120px !important;
+	}
+}
+
+.credit-card-icons {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+
+	.detected-card {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+
+		.card-name {
+			font-size: 12px;
+			font-weight: 600;
+			color: #28a745;
+			white-space: nowrap;
+		}
+
+		svg {
+			filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+		}
+	}
+
+	.all-cards {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+
+		svg {
+			opacity: 0.3;
+			transition: opacity 0.2s ease;
+
+			&:hover {
+				opacity: 0.6;
+			}
+		}
+	}
+}
+
+// Validation Message Styles
+.validation-message {
+	font-size: 12px;
+	margin-top: 4px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+
+	&.valid {
+		color: #28a745;
+
+		&::before {
+			content: '✓';
+			color: #28a745;
+			font-weight: bold;
+		}
+	}
+
+	&.invalid {
+		color: #dc3545;
+
+		&::before {
+			content: '✗';
+			color: #dc3545;
+			font-weight: bold;
+		}
+	}
+}
+
+// Bootstrap validation state overrides
+.form-control.is-valid {
+	border-color: #28a745;
+	box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+
+	&:focus {
+		border-color: #28a745;
+		box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+	}
+}
+
+.form-control.is-invalid {
+	border-color: #dc3545;
+	box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+
+	&:focus {
+		border-color: #dc3545;
+		box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+	}
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+	.card-input-wrapper {
+		.card-icons {
+			right: 8px;
+
+			.credit-card-icons {
+				gap: 4px;
+
+				svg {
+					width: 30px;
+					height: 18px;
+				}
+
+				.card-name {
+					font-size: 10px;
+				}
+			}
+		}
+
+		input {
+			padding-right: 100px !important;
+		}
+	}
+}
+
+// Animation for card type detection
+.detected-card {
+	animation: cardDetected 0.3s ease-in-out;
+}
+
+@keyframes cardDetected {
+	0% {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+// Card input focus state
+.card-input-wrapper input:focus + .card-icons {
+	.credit-card-icons .detected-card {
+		svg {
+			filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+		}
+	}
+}

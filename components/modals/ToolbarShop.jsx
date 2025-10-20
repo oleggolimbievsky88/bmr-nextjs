@@ -18,7 +18,6 @@ export default function ToolbarShop() {
             <li className="nav-mb-item">
               <Link
                 href={`/shop-default`}
-                className="tf-category-link mb-menu-link"
               >
                 <div className="image">
                   <Image

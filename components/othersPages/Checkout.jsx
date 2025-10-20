@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
 import CartSkeleton from "@/components/common/CartSkeleton";
+import CreditCardIcons from "@/components/common/CreditCardIcons";
 import { useAddressValidation } from "@/hooks/useAddressValidation";
 import { useShippingRates } from "@/hooks/useShippingRates";
+import { useCreditCard } from "@/hooks/useCreditCard";
 
 export default function Checkout() {
   const {
@@ -62,6 +64,16 @@ export default function Checkout() {
     nameOnCard: "",
   });
 
+  // Payment validation states
+  const [expiryValid, setExpiryValid] = useState(false);
+  const [expiryMessage, setExpiryMessage] = useState("");
+  const [cvvValid, setCvvValid] = useState(false);
+  const [cvvMessage, setCvvMessage] = useState("");
+
+  // Order submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
   // Shipping rates hook
   const {
     calculateShippingRates,
@@ -71,6 +83,17 @@ export default function Checkout() {
     selectShippingOption,
     error: shippingError,
   } = useShippingRates();
+
+  // Credit card hook
+  const {
+    detectedType,
+    isValid: cardValid,
+    validationMessage,
+    handleCardNumberChange,
+    formatExpiryDate,
+    validateExpiryDate,
+    validateCVV,
+  } = useCreditCard();
 
   const handleCouponApply = async () => {
     if (!couponCode.trim()) {
@@ -133,6 +156,103 @@ export default function Checkout() {
       setActiveStep("billing");
     } else if (activeStep === "payment") {
       setActiveStep("shipping");
+    }
+  };
+
+  const handleOrderSubmission = async () => {
+    // Validate all required fields
+    if (
+      !billingData.firstName ||
+      !billingData.lastName ||
+      !billingData.address1 ||
+      !billingData.city ||
+      !billingData.state ||
+      !billingData.zip ||
+      !billingData.email
+    ) {
+      setSubmitError("Please fill in all required billing fields");
+      return;
+    }
+
+    if (
+      !shippingData.firstName ||
+      !shippingData.lastName ||
+      !shippingData.address1 ||
+      !shippingData.city ||
+      !shippingData.state ||
+      !shippingData.zip
+    ) {
+      setSubmitError("Please fill in all required shipping fields");
+      return;
+    }
+
+    if (
+      !paymentData.cardNumber ||
+      !paymentData.expiryDate ||
+      !paymentData.cvv ||
+      !paymentData.nameOnCard
+    ) {
+      setSubmitError("Please fill in all required payment fields");
+      return;
+    }
+
+    if (!cardValid || !expiryValid || !cvvValid) {
+      setSubmitError("Please fix payment validation errors");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const orderData = {
+        billing: billingData,
+        shipping: shippingData,
+        payment: paymentData,
+        items: cartProducts.map((product) => ({
+          productId: product.ProductID,
+          name: product.ProductName,
+          partNumber: product.PartNumber,
+          quantity: product.quantity,
+          price: product.Price,
+          color: product.Color,
+          platform: product.platform || "",
+          yearRange: product.yearRange || "",
+          image: product.ImageSmall || product.ImageLarge || "",
+        })),
+        shippingCost: selectedOption?.cost || 0,
+        shippingMethod: selectedOption?.name || "Standard Shipping",
+        tax: 0, // Calculate tax based on location if needed
+        discount: couponDiscount || 0,
+        couponCode: appliedCoupon?.CouponCode || "",
+        totalPrice: totalPrice,
+      };
+
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Clear cart
+        setCartProducts([]);
+        removeCoupon();
+
+        // Redirect to confirmation page
+        window.location.href = `/confirmation?orderId=${data.orderId}`;
+      } else {
+        setSubmitError(data.message || "Failed to process order");
+      }
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      setSubmitError("Failed to process order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -806,19 +926,40 @@ export default function Checkout() {
                     <form className="checkout-form">
                       <div className="form-group">
                         <label htmlFor="card-number">Card Number*</label>
-                        <input
-                          type="text"
-                          id="card-number"
-                          placeholder="1234 5678 9012 3456"
-                          value={paymentData.cardNumber}
-                          onChange={(e) =>
-                            setPaymentData({
-                              ...paymentData,
-                              cardNumber: e.target.value,
-                            })
-                          }
-                          required
-                        />
+                        <div className="card-input-wrapper">
+                          <input
+                            type="text"
+                            id="card-number"
+                            placeholder="1234 5678 9012 3456"
+                            value={paymentData.cardNumber}
+                            onChange={(e) => {
+                              const formatted = handleCardNumberChange(
+                                e.target.value
+                              );
+                              setPaymentData({
+                                ...paymentData,
+                                cardNumber: formatted,
+                              });
+                            }}
+                            className={`form-control ${
+                              paymentData.cardNumber &&
+                              (cardValid ? "is-valid" : "is-invalid")
+                            }`}
+                            required
+                          />
+                          <div className="card-icons">
+                            <CreditCardIcons detectedType={detectedType} />
+                          </div>
+                          {paymentData.cardNumber && (
+                            <div
+                              className={`validation-message ${
+                                cardValid ? "valid" : "invalid"
+                              }`}
+                            >
+                              {validationMessage}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div className="row">
@@ -830,14 +971,34 @@ export default function Checkout() {
                               id="expiry-date"
                               placeholder="MM/YY"
                               value={paymentData.expiryDate}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const formatted = formatExpiryDate(
+                                  e.target.value
+                                );
+                                const validation =
+                                  validateExpiryDate(formatted);
                                 setPaymentData({
                                   ...paymentData,
-                                  expiryDate: e.target.value,
-                                })
-                              }
+                                  expiryDate: formatted,
+                                });
+                                setExpiryValid(validation.isValid);
+                                setExpiryMessage(validation.message);
+                              }}
+                              className={`form-control ${
+                                paymentData.expiryDate &&
+                                (expiryValid ? "is-valid" : "is-invalid")
+                              }`}
                               required
                             />
+                            {paymentData.expiryDate && (
+                              <div
+                                className={`validation-message ${
+                                  expiryValid ? "valid" : "invalid"
+                                }`}
+                              >
+                                {expiryMessage}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-md-6">
@@ -846,16 +1007,48 @@ export default function Checkout() {
                             <input
                               type="text"
                               id="cvv"
-                              placeholder="123"
+                              placeholder={
+                                detectedType?.name === "American Express"
+                                  ? "1234"
+                                  : "123"
+                              }
                               value={paymentData.cvv}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const cleaned = e.target.value.replace(
+                                  /\D/g,
+                                  ""
+                                );
+                                const validation = validateCVV(
+                                  cleaned,
+                                  detectedType
+                                );
                                 setPaymentData({
                                   ...paymentData,
-                                  cvv: e.target.value,
-                                })
+                                  cvv: cleaned,
+                                });
+                                setCvvValid(validation.isValid);
+                                setCvvMessage(validation.message);
+                              }}
+                              className={`form-control ${
+                                paymentData.cvv &&
+                                (cvvValid ? "is-valid" : "is-invalid")
+                              }`}
+                              maxLength={
+                                detectedType?.name === "American Express"
+                                  ? 4
+                                  : 3
                               }
                               required
                             />
+                            {paymentData.cvv && (
+                              <div
+                                className={`validation-message ${
+                                  cvvValid ? "valid" : "invalid"
+                                }`}
+                              >
+                                {cvvMessage}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -876,17 +1069,43 @@ export default function Checkout() {
                         />
                       </div>
 
+                      {submitError && (
+                        <div className="alert alert-danger mt-3">
+                          {submitError}
+                        </div>
+                      )}
+
                       <div className="d-flex justify-content-between mt-4">
                         <button
                           type="button"
                           className="btn btn-outline-secondary"
                           onClick={handleBack}
+                          disabled={isSubmitting}
                         >
                           Back
                         </button>
-                        {/* <button type="button" className="btn btn-danger btn-lg">
-                          Place Order
-                        </button> */}
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-lg"
+                          onClick={handleOrderSubmission}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              Processing Order...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-credit-card me-2"></i>
+                              Place Order
+                            </>
+                          )}
+                        </button>
                       </div>
                     </form>
                   </div>

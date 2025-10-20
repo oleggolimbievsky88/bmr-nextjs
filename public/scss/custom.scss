@@ -1,5 +1,7 @@
 @use "sass:color";
-@import "component/checkout";
+@use "component/checkout";
+@use "component/credit-card";
+@use "component/order-confirmation";
 
 .product-page{
   background-color: #f3f3f3;
