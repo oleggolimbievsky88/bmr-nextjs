@@ -3,6 +3,20 @@ const nextConfig = {
   // External packages for server components (updated syntax for Next.js 15)
   serverExternalPackages: ["mysql2"],
 
+  // Image configuration for external domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "bmrsuspension.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.bmrsuspension.com",
+      },
+    ],
+  },
+
   // Disable static optimization for API routes that use database
   async rewrites() {
     return [];
