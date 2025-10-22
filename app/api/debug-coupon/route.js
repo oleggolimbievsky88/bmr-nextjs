@@ -11,7 +11,7 @@ export async function GET(request) {
 
     // Test coupon query
     const [rows] = await connection.query(
-      "SELECT CouponID, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ?",
+      "SELECT CouponID, CouponCode, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ?",
       ["PEACOCK7"]
     );
     console.log("Debug: Coupon query result:", rows);
@@ -22,7 +22,7 @@ export async function GET(request) {
 
     // Test all coupons with this code
     const [allRows] = await connection.query(
-      "SELECT CouponID, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ? ORDER BY CouponID",
+      "SELECT CouponID, CouponCode, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ? ORDER BY CouponID",
       ["PEACOCK7"]
     );
     console.log("Debug: All coupons with PEACOCK7:", allRows);
