@@ -73,6 +73,8 @@ export default function Checkout() {
   // Order submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [emailConsent, setEmailConsent] = useState(false);
 
   // Shipping rates hook
   const {
@@ -175,12 +177,13 @@ export default function Checkout() {
     }
 
     if (
-      !shippingData.firstName ||
-      !shippingData.lastName ||
-      !shippingData.address1 ||
-      !shippingData.city ||
-      !shippingData.state ||
-      !shippingData.zip
+      !sameAsBilling &&
+      (!shippingData.firstName ||
+        !shippingData.lastName ||
+        !shippingData.address1 ||
+        !shippingData.city ||
+        !shippingData.state ||
+        !shippingData.zip)
     ) {
       setSubmitError("Please fill in all required shipping fields");
       return;
@@ -201,53 +204,55 @@ export default function Checkout() {
       return;
     }
 
+    if (!termsAgreed) {
+      setSubmitError("Please agree to the Terms & Conditions");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError("");
 
     try {
-      const orderData = {
-        billing: billingData,
-        shipping: shippingData,
-        payment: paymentData,
+      // For now, simulate successful order processing
+      // TODO: Replace with actual API call when backend is ready
+
+      // Get last 4 digits of card number
+      const lastFourDigits = paymentData.cardNumber
+        .replace(/\s/g, "")
+        .slice(-4);
+
+      // Clear cart
+      setCartProducts([]);
+      removeCoupon();
+
+      // Redirect to confirmation page with order details
+      const orderId = `BMR-${Date.now()}`;
+      const confirmationData = {
+        orderId: orderId,
+        cardLastFour: lastFourDigits,
+        total: calculateGrandTotal(),
         items: cartProducts.map((product) => ({
-          productId: product.ProductID,
           name: product.ProductName,
           partNumber: product.PartNumber,
           quantity: product.quantity,
           price: product.Price,
-          color: product.Color,
-          platform: product.platform || "",
-          yearRange: product.yearRange || "",
-          image: product.ImageSmall || product.ImageLarge || "",
         })),
-        shippingCost: selectedOption?.cost || 0,
+        billing: billingData,
+        shipping: sameAsBilling ? billingData : shippingData,
         shippingMethod: selectedOption?.name || "Standard Shipping",
-        tax: 0, // Calculate tax based on location if needed
-        discount: couponDiscount || 0,
+        shippingCost: selectedOption?.cost || 0,
         couponCode: appliedCoupon?.CouponCode || "",
-        totalPrice: totalPrice,
+        discount: couponDiscount || 0,
       };
 
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+      // Store order data in sessionStorage for the confirmation page
+      sessionStorage.setItem(
+        "orderConfirmation",
+        JSON.stringify(confirmationData)
+      );
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Clear cart
-        setCartProducts([]);
-        removeCoupon();
-
-        // Redirect to confirmation page
-        window.location.href = `/confirmation?orderId=${data.orderId}`;
-      } else {
-        setSubmitError(data.message || "Failed to process order");
-      }
+      // Redirect to confirmation page
+      window.location.href = `/confirmation?orderId=${orderId}`;
     } catch (error) {
       console.error("Error submitting order:", error);
       setSubmitError("Failed to process order. Please try again.");
@@ -1065,8 +1070,27 @@ export default function Checkout() {
                               nameOnCard: e.target.value,
                             })
                           }
+                          className={`form-control ${
+                            paymentData.nameOnCard &&
+                            (paymentData.nameOnCard.trim().length > 0
+                              ? "is-valid"
+                              : "is-invalid")
+                          }`}
                           required
                         />
+                        {paymentData.nameOnCard && (
+                          <div
+                            className={`validation-message ${
+                              paymentData.nameOnCard.trim().length > 0
+                                ? "valid"
+                                : "invalid"
+                            }`}
+                          >
+                            {paymentData.nameOnCard.trim().length > 0
+                              ? "Valid name"
+                              : "Please enter a valid name"}
+                          </div>
+                        )}
                       </div>
 
                       {submitError && (
@@ -1075,7 +1099,7 @@ export default function Checkout() {
                         </div>
                       )}
 
-                      <div className="d-flex justify-content-between mt-4">
+                      <div className="d-flex justify-content-start mt-4">
                         <button
                           type="button"
                           className="btn btn-outline-secondary"
@@ -1083,28 +1107,6 @@ export default function Checkout() {
                           disabled={isSubmitting}
                         >
                           Back
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-lg"
-                          onClick={handleOrderSubmission}
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <span
-                                className="spinner-border spinner-border-sm me-2"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                              Processing Order...
-                            </>
-                          ) : (
-                            <>
-                              <i className="fas fa-credit-card me-2"></i>
-                              Place Order
-                            </>
-                          )}
                         </button>
                       </div>
                     </form>
@@ -1302,16 +1304,47 @@ export default function Checkout() {
 
               <div className="terms-checkbox">
                 <label>
-                  <input type="checkbox" required />I agree to BMR Suspension's{" "}
+                  <input
+                    type="checkbox"
+                    checked={termsAgreed}
+                    onChange={(e) => setTermsAgreed(e.target.checked)}
+                    required
+                  />
+                  I agree to BMR Suspension's{" "}
                   <Link href="/terms-conditions">Terms & Conditions</Link>
                 </label>
               </div>
 
+              <div className="email-consent-checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={emailConsent}
+                    onChange={(e) => setEmailConsent(e.target.checked)}
+                  />
+                  I agree to receive texts and emails from BMR
+                </label>
+              </div>
+
               <button
-                className="btn btn-primary btn-lg w-100 place-order-btn"
-                disabled={activeStep !== "payment"}
+                className="btn btn-lg w-100 place-order-btn"
+                onClick={handleOrderSubmission}
+                disabled={
+                  activeStep !== "payment" || isSubmitting || !termsAgreed
+                }
               >
-                PLACE ORDER
+                {isSubmitting ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Processing Order...
+                  </>
+                ) : (
+                  "PLACE ORDER"
+                )}
               </button>
             </div>
           </div>

@@ -15,7 +15,22 @@ export default function OrderConfirmation({ orderData }) {
       setOrder(orderData);
       setLoading(false);
     } else {
-      // Otherwise, try to get order from URL params or localStorage
+      // Try to get order from sessionStorage first (from checkout)
+      const storedOrder = sessionStorage.getItem("orderConfirmation");
+      if (storedOrder) {
+        try {
+          const parsedOrder = JSON.parse(storedOrder);
+          setOrder(parsedOrder);
+          setLoading(false);
+          // Clear the stored order data
+          sessionStorage.removeItem("orderConfirmation");
+          return;
+        } catch (error) {
+          console.error("Error parsing stored order:", error);
+        }
+      }
+
+      // Otherwise, try to get order from URL params
       const urlParams = new URLSearchParams(window.location.search);
       const orderId = urlParams.get("orderId");
 
@@ -99,7 +114,7 @@ export default function OrderConfirmation({ orderData }) {
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const shipping = parseFloat(order.shippingCost || 0);
-    const tax = parseFloat(order.tax || 0);
+    const tax = 0; // No tax for now
     const discount = parseFloat(order.discount || 0);
     return subtotal + shipping + tax - discount;
   };
@@ -128,13 +143,22 @@ export default function OrderConfirmation({ orderData }) {
             <div className="card-header bg-primary text-white">
               <h3 className="mb-0">
                 <i className="fas fa-receipt me-2"></i>
-                Order #{order.orderNumber}
+                Order #{order.orderId}
               </h3>
-              <small>Placed on {formatDate(order.orderDate)}</small>
+              <small>
+                Placed on{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </small>
             </div>
             <div className="card-body">
               <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-4">
                   <h5>Billing Information</h5>
                   <address>
                     {order.billing.firstName} {order.billing.lastName}
@@ -153,7 +177,7 @@ export default function OrderConfirmation({ orderData }) {
                     {order.billing.country}
                   </address>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-4">
                   <h5>Shipping Information</h5>
                   <address>
                     {order.shipping.firstName} {order.shipping.lastName}
@@ -171,6 +195,25 @@ export default function OrderConfirmation({ orderData }) {
                     <br />
                     {order.shipping.country}
                   </address>
+                </div>
+                <div className="col-md-4">
+                  <h5>Payment Information</h5>
+                  <div className="payment-info">
+                    <div className="d-flex align-items-center mb-2">
+                      <i className="fas fa-credit-card me-2 text-muted"></i>
+                      <span>Card ending in {order.cardLastFour}</span>
+                    </div>
+                    <div className="d-flex align-items-center mb-2">
+                      <i className="fas fa-truck me-2 text-muted"></i>
+                      <span>{order.shippingMethod}</span>
+                    </div>
+                    {order.couponCode && (
+                      <div className="d-flex align-items-center">
+                        <i className="fas fa-tag me-2 text-muted"></i>
+                        <span>Coupon: {order.couponCode}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -273,7 +316,10 @@ export default function OrderConfirmation({ orderData }) {
                     <div className="d-flex justify-content-between mb-3">
                       <strong>Total:</strong>
                       <strong className="text-primary">
-                        ${calculateTotal().toFixed(2)}
+                        $
+                        {order.total
+                          ? order.total.toFixed(2)
+                          : calculateTotal().toFixed(2)}
                       </strong>
                     </div>
                   </div>

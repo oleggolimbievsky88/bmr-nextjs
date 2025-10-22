@@ -1,4 +1,34 @@
 // Checkout Page Styles
+.checkout-form {
+  .btn-danger {
+    background-color: #cc0000 !important;
+    border-color: #cc0000 !important;
+
+    &:hover:not(:disabled) {
+      background-color: #b30000 !important;
+      border-color: #b30000 !important;
+    }
+
+    &:focus {
+      background-color: #cc0000 !important;
+      border-color: #cc0000 !important;
+      box-shadow: 0 0 0 0.2rem rgba(204, 0, 0, 0.25) !important;
+    }
+  }
+
+  .btn-outline-secondary {
+    background-color: #fff !important;
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+
+    &:hover:not(:disabled) {
+      background-color: #6c757d !important;
+      border-color: #6c757d !important;
+      color: #fff !important;
+    }
+  }
+}
+
 .checkout-steps {
   .checkout-step {
     margin-bottom: 2rem;
@@ -276,7 +306,7 @@
   }
 
   .terms-checkbox {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     label {
       display: flex;
@@ -302,8 +332,26 @@
     }
   }
 
+  .email-consent-checkbox {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: flex;
+      align-items: flex-start;
+      font-size: 0.9rem;
+      color: #666;
+      cursor: pointer;
+
+      input[type="checkbox"] {
+        width: auto;
+        margin-right: 0.5rem;
+        margin-top: 0.1rem;
+      }
+    }
+  }
+
   .place-order-btn {
-    background: #dc3545;
+    background: #cc0000;
     color: #fff;
     border: none;
     padding: 1rem;
@@ -311,14 +359,23 @@
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    transform: scale(1);
 
     &:hover:not(:disabled) {
-      background: #c82333;
+      background: #b30000;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
     }
 
     &:disabled {
       background: #6c757d;
       cursor: not-allowed;
+      transform: scale(1);
     }
   }
 }
@@ -404,6 +461,19 @@
     &.border-red-400 {
       border-color: #ef4444 !important;
       box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+    }
+  }
+
+  .validation-message {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+
+    &.valid {
+      color: #28a745;
+    }
+
+    &.invalid {
+      color: #dc3545;
     }
   }
 }
