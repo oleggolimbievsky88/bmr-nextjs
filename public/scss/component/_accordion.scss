@@ -1,5 +1,5 @@
-@use "../abstracts/mixin";
-@use "../abstracts/variable";
+@use "../abstracts/mixin" as *;
+@use "../abstracts/variable" as *;
 
 .flat-accordion2,
 .flat-accordion1,
@@ -20,7 +20,7 @@
 
             cursor: pointer;
             position: relative;
-            @include mixin.transition3;
+            @include transition3;
             &:hover {
                 color: var(--primary);
             }
@@ -47,7 +47,7 @@
                     border-radius: 2px;
                     top: 50%;
                     transform: translateY(-50%);
-                    @include mixin.transition3;
+                    @include transition3;
                 }
                 &::before {
                     position: absolute;
@@ -59,7 +59,7 @@
                     border-radius: 2px;
                     top: 50%;
                     transform: translateY(-50%);
-                    @include mixin.transition3;
+                    @include transition3;
                     opacity: 1;
                 }
                 &.active {
@@ -94,11 +94,11 @@
                 &::before {
                     position: absolute;
                     content: '\e904';
-                    font-family: variable.$fontIcon;
+                    font-family: $fontIcon;
                     font-size: 8px;
                     color: var(--main);
                     right: 0;
-                    @include mixin.transition3;
+                    @include transition3;
                 }
                 &.active {
                     &::before {

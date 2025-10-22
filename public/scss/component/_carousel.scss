@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 
 .swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet,
@@ -17,17 +17,17 @@
     gap: 8px;
     &.swiper-pagination-bullets{
         .swiper-pagination-bullet {
-            @include mixin.flex(center, center);
+            @include flex(center, center);
          
         }
     }
     .swiper-pagination-bullet {
         width: 22px;
         height: 22px;
-        @include mixin.flex(center, center);
+        @include flex(center, center);
         background-color: transparent;
         opacity: 1;
-        @include mixin.transition3;
+        @include transition3;
         border: 2px solid transparent;
         &:before {
             content: "";
@@ -198,8 +198,8 @@
     color: var(--main);
     border: 1px solid var(--main);
     background-color: transparent;
-    @include mixin.flex(center, center);
-    @include mixin.transition3;
+    @include flex(center, center);
+    @include transition3;
     font-size: 12px;
     cursor: pointer;
     &.swiper-button-disabled {
@@ -285,7 +285,7 @@
 .nav-sw-arrow {
     width: 30px;
     height: 30px;
-    @include mixin.flex(center, center);
+    @include flex(center, center);
     font-size: 12px;
     cursor: pointer;
     &:hover {
@@ -309,7 +309,7 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        @include mixin.transition4;
+        @include transition4;
         cursor: pointer;
         visibility: hidden;
         background-color: var(--white);
@@ -376,12 +376,12 @@
     height: 46px;
     background-color: var(--white);
     border-radius: 50%;
-    @include mixin.transition3;
+    @include transition3;
     &::after {
         font-size: 11px;
         color: var(--main);
         font-weight: 700;
-        @include mixin.transition3;
+        @include transition3;
     }
     &:hover {
         background-color: var(--primary);
@@ -428,7 +428,7 @@
     height: 27px;
     border-radius: 50%;
     position: relative;
-    @include mixin.flex(center, center);
+    @include flex(center, center);
     z-index: 1;
     background-color: var(--white);
     span {

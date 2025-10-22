@@ -1,10 +1,10 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 // ------- box icon ---------
 
 .box-icon {
-    @include mixin.flex(center, center);
-    @include mixin.transition4;
+    @include flex(center, center);
+    @include transition4;
     cursor: pointer;
     &.w_28 {
         width: 28px;

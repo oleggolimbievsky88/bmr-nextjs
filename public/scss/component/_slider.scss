@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 .wrap-slider {
   position: relative;
@@ -83,7 +83,7 @@
       transform: translateY(100px);
       opacity: 0;
       visibility: hidden;
-      @include mixin.transition3;
+      @include transition3;
       &.fade-box {
         transition-delay: 0.4s;
       }
@@ -204,7 +204,7 @@
     align-items: center;
     z-index: 1;
     width: 51%;
-    @include mixin.transition3;
+    @include transition3;
     &:hover {
       z-index: 2;
     }
@@ -212,7 +212,7 @@
   .item-2 {
     margin-left: auto;
     width: 84%;
-    @include mixin.transition3;
+    @include transition3;
     &:hover {
       z-index: 2;
       position: relative;

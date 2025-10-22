@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 .tf-featured {
     position: relative;
@@ -135,7 +135,7 @@
 }
 .tf-countdown-v2 {
     .countdown__timer {
-        @include mixin.flex(center, center);
+        @include flex(center, center);
         gap: 8px;
     }
     .countdown__item {

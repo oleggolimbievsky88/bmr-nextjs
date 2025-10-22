@@ -1,5 +1,5 @@
-@use "../abstracts/mixin";
-@use "../abstracts/variable";
+@use "../abstracts/mixin" as *;
+@use "../abstracts/variable" as *;
 
 .form-newlleter {
   h4 {
@@ -67,7 +67,7 @@
   border-radius: 3px;
   border: 1px solid var(--line);
   height: 42px;
-  @include mixin.transition3;
+  @include transition3;
   outline: none;
   &:focus-visible {
     border: 1px solid var(--main);
@@ -82,7 +82,7 @@
     background-color: transparent;
   }
   &::after {
-    font-family: variable.$fontIcon;
+    font-family: $fontIcon;
     position: absolute;
     content: "\e904";
     right: 10px;
@@ -169,14 +169,14 @@
     }
   }
   &::before {
-    font-family: variable.$fontIcon;
+    font-family: $fontIcon;
     content: "\e911";
     position: absolute;
     color: var(--white);
     opacity: 0;
     font-size: 8px;
     transform: scale(0);
-    @include mixin.transition3;
+    @include transition3;
   }
 }
 .tf-check-color {
@@ -201,14 +201,14 @@
     }
   }
   &::before {
-    font-family: variable.$fontIcon;
+    font-family: $fontIcon;
     content: "\e911";
     position: absolute;
     color: var(--white);
     opacity: 0;
     font-size: 8px;
     transform: scale(0);
-    @include mixin.transition3;
+    @include transition3;
   }
   &.bg_white {
     border-color: var(--line);
@@ -223,9 +223,9 @@
   min-width: 100px;
   border: 1px solid var(--line-2);
   cursor: pointer;
-  @include mixin.transition3;
+  @include transition3;
   .btn-select {
-    @include mixin.flex(center, space-between);
+    @include flex(center, space-between);
     gap: 10px;
     .icon {
       font-size: 7px;
@@ -269,7 +269,7 @@
     padding: 0 20px;
     line-height: 30px;
     width: 100%;
-    @include mixin.transition3;
+    @include transition3;
     &::after {
       height: 100%;
       content: "";
@@ -395,7 +395,7 @@
     background-color: transparent;
   }
   &::after {
-    font-family: variable.$fontIcon;
+    font-family: $fontIcon;
     position: absolute;
     content: "\e904";
     right: 8px;

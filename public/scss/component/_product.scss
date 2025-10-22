@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 // tf-main-product
 .thumbs-slider1,
@@ -32,7 +32,7 @@
         left: 0;
         bottom: 0;
         border: 2px solid transparent;
-        @include mixin.transition3;
+        @include transition3;
         border-radius: 5px;
       }
     }
@@ -439,7 +439,7 @@
 .find-size {
   text-decoration: underline !important;
   text-underline-offset: 5px;
-  @include mixin.transition3;
+  @include transition3;
   cursor: pointer;
   &:hover {
     color: var(--primary);
@@ -491,7 +491,7 @@
       cursor: pointer;
       font-weight: 400;
       line-height: 22.4px;
-      @include mixin.transition3;
+      @include transition3;
       &:hover {
         border-color: var(--main);
       }
@@ -974,7 +974,7 @@
 
 .wrap-btn-viewer {
   position: absolute;
-  @include mixin.center();
+  @include center();
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -1013,7 +1013,7 @@
   align-items: center;
   justify-content: center;
   border: 1px solid var(--line);
-  @include mixin.transition3;
+  @include transition3;
   cursor: pointer;
   .icon,
   i {
@@ -1084,7 +1084,7 @@
     font-size: 24px;
     color: var(--main);
     cursor: pointer;
-    @include mixin.transition3;
+    @include transition3;
     &:hover {
       color: var(--primary);
     }
@@ -1230,7 +1230,7 @@
 
 // card product item
 .card-product {
-  @include mixin.transition3;
+  @include transition3;
   border: 1px solid #cccccc;
   border-radius: 6px;
   .product-img {
@@ -1247,7 +1247,7 @@
     overflow: hidden;
     z-index: 20;
     .sold-out {
-      @include mixin.flex(center, center);
+      @include flex(center, center);
       z-index: 100;
       position: absolute;
       top: 50%;
@@ -1398,7 +1398,7 @@
     font-size: 12px;
     line-height: 32px;
     font-weight: 700;
-    @include mixin.flex(center, center);
+    @include flex(center, center);
   }
   .card-product-info {
     padding: 10px;
@@ -1861,10 +1861,10 @@
     padding: 3px;
     border: solid 1px rgb(238 238 238);
     background-color: transparent;
-    @include mixin.transition4;
+    @include transition4;
     border-radius: 50%;
     cursor: pointer;
-    @include mixin.flex(center, center);
+    @include flex(center, center);
     position: relative;
     .swatch-value {
       width: 18px;
@@ -1872,7 +1872,7 @@
       display: inline-block;
       border-radius: 50%;
       border: 3px solid transparent;
-      @include mixin.transition4;
+      @include transition4;
     }
     .sold-out {
       &::after {
@@ -1989,7 +1989,7 @@
   background-color: rgba(0, 0, 0, 0.3);
   gap: 10px;
   height: 30px;
-  @include mixin.flex(center, center);
+  @include flex(center, center);
   text-align: center;
   transition: 0.4s ease 0.1s;
   span {
@@ -2008,7 +2008,7 @@
       min-width: 30px;
       height: 26px;
       border-radius: 3px;
-      @include mixin.flex(center, center);
+      @include flex(center, center);
       border: 1px solid rgb(236, 236, 236);
     }
   }

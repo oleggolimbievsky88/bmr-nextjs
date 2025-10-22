@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 .testimonial-item {
     .icon {
@@ -314,7 +314,7 @@
         padding-left: 10px;
         padding-right: 10px;
         opacity: 0.3;
-        @include mixin.transition3;
+        @include transition3;
         img{
             max-width: 100px;
             cursor: pointer;

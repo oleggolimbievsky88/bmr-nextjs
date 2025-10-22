@@ -1,50 +1,50 @@
 /*------------ header ---------------- */
-@use "header";
+@use "header" as *;
 /*------------ footer ---------------- */
-@use "footer";
+@use "footer" as *;
 /*------------ tabs ---------------- */
-@use "tabs";
+@use "tabs" as *;
 /*------------ slider banner ---------------- */
-@use "slider";
+@use "slider" as *;
 /*------------ button ---------------- */
-@use "button";
+@use "button" as *;
 /*------------ range slider ---------------- */
-@use "range-slider";
+@use "range-slider" as *;
 /*------------ form ---------------- */
-@use "form";
+@use "form" as *;
 /*------------ nice select ---------------- */
-@use "nice-select";
+@use "nice-select" as *;
 /*------------ carousel ---------------- */
-@use "carousel";
+@use "carousel" as *;
 /*------------ avatar ---------------- */
-@use "avatar";
+@use "avatar" as *;
 /*------------ pop up ---------------- */
-@use "pop-up";
+@use "pop-up" as *;
 /*------------ box icon ---------------- */
-@use "box-icon";
+@use "box-icon" as *;
 /*------------ hover ---------------- */
-@use "hover";
+@use "hover" as *;
 /*------------ collection ---------------- */
-@use "collection";
+@use "collection" as *;
 /*------------ product ---------------- */
-@use "product";
+@use "product" as *;
 /*------------ blog ---------------- */
-@use "blog";
+@use "blog" as *;
 /*------------ testimonial ---------------- */
-@use "testimonial";
+@use "testimonial" as *;
 /*------------ lookbook ---------------- */
-@use "lookbook";
+@use "lookbook" as *;
 /*------------ featured ---------------- */
-@use "featured";
+@use "featured" as *;
 /*------------ accordion ---------------- */
-@use "accordion";
+@use "accordion" as *;
 /*------------ zoom ---------------- */
-@use "zoom";
+@use "zoom" as *;
 /*------------ search filter ---------------- */
-@use "search-filter";
+@use "search-filter" as *;
 /*------------ checkout ---------------- */
-@use "checkout";
+@use "checkout" as *;
 /*------------ order confirmation ---------------- */
-@use "order-confirmation";
+@use "order-confirmation" as *;
 /*------------ credit card ---------------- */
-@use "credit-card";
+@use "credit-card" as *;

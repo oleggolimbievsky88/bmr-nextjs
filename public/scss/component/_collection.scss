@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 .collection-item {
   .collection-inner {
@@ -371,7 +371,7 @@
       font-size: 16px;
       background-color: var(--white);
       color: var(--main);
-      @include mixin.flex(center, center);
+      @include flex(center, center);
       white-space: nowrap;
       .icon {
         display: none;
@@ -392,7 +392,7 @@
   line-height: 48px;
   border-radius: 3px;
   padding: 0px 30px;
-  @include mixin.transition3;
+  @include transition3;
   background-color: var(--white);
   &:hover {
     color: var(--white);

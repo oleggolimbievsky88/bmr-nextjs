@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 .tf-zoom-main {
     position: fixed !important;
@@ -52,7 +52,7 @@
 
 .section-image-zoom {
     .other-image-zoom {
-        @include mixin.transition3;
+        @include transition3;
     }
     &.zoom-active .other-image-zoom {
         opacity: 0.3;

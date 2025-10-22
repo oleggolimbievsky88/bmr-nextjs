@@ -1,4 +1,4 @@
-@use "../abstracts/mixin";
+@use "../abstracts/mixin" as *;
 
 .footer {
   .footer-wrap {
@@ -371,7 +371,7 @@
       padding-left: 10px;
       height: 67px;
       gap: 9px;
-      @include mixin.flex(center, center);
+      @include flex(center, center);
       flex-direction: column;
       .toolbar-icon {
         width: 18px;
@@ -387,7 +387,7 @@
           right: -12px;
           width: 18px;
           height: 18px;
-          @include mixin.flex(center, center);
+          @include flex(center, center);
           background-color: var(--primary);
           border-radius: 50%;
           font-size: 10px;

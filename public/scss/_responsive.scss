@@ -1,4 +1,4 @@
-@use "abstracts/mixin";
+@use "abstracts/mixin" as *;
 
 /* Media Queries
 -------------------------------------------------------------- */
@@ -1588,11 +1588,11 @@
     .navigation-sw-dot {
       width: 24px;
       height: 24px;
-      @include mixin.transition3;
+      @include transition3;
       span {
         width: 8px;
         height: 8px;
-        @include mixin.transition3;
+        @include transition3;
       }
       &:hover {
         width: 32px;
@@ -1657,7 +1657,7 @@
   .collection-item-circle {
     .tf-shopall-icon {
       .icon {
-        @include mixin.transition3;
+        @include transition3;
       }
       &:hover {
         border-color: var(--primary);

@@ -2,10 +2,10 @@
     * Name: Ecomus Multipurpose eCommerce HTML Template
     * Version: 1.0.3
     * Author: Themesflat
-    * Author URI: http://themesflat.com 
+    * Author URI: http://themesflat.com
 
 	* Abstracts variable
-    
+
     * Reset css styles
 
     * Components
@@ -30,23 +30,23 @@
         * featured
         * accordion
         * zoom
-        
+
     * section
 
     * Responsive
  ------------------------------------------------------------------------------ */
 
 /*--------- Abstracts variable ---------- */
-@use "abstracts/index";
+@use "abstracts/index" as *;
 
 /*---------- Reset css styles ----------- */
-@use "reset";
+@use "reset" as *;
 
 /*------------ Components ---------------- */
-@use "component/index" as index2;
+@use "component/index" as *;
 
 /*------------ sections ---------------- */
-@use "sections";
+@use "sections" as *;
 
 /*-------------- Responsive ----------------- */
-@use "responsive";
+@use "responsive" as *;
