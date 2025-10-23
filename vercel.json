@@ -7,10 +7,7 @@
   },
   "build": {
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "preview"
       }
-    },
-  "rewrites": [
-      { "source": "/api/:path*", "destination": "/app/api/:path*" }
-    ]
+    }
 }
