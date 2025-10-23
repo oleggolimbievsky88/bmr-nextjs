@@ -1,3 +1,5 @@
+// app/api/debug/route.js
+
 import { NextResponse } from "next/server";
 import { testConnection } from "@/lib/db";
 
@@ -11,20 +13,29 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const testSlug = searchParams.get("test");
   const slug = searchParams.get("slug");
+
   try {
     const envCheck = {
       NODE_ENV: process.env.NODE_ENV,
+      VERCEL_ENV: process.env.VERCEL_ENV,
       hasHost: !!process.env.MYSQL_HOST,
       hasUser: !!process.env.MYSQL_USER,
       hasPassword: !!process.env.MYSQL_PASSWORD,
       hasDatabase: !!process.env.MYSQL_DATABASE,
       sslEnabled: process.env.MYSQL_SSL === "true",
+      // Don't log actual values for security
+      hostLength: process.env.MYSQL_HOST?.length || 0,
     };
 
     console.log("Environment check:", envCheck);
 
-    // Test database connection
-    const dbConnected = await testConnection();
+    // Test database connection with timeout
+    const dbConnected = await Promise.race([
+      testConnection(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Connection timeout")), 10000)
+      ),
+    ]);
 
     // Try a simple query if connected
     let queryResult = null;
