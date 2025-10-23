@@ -5,7 +5,12 @@
       "memory": 1024
     }
   },
-  "env": {
-    "MYSQL_SSL": "true"
-  }
+  "build": {
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+  "rewrites": [
+      { "source": "/api/:path*", "destination": "/app/api/:path*" }
+    ]
 }

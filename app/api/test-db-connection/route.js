@@ -1,19 +1,13 @@
-// app/api/debug/route.js
-
 import { NextResponse } from "next/server";
 import { testConnection } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Debug API Route - Use this to test database connectivity on Vercel
- * Remove this route in production for security!
+ * Test Database Connection API Route
+ * Use this to test database connectivity on Vercel
  */
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const testSlug = searchParams.get("test");
-  const slug = searchParams.get("slug");
-
   try {
     const envCheck = {
       NODE_ENV: process.env.NODE_ENV,
@@ -42,7 +36,6 @@ export async function GET(request) {
 
     // Try a simple query if connected
     let queryResult = null;
-    let platformTest = null;
     if (dbConnected) {
       try {
         const pool = (await import("@/lib/db")).default;
@@ -51,43 +44,59 @@ export async function GET(request) {
         );
         queryResult = rows[0];
 
-        // Test platform slug if requested
-        if (testSlug === "platform" && slug) {
-          const [platformRows] = await pool.query(
-            "SELECT BodyID, Name, slug FROM bodies WHERE slug = ?",
-            [slug]
-          );
-          platformTest = {
-            slug,
-            found: platformRows.length > 0,
-            data: platformRows[0] || null,
-            allSlugs: (
-              await pool.query(
-                "SELECT slug FROM bodies WHERE slug IS NOT NULL LIMIT 5"
-              )
-            )[0],
-          };
-        }
-      } catch (queryError) {
-        queryResult = { error: queryError.message };
-      }
-    }
+        // Test a coupon query
+        const [couponRows] = await pool.query(
+          "SELECT CouponID, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ? LIMIT 1",
+          ["PEACOCK7"]
+        );
 
-    return NextResponse.json({
-      message: "Debug info",
-      environment: envCheck,
-      database: {
-        connected: dbConnected,
-        queryTest: queryResult,
-        platformTest,
-        timestamp: new Date().toISOString(),
-      },
-    });
+        return NextResponse.json({
+          success: true,
+          message: "Database connection successful",
+          environment: envCheck,
+          database: {
+            connected: dbConnected,
+            productCount: queryResult?.count || 0,
+            couponTest:
+              couponRows.length > 0 ? couponRows[0] : "No coupon found",
+            timestamp: new Date().toISOString(),
+          },
+        });
+      } catch (queryError) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Database connected but query failed",
+            environment: envCheck,
+            database: {
+              connected: dbConnected,
+              queryError: queryError.message,
+              timestamp: new Date().toISOString(),
+            },
+          },
+          { status: 500 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Database connection failed",
+          environment: envCheck,
+          database: {
+            connected: false,
+            timestamp: new Date().toISOString(),
+          },
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error("Debug error:", error);
+    console.error("Test DB connection error:", error);
     return NextResponse.json(
       {
-        error: "Debug failed",
+        success: false,
+        error: "Test failed",
         message: error.message,
         environment: {
           NODE_ENV: process.env.NODE_ENV,
