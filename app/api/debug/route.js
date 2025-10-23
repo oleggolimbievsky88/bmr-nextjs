@@ -30,12 +30,12 @@ export async function GET(request) {
     console.log("Environment check:", envCheck);
 
     // Test database connection with timeout
-    const dbConnected = await Promise.race([
-      testConnection(),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Connection timeout")), 10000)
-      ),
-    ]);
+    // const dbConnected = await Promise.race([
+    //   testConnection(),
+    //   new Promise((_, reject) =>
+    //     setTimeout(() => reject(new Error("Connection timeout")), 10000)
+    //   ),
+    // ]);
 
     // Try a simple query if connected
     let queryResult = null;
