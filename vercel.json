@@ -5,9 +5,8 @@
       "memory": 1024
     }
   },
-  "build": {
-      "env": {
-        "NODE_ENV": "preview"
-      }
-    }
+  "env": {
+    "MYSQL_SSL": "true",
+    "NODE_ENV": "preview"
+  }
 }
