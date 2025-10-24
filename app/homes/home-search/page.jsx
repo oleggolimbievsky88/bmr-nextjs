@@ -1,7 +1,7 @@
-import Footer2 from "@/components/footers/Footer2";
-import Header2 from "@/components/headers/Header2";
-import Topbar2 from "@/components/headers/Topbar2";
-import Products from "@/components/shop/Products";
+import Footer1 from "@/components/footer/Footer";
+import Header2 from "@/components/header/Header";
+import Topbar2 from "@/components/header/Topbar2";
+import ShopDefault from "@/components/shop/ShopDefault";
 
 import React from "react";
 
@@ -28,8 +28,8 @@ export default async function page() {
           <div className="heading text-center">Search</div>
         </div>
       </div>
-      <Products />
-      <Footer2 />
+      <ShopDefault />
+      <Footer1 />
     </>
   );
 }
