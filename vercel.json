@@ -6,7 +6,7 @@
     }
   },
   "env": {
-    "MYSQL_SSL": "true"
+    "MYSQL_SSL": "false"
   },
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install",
