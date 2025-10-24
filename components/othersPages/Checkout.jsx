@@ -3,6 +3,7 @@ import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
 import CartSkeleton from "@/components/common/CartSkeleton";
 import CreditCardIcons from "@/components/common/CreditCardIcons";
@@ -11,6 +12,7 @@ import { useShippingRates } from "@/hooks/useShippingRates";
 import { useCreditCard } from "@/hooks/useCreditCard";
 
 export default function Checkout() {
+  const router = useRouter();
   const {
     cartProducts,
     setCartProducts,
@@ -96,6 +98,13 @@ export default function Checkout() {
     validateExpiryDate,
     validateCVV,
   } = useCreditCard();
+
+  // Redirect to products page if cart is empty
+  useEffect(() => {
+    if (!cartLoading && cartProducts.length === 0) {
+      router.push("/products");
+    }
+  }, [cartLoading, cartProducts.length, router]);
 
   const handleCouponApply = async () => {
     if (!couponCode.trim()) {
@@ -231,12 +240,54 @@ export default function Checkout() {
         orderId: orderId,
         cardLastFour: lastFourDigits,
         total: calculateGrandTotal(),
-        items: cartProducts.map((product) => ({
-          name: product.ProductName,
-          partNumber: product.PartNumber,
-          quantity: product.quantity,
-          price: product.Price,
-        })),
+        items: cartProducts.map((product) => {
+          // Get the correct color-specific image
+          let productImage = null;
+          if (
+            product.selectedColor &&
+            product.images &&
+            product.images.length > 0
+          ) {
+            let imageIndex = 0;
+            if (product.selectedColor.ColorID === 1) {
+              imageIndex = Math.min(1, product.images.length - 1);
+            } else if (product.selectedColor.ColorID === 2) {
+              imageIndex = 0;
+            }
+            const colorImageSrc =
+              product.images[imageIndex]?.imgSrc || product.images[0]?.imgSrc;
+            if (colorImageSrc && colorImageSrc.trim() !== "") {
+              productImage = colorImageSrc;
+            }
+          }
+          if (
+            !productImage &&
+            product.images?.[0]?.imgSrc &&
+            product.images[0].imgSrc.trim() !== ""
+          ) {
+            productImage = product.images[0].imgSrc;
+          }
+          if (
+            !productImage &&
+            product.ImageLarge &&
+            product.ImageLarge.trim() !== ""
+          ) {
+            productImage = product.ImageLarge;
+          }
+
+          return {
+            name: product.ProductName,
+            partNumber: product.PartNumber,
+            quantity: product.quantity,
+            price: product.Price,
+            color: product.selectedColor
+              ? product.selectedColor.ColorName
+              : "Default",
+            platform: product.PlatformName,
+            yearRange: product.YearRange,
+            image: productImage,
+          };
+        }),
         billing: billingData,
         shipping: sameAsBilling ? billingData : shippingData,
         shippingMethod: selectedOption?.name || "Standard Shipping",
@@ -250,6 +301,25 @@ export default function Checkout() {
         "orderConfirmation",
         JSON.stringify(confirmationData)
       );
+
+      // Automatically send receipt email
+      try {
+        await fetch("/api/send-receipt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: billingData.email,
+            orderId: orderId,
+            orderData: confirmationData,
+          }),
+        });
+        console.log("Receipt email sent successfully");
+      } catch (emailError) {
+        console.error("Failed to send receipt email:", emailError);
+        // Don't block the order process if email fails
+      }
 
       // Redirect to confirmation page
       window.location.href = `/confirmation?orderId=${orderId}`;
@@ -1239,12 +1309,12 @@ export default function Checkout() {
                 )}
               </div>
 
-              {!cartLoading && cartProducts.length === 0 && (
-                <div className="empty-cart">
-                  <p>Your shop cart is empty</p>
-                  <Link href="/products" className="btn btn-primary">
-                    Explore Products!
-                  </Link>
+              {cartLoading && (
+                <div className="text-center py-4">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading cart...</span>
+                  </div>
+                  <p className="mt-2">Loading your cart...</p>
                 </div>
               )}
 

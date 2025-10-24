@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 
 // Email Receipt Form Component
 function EmailReceiptForm({ order }) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(order?.billing?.email || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -64,7 +64,7 @@ function EmailReceiptForm({ order }) {
         <div className="col-md-8">
           <div className="form-group">
             <label htmlFor="receiptEmail" className="form-label">
-              Email Address
+              Email Address (or enter a different email)
             </label>
             <input
               type="email"
@@ -222,6 +222,19 @@ export default function OrderConfirmation({ orderData }) {
     return subtotal + shipping + tax - discount;
   };
 
+  const getColorClass = (colorName) => {
+    if (!colorName) return "color-default";
+
+    const color = colorName.toLowerCase();
+    if (color.includes("black") || color.includes("dark")) {
+      return "color-black";
+    } else if (color.includes("red")) {
+      return "color-red";
+    } else {
+      return "color-default";
+    }
+  };
+
   return (
     <div className="container py-5 order-confirmation-page">
       <div className="row justify-content-center">
@@ -366,7 +379,11 @@ export default function OrderConfirmation({ orderData }) {
                           <code className="part-number">{item.partNumber}</code>
                         </td>
                         <td>
-                          <span className="badge bg-secondary color-badge">
+                          <span
+                            className={`color-badge ${getColorClass(
+                              item.color
+                            )}`}
+                          >
                             {item.color}
                           </span>
                         </td>
@@ -438,13 +455,37 @@ export default function OrderConfirmation({ orderData }) {
                 <i className="fas fa-envelope me-2"></i>
                 Email Receipt
               </h4>
-              <div className="alert alert-info">
+              <div className="alert alert-success">
                 <p className="mb-3">
-                  <strong>Get your receipt via email!</strong> Enter your email
-                  address below and we'll send you a detailed receipt of your
-                  order confirmation.
+                  <strong>Receipt sent automatically!</strong> We've
+                  automatically sent a detailed receipt to{" "}
+                  <strong>{order.billing.email}</strong>. If you didn't receive
+                  it, check your spam folder or use the form below to resend it.
                 </p>
-                <EmailReceiptForm order={order} />
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary btn-sm me-2"
+                    onClick={() => {
+                      const emailForm = document.querySelector(
+                        ".email-receipt-form"
+                      );
+                      if (emailForm) {
+                        emailForm.style.display =
+                          emailForm.style.display === "none" ? "block" : "none";
+                      }
+                    }}
+                  >
+                    <i className="fas fa-paper-plane me-1"></i>
+                    Resend Receipt
+                  </button>
+                </div>
+                <div
+                  className="email-receipt-form mt-3"
+                  style={{ display: "none" }}
+                >
+                  <EmailReceiptForm order={order} />
+                </div>
               </div>
             </div>
           </div>

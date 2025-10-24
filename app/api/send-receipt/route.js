@@ -58,6 +58,19 @@ function generateReceiptHTML(orderData) {
     });
   };
 
+  const getEmailColorClass = (colorName) => {
+    if (!colorName) return "color-default";
+
+    const color = colorName.toLowerCase();
+    if (color.includes("black") || color.includes("dark")) {
+      return "color-black";
+    } else if (color.includes("red")) {
+      return "color-red";
+    } else {
+      return "color-default";
+    }
+  };
+
   const calculateSubtotal = () => {
     return orderData.items.reduce((total, item) => {
       return total + parseFloat(item.price) * item.quantity;
@@ -163,12 +176,31 @@ function generateReceiptHTML(orderData) {
           font-size: 13px;
         }
         .part-number {
-          background: #dc3545;
-          color: white;
-          padding: 4px 8px;
-          border-radius: 4px;
+          background: none;
+          color: #000;
+          padding: 0;
+          border-radius: 0;
           font-size: 12px;
           font-weight: bold;
+        }
+        .color-badge {
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-weight: 500;
+          font-size: 12px;
+          display: inline-block;
+        }
+        .color-badge.color-black {
+          background: #000 !important;
+          color: white !important;
+        }
+        .color-badge.color-red {
+          background: #dc3545 !important;
+          color: white !important;
+        }
+        .color-badge.color-default {
+          background: #6c757d !important;
+          color: white !important;
         }
         .totals {
           background: #f8f9fa;
@@ -310,13 +342,20 @@ function generateReceiptHTML(orderData) {
                   (item) => `
                 <tr>
                   <td>
+                    ${
+                      item.image
+                        ? `<img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; vertical-align: middle;">`
+                        : ""
+                    }
                     <strong>${item.name}</strong><br>
                     <small style="color: #666;">${item.platform} (${
                     item.yearRange
                   })</small>
                   </td>
                   <td><span class="part-number">${item.partNumber}</span></td>
-                  <td>${item.color}</td>
+                  <td><span class="color-badge ${getEmailColorClass(
+                    item.color
+                  )}">${item.color}</span></td>
                   <td>${item.quantity}</td>
                   <td>$${parseFloat(item.price).toFixed(2)}</td>
                   <td><strong>$${(
