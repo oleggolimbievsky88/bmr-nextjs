@@ -4,6 +4,109 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+// Email Receipt Form Component
+function EmailReceiptForm({ order }) {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      setError("Please enter your email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/send-receipt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          orderId: order.orderId,
+          orderData: order,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+        setEmail("");
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to send receipt");
+      }
+    } catch (err) {
+      setError("Failed to send receipt. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="alert alert-success">
+        <i className="fas fa-check-circle me-2"></i>
+        <strong>Receipt sent successfully!</strong> Check your email for your
+        order confirmation receipt.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="email-receipt-form">
+      <div className="row">
+        <div className="col-md-8">
+          <div className="form-group">
+            <label htmlFor="receiptEmail" className="form-label">
+              Email Address
+            </label>
+            <input
+              type="email"
+              className="form-control"
+              id="receiptEmail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
+        </div>
+        <div className="col-md-4 d-flex align-items-end">
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <i className="fas fa-spinner fa-spin me-2"></i>
+                Sending...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-paper-plane me-2"></i>
+                Send Receipt
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+      {error && (
+        <div className="alert alert-danger mt-3">
+          <i className="fas fa-exclamation-triangle me-2"></i>
+          {error}
+        </div>
+      )}
+    </form>
+  );
+}
+
 export default function OrderConfirmation({ orderData }) {
   const { cartProducts } = useContextElement();
   const [order, setOrder] = useState(null);
@@ -127,12 +230,12 @@ export default function OrderConfirmation({ orderData }) {
           <div className="text-center mb-5">
             <div className="success-icon mb-3">
               <i
-                className="fas fa-check-circle text-success"
+                className="fas fa-check-circle"
                 style={{ fontSize: "4rem" }}
               ></i>
             </div>
-            <h1 className="display-4 text-success mb-3">Order Confirmed!</h1>
-            <p className="lead text-muted">
+            <h1 className="display-4 mb-3">Order Confirmed!</h1>
+            <p className="lead">
               Thank you for your purchase! Your order has been successfully
               placed.
             </p>
@@ -140,7 +243,7 @@ export default function OrderConfirmation({ orderData }) {
 
           {/* Order Summary Card */}
           <div className="card order-summary-card mb-4">
-            <div className="card-header bg-primary text-white">
+            <div className="card-header">
               <h3 className="mb-0">
                 <i className="fas fa-receipt me-2"></i>
                 Order #{order.orderId}
@@ -315,7 +418,7 @@ export default function OrderConfirmation({ orderData }) {
                     <hr />
                     <div className="d-flex justify-content-between mb-3">
                       <strong>Total:</strong>
-                      <strong className="text-primary">
+                      <strong>
                         $
                         {order.total
                           ? order.total.toFixed(2)
@@ -328,11 +431,29 @@ export default function OrderConfirmation({ orderData }) {
             </div>
           </div>
 
+          {/* Email Receipt Section */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h4 className="card-title mb-3">
+                <i className="fas fa-envelope me-2"></i>
+                Email Receipt
+              </h4>
+              <div className="alert alert-info">
+                <p className="mb-3">
+                  <strong>Get your receipt via email!</strong> Enter your email
+                  address below and we'll send you a detailed receipt of your
+                  order confirmation.
+                </p>
+                <EmailReceiptForm order={order} />
+              </div>
+            </div>
+          </div>
+
           {/* Customer Message */}
           <div className="card shadow-sm mb-4">
             <div className="card-body customer-message">
               <h4 className="card-title mb-3">
-                <i className="fas fa-envelope me-2"></i>
+                <i className="fas fa-info-circle me-2"></i>
                 What's Next?
               </h4>
               <div className="alert alert-info">

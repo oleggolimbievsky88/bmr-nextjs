@@ -1,152 +1,208 @@
-// Order Confirmation Page Styles
+@use "../abstracts/mixin" as *;
+@use "../abstracts/variable" as *;
+
 .order-confirmation-page {
-  .success-icon {
-    animation: bounceIn 0.6s ease-out;
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 0;
+
+  .container {
+    max-width: 1200px;
   }
 
-  .order-summary-card {
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    overflow: hidden;
+  // Success header
+  .success-icon {
+    i {
+      color: #dc3545 !important;
+    }
+  }
+
+  h1 {
+    color: #000 !important;
+    font-weight: 700;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+
+  .lead {
+    color: #333 !important;
+    font-size: 1.25rem;
+    font-weight: 400;
+  }
+
+  // Card styling similar to checkout
+  .card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    background: white;
 
     .card-header {
-      background: linear-gradient(135deg, #cc0000 0%, #b30000 100%);
-      border: none;
+      background: #fff !important;
+      border-bottom: 1px solid #dee2e6;
       padding: 1.5rem;
 
       h3 {
+        color: #000 !important;
         font-weight: 600;
+        font-size: 1.5rem;
         margin-bottom: 0.5rem;
+        position: relative;
+
+        &::after {
+          content: "" !important;
+          position: absolute !important;
+          bottom: 15px !important;
+          left: 0 !important;
+          width: 50px !important;
+          height: 3px !important;
+          background-color: #dc3545 !important;
+          display: block !important;
+        }
       }
 
       small {
-        opacity: 0.9;
+        color: #666 !important;
+        font-size: 0.9rem;
+        font-weight: 400;
       }
     }
 
     .card-body {
-      padding: 2rem;
-
-      h5 {
-        color: #333;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #f8f9fa;
-        padding-bottom: 0.5rem;
-      }
-
-      address {
-        font-style: normal;
-        line-height: 1.6;
-        color: #666;
-      }
-
-      .payment-info {
-        .d-flex {
-          padding: 0.5rem 0;
-          border-bottom: 1px solid #f8f9fa;
-
-          &:last-child {
-            border-bottom: none;
-          }
-
-          i {
-            width: 20px;
-            text-align: center;
-          }
-        }
-      }
+      padding: 1.5rem;
     }
   }
 
+  // Table styling similar to checkout
   .order-items-table {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+
     th {
-      background-color: #f8f9fa;
-      border: none;
+      background: #f8f9fa;
+      color: #000 !important;
       font-weight: 600;
-      color: #333;
-      padding: 1rem 0.75rem;
+      font-size: 0.9rem;
+      padding: 1rem;
+      border-bottom: 1px solid #dee2e6;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #dc3545;
+      }
     }
 
     td {
-      border: none;
-      padding: 1rem 0.75rem;
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
       vertical-align: middle;
     }
 
-    tr {
-      border-bottom: 1px solid #f8f9fa;
-
-      &:hover {
+    tr:hover {
         background-color: #f8f9fa;
-      }
-    }
-
-    .product-info {
-      .product-details {
-        h6 {
-          margin: 0;
-          font-weight: 600;
-          color: #333;
-        }
-
-        small {
-          color: #666;
-        }
-      }
     }
 
     .part-number {
-      background-color: #e9ecef;
-      padding: 0.25rem 0.5rem;
+      background: #dc3545;
+      color: white;
+      padding: 4px 8px;
       border-radius: 4px;
       font-size: 0.875rem;
+      font-weight: 600;
+      display: inline-block;
     }
 
     .color-badge {
-      background-color: #6c757d;
-      color: white;
-      padding: 0.25rem 0.5rem;
+      background: #000 !important;
+      color: white !important;
+      padding: 4px 8px;
       border-radius: 4px;
-      font-size: 0.75rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .product-info {
+      h6 {
+        color: #000;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      small {
+        color: #666;
+        font-weight: 400;
+      }
     }
   }
 
+  // Order totals styling
   .order-totals {
-    background-color: #f8f9fa;
+    background: #f8f9fa;
     padding: 1.5rem;
     border-radius: 8px;
+    border: 1px solid #dee2e6;
 
     .d-flex {
       padding: 0.5rem 0;
+      font-size: 1rem;
+
+      span:first-child {
+        color: #000;
+        font-weight: 600;
+      }
+
+      span:last-child {
+        color: #dc3545;
+        font-weight: 700;
+      }
     }
 
     hr {
-      margin: 1rem 0;
       border-color: #dee2e6;
+      border-width: 1px;
+      margin: 1rem 0;
     }
 
-    strong {
+    .fw-bold {
       font-size: 1.1rem;
+      color: #000 !important;
     }
   }
 
+  // Customer message styling
   .customer-message {
-    .card-title {
-      color: #333;
-      font-weight: 600;
-    }
-
     .alert-info {
-      background-color: #e7f3ff;
-      border: 1px solid #b8daff;
-      color: #004085;
+      background: #fff5f5;
+      border: 1px solid #dc3545;
       border-radius: 8px;
+      color: #000;
+      padding: 1.5rem;
+
+      p {
+        color: #333;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
 
       a {
-        color: #cc0000;
-        font-weight: 500;
+        color: #dc3545;
+        font-weight: 600;
+        text-decoration: none;
 
         &:hover {
           text-decoration: underline;
@@ -155,72 +211,169 @@
     }
   }
 
+  // Action buttons styling
   .action-buttons {
-    margin-top: 2rem;
-
     .btn {
       padding: 0.75rem 2rem;
-      border-radius: 8px;
-      font-weight: 500;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 6px;
       transition: all 0.3s ease;
+      border: 1px solid;
 
       &.btn-primary {
-        background-color: #cc0000;
-        border-color: #cc0000;
+        background: #dc3545;
+        border-color: #dc3545;
+        color: white;
 
         &:hover {
-          background-color: #b30000;
-          border-color: #b30000;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
+          background: #c82333;
+          border-color: #c82333;
         }
       }
 
       &.btn-outline-primary {
-        color: #cc0000;
-        border-color: #cc0000;
+        background: transparent;
+        border-color: #000;
+        color: #000;
 
         &:hover {
-          background-color: #cc0000;
-          border-color: #cc0000;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
+          background: #000;
+          color: white;
         }
       }
     }
   }
-}
 
-// Animations
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
+  // Information sections styling similar to checkout
+  .card-body h5 {
+    color: #000 !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    position: relative;
 
-// Responsive adjustments
-@media (max-width: 768px) {
-  .order-confirmation-page {
-    .order-summary-card {
-      .card-body {
-        padding: 1rem;
-
-        .row > div {
-          margin-bottom: 1.5rem;
+    &::after {
+      content: "" !important;
+      position: absolute !important;
+      bottom: -4px !important;
+      left: 0 !important;
+      width: 30px !important;
+      height: 2px !important;
+      background-color: #dc3545 !important;
+      display: block !important;
         }
       }
+
+  address {
+    color: #333;
+    font-style: normal;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .payment-info {
+    .d-flex {
+      margin-bottom: 0.75rem;
+
+      i {
+        color: #dc3545;
+        width: 16px;
+        font-size: 0.9rem;
+      }
+
+      span {
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  // Email receipt form styling
+  .email-receipt-form {
+    .form-group {
+      margin-bottom: 0;
+  }
+
+    .form-label {
+      color: #000;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+
+      &:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+    }
+
+    .btn-primary {
+      background: #dc3545;
+      border-color: #dc3545;
+      font-weight: 600;
+
+      &:hover {
+        background: #c82333;
+        border-color: #c82333;
+      }
+
+      &:disabled {
+        background: #6c757d;
+        border-color: #6c757d;
+      }
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .alert-danger {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+  }
+}
+
+  // Responsive improvements
+@media (max-width: 768px) {
+    padding: 1rem 0;
+
+    .card {
+          margin-bottom: 1.5rem;
+
+      .card-header {
+        padding: 1.5rem;
+
+        h3 {
+          font-size: 1.5rem;
+        }
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+    }
+
+    .order-items-table {
+      font-size: 0.875rem;
+
+      th, td {
+        padding: 1rem 0.5rem;
+        }
+      }
+
+    .order-totals {
+      padding: 1.5rem;
     }
 
     .action-buttons {
@@ -228,10 +381,44 @@
         display: block;
         width: 100%;
         margin-bottom: 1rem;
+        padding: 1rem 2rem;
 
         &:last-child {
           margin-bottom: 0;
         }
+      }
+    }
+
+    .email-receipt-form {
+      .row {
+        .col-md-8,
+        .col-md-4 {
+          margin-bottom: 1rem;
+        }
+    }
+  }
+}
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    .lead {
+      font-size: 1.1rem;
+    }
+
+    .card {
+      .card-header {
+        padding: 1rem;
+
+        h3 {
+          font-size: 1.25rem;
+        }
+      }
+
+      .card-body {
+        padding: 1rem;
       }
     }
   }

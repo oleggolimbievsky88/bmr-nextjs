@@ -1,12 +1,46 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
-import { navItems } from "@/data/menu";
 import { usePathname } from "next/navigation";
+
 export default function MobileMenu() {
   const pathname = usePathname();
+  const [menuData, setMenuData] = useState({
+    fordLinks: [],
+    moparLinks: [],
+    gmLateModelLinks: [],
+    gmMidMuscleLinks: [],
+    gmClassicMuscleLinks: [],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        const response = await fetch("/api/menu");
+        if (!response.ok) throw new Error("Failed to fetch menu");
+        const data = await response.json();
+        setMenuData(data);
+      } catch (err) {
+        console.error("Error fetching menu:", err);
+        // Set empty data on error to prevent component from breaking
+        setMenuData({
+          fordLinks: [],
+          moparLinks: [],
+          gmLateModelLinks: [],
+          gmMidMuscleLinks: [],
+          gmClassicMuscleLinks: [],
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMenuData();
+  }, []);
+
   const isMenuActive = (menuItem) => {
     let active = false;
     if (menuItem.href?.includes("/")) {
@@ -33,6 +67,68 @@ export default function MobileMenu() {
 
     return active;
   };
+  // Create the main navigation items
+  const mainNavItems = [
+    {
+      id: "home",
+      label: "Home",
+      href: "/",
+      type: "link",
+    },
+    {
+      id: "products",
+      label: "Products",
+      type: "dropdown",
+      links: [
+        {
+          id: "ford",
+          label: "Ford",
+          type: "platform",
+          platformData: menuData.fordLinks,
+        },
+        {
+          id: "gm-late-model",
+          label: "GM Late Model Cars",
+          type: "platform",
+          platformData: menuData.gmLateModelLinks,
+        },
+        {
+          id: "gm-mid-muscle",
+          label: "GM Mid Muscle Cars",
+          type: "platform",
+          platformData: menuData.gmMidMuscleLinks,
+        },
+        {
+          id: "gm-classic-muscle",
+          label: "GM Classic Muscle Cars",
+          type: "platform",
+          platformData: menuData.gmClassicMuscleLinks,
+        },
+        {
+          id: "mopar",
+          label: "Mopar",
+          type: "platform",
+          platformData: menuData.moparLinks,
+        },
+      ],
+    },
+    {
+      id: "pages",
+      label: "Pages",
+      type: "dropdown",
+      links: [
+        { href: "/about-us", label: "About us" },
+        { href: "/contact-1", label: "Contact" },
+        { href: "/faq-1", label: "FAQ" },
+        { href: "/our-store", label: "Our store" },
+        { href: "/store-locations", label: "Store locator" },
+        { href: "/my-account", label: "My account" },
+        { href: "/wishlist", label: "Wishlist" },
+        { href: "/terms", label: "Terms and conditions" },
+      ],
+    },
+  ];
+
   return (
     <div className="offcanvas offcanvas-start canvas-mb" id="mobileMenu">
       <span
@@ -43,91 +139,105 @@ export default function MobileMenu() {
       <div className="mb-canvas-content">
         <div className="mb-body">
           <ul className="nav-ul-mb" id="wrapper-menu-navigation">
-            {navItems.map((item, i) => (
+            {mainNavItems.map((item, i) => (
               <li key={i} className="nav-mb-item">
-                <a
-                  href={`#${item.id}`}
-                  className={`collapsed mb-menu-link current ${
-                    isMenuActive(item) ? "activeMenu" : ""
-                  }`}
-                  data-bs-toggle="collapse"
-                  aria-expanded="true"
-                  aria-controls={item.id}
-                >
-                  <span>{item.label}</span>
-                  <span className="btn-open-sub" />
-                </a>
-                <div id={item.id} className="collapse">
-                  <ul className="sub-nav-menu">
-                    {item.links.map((subItem, i2) => (
-                      <li key={i2}>
-                        {subItem.links ? (
-                          <>
-                            <a
-                              href={`#${subItem.id}`}
-                              className={`sub-nav-link collapsed  ${
-                                isMenuActive(subItem) ? "activeMenu" : ""
-                              }`}
-                              data-bs-toggle="collapse"
-                              aria-expanded="true"
-                              aria-controls={subItem.id}
-                            >
-                              <span>{subItem.label}</span>
-                              <span className="btn-open-sub" />
-                            </a>
-                            <div id={subItem.id} className="collapse">
-                              <ul className="sub-nav-menu sub-menu-level-2">
-                                {subItem.links.map((innerItem, i3) => (
-                                  <li key={i3}>
-                                    <Link
-                                      href={innerItem.href}
-                                      className={`sub-nav-link  ${
-                                        isMenuActive(innerItem)
-                                          ? "activeMenu"
-                                          : ""
-                                      }`}
-                                    >
-                                      {innerItem.label}
-                                      {innerItem.demoLabel && (
-                                        <div className="demo-label">
-                                          <span className="demo-new">New</span>
-                                        </div>
-                                      )}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </>
-                        ) : (
-                          <Link
-                            href={subItem.href}
-                            className={`sub-nav-link ${
-                              isMenuActive(subItem) ? "activeMenu" : ""
-                            }`}
-                          >
-                            {subItem.label}
-                            {subItem.demoLabel && (
-                              <div className="demo-label">
-                                <span className="demo-new">New</span>
-                              </div>
+                {item.type === "link" ? (
+                  <Link
+                    href={item.href}
+                    className={`mb-menu-link ${
+                      isMenuActive(item) ? "activeMenu" : ""
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                  </Link>
+                ) : (
+                  <>
+                    <a
+                      href={`#${item.id}`}
+                      className={`collapsed mb-menu-link current ${
+                        isMenuActive(item) ? "activeMenu" : ""
+                      }`}
+                      data-bs-toggle="collapse"
+                      aria-expanded="true"
+                      aria-controls={item.id}
+                    >
+                      <span>{item.label}</span>
+                      <span className="btn-open-sub" />
+                    </a>
+                    <div id={item.id} className="collapse">
+                      <ul className="sub-nav-menu">
+                        {item.links.map((subItem, i2) => (
+                          <li key={i2}>
+                            {subItem.type === "platform" ? (
+                              <>
+                                <a
+                                  href={`#${subItem.id}`}
+                                  className={`sub-nav-link collapsed ${
+                                    isMenuActive(subItem) ? "activeMenu" : ""
+                                  }`}
+                                  data-bs-toggle="collapse"
+                                  aria-expanded="true"
+                                  aria-controls={subItem.id}
+                                >
+                                  <span>{subItem.label}</span>
+                                  <span className="btn-open-sub" />
+                                </a>
+                                <div id={subItem.id} className="collapse">
+                                  <ul className="sub-nav-menu sub-menu-level-2">
+                                    {isLoading ? (
+                                      <li>
+                                        <span className="sub-nav-link">
+                                          Loading...
+                                        </span>
+                                      </li>
+                                    ) : subItem.platformData &&
+                                      subItem.platformData.length > 0 ? (
+                                      subItem.platformData.map(
+                                        (platform, i3) => (
+                                          <li key={i3}>
+                                            <Link
+                                              href={`/products/${platform.slug}`}
+                                              className={`sub-nav-link ${
+                                                isMenuActive({
+                                                  href: `/products/${platform.slug}`,
+                                                })
+                                                  ? "activeMenu"
+                                                  : ""
+                                              }`}
+                                            >
+                                              {platform.heading}
+                                            </Link>
+                                          </li>
+                                        )
+                                      )
+                                    ) : (
+                                      <li>
+                                        <span className="sub-nav-link">
+                                          No platforms available
+                                        </span>
+                                      </li>
+                                    )}
+                                  </ul>
+                                </div>
+                              </>
+                            ) : (
+                              <Link
+                                href={subItem.href}
+                                className={`sub-nav-link ${
+                                  isMenuActive(subItem) ? "activeMenu" : ""
+                                }`}
+                              >
+                                {subItem.label}
+                              </Link>
                             )}
-                          </Link>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
-            <li className="nav-mb-item">
-              <a
-                href="https://themeforest.net/item/ecomus-ultimate-html5-template/53417990?s_rank=3"
-                className="mb-menu-link"
-              >
-                Buy now
-              </a>
-            </li>
           </ul>
           <div className="mb-other-content">
             <div className="d-flex group-icon">
@@ -147,14 +257,14 @@ export default function MobileMenu() {
             </div>
             <ul className="mb-info">
               <li>
-                Address: 1234 Fashion Street, Suite 567, <br />
-                New York, NY 10001
+                Address: BMR Suspension <br />
+                Performance Suspension & Chassis Parts
               </li>
               <li>
-                Email: <b>info@fashionshop.com</b>
+                Email: <b>info@bmrsuspension.com</b>
               </li>
               <li>
-                Phone: <b>(212) 555-1234</b>
+                Phone: <b>(800) 555-BMR1</b>
               </li>
             </ul>
           </div>

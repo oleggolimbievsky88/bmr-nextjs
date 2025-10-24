@@ -171,7 +171,7 @@
 .vehicle-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 12px;  /* Reduced from 15px */
+  gap: 17px;  /* Reduced from 15px */
   max-width: 1200px;
   margin: 0 auto;
 
@@ -1307,6 +1307,7 @@
       max-width: 1200px;
       margin: 0 auto;
   }
+}
 
   .tf-breadcrumb-wrap {
       display: flex;
@@ -1345,7 +1346,6 @@
   .breadcrumb-item.active {
       color: #000000;
       cursor: default;
-
   }
 
   .icon-arrow-right {
@@ -1357,6 +1357,12 @@
   .icon-home {
       font-size: 18px;
       color: var(--primary); /* Use BMR Red */
+}
+
+/* Mobile spacing fix for banner to products gap */
+@media (max-width: 768px) {
+  .flat-spacing-1.pt_0 {
+    padding-top: 10px !important;
   }
 }
 
@@ -1748,5 +1754,8 @@
 	margin-top: 0 !important;
 	padding-top: 0 !important;
 }
+
+// Import order confirmation styles
+@import "component/order-confirmation";
 
 

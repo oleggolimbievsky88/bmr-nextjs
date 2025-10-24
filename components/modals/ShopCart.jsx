@@ -3,6 +3,7 @@ import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -10,6 +11,7 @@ export default function ShopCart() {
   const { cartProducts, totalPrice, setCartProducts, setQuickViewItem } =
     useContextElement();
   const [recommendations, setRecommendations] = useState([]);
+  const router = useRouter();
 
   // Debug logging
   console.log("ShopCart rendered with cartProducts:", cartProducts);
@@ -25,6 +27,21 @@ export default function ShopCart() {
   };
   const removeItem = (item) => {
     setCartProducts((pre) => [...pre.filter((elm) => elm !== item)]);
+  };
+
+  const handleCheckoutClick = () => {
+    // Close the shopping cart modal
+    const bootstrap = require("bootstrap");
+    const modalElement = document.getElementById("shoppingCart");
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+
+    // Navigate to checkout page
+    router.push("/checkout");
   };
 
   const addNoteRef = useRef();
@@ -509,12 +526,12 @@ export default function ShopCart() {
                     >
                       View cart
                     </Link>
-                    <Link
-                      href={`/checkout`}
+                    <button
+                      onClick={handleCheckoutClick}
                       className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
                     >
                       <span>Check out</span>
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
