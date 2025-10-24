@@ -6,7 +6,10 @@
     }
   },
   "env": {
-    "MYSQL_SSL": "true",
-    "NODE_ENV": "preview"
-  }
+    "MYSQL_SSL": "true"
+  },
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm build",
+  "framework": "nextjs"
 }
