@@ -3,6 +3,7 @@ import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 
 export default function CartNew() {
   const {
@@ -20,6 +21,7 @@ export default function CartNew() {
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [showCouponModal, setShowCouponModal] = useState(false);
 
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
@@ -50,6 +52,7 @@ export default function CartNew() {
       if (result.success) {
         setCouponCode("");
         setCouponError("");
+        setShowCouponModal(true);
       } else {
         setCouponError(result.message);
       }
@@ -487,13 +490,22 @@ export default function CartNew() {
                         margin: "0",
                       }}
                     >
-                      <div>
-                        <strong>{appliedCoupon.name}</strong> -{" "}
-                        {appliedCoupon.valueType === "percentage"
-                          ? `${appliedCoupon.value}%`
-                          : `$${appliedCoupon.value}`}{" "}
-                        off
-                        {appliedCoupon.freeShipping && " and FREE shipping"}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: "600", marginBottom: "4px" }}>
+                          Code: {appliedCoupon.code}
+                        </div>
+                        {appliedCoupon.name && (
+                          <div style={{ fontSize: "14px", marginTop: "4px" }}>
+                            <strong>{appliedCoupon.name}</strong>
+                          </div>
+                        )}
+                        <div style={{ fontSize: "13px", marginTop: "4px" }}>
+                          {appliedCoupon.discountType === "percentage"
+                            ? `${appliedCoupon.discountValue}%`
+                            : `$${appliedCoupon.discountValue}`}{" "}
+                          off
+                          {appliedCoupon.freeShipping && " and FREE shipping"}
+                        </div>
                       </div>
                       <button
                         className="btn btn-sm btn-outline-danger"
@@ -505,6 +517,7 @@ export default function CartNew() {
                           padding: "5px 10px",
                           fontSize: "12px",
                           borderRadius: "3px",
+                          marginLeft: "10px",
                         }}
                       >
                         Remove
@@ -669,6 +682,12 @@ export default function CartNew() {
           </div>
         </div>
       </div>
+
+      <CouponSuccessModal
+        coupon={appliedCoupon}
+        show={showCouponModal}
+        onClose={() => setShowCouponModal(false)}
+      />
     </section>
   );
 }

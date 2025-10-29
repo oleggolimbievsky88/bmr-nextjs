@@ -4,6 +4,7 @@ import CartSkeleton from "@/components/common/CartSkeleton";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 export default function Cart() {
   const {
     cartProducts,
@@ -21,6 +22,7 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [showCouponModal, setShowCouponModal] = useState(false);
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
       const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
@@ -49,6 +51,7 @@ export default function Cart() {
       if (result.success) {
         setCouponCode("");
         setCouponError("");
+        setShowCouponModal(true);
       } else {
         setCouponError(result.message);
       }
@@ -683,17 +686,29 @@ export default function Cart() {
                     // After coupon applied state
                     <div className="coupon-applied">
                       <div className="alert alert-success d-flex justify-content-between align-items-center">
-                        <div>
-                          <strong>{appliedCoupon.name}</strong> -{" "}
-                          {appliedCoupon.valueType === "percentage"
-                            ? `${appliedCoupon.value}%`
-                            : `$${appliedCoupon.value}`}{" "}
-                          off
-                          {appliedCoupon.freeShipping && " and FREE shipping"}
+                        <div style={{ flex: 1 }}>
+                          <div
+                            style={{ fontWeight: "600", marginBottom: "4px" }}
+                          >
+                            Code: {appliedCoupon.code}
+                          </div>
+                          {appliedCoupon.name && (
+                            <div style={{ fontSize: "14px", marginTop: "4px" }}>
+                              <strong>{appliedCoupon.name}</strong>
+                            </div>
+                          )}
+                          <div style={{ fontSize: "13px", marginTop: "4px" }}>
+                            {appliedCoupon.discountType === "percentage"
+                              ? `${appliedCoupon.discountValue}%`
+                              : `$${appliedCoupon.discountValue}`}{" "}
+                            off
+                            {appliedCoupon.freeShipping && " and FREE shipping"}
+                          </div>
                         </div>
                         <button
                           className="btn btn-sm btn-outline-danger"
                           onClick={handleRemoveCoupon}
+                          style={{ marginLeft: "10px" }}
                         >
                           Remove
                         </button>
@@ -956,6 +971,12 @@ export default function Cart() {
           </div>
         </div>
       </div>
+
+      <CouponSuccessModal
+        coupon={appliedCoupon}
+        show={showCouponModal}
+        onClose={() => setShowCouponModal(false)}
+      />
     </section>
   );
 }

@@ -10,6 +10,7 @@ import CreditCardIcons from "@/components/common/CreditCardIcons";
 import { useAddressValidation } from "@/hooks/useAddressValidation";
 import { useShippingRates } from "@/hooks/useShippingRates";
 import { useCreditCard } from "@/hooks/useCreditCard";
+import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 
 export default function Checkout() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function Checkout() {
   const [activeStep, setActiveStep] = useState("billing");
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
+  const [showCouponModal, setShowCouponModal] = useState(false);
   const [sameAsBilling, setSameAsBilling] = useState(true);
   const [billingAddressValid, setBillingAddressValid] = useState(false);
   const [shippingAddressValid, setShippingAddressValid] = useState(false);
@@ -115,6 +117,8 @@ export default function Checkout() {
     const result = await applyCoupon(couponCode);
     if (result.success) {
       setCouponError("");
+      setCouponCode("");
+      setShowCouponModal(true);
     } else {
       setCouponError(result.message);
     }
@@ -1339,6 +1343,31 @@ export default function Checkout() {
                   </button>
                 </div>
                 {couponError && <p className="text-danger">{couponError}</p>}
+                {appliedCoupon && (
+                  <div className="mt-2">
+                    <p
+                      className="mb-1"
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        color: "#333",
+                      }}
+                    >
+                      <strong>Coupon:</strong> {appliedCoupon.code}
+                    </p>
+                    {appliedCoupon.name && (
+                      <p
+                        style={{
+                          fontSize: "13px",
+                          color: "#666",
+                          marginBottom: "0",
+                        }}
+                      >
+                        {appliedCoupon.name}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="order-totals">
@@ -1353,7 +1382,10 @@ export default function Checkout() {
                   </span>
                 </div>
                 {appliedCoupon && (
-                  <div className="total-line coupon-discount">
+                  <div
+                    className="d-flex justify-content-between mb-2 text-danger total-line"
+                    style={{ fontSize: "14px" }}
+                  >
                     <span>Coupon ({appliedCoupon.code}):</span>
                     <span>-${couponDiscount.toFixed(2)}</span>
                   </div>
@@ -1420,6 +1452,12 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+
+      <CouponSuccessModal
+        coupon={appliedCoupon}
+        show={showCouponModal}
+        onClose={() => setShowCouponModal(false)}
+      />
     </section>
   );
 }
