@@ -6,17 +6,17 @@ export async function POST(request) {
     const { couponCode, cartItems, customerId } = await request.json();
 
     if (!couponCode) {
-      return NextResponse.json(
-        { error: "Coupon code is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        valid: false,
+        message: "Coupon code is required",
+      });
     }
 
     if (!cartItems || cartItems.length === 0) {
-      return NextResponse.json(
-        { error: "Cart items are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        valid: false,
+        message: "Cart items are required",
+      });
     }
 
     console.log("API: Validating coupon:", couponCode);
@@ -29,12 +29,20 @@ export async function POST(request) {
 
     console.log("API: Validation result:", validation);
 
+    // Ensure we always return a valid response format
+    if (!validation || typeof validation.valid === "undefined") {
+      return NextResponse.json({
+        valid: false,
+        message: "Error validating coupon",
+      });
+    }
+
     return NextResponse.json(validation);
   } catch (error) {
     console.error("Error validating coupon:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      valid: false,
+      message: "Error validating coupon. Please try again.",
+    });
   }
 }

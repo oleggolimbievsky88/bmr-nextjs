@@ -9,9 +9,9 @@ export async function GET(request) {
     const connection = await pool.getConnection();
     console.log("Debug: Database connection successful");
 
-    // Test coupon query
+    // Test coupon query from coupons_new table
     const [rows] = await connection.query(
-      "SELECT CouponID, CouponCode, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ?",
+      "SELECT id, code, name, discount_type, discount_value, start_date, end_date, is_active, is_public FROM coupons_new WHERE code = ?",
       ["PEACOCK7"]
     );
     console.log("Debug: Coupon query result:", rows);
@@ -22,7 +22,7 @@ export async function GET(request) {
 
     // Test all coupons with this code
     const [allRows] = await connection.query(
-      "SELECT CouponID, CouponCode, CouponName, Value, ValueType FROM coupons WHERE CouponCode = ? ORDER BY CouponID",
+      "SELECT id, code, name, discount_type, discount_value, start_date, end_date, is_active, is_public FROM coupons_new WHERE code = ? ORDER BY id",
       ["PEACOCK7"]
     );
     console.log("Debug: All coupons with PEACOCK7:", allRows);

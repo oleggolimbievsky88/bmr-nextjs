@@ -292,7 +292,7 @@ export default function Checkout() {
         shipping: sameAsBilling ? billingData : shippingData,
         shippingMethod: selectedOption?.name || "Standard Shipping",
         shippingCost: selectedOption?.cost || 0,
-        couponCode: appliedCoupon?.CouponCode || "",
+        couponCode: appliedCoupon?.code || "",
         discount: couponDiscount || 0,
       };
 
@@ -1354,7 +1354,7 @@ export default function Checkout() {
                 </div>
                 {appliedCoupon && (
                   <div className="total-line coupon-discount">
-                    <span>Coupon ({appliedCoupon.CouponCode}):</span>
+                    <span>Coupon ({appliedCoupon.code}):</span>
                     <span>-${couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
