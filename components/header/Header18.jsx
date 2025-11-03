@@ -3,8 +3,8 @@ import MainMenu from "./MainMenu";
 import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength";
-import { products44 } from "@/data/products";
 import VehicleSearch from "../common/VehicleSearch";
+import SearchInput from "../search/SearchInput";
 import { useState, useEffect } from "react";
 
 // Add this default structure before your component
@@ -78,65 +78,7 @@ export default function Header18({ initialMenuData }) {
             </div>
             <div className="col-xl-10 col-md-8 col-12 my-10 py-0">
               <div className="tf-form-search">
-                <form
-                  onSubmit={(e) => e.preventDefault()}
-                  className="search-box"
-                >
-                  <input
-                    type="text"
-                    required
-                    placeholder="Search by part # or keyword"
-                  />
-                  <button className="tf-btn">
-                    <i className="icon icon-search" />
-                  </button>
-                </form>
-                <div className="search-suggests-results">
-                  <div className="search-suggests-results-inner">
-                    <ul>
-                      {products44.map((product, index) => (
-                        <li key={index}>
-                          <Link
-                            className="search-result-item"
-                            href={`/products/${product.partNumber}`}
-                          >
-                            <div className="img-box">
-                              <Image
-                                alt={product.imgAlt}
-                                src={product.imgSrc}
-                                width={product.imgWidth}
-                                height={product.imgHeight}
-                              />
-                            </div>
-                            <div className="box-content">
-                              <p className="title link">{product.title}</p>
-                              {product.hasOldPrice ? (
-                                <div className="d-flex gap-10">
-                                  <span className="old-price">
-                                    $
-                                    {(
-                                      parseFloat(product.oldPrice) || 0
-                                    ).toFixed(2)}
-                                  </span>
-                                  <span className="new-price">
-                                    $
-                                    {(parseFloat(product.price) || 0).toFixed(
-                                      2
-                                    )}
-                                  </span>
-                                </div>
-                              ) : (
-                                <div className="price">
-                                  ${(parseFloat(product.price) || 0).toFixed(2)}
-                                </div>
-                              )}
-                            </div>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <SearchInput />
               </div>
             </div>
             {/* <div className="col-md-4 col-3">

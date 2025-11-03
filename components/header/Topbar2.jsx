@@ -7,13 +7,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 export default function Topbar2({ bgColor = "bg_dark" }) {
   return (
-    <div className={`tf-top-bar bg_dark line ${bgColor}`}>
+    <div className={`tf-top-bar bg_dark line-red`}>
       <div className="px_15 lg-px_40">
         <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
           <div className="tf-top-bar_left">
             <div className="d-flex gap-30 text_white fw-5">
-              <span>(+333) 123-1688</span>
-              <span>sayhello@ecomus.com</span>
+              <span>(813) 986-9302</span>
+              <span>sales@bmrsuspension.com</span>
             </div>
           </div>
           <div className="text-center overflow-hidden">
@@ -23,15 +23,15 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
               modules={[Autoplay]}
               speed={1000}
               autoplay={{
-                delay: 2000,
+                delay: 4000,
               }}
               loop
             >
               <SwiperSlide className="swiper-slide">
                 <p className="top-bar-text fw-5 text_white">
-                  Spring Fashion Sale{" "}
+                  2004 Mustang Suspension Sale{" "}
                   <Link
-                    href={`/shop-default`}
+                    href={`/products/2024-mustang/suspension`}
                     title="all collection"
                     className="tf-btn btn-line"
                   >
@@ -43,12 +43,35 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
               </SwiperSlide>
               <SwiperSlide className="swiper-slide">
                 <p className="top-bar-text fw-5 text_white">
-                  <a>Summer sale discount off 70%</a>
+                  <a>Fall Sale Discount 20% Off. Use Code: SAVE20</a>
                 </p>
               </SwiperSlide>
               <SwiperSlide className="swiper-slide">
                 <p className="top-bar-text fw-5 text_white">
-                  <a>Time to refresh your wardrobe.</a>
+                  Fall Sale Discount 10% Off.{" "}
+                  <Link
+                    href={`/platform/2024-mustang/suspension`}
+                    title="2024 Mustang Suspension collection"
+                    className="tf-btn btn-line"
+                  >
+                    {" "}
+                    Shop Now!
+                    <i className="icon icon-arrow1-top-left" />
+                  </Link>
+                </p>
+              </SwiperSlide>
+              <SwiperSlide className="swiper-slide">
+                <p className="top-bar-text fw-5 text_white">
+                  S650 Mustang Suspension.{" "}
+                  <Link
+                    href={`/shop-default`}
+                    title="all collection"
+                    className="tf-btn btn-line"
+                  >
+                    {" "}
+                    Shop now
+                    <i className="icon icon-arrow1-top-left" />
+                  </Link>
                 </p>
               </SwiperSlide>
             </Swiper>

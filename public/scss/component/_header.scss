@@ -742,6 +742,10 @@
     }
   }
 }
+
+.line-red {
+  border-bottom: 1px solid var(--primary);
+}
 .header-list-categories {
   display: flex;
   align-items: center;

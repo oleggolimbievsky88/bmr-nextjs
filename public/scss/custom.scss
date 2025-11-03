@@ -1,4 +1,6 @@
 @use "sass:color";
+@use "component/order-confirmation";
+@use "component/search";
 
 .product-page{
   background-color: #f3f3f3;
@@ -1754,8 +1756,3 @@
 	margin-top: 0 !important;
 	padding-top: 0 !important;
 }
-
-// Import order confirmation styles
-@import "component/order-confirmation";
-
-

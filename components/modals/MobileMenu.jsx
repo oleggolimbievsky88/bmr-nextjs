@@ -264,7 +264,7 @@ export default function MobileMenu() {
                 Email: <b>info@bmrsuspension.com</b>
               </li>
               <li>
-                Phone: <b>(800) 555-BMR1</b>
+                Phone: <b>(813) 986-9302</b>
               </li>
             </ul>
           </div>
