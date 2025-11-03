@@ -5,7 +5,7 @@ import SearchResults from "@/components/search/SearchResults";
 import SearchInput from "@/components/search/SearchInput";
 import { searchAllQuick } from "@/lib/queries";
 
-import React from "react";
+import React, { Suspense } from "react";
 
 //get search results from the database
 async function getSearchResults(searchQuery = "") {
@@ -86,7 +86,25 @@ export default async function page({ searchParams }) {
           </div>
           <div className="row justify-content-center mt_5">
             <div className="col-md-8 col-lg-6">
-              <SearchInput initialQuery={searchQuery} />
+              <Suspense
+                fallback={
+                  <div className="search-input-container">
+                    <form className="search-input-wrapper">
+                      <div className="search-input-inner">
+                        <input
+                          type="text"
+                          className="form-control search-input-field"
+                          placeholder="Search by part # or keyword"
+                          defaultValue={searchQuery}
+                          disabled
+                        />
+                      </div>
+                    </form>
+                  </div>
+                }
+              >
+                <SearchInput initialQuery={searchQuery} />
+              </Suspense>
             </div>
           </div>
           {searchQuery && (

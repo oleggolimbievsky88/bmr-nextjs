@@ -5,7 +5,7 @@ import Link from "next/link";
 import CartLength from "../common/CartLength";
 import VehicleSearch from "../common/VehicleSearch";
 import SearchInput from "../search/SearchInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 // Add this default structure before your component
 const defaultMenuData = {
@@ -78,7 +78,24 @@ export default function Header18({ initialMenuData }) {
             </div>
             <div className="col-xl-10 col-md-8 col-12 my-10 py-0">
               <div className="tf-form-search">
-                <SearchInput />
+                <Suspense
+                  fallback={
+                    <div className="search-input-container">
+                      <form className="search-input-wrapper">
+                        <div className="search-input-inner">
+                          <input
+                            type="text"
+                            className="form-control search-input-field"
+                            placeholder="Search by part # or keyword"
+                            disabled
+                          />
+                        </div>
+                      </form>
+                    </div>
+                  }
+                >
+                  <SearchInput />
+                </Suspense>
               </div>
             </div>
             {/* <div className="col-md-4 col-3">
