@@ -10,20 +10,16 @@ export async function GET(request) {
       return NextResponse.json({
         products: [],
         categories: [],
-        platforms: [],
         vehicles: [],
         brands: [],
-        pages: [],
       });
     }
 
     const results = await searchAllQuick(query.trim(), {
       products: 6,
       categories: 5,
-      platforms: 5,
       vehicles: 5,
       brands: 5,
-      pages: 5,
     });
     return NextResponse.json(results);
   } catch (error) {
@@ -32,10 +28,8 @@ export async function GET(request) {
       {
         products: [],
         categories: [],
-        platforms: [],
         vehicles: [],
         brands: [],
-        pages: [],
       },
       { status: 500 }
     );

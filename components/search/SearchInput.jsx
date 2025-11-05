@@ -7,10 +7,8 @@ export default function SearchInput({ initialQuery = "" }) {
   const [grouped, setGrouped] = useState({
     products: [],
     categories: [],
-    platforms: [],
     vehicles: [],
     brands: [],
-    pages: [],
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef(null);
@@ -66,20 +64,16 @@ export default function SearchInput({ initialQuery = "" }) {
         setGrouped({
           products: [],
           categories: [],
-          platforms: [],
           vehicles: [],
           brands: [],
-          pages: [],
         });
       }
     } else {
       setGrouped({
         products: [],
         categories: [],
-        platforms: [],
         vehicles: [],
         brands: [],
-        pages: [],
       });
       setShowSuggestions(false);
     }
@@ -99,13 +93,6 @@ export default function SearchInput({ initialQuery = "" }) {
     // product: go to product page
     if (type === "product" && item?.ProductID) {
       router.push(`/product/${item.ProductID}`);
-      setShowSuggestions(false);
-      return;
-    }
-
-    // platform: navigate to platform page using slug
-    if (type === "platform" && item?.slug) {
-      router.push(`/products/${item.slug}`);
       setShowSuggestions(false);
       return;
     }
@@ -130,14 +117,6 @@ export default function SearchInput({ initialQuery = "" }) {
     if (type === "brand" && item?.ManName) {
       setQuery(item.ManName);
       handleSearch(item.ManName);
-      return;
-    }
-
-    // page: could navigate directly if Page looks like a route
-    if (type === "page" && item?.Page && item.Page !== "0") {
-      const path = item.Page.startsWith("/") ? item.Page : `/${item.Page}`;
-      router.push(path);
-      setShowSuggestions(false);
       return;
     }
 
@@ -187,7 +166,10 @@ export default function SearchInput({ initialQuery = "" }) {
             {/* Products */}
             {grouped.products?.length ? (
               <div>
-                <div className="px-3 py-2 text-uppercase small text-muted">
+                <div
+                  className="px-3 py-2 text-uppercase small"
+                  style={{ color: "var(--primary)" }}
+                >
                   Products
                 </div>
                 {grouped.products.map((p) => (
@@ -233,35 +215,13 @@ export default function SearchInput({ initialQuery = "" }) {
               </div>
             ) : null}
 
-            {/* Platforms */}
-            {grouped.platforms?.length ? (
-              <div>
-                <div className="px-3 py-2 text-uppercase small text-muted">
-                  Platforms
-                </div>
-                {grouped.platforms.map((b) => (
-                  <div
-                    key={`b-${b.BodyID}`}
-                    className="suggestion-item"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSuggestionClick(b, "platform");
-                    }}
-                  >
-                    <div className="fw-bold">{b.Name}</div>
-                    <div className="text-muted small">
-                      {b.StartYear}-{b.EndYear}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-
             {/* Vehicles */}
             {grouped.vehicles?.length ? (
               <div>
-                <div className="px-3 py-2 text-uppercase small text-muted">
+                <div
+                  className="px-3 py-2 text-uppercase small"
+                  style={{ color: "var(--primary)" }}
+                >
                   Vehicles
                 </div>
                 {grouped.vehicles.map((v) => (
@@ -303,29 +263,6 @@ export default function SearchInput({ initialQuery = "" }) {
                   >
                     <div className="fw-bold">{m.ManName}</div>
                     <div className="text-muted small">Brand</div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-
-            {/* Pages */}
-            {grouped.pages?.length ? (
-              <div>
-                <div className="px-3 py-2 text-uppercase small text-muted">
-                  Pages
-                </div>
-                {grouped.pages.map((pg) => (
-                  <div
-                    key={`pg-${pg.MetaTagID}`}
-                    className="suggestion-item"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSuggestionClick(pg, "page");
-                    }}
-                  >
-                    <div className="fw-bold">{pg.Title}</div>
-                    <div className="text-muted small">{pg.Page}</div>
                   </div>
                 ))}
               </div>

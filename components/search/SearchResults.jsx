@@ -10,13 +10,12 @@ export default function SearchResults({
   const {
     products = [],
     categories = [],
-    platforms = [],
     vehicles = [],
     brands = [],
-    pages = [],
   } = groupedResults;
 
   const [colorsMap, setColorsMap] = useState({});
+  const [showAllProducts, setShowAllProducts] = useState(false);
 
   // Fetch colors list and build colorsMap
   useEffect(() => {
@@ -38,13 +37,12 @@ export default function SearchResults({
     fetchColors();
   }, []);
 
+  // Limit products to 8 initially
+  const displayedProducts = showAllProducts ? products : products.slice(0, 8);
+  const hasMoreProducts = products.length > 8;
+
   const totalResults =
-    products.length +
-    categories.length +
-    platforms.length +
-    vehicles.length +
-    brands.length +
-    pages.length;
+    products.length + categories.length + vehicles.length + brands.length;
 
   if (totalResults === 0) {
     return (
@@ -76,11 +74,13 @@ export default function SearchResults({
                 className="title wow fadeInUp home-title"
                 data-wow-delay="0s"
               >
+                <span style={{ color: "var(--primary)" }}>- </span>
                 Products ({products.length})
+                <span style={{ color: "var(--primary)" }}> -</span>
               </span>
             </div>
             <div className="grid-layout wrapper-shop" data-grid="grid-4">
-              {products.map((product) => (
+              {displayedProducts.map((product) => (
                 <ProductCard
                   key={product.ProductID}
                   product={product}
@@ -88,16 +88,45 @@ export default function SearchResults({
                 />
               ))}
             </div>
+            {hasMoreProducts && !showAllProducts && (
+              <div className="text-center mt-4">
+                <button
+                  onClick={() => setShowAllProducts(true)}
+                  className="btn btn-outline-primary"
+                  style={{
+                    borderColor: "var(--primary)",
+                    color: "var(--primary)",
+                    padding: "10px 30px",
+                    fontSize: "16px",
+                    fontWeight: "500",
+                    borderRadius: "5px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  View More
+                  <i
+                    className="icon icon-arrow-down"
+                    style={{ fontSize: "18px" }}
+                  ></i>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         {/* Categories Section */}
         {categories.length > 0 && (
           <div className="mb-5">
-            <h3 className="mb-4">
-              Categories{" "}
-              <span className="text-muted">({categories.length})</span>
-            </h3>
+            <div className="flat-title">
+              <span
+                className="title wow fadeInUp home-title"
+                data-wow-delay="0s"
+              >
+                Categories ({categories.length})
+              </span>
+            </div>
             <div className="row">
               {categories.map((category) => (
                 <div
@@ -108,42 +137,37 @@ export default function SearchResults({
                     href={`/homes/home-search?q=${encodeURIComponent(
                       category.CatName
                     )}`}
-                    className="card h-100 text-decoration-none"
+                    className="card h-100 text-decoration-none search-result-card"
+                    style={{
+                      borderRadius: "15px",
+                      border: "2px solid #e9ecef",
+                      overflow: "hidden",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "var(--primary)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 12px rgba(204, 0, 0, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#e9ecef";
+                      e.currentTarget.style.boxShadow =
+                        "0 2px 8px rgba(0,0,0,0.1)";
+                    }}
                   >
-                    <div className="card-body">
-                      <h5 className="card-title">{category.CatName}</h5>
-                      <p className="text-muted small mb-0">Category</p>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Platforms Section */}
-        {platforms.length > 0 && (
-          <div className="mb-5">
-            <h3 className="mb-4">
-              Platforms <span className="text-muted">({platforms.length})</span>
-            </h3>
-            <div className="row">
-              {platforms.map((platform) => (
-                <div
-                  key={platform.BodyID}
-                  className="col-lg-3 col-md-4 col-sm-6 col-12 mb-3"
-                >
-                  <Link
-                    href={`/products/${
-                      platform.slug ||
-                      platform.Name.toLowerCase().replace(/\s+/g, "-")
-                    }`}
-                    className="card h-100 text-decoration-none"
-                  >
-                    <div className="card-body">
-                      <h5 className="card-title">{platform.Name}</h5>
-                      <p className="text-muted small mb-0">
-                        {platform.StartYear}-{platform.EndYear}
+                    <div className="card-body" style={{ padding: "1.5rem" }}>
+                      <h5
+                        className="card-title"
+                        style={{ color: "#000", marginBottom: "0.5rem" }}
+                      >
+                        {category.CatName}
+                      </h5>
+                      <p
+                        className="text-muted small mb-0"
+                        style={{ color: "var(--primary)", fontWeight: "500" }}
+                      >
+                        Category
                       </p>
                     </div>
                   </Link>
@@ -156,9 +180,14 @@ export default function SearchResults({
         {/* Vehicles Section */}
         {vehicles.length > 0 && (
           <div className="mb-5">
-            <h3 className="mb-4">
-              Vehicles <span className="text-muted">({vehicles.length})</span>
-            </h3>
+            <div className="flat-title">
+              <span
+                className="title wow fadeInUp home-title"
+                data-wow-delay="0s"
+              >
+                Vehicles ({vehicles.length})
+              </span>
+            </div>
             <div className="row">
               {vehicles.map((vehicle) => (
                 <div
@@ -169,13 +198,36 @@ export default function SearchResults({
                     href={`/homes/home-search?q=${encodeURIComponent(
                       vehicle.Make + " " + vehicle.Model
                     )}`}
-                    className="card h-100 text-decoration-none"
+                    className="card h-100 text-decoration-none search-result-card"
+                    style={{
+                      borderRadius: "15px",
+                      border: "2px solid #e9ecef",
+                      overflow: "hidden",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "var(--primary)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 12px rgba(204, 0, 0, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#e9ecef";
+                      e.currentTarget.style.boxShadow =
+                        "0 2px 8px rgba(0,0,0,0.1)";
+                    }}
                   >
-                    <div className="card-body">
-                      <h5 className="card-title">
+                    <div className="card-body" style={{ padding: "1.5rem" }}>
+                      <h5
+                        className="card-title"
+                        style={{ color: "#000", marginBottom: "0.5rem" }}
+                      >
                         {vehicle.Make} {vehicle.Model}
                       </h5>
-                      <p className="text-muted small mb-0">
+                      <p
+                        className="text-muted small mb-0"
+                        style={{ color: "var(--primary)", fontWeight: "500" }}
+                      >
                         {vehicle.StartYear}-{vehicle.EndYear}
                       </p>
                     </div>
@@ -189,9 +241,14 @@ export default function SearchResults({
         {/* Brands Section */}
         {brands.length > 0 && (
           <div className="mb-5">
-            <h3 className="mb-4">
-              Brands <span className="text-muted">({brands.length})</span>
-            </h3>
+            <div className="flat-title">
+              <span
+                className="title wow fadeInUp home-title"
+                data-wow-delay="0s"
+              >
+                Brands ({brands.length})
+              </span>
+            </div>
             <div className="row">
               {brands.map((brand) => (
                 <div
@@ -207,39 +264,6 @@ export default function SearchResults({
                     <div className="card-body">
                       <h5 className="card-title">{brand.ManName}</h5>
                       <p className="text-muted small mb-0">Brand</p>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Pages Section */}
-        {pages.length > 0 && (
-          <div className="mb-5">
-            <h3 className="mb-4">
-              Pages <span className="text-muted">({pages.length})</span>
-            </h3>
-            <div className="row">
-              {pages.map((page) => (
-                <div
-                  key={page.MetaTagID}
-                  className="col-lg-3 col-md-4 col-sm-6 col-12 mb-3"
-                >
-                  <Link
-                    href={
-                      page.Page && page.Page !== "0"
-                        ? page.Page.startsWith("/")
-                          ? page.Page
-                          : `/${page.Page}`
-                        : "#"
-                    }
-                    className="card h-100 text-decoration-none"
-                  >
-                    <div className="card-body">
-                      <h5 className="card-title">{page.Title}</h5>
-                      <p className="text-muted small mb-0">{page.Page}</p>
                     </div>
                   </Link>
                 </div>

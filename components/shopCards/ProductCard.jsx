@@ -85,6 +85,21 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
         >
           Part Number: {product.PartNumber}
         </div>
+        {product.PlatformName && (
+          <div
+            style={{
+              color: "var(--primary)",
+              fontSize: "0.85em",
+              margin: "2px 0 2px 0",
+              lineHeight: 1,
+              fontWeight: "500",
+            }}
+          >
+            {product.PlatformStartYear && product.PlatformEndYear
+              ? `${product.PlatformStartYear}-${product.PlatformEndYear} ${product.PlatformName}`
+              : product.PlatformName}
+          </div>
+        )}
         <div
           style={{
             display: "flex",
