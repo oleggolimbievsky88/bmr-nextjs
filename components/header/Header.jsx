@@ -50,7 +50,7 @@ export default function Header({
                 width={200}
                 height={40}
                 style={{
-                  maxWidth: "100%",
+                  width: "100%",
                   height: "auto",
                   objectFit: "contain",
                 }}

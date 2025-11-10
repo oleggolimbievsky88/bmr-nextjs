@@ -4,7 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import CountdownComponent from "../common/Countdown";
-export const ProductCard = ({ product, colorsMap = {} }) => {
+export const ProductCard = ({
+  product,
+  colorsMap = {},
+  cardClassName = "",
+}) => {
   const [currentImage, setCurrentImage] = useState(product.imgSrc);
   const { setQuickViewItem } = useContextElement();
   const {
@@ -16,9 +20,9 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
   } = useContextElement();
 
   // Debug logging
-  console.log("ProductCard received product:", product);
-  console.log("ProductCard PartNumber:", product?.PartNumber);
-  console.log("ProductCard Price:", product?.Price);
+  // console.log("ProductCard received product:", product);
+  // console.log("ProductCard PartNumber:", product?.PartNumber);
+  // console.log("ProductCard Price:", product?.Price);
 
   useEffect(() => {
     setCurrentImage(product.imgSrc);
@@ -38,7 +42,7 @@ export const ProductCard = ({ product, colorsMap = {} }) => {
   return (
     <Link
       href={`/product/${product.ProductID}`}
-      className="card-product fl-item"
+      className={`card-product fl-item ${cardClassName}`.trim()}
       key={product.ProductID}
       style={{
         textDecoration: "none",

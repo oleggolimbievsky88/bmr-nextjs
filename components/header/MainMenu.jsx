@@ -287,7 +287,7 @@ export default function MainMenu({ initialMenuData }) {
                                 <Image
                                   src={`https://bmrsuspension.com/siteart/categories/${mainCatGroup.mainCategory.image}`}
                                   alt={mainCatGroup.mainCategory.name}
-                                  width={100}
+                                  width={200}
                                   height={100}
                                   style={{ objectFit: "contain" }}
                                   onError={handleImageError}
@@ -378,7 +378,10 @@ export default function MainMenu({ initialMenuData }) {
               onMouseEnter={() => handlePlatformHover("gmLateModel")}
               onMouseLeave={handlePlatformLeave}
             >
-              <Link href="/products/gm/late-model" className="nav-link dropdown-toggle">
+              <Link
+                href="/products/gm/late-model"
+                className="nav-link dropdown-toggle"
+              >
                 GM Late Model Cars
               </Link>
               {activePlatform === "gmLateModel" &&
@@ -391,7 +394,10 @@ export default function MainMenu({ initialMenuData }) {
               onMouseEnter={() => handlePlatformHover("gmMidMuscle")}
               onMouseLeave={handlePlatformLeave}
             >
-              <Link href="/products/gm/mid-muscle" className="nav-link dropdown-toggle">
+              <Link
+                href="/products/gm/mid-muscle"
+                className="nav-link dropdown-toggle"
+              >
                 GM Mid Muscle Cars
               </Link>
               {activePlatform === "gmMidMuscle" &&
@@ -404,7 +410,10 @@ export default function MainMenu({ initialMenuData }) {
               onMouseEnter={() => handlePlatformHover("gmClassicMuscle")}
               onMouseLeave={handlePlatformLeave}
             >
-              <Link href="/products/gm/classic-muscle" className="nav-link dropdown-toggle">
+              <Link
+                href="/products/gm/classic-muscle"
+                className="nav-link dropdown-toggle"
+              >
                 GM Classic Muscle Cars
               </Link>
               {activePlatform === "gmClassicMuscle" &&

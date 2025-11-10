@@ -68,6 +68,7 @@ export default function SearchResults({
   };
 
   if (totalResults === 0) {
+    console.log("categories", categories);
     return (
       <section className="flat-spacing-2">
         <div className="container">
@@ -106,6 +107,7 @@ export default function SearchResults({
                   key={product.ProductID}
                   product={product}
                   colorsMap={colorsMap}
+                  cardClassName="search-result-product-card"
                 />
               ))}
             </div>

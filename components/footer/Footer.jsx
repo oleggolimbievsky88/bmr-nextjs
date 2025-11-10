@@ -20,7 +20,7 @@ export default function Footer1({ bgColor = "background-black" }) {
                         alt="BMR Logo"
                         width={165}
                         height={35}
-                        style={{ width: 165, height: 35 }}
+                        style={{ width: "100%", height: "auto" }}
                       />
                     </Link>
                   </div>
