@@ -239,15 +239,37 @@
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
+.view-more-btn {
+  background-color: transparent !important;
+  border: 2px solid var(--primary, #cc0000) !important;
+  color: var(--primary, #cc0000) !important;
+  padding: 10px 30px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  border-radius: 5px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.view-more-btn:hover,
+.view-more-btn:focus {
+  background-color: var(--black, #000) !important;
+  color: var(--white, #fff) !important;
+  border-color: var(--black, #000) !important;
+}
+
 // Fix for any overlapping issues
 .tf-page-title {
   position: relative;
-  z-index: 1;
+  z-index: 2000;
+  overflow: visible;
 }
 
 .flat-spacing-2 {
   position: relative;
-  z-index: 1;
+  z-index: 0;
 }
 
 // Make sure the search container has proper stacking context

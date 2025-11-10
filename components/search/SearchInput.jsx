@@ -15,6 +15,29 @@ export default function SearchInput({ initialQuery = "" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const getCategoryPlatformLabel = (category) => {
+    if (!category) return "Platform";
+    const { PlatformStartYear, PlatformEndYear, PlatformName } = category;
+    const cleanStart =
+      PlatformStartYear && PlatformStartYear !== "0" ? PlatformStartYear : "";
+    const cleanEnd =
+      PlatformEndYear && PlatformEndYear !== "0" ? PlatformEndYear : "";
+
+    let yearSegment = "";
+    if (cleanStart && cleanEnd && cleanStart !== cleanEnd) {
+      yearSegment = `${cleanStart} - ${cleanEnd}`;
+    } else if (cleanStart && cleanEnd && cleanStart === cleanEnd) {
+      yearSegment = cleanStart;
+    } else if (cleanStart) {
+      yearSegment = cleanStart;
+    } else if (cleanEnd) {
+      yearSegment = cleanEnd;
+    }
+
+    const label = [yearSegment, PlatformName].filter(Boolean).join(" ").trim();
+    return label || "Platform";
+  };
+
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
@@ -209,7 +232,12 @@ export default function SearchInput({ initialQuery = "" }) {
                     }}
                   >
                     <div className="fw-bold">{c.CatName}</div>
-                    <div className="text-muted small">Sub-category</div>
+                    <div
+                      className="small"
+                      style={{ color: "#cc0000", fontWeight: "600" }}
+                    >
+                      {getCategoryPlatformLabel(c)}
+                    </div>
                   </div>
                 ))}
               </div>

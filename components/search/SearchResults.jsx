@@ -44,6 +44,29 @@ export default function SearchResults({
   const totalResults =
     products.length + categories.length + vehicles.length + brands.length;
 
+  const getCategoryPlatformLabel = (category) => {
+    if (!category) return "Platform";
+    const { PlatformStartYear, PlatformEndYear, PlatformName } = category;
+    const cleanStart =
+      PlatformStartYear && PlatformStartYear !== "0" ? PlatformStartYear : "";
+    const cleanEnd =
+      PlatformEndYear && PlatformEndYear !== "0" ? PlatformEndYear : "";
+
+    let yearSegment = "";
+    if (cleanStart && cleanEnd && cleanStart !== cleanEnd) {
+      yearSegment = `${cleanStart} - ${cleanEnd}`;
+    } else if (cleanStart && cleanEnd && cleanStart === cleanEnd) {
+      yearSegment = cleanStart;
+    } else if (cleanStart) {
+      yearSegment = cleanStart;
+    } else if (cleanEnd) {
+      yearSegment = cleanEnd;
+    }
+
+    const label = [yearSegment, PlatformName].filter(Boolean).join(" ").trim();
+    return label || "Platform";
+  };
+
   if (totalResults === 0) {
     return (
       <section className="flat-spacing-2">
@@ -74,9 +97,7 @@ export default function SearchResults({
                 className="title wow fadeInUp home-title"
                 data-wow-delay="0s"
               >
-                <span style={{ color: "var(--primary)" }}>- </span>
                 Products ({products.length})
-                <span style={{ color: "var(--primary)" }}> -</span>
               </span>
             </div>
             <div className="grid-layout wrapper-shop" data-grid="grid-4">
@@ -92,18 +113,7 @@ export default function SearchResults({
               <div className="text-center mt-4">
                 <button
                   onClick={() => setShowAllProducts(true)}
-                  className="btn btn-outline-primary"
-                  style={{
-                    borderColor: "var(--primary)",
-                    color: "var(--primary)",
-                    padding: "10px 30px",
-                    fontSize: "16px",
-                    fontWeight: "500",
-                    borderRadius: "5px",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
+                  className="view-more-btn"
                 >
                   View More
                   <i
@@ -165,9 +175,12 @@ export default function SearchResults({
                       </h5>
                       <p
                         className="text-muted small mb-0"
-                        style={{ color: "var(--primary)", fontWeight: "500" }}
+                        style={{
+                          color: "#cc0000 !important",
+                          fontWeight: "600",
+                        }}
                       >
-                        Category
+                        {getCategoryPlatformLabel(category)}
                       </p>
                     </div>
                   </Link>
@@ -226,7 +239,10 @@ export default function SearchResults({
                       </h5>
                       <p
                         className="text-muted small mb-0"
-                        style={{ color: "var(--primary)", fontWeight: "500" }}
+                        style={{
+                          color: "var(--primary) !important",
+                          fontWeight: "600",
+                        }}
                       >
                         {vehicle.StartYear}-{vehicle.EndYear}
                       </p>

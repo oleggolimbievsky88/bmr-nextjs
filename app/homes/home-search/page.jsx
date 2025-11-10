@@ -43,7 +43,7 @@ export async function generateMetadata({ searchParams }) {
   return {
     title: `Search Results | BMR Suspension | ${searchQuery}`,
     description:
-      "BMR Suspension - Search for products, categories, platforms, vehicles, brands, and pages",
+      "BMR Suspension - Search for products, categories, vehicles, and brands",
   };
 }
 
