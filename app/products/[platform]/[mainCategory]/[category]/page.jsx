@@ -8,6 +8,19 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import Footer1 from "@/components/footer/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
+// Sanitize slug by removing/replacing special characters
+const sanitizeSlug = (slug) => {
+  if (!slug) return "";
+  return slug
+    .toLowerCase()
+    .replace(/["""]/g, "") // Remove double quotes (regular and smart quotes)
+    .replace(/[''']/g, "") // Remove single quotes (regular and smart quotes)
+    .replace(/[^\w\s-]/g, "") // Remove any other special characters except word chars, spaces, and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+};
+
 export default function CategoryPage({ params }) {
   const { platform, mainCategory, category } = use(params);
   console.log(
@@ -21,6 +34,7 @@ export default function CategoryPage({ params }) {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [platformInfo, setPlatformInfo] = useState(null);
   const [currentCategory, setCurrentCategory] = useState(null);
+  const [currentMainCategory, setCurrentMainCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,7 +56,20 @@ export default function CategoryPage({ params }) {
         }
         const platformData = await platformRes.json();
         setPlatformInfo(platformData.platformInfo || {});
-        setMainCategories(platformData.mainCategories || []);
+        const mainCats = platformData.mainCategories || [];
+        setMainCategories(mainCats);
+
+        // Find the current main category by slug
+        // Decode URL-encoded characters first (e.g., %22 becomes ")
+        const decodedMainCategory = decodeURIComponent(mainCategory);
+        const sanitizedMainCatSlug = sanitizeSlug(decodedMainCategory);
+        const mainCat = mainCats.find((mc) => {
+          const mcSlug = mc.slug || mc.MainCatSlug || mc.name;
+          return sanitizeSlug(mcSlug) === sanitizedMainCatSlug;
+        });
+        if (mainCat) {
+          setCurrentMainCategory(mainCat);
+        }
 
         // 2. Fetch subcategories for the selected main category
         const subcatRes = await fetch(
@@ -52,10 +79,14 @@ export default function CategoryPage({ params }) {
         const subcatData = await subcatRes.json();
         setCategories(subcatData.categories || []);
 
-        // 3. Find the current category by slug
-        const currentCat = subcatData.categories?.find(
-          (cat) => (cat.CatSlug || cat.slug) === category
-        );
+        // 3. Find the current category by slug (sanitize both sides for comparison)
+        // Decode URL-encoded characters first (e.g., %22 becomes ")
+        const decodedCategory = decodeURIComponent(category);
+        const sanitizedCategorySlug = sanitizeSlug(decodedCategory);
+        const currentCat = subcatData.categories?.find((cat) => {
+          const dbSlug = cat.CatSlug || cat.slug || cat.CatNameSlug;
+          return sanitizeSlug(dbSlug) === sanitizedCategorySlug;
+        });
         if (!currentCat) throw new Error("Category not found");
         setCurrentCategory(currentCat);
 
@@ -110,19 +141,31 @@ export default function CategoryPage({ params }) {
           slug: platformInfo?.slug,
           mainCategory: mainCategory ? mainCategory : null,
         }}
+        mainCategoryName={
+          currentMainCategory?.name || currentMainCategory?.MainCatName || null
+        }
       />
 
       <div className="container">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: platform, href: `/products/${platform}` },
             {
-              label: mainCategory,
+              label: platformInfo
+                ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                : platform,
+              href: `/products/${platform}`,
+            },
+            {
+              label:
+                currentMainCategory?.name ||
+                currentMainCategory?.MainCatName ||
+                mainCategory,
               href: `/products/${platform}/${mainCategory}`,
             },
             {
-              label: currentCategory?.CatName || category,
+              label:
+                currentCategory?.CatName || currentCategory?.name || category,
               href: `/products/${platform}/${mainCategory}/${category}`,
             },
           ]}

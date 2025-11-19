@@ -7,6 +7,19 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
+// Sanitize slug by removing/replacing special characters
+const sanitizeSlug = (slug) => {
+  if (!slug) return "";
+  return slug
+    .toLowerCase()
+    .replace(/["""]/g, "") // Remove double quotes (regular and smart quotes)
+    .replace(/[''']/g, "") // Remove single quotes (regular and smart quotes)
+    .replace(/[^\w\s-]/g, "") // Remove any other special characters except word chars, spaces, and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+};
+
 export default function MainCategoryPage({ params }) {
   const { platform, mainCategory } = use(params);
 
@@ -14,6 +27,7 @@ export default function MainCategoryPage({ params }) {
   const [mainCategories, setMainCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [platformInfo, setPlatformInfo] = useState(null);
+  const [currentMainCategory, setCurrentMainCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,7 +39,20 @@ export default function MainCategoryPage({ params }) {
           `/api/platform-by-slug?platform=${platform}`
         );
         const mainCatData = await mainCatRes.json();
-        setMainCategories(mainCatData.mainCategories || []);
+        const mainCats = mainCatData.mainCategories || [];
+        setMainCategories(mainCats);
+
+        // Find the current main category by slug
+        // Decode URL-encoded characters first (e.g., %22 becomes ")
+        const decodedMainCategory = decodeURIComponent(mainCategory);
+        const sanitizedMainCatSlug = sanitizeSlug(decodedMainCategory);
+        const mainCat = mainCats.find((mc) => {
+          const mcSlug = mc.slug || mc.MainCatSlug || mc.name;
+          return sanitizeSlug(mcSlug) === sanitizedMainCatSlug;
+        });
+        if (mainCat) {
+          setCurrentMainCategory(mainCat);
+        }
 
         // Fetch subcategories and products for the selected main category
         const res = await fetch(
@@ -68,15 +95,26 @@ export default function MainCategoryPage({ params }) {
           slug: platformInfo?.slug,
           mainCategory: mainCategory ? mainCategory : null,
         }}
+        mainCategoryName={
+          currentMainCategory?.name || currentMainCategory?.MainCatName || null
+        }
       />
 
       <div className="container">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: platform, href: `/products/${platform}` },
             {
-              label: mainCategory,
+              label: platformInfo
+                ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                : platform,
+              href: `/products/${platform}`,
+            },
+            {
+              label:
+                currentMainCategory?.name ||
+                currentMainCategory?.MainCatName ||
+                mainCategory,
               href: `/products/${platform}/${mainCategory}`,
             },
           ]}

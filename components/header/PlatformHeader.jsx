@@ -5,6 +5,7 @@ export default function PlatformHeader({
   title = "Select a category to shop through our latest selection of Suspension & Chassis Parts",
   subtitle,
   slug = "platformData.slug",
+  mainCategoryName = null,
 }) {
   if (!platformData) return null;
   console.log("Platform Header Data:", platformData);
@@ -23,6 +24,13 @@ export default function PlatformHeader({
   console.log("Platform Header Image URL:", imageUrl);
   console.log("Encoded Platform Header Image URL:", encodedImageUrl);
 
+  // Use mainCategoryName prop if provided, otherwise fall back to platformData.mainCategory
+  const displayMainCategory =
+    mainCategoryName ||
+    (platformData.mainCategory &&
+      platformData.mainCategory.charAt(0).toUpperCase() +
+        platformData.mainCategory.slice(1));
+
   return (
     <div className="container-fluid px-0 m-0 p-0">
       <div
@@ -36,10 +44,7 @@ export default function PlatformHeader({
           <h1 className="platform-header-title">
             {yearDisplay}
             <br />
-            {platformData.Name}{" "}
-            {platformData.mainCategory &&
-              platformData.mainCategory.charAt(0).toUpperCase() +
-                platformData.mainCategory.slice(1)}
+            {platformData.Name} {displayMainCategory && displayMainCategory}
           </h1>
         </div>
       </div>

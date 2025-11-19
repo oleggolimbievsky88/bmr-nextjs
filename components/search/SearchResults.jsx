@@ -44,6 +44,19 @@ export default function SearchResults({
   const totalResults =
     products.length + categories.length + vehicles.length + brands.length;
 
+  // Sanitize slug by removing/replacing special characters
+  const sanitizeSlug = (slug) => {
+    if (!slug) return "";
+    return slug
+      .toLowerCase()
+      .replace(/["""]/g, "") // Remove double quotes (regular and smart quotes)
+      .replace(/[''']/g, "") // Remove single quotes (regular and smart quotes)
+      .replace(/[^\w\s-]/g, "") // Remove any other special characters except word chars, spaces, and hyphens
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+      .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+  };
+
   const getCategoryPlatformLabel = (category) => {
     if (!category) return "Platform";
     const { PlatformStartYear, PlatformEndYear, PlatformName } = category;
@@ -65,6 +78,32 @@ export default function SearchResults({
 
     const label = [yearSegment, PlatformName].filter(Boolean).join(" ").trim();
     return label || "Platform";
+  };
+
+  const getCategoryUrl = (category) => {
+    if (!category) return "/homes/home-search";
+
+    const { PlatformSlug, MainCatSlug, CatSlug, CatName, BodyID, MainCatID } =
+      category;
+
+    // If we have all the required slugs, build the proper URL
+    if (PlatformSlug && MainCatSlug && (CatSlug || CatName)) {
+      // Use CatSlug if available, otherwise generate from CatName
+      // Sanitize to remove special characters like quotes
+      const categorySlug = CatSlug
+        ? sanitizeSlug(CatSlug)
+        : sanitizeSlug(CatName);
+      return `/products/${PlatformSlug}/${MainCatSlug}/${categorySlug}`;
+    }
+
+    // Fallback: if we have platform and category info but missing main category,
+    // we could try to search, but for now fall back to search page
+    if (BodyID && CatName) {
+      return `/homes/home-search?q=${encodeURIComponent(CatName)}`;
+    }
+
+    // Last resort: search page
+    return "/homes/home-search";
   };
 
   if (totalResults === 0) {
@@ -146,9 +185,7 @@ export default function SearchResults({
                   className="col-lg-3 col-md-4 col-sm-6 col-12 mb-3"
                 >
                   <Link
-                    href={`/homes/home-search?q=${encodeURIComponent(
-                      category.CatName
-                    )}`}
+                    href={getCategoryUrl(category)}
                     className="card h-100 text-decoration-none search-result-card"
                     style={{
                       borderRadius: "15px",

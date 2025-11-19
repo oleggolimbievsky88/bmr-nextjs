@@ -72,8 +72,12 @@ export default function PlatformPage({ params }) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "Products", href: "/products" },
-            { label: platformInfo?.name || platform, href: "#" },
+            {
+              label: platformInfo
+                ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                : platform,
+              href: `/products/${platform}`,
+            },
           ]}
         />
 
