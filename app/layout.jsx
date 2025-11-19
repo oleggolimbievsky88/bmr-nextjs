@@ -29,6 +29,7 @@ import { usePathname } from "next/navigation";
 import NewsletterModal from "@/components/modals/NewsletterModal";
 import ShareModal from "@/components/modals/ShareModal";
 import ScrollTop from "@/components/common/ScrollTop";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -164,6 +165,7 @@ export default function RootLayout({ children }) {
           <ShareModal />
         </Context>
         <ScrollTop />
+        <Analytics />
       </body>
     </html>
   );

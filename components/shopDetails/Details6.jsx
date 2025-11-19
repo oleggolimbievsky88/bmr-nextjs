@@ -237,11 +237,23 @@ export default function ou({ product, initialColor, searchParams }) {
               setCurrentColor(null);
             }
           } else {
-            // No color in URL - require selection for all options
-            console.log(
-              "No color in URL - requiring selection for all color options"
-            );
-            setCurrentColor(null);
+            // Auto-select if there's only one color option
+            if (filteredColors.length === 1) {
+              const singleColor = filteredColors[0];
+              console.log(
+                "Only one color option available, auto-selecting:",
+                singleColor
+              );
+              setCurrentColor(singleColor);
+              // Update URL with the auto-selected color
+              updateColorInURL(singleColor);
+            } else {
+              // No color in URL and multiple options - require selection
+              console.log(
+                "No color in URL - requiring selection for all color options"
+              );
+              setCurrentColor(null);
+            }
           }
         } else {
           console.log(

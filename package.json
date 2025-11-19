@@ -6,12 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "vercel deploy",
+    "deploy:prod": "vercel deploy --prod"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@google/model-viewer": "^3.5.0",
     "@prisma/client": "^6.1.0",
+    "@vercel/analytics": "^1.5.0",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.13.1",
     "critters": "^0.0.25",
@@ -35,7 +38,8 @@
   },
   "devDependencies": {
     "prisma": "^6.1.0",
-    "sass": "^1.85.1"
+    "sass": "^1.85.1",
+    "vercel": "^48.10.4"
   },
   "engines": {
     "node": "22.x",
