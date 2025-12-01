@@ -414,24 +414,20 @@ export default function OrderConfirmation({ orderData }) {
                     </div>
                     {order.discount > 0 && (
                       <div className="d-flex justify-content-between mb-2 text-success">
-                        <span>Discount ({order.couponCode}):</span>
+                        <span>Discount ({order.couponCode || "Coupon"}):</span>
                         <span>-${parseFloat(order.discount).toFixed(2)}</span>
                       </div>
                     )}
-                    {order.shippingCost > 0 && (
-                      <div className="d-flex justify-content-between mb-2">
-                        <span>Shipping:</span>
-                        <span>
-                          ${parseFloat(order.shippingCost).toFixed(2)}
-                        </span>
-                      </div>
-                    )}
-                    {order.tax > 0 && (
-                      <div className="d-flex justify-content-between mb-2">
-                        <span>Tax:</span>
-                        <span>${parseFloat(order.tax).toFixed(2)}</span>
-                      </div>
-                    )}
+                    <div className="d-flex justify-content-between mb-2">
+                      <span>Shipping:</span>
+                      <span>
+                        ${parseFloat(order.shippingCost || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="d-flex justify-content-between mb-2">
+                      <span>Tax:</span>
+                      <span>${parseFloat(order.tax || 0).toFixed(2)}</span>
+                    </div>
                     <hr />
                     <div className="d-flex justify-content-between mb-3">
                       <strong>Total:</strong>

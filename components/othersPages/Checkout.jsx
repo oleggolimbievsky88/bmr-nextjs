@@ -2,7 +2,7 @@
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
 import CartSkeleton from "@/components/common/CartSkeleton";
@@ -80,6 +80,10 @@ export default function Checkout() {
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [emailConsent, setEmailConsent] = useState(false);
 
+  // Ref to prevent infinite loops when calculating shipping rates
+  const isCalculatingShippingRef = useRef(false);
+  const lastShippingAddressRef = useRef("");
+
   // Shipping rates hook
   const {
     calculateShippingRates,
@@ -107,6 +111,75 @@ export default function Checkout() {
       router.push("/products");
     }
   }, [cartLoading, cartProducts.length, router]);
+
+  const calculateShippingRatesForCurrentAddress = useCallback(async () => {
+    // Prevent multiple simultaneous calls
+    if (isCalculatingShippingRef.current) {
+      return;
+    }
+
+    const fromAddress = {
+      address1: "1033 Pine Chase Ave",
+      city: "Lakeland",
+      state: "FL",
+      zip: "33815",
+      country: "US",
+    };
+
+    const toAddress = sameAsBilling ? billingData : shippingData;
+
+    // Create a unique key for this address to prevent duplicate calculations
+    const addressKey = `${toAddress.address1}-${toAddress.city}-${toAddress.state}-${toAddress.zip}`;
+    if (lastShippingAddressRef.current === addressKey) {
+      return; // Already calculated for this address
+    }
+
+    isCalculatingShippingRef.current = true;
+    lastShippingAddressRef.current = addressKey;
+
+    try {
+      // Create packages based on cart items
+      const packages = cartProducts.map((item) => ({
+        weight: 1, // Default weight, could be calculated from product data
+        length: 10,
+        width: 10,
+        height: 10,
+      }));
+
+      await calculateShippingRates(fromAddress, toAddress, packages);
+    } finally {
+      isCalculatingShippingRef.current = false;
+    }
+  }, [
+    sameAsBilling,
+    billingData,
+    shippingData,
+    cartProducts,
+    calculateShippingRates,
+  ]);
+
+  // When sameAsBilling is checked, use billing address validation
+  useEffect(() => {
+    if (sameAsBilling) {
+      setShippingAddressValid(billingAddressValid);
+      // Recalculate shipping rates with billing address
+      if (billingAddressValid && activeStep === "shipping") {
+        calculateShippingRatesForCurrentAddress();
+      }
+    }
+  }, [
+    sameAsBilling,
+    billingAddressValid,
+    activeStep,
+    calculateShippingRatesForCurrentAddress,
+  ]);
+
+  // Reset shipping address ref when sameAsBilling changes
+  useEffect(() => {
+    if (sameAsBilling) {
+      lastShippingAddressRef.current = "";
+    }
+  }, [sameAsBilling]);
 
   const handleCouponApply = async () => {
     if (!couponCode.trim()) {
@@ -142,28 +215,6 @@ export default function Checkout() {
         );
       }
     }
-  };
-
-  const calculateShippingRatesForCurrentAddress = async () => {
-    const fromAddress = {
-      address1: "1033 Pine Chase Ave",
-      city: "Lakeland",
-      state: "FL",
-      zip: "33815",
-      country: "US",
-    };
-
-    const toAddress = sameAsBilling ? billingData : shippingData;
-
-    // Create packages based on cart items
-    const packages = cartProducts.map((item) => ({
-      weight: 1, // Default weight, could be calculated from product data
-      length: 10,
-      width: 10,
-      height: 10,
-    }));
-
-    await calculateShippingRates(fromAddress, toAddress, packages);
   };
 
   const handleBack = () => {
@@ -226,8 +277,20 @@ export default function Checkout() {
     setSubmitError("");
 
     try {
-      // For now, simulate successful order processing
-      // TODO: Replace with actual API call when backend is ready
+      // Get the next order number from the API
+      let orderId = `BMR-660000`; // Fallback
+      try {
+        const orderNumberResponse = await fetch("/api/get-next-order-number");
+        if (orderNumberResponse.ok) {
+          const orderNumberData = await orderNumberResponse.json();
+          orderId =
+            orderNumberData.orderId ||
+            `BMR-${orderNumberData.orderNumber || 660000}`;
+        }
+      } catch (orderNumberError) {
+        console.error("Failed to get order number:", orderNumberError);
+        // Use fallback
+      }
 
       // Get last 4 digits of card number
       const lastFourDigits = paymentData.cardNumber
@@ -239,7 +302,6 @@ export default function Checkout() {
       removeCoupon();
 
       // Redirect to confirmation page with order details
-      const orderId = `BMR-${Date.now()}`;
       const confirmationData = {
         orderId: orderId,
         cardLastFour: lastFourDigits,
@@ -308,7 +370,7 @@ export default function Checkout() {
 
       // Automatically send receipt email
       try {
-        await fetch("/api/send-receipt", {
+        const emailResponse = await fetch("/api/send-receipt", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -319,7 +381,14 @@ export default function Checkout() {
             orderData: confirmationData,
           }),
         });
-        console.log("Receipt email sent successfully");
+
+        const emailResult = await emailResponse.json();
+        if (emailResponse.ok) {
+          console.log("Receipt email sent successfully:", emailResult);
+        } else {
+          console.error("Failed to send receipt email:", emailResult);
+          // Don't block the order process if email fails
+        }
       } catch (emailError) {
         console.error("Failed to send receipt email:", emailError);
         // Don't block the order process if email fails
@@ -645,7 +714,13 @@ export default function Checkout() {
                           <input
                             type="checkbox"
                             checked={sameAsBilling}
-                            onChange={(e) => setSameAsBilling(e.target.checked)}
+                            onChange={(e) => {
+                              setSameAsBilling(e.target.checked);
+                              // Reset shipping validation when unchecking
+                              if (!e.target.checked) {
+                                setShippingAddressValid(false);
+                              }
+                            }}
                           />
                           Same as billing address?
                         </label>
@@ -694,40 +769,20 @@ export default function Checkout() {
                             </div>
                           </div>
 
-                          <div className="form-group">
-                            <label htmlFor="shipping-address1">
-                              Address Line 1*
-                            </label>
-                            <input
-                              type="text"
-                              id="shipping-address1"
-                              value={shippingData.address1}
-                              onChange={(e) =>
-                                setShippingData({
-                                  ...shippingData,
-                                  address1: e.target.value,
-                                })
+                          <AddressAutocomplete
+                            address={shippingData}
+                            onAddressChange={setShippingData}
+                            onValidationComplete={(result) => {
+                              setShippingAddressValid(result.isValid);
+                              // Recalculate shipping rates when address is validated
+                              if (result.isValid) {
+                                calculateShippingRatesForCurrentAddress();
                               }
-                              required
-                            />
-                          </div>
-
-                          <div className="form-group">
-                            <label htmlFor="shipping-address2">
-                              Address Line 2
-                            </label>
-                            <input
-                              type="text"
-                              id="shipping-address2"
-                              value={shippingData.address2}
-                              onChange={(e) =>
-                                setShippingData({
-                                  ...shippingData,
-                                  address2: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
+                            }}
+                            label="Shipping Address"
+                            placeholder="Enter your shipping address"
+                            required={true}
+                          />
 
                           <div className="form-group">
                             <label htmlFor="shipping-city">City*</label>

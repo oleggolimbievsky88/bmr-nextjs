@@ -1,6 +1,47 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
+async function getNextOrderNumber() {
+  try {
+    // Get the highest order number from the database
+    const sql = `
+      SELECT order_number
+      FROM new_orders
+      ORDER BY new_order_id DESC
+      LIMIT 100
+    `;
+
+    const rows = await query(sql);
+    let nextOrderNumber = 660000;
+    let maxFound = 0;
+
+    // Extract numbers from order numbers (handles both "BMR-660001" and "660001" formats)
+    if (rows && rows.length > 0) {
+      for (const row of rows) {
+        const orderNum = row.order_number || "";
+        // Extract number from "BMR-660001" format or just number
+        const match = orderNum.match(/(\d+)$/);
+        if (match) {
+          const num = parseInt(match[1]);
+          if (num >= 660000 && num > maxFound) {
+            maxFound = num;
+          }
+        }
+      }
+
+      if (maxFound >= 660000) {
+        nextOrderNumber = maxFound + 1;
+      }
+    }
+
+    return nextOrderNumber;
+  } catch (error) {
+    console.error("Error getting next order number:", error);
+    // Fallback to 660000
+    return 660000;
+  }
+}
+
 export async function POST(request) {
   try {
     // Check if database connection is available
@@ -13,8 +54,9 @@ export async function POST(request) {
 
     const orderData = await request.json();
 
-    // Generate order number
-    const orderNumber = generateOrderNumber();
+    // Generate order number (sequential starting from 660000)
+    const orderNumberValue = await getNextOrderNumber();
+    const orderNumber = `BMR-${orderNumberValue}`;
     const orderDate = new Date().toISOString();
 
     // Calculate totals
@@ -66,13 +108,6 @@ export async function POST(request) {
   }
 }
 
-function generateOrderNumber() {
-  const timestamp = Date.now().toString();
-  const random = Math.floor(Math.random() * 1000)
-    .toString()
-    .padStart(3, "0");
-  return `BMR-${timestamp.slice(-6)}-${random}`;
-}
 
 async function createOrder(orderData) {
   const sql = `
@@ -264,7 +299,7 @@ async function sendConfirmationEmail(emailData) {
     // Example with Nodemailer:
     /*
     const nodemailer = require('nodemailer')
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       // Your email configuration
     })
 

@@ -12,36 +12,90 @@ export async function POST(request) {
       );
     }
 
-    // Create transporter (you'll need to configure this with your email service)
-    const transporter = nodemailer.createTransporter({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: process.env.SMTP_PORT || 587,
-      secure: false,
+    // Validate SMTP configuration
+    if (
+      !process.env.SMTP_HOST ||
+      !process.env.SMTP_USER ||
+      !process.env.SMTP_PASS
+    ) {
+      console.error("SMTP configuration missing:", {
+        hasHost: !!process.env.SMTP_HOST,
+        hasUser: !!process.env.SMTP_USER,
+        hasPass: !!process.env.SMTP_PASS,
+      });
+      return NextResponse.json(
+        {
+          message:
+            "Email service not configured. Please set SMTP environment variables.",
+          error: "SMTP configuration missing",
+        },
+        { status: 500 }
+      );
+    }
+
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || "587"),
+      secure: process.env.SMTP_PORT === "465", // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
 
+    // Verify transporter configuration
+    try {
+      await transporter.verify();
+    } catch (verifyError) {
+      console.error("SMTP verification failed:", verifyError);
+      return NextResponse.json(
+        {
+          message:
+            "Email service configuration error. Please check your SMTP settings.",
+          error: verifyError.message,
+        },
+        { status: 500 }
+      );
+    }
+
     // Generate HTML email content
     const htmlContent = generateReceiptHTML(orderData);
 
     // Email options
     const mailOptions = {
-      from: process.env.SMTP_FROM || "noreply@bmrsuspension.com",
+      from:
+        process.env.SMTP_FROM ||
+        process.env.SMTP_USER ||
+        "noreply@bmrsuspension.com",
       to: email,
-      subject: `Order Confirmation Receipt - ${orderId}`,
+      subject: `BMR Suspension - Order Confirmation Receipt - ${orderId}`,
       html: htmlContent,
     };
 
     // Send email
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Receipt email sent successfully:", {
+      messageId: info.messageId,
+      to: email,
+      orderId: orderId,
+    });
 
-    return NextResponse.json({ message: "Receipt sent successfully" });
+    return NextResponse.json({
+      message: "Receipt sent successfully",
+      messageId: info.messageId,
+    });
   } catch (error) {
-    console.error("Error sending receipt:", error);
+    console.error("Error sending receipt:", {
+      error: error.message,
+      stack: error.stack,
+      code: error.code,
+    });
     return NextResponse.json(
-      { message: "Failed to send receipt" },
+      {
+        message: "Failed to send receipt",
+        error: error.message,
+      },
       { status: 500 }
     );
   }
@@ -85,6 +139,13 @@ function generateReceiptHTML(orderData) {
     return subtotal + shipping + tax - discount;
   };
 
+  // Get base URL for logo
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.VERCEL_URL ||
+    "https://bmrsuspension.com";
+  const logoUrl = `${baseUrl}/images/logo/logo.png`;
+
   return `
     <!DOCTYPE html>
     <html>
@@ -114,16 +175,31 @@ function generateReceiptHTML(orderData) {
           padding-bottom: 20px;
           border-bottom: 2px solid #dc3545;
         }
+        .logo-container {
+          margin-bottom: 20px;
+        }
         .logo {
-          font-size: 24px;
-          font-weight: bold;
-          color: #000;
-          margin-bottom: 10px;
+          max-width: 200px;
+          height: auto;
+          margin: 0 auto;
         }
         .order-number {
           font-size: 18px;
           color: #dc3545;
           font-weight: bold;
+          margin-top: 15px;
+        }
+        .thank-you-message {
+          background: #f8f9fa;
+          padding: 25px;
+          border-left: 4px solid #dc3545;
+          margin: 25px 0;
+          line-height: 1.8;
+        }
+        .thank-you-message p {
+          margin: 10px 0;
+          font-size: 14px;
+          color: #333;
         }
         .section {
           margin-bottom: 25px;
@@ -265,11 +341,19 @@ function generateReceiptHTML(orderData) {
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">BMR SUSPENSION</div>
+          <div class="logo-container">
+            <img src="${logoUrl}" alt="BMR Suspension" class="logo" />
+          </div>
           <div class="order-number">Order #${orderData.orderId}</div>
           <div style="color: #666; font-size: 14px;">
             Placed on ${formatDate(new Date())}
           </div>
+        </div>
+
+        <div class="thank-you-message">
+          <p>Thank you for your purchase! We have received your order and will work on shipping it out as soon as possible. Once your order is processed through our system, you will receive tracking information. Please note, we will not charge your card until your part(s) are ready to ship out.</p>
+          <p>All orders are manually entered to ensure all information is correct before shipment.</p>
+          <p>If you have any questions or would like to change any part of your order, simply send us an email at <a href="mailto:WebSales@bmrsuspension.com" style="color: #dc3545; text-decoration: none;">WebSales@bmrsuspension.com</a> or call us at <a href="tel:+18139869302" style="color: #dc3545; text-decoration: none;">(813) 986-9302</a> between 8:30 - 5:00 pm Eastern time, Monday through Friday. We thank you for continuing to support American manufacturing!</p>
         </div>
 
         <div class="section">
@@ -379,7 +463,7 @@ function generateReceiptHTML(orderData) {
               orderData.discount > 0
                 ? `
               <div class="total-row">
-                <span>Discount (${orderData.couponCode}):</span>
+                <span>Discount (${orderData.couponCode || "Coupon"}):</span>
                 <span style="color: #dc3545;">-$${parseFloat(
                   orderData.discount
                 ).toFixed(2)}</span>
@@ -387,26 +471,16 @@ function generateReceiptHTML(orderData) {
             `
                 : ""
             }
-            ${
-              orderData.shippingCost > 0
-                ? `
-              <div class="total-row">
-                <span>Shipping:</span>
-                <span>$${parseFloat(orderData.shippingCost).toFixed(2)}</span>
-              </div>
-            `
-                : ""
-            }
-            ${
-              orderData.tax > 0
-                ? `
-              <div class="total-row">
-                <span>Tax:</span>
-                <span>$${parseFloat(orderData.tax).toFixed(2)}</span>
-              </div>
-            `
-                : ""
-            }
+            <div class="total-row">
+              <span>Shipping:</span>
+              <span>$${parseFloat(orderData.shippingCost || 0).toFixed(
+                2
+              )}</span>
+            </div>
+            <div class="total-row">
+              <span>Tax:</span>
+              <span>$${parseFloat(orderData.tax || 0).toFixed(2)}</span>
+            </div>
             <div class="total-row final">
               <span>Total:</span>
               <span style="color: #dc3545;">$${
@@ -416,19 +490,6 @@ function generateReceiptHTML(orderData) {
               }</span>
             </div>
           </div>
-        </div>
-
-        <div class="contact-info">
-          <h4>What's Next?</h4>
-          <p><strong>Thank you for your purchase!</strong> We have received your order and will work on shipping it out as soon as possible. Once your order is processed through our system, you will receive tracking information.</p>
-          <p><strong>Important:</strong> We will not charge your card until your part(s) are ready to ship out. All orders are manually entered to ensure all information is correct before shipment.</p>
-          <p>If you have any questions or would like to change any part of your order, please contact us:</p>
-          <p>
-            <strong>Email:</strong> <a href="mailto:WebSales@bmrsuspension.com">WebSales@bmrsuspension.com</a><br>
-            <strong>Phone:</strong> <a href="tel:+18139869302">(813) 986-9302</a><br>
-            <strong>Hours:</strong> 8:30 AM - 5:00 PM Eastern, Monday through Friday
-          </p>
-          <p><strong>Thank you for continuing to support American manufacturing!</strong></p>
         </div>
 
         <div class="footer">
