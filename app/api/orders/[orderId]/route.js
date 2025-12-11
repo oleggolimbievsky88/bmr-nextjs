@@ -13,11 +13,11 @@ export async function GET(request, { params }) {
 
     const { orderId } = params;
 
-    // Fetch order details
+    // Fetch order details - try by order_number first (e.g., "BMR-660000"), then by ID
     const orderSql = `
-      SELECT * FROM new_orders WHERE new_order_id = ?
+      SELECT * FROM new_orders WHERE order_number = ? OR new_order_id = ?
     `;
-    const orderResult = await query(orderSql, [orderId]);
+    const orderResult = await query(orderSql, [orderId, orderId]);
 
     if (orderResult.length === 0) {
       return NextResponse.json(
@@ -28,18 +28,19 @@ export async function GET(request, { params }) {
 
     const order = orderResult[0];
 
-    // Fetch order items
+    // Fetch order items using the actual database ID
     const itemsSql = `
       SELECT * FROM new_order_items WHERE new_order_id = ?
     `;
-    const itemsResult = await query(itemsSql, [orderId]);
+    const itemsResult = await query(itemsSql, [order.new_order_id]);
 
     // Format the order data
     const orderData = {
-      orderId: order.new_order_id,
+      orderId: order.order_number, // Use order number (e.g., "BMR-660000") for consistency
       orderNumber: order.order_number,
       orderDate: order.order_date,
       status: order.status,
+      cardLastFour: "", // Not stored in database, will be empty when fetched from API
       billing: {
         firstName: order.billing_first_name,
         lastName: order.billing_last_name,

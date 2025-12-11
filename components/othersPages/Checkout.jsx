@@ -80,6 +80,7 @@ export default function Checkout() {
   const [submitError, setSubmitError] = useState("");
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [emailConsent, setEmailConsent] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Ref to prevent infinite loops when calculating shipping rates
   const isCalculatingShippingRef = useRef(false);
@@ -106,12 +107,12 @@ export default function Checkout() {
     validateCVV,
   } = useCreditCard();
 
-  // Redirect to products page if cart is empty
+  // Redirect to products page if cart is empty (but not when redirecting to confirmation)
   useEffect(() => {
-    if (!cartLoading && cartProducts.length === 0) {
+    if (!cartLoading && cartProducts.length === 0 && !isRedirecting) {
       router.push("/products");
     }
-  }, [cartLoading, cartProducts.length, router]);
+  }, [cartLoading, cartProducts.length, router, isRedirecting]);
 
   const calculateShippingRatesForCurrentAddress = useCallback(async () => {
     // Prevent multiple simultaneous calls
@@ -278,21 +279,6 @@ export default function Checkout() {
     setSubmitError("");
 
     try {
-      // Get the next order number from the API
-      let orderId = `BMR-660000`; // Fallback
-      try {
-        const orderNumberResponse = await fetch("/api/get-next-order-number");
-        if (orderNumberResponse.ok) {
-          const orderNumberData = await orderNumberResponse.json();
-          orderId =
-            orderNumberData.orderId ||
-            `BMR-${orderNumberData.orderNumber || 660000}`;
-        }
-      } catch (orderNumberError) {
-        console.error("Failed to get order number:", orderNumberError);
-        // Use fallback
-      }
-
       // Get last 4 digits of card number
       const lastFourDigits = paymentData.cardNumber
         .replace(/\s/g, "")
@@ -311,64 +297,116 @@ export default function Checkout() {
         // Element might not be available, use localStorage value
       }
 
+      // Set redirecting flag to prevent unwanted redirects
+      setIsRedirecting(true);
+
+      // Store cart products before clearing (needed for confirmation)
+      const cartProductsForConfirmation = [...cartProducts];
+
+      // Prepare order items for API
+      const orderItems = cartProductsForConfirmation.map((product) => {
+        // Get the correct color-specific image
+        let productImage = null;
+        if (
+          product.selectedColor &&
+          product.images &&
+          product.images.length > 0
+        ) {
+          let imageIndex = 0;
+          if (product.selectedColor.ColorID === 1) {
+            imageIndex = Math.min(1, product.images.length - 1);
+          } else if (product.selectedColor.ColorID === 2) {
+            imageIndex = 0;
+          }
+          const colorImageSrc =
+            product.images[imageIndex]?.imgSrc || product.images[0]?.imgSrc;
+          if (colorImageSrc && colorImageSrc.trim() !== "") {
+            productImage = colorImageSrc;
+          }
+        }
+        if (
+          !productImage &&
+          product.images?.[0]?.imgSrc &&
+          product.images[0].imgSrc.trim() !== ""
+        ) {
+          productImage = product.images[0].imgSrc;
+        }
+        if (
+          !productImage &&
+          product.ImageLarge &&
+          product.ImageLarge.trim() !== ""
+        ) {
+          productImage = product.ImageLarge;
+        }
+
+        return {
+          productId: product.ProductID,
+          name: product.ProductName,
+          partNumber: product.PartNumber,
+          quantity: product.quantity,
+          price: product.Price,
+          color: product.selectedColor
+            ? product.selectedColor.ColorName
+            : "Default",
+          platform: product.PlatformName,
+          yearRange: product.YearRange,
+          image: productImage,
+        };
+      });
+
+      // Create order in database first
+      let orderId = `BMR-660000`; // Fallback
+      try {
+        const orderResponse = await fetch("/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            billing: billingData,
+            shipping: sameAsBilling ? billingData : shippingData,
+            items: orderItems,
+            shippingMethod: selectedOption?.name || "Standard Shipping",
+            shippingCost: selectedOption?.cost || 0,
+            tax: 0,
+            discount: couponDiscount || 0,
+            couponCode: appliedCoupon?.code || "",
+            notes: orderNotes,
+          }),
+        });
+
+        if (orderResponse.ok) {
+          const orderResult = await orderResponse.json();
+          orderId = orderResult.orderNumber || orderId;
+        } else {
+          console.error("Failed to create order:", await orderResponse.json());
+          // Continue with fallback order ID
+        }
+      } catch (orderError) {
+        console.error("Failed to create order:", orderError);
+        // Continue with fallback order ID
+      }
+
       // Clear cart (but keep notes until after order is confirmed)
       setCartProducts([]);
       removeCoupon();
 
-      // Redirect to confirmation page with order details
+      // Prepare confirmation data with order items for display
       const confirmationData = {
         orderId: orderId,
         cardLastFour: lastFourDigits,
         total: calculateGrandTotal(),
         notes: orderNotes,
-        items: cartProducts.map((product) => {
-          // Get the correct color-specific image
-          let productImage = null;
-          if (
-            product.selectedColor &&
-            product.images &&
-            product.images.length > 0
-          ) {
-            let imageIndex = 0;
-            if (product.selectedColor.ColorID === 1) {
-              imageIndex = Math.min(1, product.images.length - 1);
-            } else if (product.selectedColor.ColorID === 2) {
-              imageIndex = 0;
-            }
-            const colorImageSrc =
-              product.images[imageIndex]?.imgSrc || product.images[0]?.imgSrc;
-            if (colorImageSrc && colorImageSrc.trim() !== "") {
-              productImage = colorImageSrc;
-            }
-          }
-          if (
-            !productImage &&
-            product.images?.[0]?.imgSrc &&
-            product.images[0].imgSrc.trim() !== ""
-          ) {
-            productImage = product.images[0].imgSrc;
-          }
-          if (
-            !productImage &&
-            product.ImageLarge &&
-            product.ImageLarge.trim() !== ""
-          ) {
-            productImage = product.ImageLarge;
-          }
-
-          return {
-            name: product.ProductName,
-            partNumber: product.PartNumber,
-            quantity: product.quantity,
-            price: product.Price,
-            color: product.selectedColor
-              ? product.selectedColor.ColorName
-              : "Default",
-            platform: product.PlatformName,
-            yearRange: product.YearRange,
-            image: productImage,
-          };
-        }),
+        items: orderItems.map((item) => ({
+          name: item.name,
+          partNumber: item.partNumber,
+          quantity: item.quantity,
+          price: item.price,
+          color: item.color,
+          platform: item.platform,
+          yearRange: item.yearRange,
+          image: item.image,
+        })),
         billing: billingData,
         shipping: sameAsBilling ? billingData : shippingData,
         shippingMethod: selectedOption?.name || "Standard Shipping",
@@ -414,6 +452,7 @@ export default function Checkout() {
     } catch (error) {
       console.error("Error submitting order:", error);
       setSubmitError("Failed to process order. Please try again.");
+      setIsRedirecting(false);
     } finally {
       setIsSubmitting(false);
     }
