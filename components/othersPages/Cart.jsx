@@ -3,7 +3,7 @@ import { useContextElement } from "@/context/Context";
 import CartSkeleton from "@/components/common/CartSkeleton";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 export default function Cart() {
   const {
@@ -23,6 +23,15 @@ export default function Cart() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
   const [showCouponModal, setShowCouponModal] = useState(false);
+  const [orderNotes, setOrderNotes] = useState("");
+
+  // Load order notes from localStorage only on client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedNotes = localStorage.getItem("orderNotes") || "";
+      setOrderNotes(savedNotes);
+    }
+  }, []);
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
       const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
@@ -450,9 +459,13 @@ export default function Cart() {
                   name="note"
                   id="cart-note"
                   placeholder="Order notes (optional)"
-                  defaultValue={localStorage.getItem("orderNotes") || ""}
+                  value={orderNotes}
                   onChange={(e) => {
-                    localStorage.setItem("orderNotes", e.target.value);
+                    const value = e.target.value;
+                    setOrderNotes(value);
+                    if (typeof window !== "undefined") {
+                      localStorage.setItem("orderNotes", value);
+                    }
                   }}
                 />
               </div>

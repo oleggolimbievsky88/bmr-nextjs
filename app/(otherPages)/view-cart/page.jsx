@@ -6,6 +6,8 @@ import RecentProducts from "@/components/shopDetails/RecentProducts";
 import CartCount from "@/components/common/CartCount";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title:
     "View Cart | BMR Suspension - Performance Racing Suspension & Chassis Parts",
