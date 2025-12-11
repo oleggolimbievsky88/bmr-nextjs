@@ -29,7 +29,7 @@ export default async function ProductPage({ params }) {
     return <p>Product not found.</p>;
   }
 
-  const product = await res.json();
+  const { product } = await res.json();
 
   return (
     <>
