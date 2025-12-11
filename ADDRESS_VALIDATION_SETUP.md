@@ -51,16 +51,13 @@ Once approved, you'll receive:
 ### Step 4: Configure Environment Variables
 Add to your `.env.local` file:
 ```
-UPS_USERNAME=bmrfab
+UPS_USERNAME=your_ups_username
 UPS_PASSWORD=your_ups_password
-UPS_ACCESS_KEY=pTNCPZLlxUGSW5NmgO1Y1CAWYjDZzYZgKPg6d6KOjnrBrB9Z
+UPS_ACCESS_KEY=your_ups_access_key
 UPS_ACCOUNT_NUMBER=your_ups_account_number
-
-UPS_USERNAME=bmrfab
-UPS_PASSWORD=jiUvaB0CJvbptGSADk9bgcXZwA27tTTMqRnlls5tkbmbWHeAAzpNJztTodqg9VZd
-UPS_ACCESS_KEY=pTNCPZLIXUGSW5NmgO1Y1CAWYjDZzYZgKPg6d6KOjnrBrB9Z
-UPS_ACCOUNT_NUMBER=3A54E9
 ```
+
+**⚠️ SECURITY WARNING**: Never commit actual UPS credentials to version control. If credentials were previously exposed, immediately rotate them in your UPS Developer Portal account.
 
 ## 3. Features Implemented
 

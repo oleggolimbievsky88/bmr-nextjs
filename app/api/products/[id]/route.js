@@ -45,6 +45,11 @@ export async function GET(_, context) {
 
       // Helper function to parse the Images field and create small/large image pairs
       const parseImages = (imagesString) => {
+        // Guard against null/undefined input
+        if (!imagesString || typeof imagesString !== "string") {
+          return [];
+        }
+
         return imagesString
           .split(/[,;]/) // Split on both commas and semicolons
           .map((imgSrc) => imgSrc.trim()) // Trim whitespace
