@@ -91,6 +91,7 @@ export async function POST(request) {
       orderData,
       subtotal,
       total,
+      notes: orderData.notes || "",
     });
 
     return NextResponse.json({
@@ -108,7 +109,6 @@ export async function POST(request) {
   }
 }
 
-
 async function createOrder(orderData) {
   const sql = `
     INSERT INTO new_orders (
@@ -119,8 +119,8 @@ async function createOrder(orderData) {
       shipping_address2, shipping_city, shipping_state, shipping_zip,
       shipping_country, shipping_method, subtotal, shipping_cost,
       tax, discount, total, coupon_code, payment_method, order_date,
-      status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      status, notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -154,6 +154,7 @@ async function createOrder(orderData) {
     orderData.paymentMethod || "Credit Card",
     orderData.orderDate,
     "pending",
+    orderData.notes || "",
   ];
 
   const result = await query(sql, values);
@@ -272,6 +273,14 @@ async function sendConfirmationEmail(emailData) {
                 }
                 <p><strong>Total:</strong> $${emailData.total.toFixed(2)}</p>
               </div>
+              ${
+                emailData.notes && emailData.notes.trim()
+                  ? `<div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #dc3545; border-radius: 4px;">
+                    <h4 style="margin-top: 0; color: #000;">Order Notes:</h4>
+                    <p style="margin-bottom: 0; white-space: pre-wrap;">${emailData.notes}</p>
+                  </div>`
+                  : ""
+              }
             </div>
 
             <p>If you have any questions or would like to change any part of your order, simply send us an email at <a href="mailto:WebSales@bmrsuspension.com">WebSales@bmrsuspension.com</a> or call us at <a href="tel:+18139869302">(813) 986-9302</a> between 8:30 - 5:00 pm Eastern time, Monday through Friday.</p>

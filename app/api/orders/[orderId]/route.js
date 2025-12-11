@@ -68,6 +68,8 @@ export async function GET(request, { params }) {
       discount: order.discount,
       couponCode: order.coupon_code,
       paymentMethod: order.payment_method,
+      notes: order.notes || "",
+      total: order.total,
       items: itemsResult.map((item) => ({
         productId: item.product_id,
         name: item.product_name,

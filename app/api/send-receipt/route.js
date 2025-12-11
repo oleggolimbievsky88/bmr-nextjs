@@ -492,6 +492,19 @@ function generateReceiptHTML(orderData) {
           </div>
         </div>
 
+        ${
+          orderData.notes && orderData.notes.trim()
+            ? `
+        <div class="section">
+          <div class="section-title">Order Notes</div>
+          <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #dc3545;">
+            <p style="margin: 0; white-space: pre-wrap; color: #333;">${orderData.notes}</p>
+          </div>
+        </div>
+        `
+            : ""
+        }
+
         <div class="footer">
           <p>© ${new Date().getFullYear()} BMR Suspension. All Rights Reserved.</p>
           <p>1033 Pine Chase Ave, Lakeland, FL 33815</p>

@@ -298,7 +298,20 @@ export default function Checkout() {
         .replace(/\s/g, "")
         .slice(-4);
 
-      // Clear cart
+      // Get order notes from localStorage (stored from cart page)
+      // Also try to get from cart page textarea if available
+      let orderNotes = localStorage.getItem("orderNotes") || "";
+      try {
+        const cartNoteElement = document.getElementById("cart-note");
+        if (cartNoteElement && cartNoteElement.value) {
+          orderNotes = cartNoteElement.value;
+          localStorage.setItem("orderNotes", orderNotes);
+        }
+      } catch (e) {
+        // Element might not be available, use localStorage value
+      }
+
+      // Clear cart (but keep notes until after order is confirmed)
       setCartProducts([]);
       removeCoupon();
 
@@ -307,6 +320,7 @@ export default function Checkout() {
         orderId: orderId,
         cardLastFour: lastFourDigits,
         total: calculateGrandTotal(),
+        notes: orderNotes,
         items: cartProducts.map((product) => {
           // Get the correct color-specific image
           let productImage = null;

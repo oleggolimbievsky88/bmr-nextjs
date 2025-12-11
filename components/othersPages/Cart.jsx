@@ -450,7 +450,10 @@ export default function Cart() {
                   name="note"
                   id="cart-note"
                   placeholder="Order notes (optional)"
-                  defaultValue={""}
+                  defaultValue={localStorage.getItem("orderNotes") || ""}
+                  onChange={(e) => {
+                    localStorage.setItem("orderNotes", e.target.value);
+                  }}
                 />
               </div>
             </form>

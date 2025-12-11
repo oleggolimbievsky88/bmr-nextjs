@@ -115,6 +115,11 @@ export default function OrderConfirmation({ orderData }) {
   useEffect(() => {
     // If orderData is passed as prop, use it directly
     if (orderData) {
+      // Ensure notes are included if missing
+      if (!orderData.notes) {
+        const notesFromStorage = localStorage.getItem("orderNotes") || "";
+        orderData.notes = notesFromStorage;
+      }
       setOrder(orderData);
       setLoading(false);
     } else {
@@ -123,10 +128,19 @@ export default function OrderConfirmation({ orderData }) {
       if (storedOrder) {
         try {
           const parsedOrder = JSON.parse(storedOrder);
+          // Ensure notes are included if missing
+          if (!parsedOrder.notes) {
+            const notesFromStorage = localStorage.getItem("orderNotes") || "";
+            parsedOrder.notes = notesFromStorage;
+          }
           setOrder(parsedOrder);
           setLoading(false);
-          // Clear the stored order data
+          // Clear the stored order data and notes after displaying
           sessionStorage.removeItem("orderConfirmation");
+          // Clear notes from localStorage after order is displayed
+          setTimeout(() => {
+            localStorage.removeItem("orderNotes");
+          }, 1000);
           return;
         } catch (error) {
           console.error("Error parsing stored order:", error);
@@ -150,8 +164,23 @@ export default function OrderConfirmation({ orderData }) {
     try {
       const response = await fetch(`/api/orders/${orderId}`);
       if (response.ok) {
-        const orderData = await response.json();
-        setOrder(orderData);
+        const result = await response.json();
+        // API returns { success: true, order: orderData }
+        let orderToSet = null;
+        if (result.success && result.order) {
+          orderToSet = result.order;
+        } else {
+          // Fallback for direct order data
+          orderToSet = result;
+        }
+        // Ensure notes are included if missing (fallback to localStorage)
+        if (!orderToSet.notes || !orderToSet.notes.trim()) {
+          const notesFromStorage = localStorage.getItem("orderNotes") || "";
+          if (notesFromStorage) {
+            orderToSet.notes = notesFromStorage;
+          }
+        }
+        setOrder(orderToSet);
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
@@ -443,6 +472,32 @@ export default function OrderConfirmation({ orderData }) {
               </div>
             </div>
           </div>
+
+          {/* Order Notes */}
+          {order.notes && order.notes.trim() && (
+            <div className="card shadow-sm mb-4">
+              <div className="card-header bg-light">
+                <h4 className="mb-0">
+                  <i className="fas fa-sticky-note me-2 text-primary"></i>
+                  Order Notes
+                </h4>
+              </div>
+              <div className="card-body">
+                <div
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    marginBottom: 0,
+                    padding: "15px",
+                    backgroundColor: "#f8f9fa",
+                    borderRadius: "4px",
+                    borderLeft: "4px solid #dc3545",
+                  }}
+                >
+                  {order.notes}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Email Receipt Section */}
           <div className="card shadow-sm mb-4">
