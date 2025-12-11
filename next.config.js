@@ -39,6 +39,9 @@ const nextConfig = {
     return config;
   },
 
+  // Turbopack configuration (empty to silence error - webpack is still used)
+  turbopack: {},
+
   // Disable static generation for specific pages that use database
   async headers() {
     return [
