@@ -11,6 +11,7 @@ import { useAddressValidation } from "@/hooks/useAddressValidation";
 import { useShippingRates } from "@/hooks/useShippingRates";
 import { useCreditCard } from "@/hooks/useCreditCard";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
+import ShippingEstimate from "@/components/common/ShippingEstimate";
 
 export default function Checkout() {
   const router = useRouter();
@@ -1376,6 +1377,10 @@ export default function Checkout() {
                   <p className="mt-2">Loading your cart...</p>
                 </div>
               )}
+
+              <div className="shipping-estimate-section mb-4">
+                <ShippingEstimate inline={true} />
+              </div>
 
               <div className="coupon-section">
                 <p>Have a coupon code? Enter it here!</p>

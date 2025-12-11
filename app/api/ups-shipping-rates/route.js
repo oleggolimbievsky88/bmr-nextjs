@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCountryCode } from "@/lib/countryCodes";
 
 export async function POST(request) {
   try {
@@ -40,6 +41,50 @@ export async function POST(request) {
       0
     );
 
+    // Get country codes - ensure we have valid codes
+    const toCountryCode = toAddress.country || "US";
+    const fromCountryCode = fromAddress.country || "US";
+
+    // Build ShipTo address - handle international addresses
+    const shipToAddress = {
+      AddressLine: [toAddress.address1],
+      City: toAddress.city,
+      PostalCode: toAddress.zip,
+      CountryCode: toCountryCode,
+    };
+
+    // State/Province is required for US/CA, optional for others
+    if (toAddress.state && (toCountryCode === "US" || toCountryCode === "CA")) {
+      shipToAddress.StateProvinceCode = toAddress.state;
+    } else if (toAddress.state) {
+      // For international, include as part of address if provided
+      shipToAddress.StateProvinceCode = toAddress.state;
+    }
+
+    // Build ShipFrom address
+    const shipFromAddress = {
+      AddressLine: [fromAddress.address1],
+      City: fromAddress.city,
+      StateProvinceCode: fromAddress.state,
+      PostalCode: fromAddress.zip,
+      CountryCode: fromCountryCode,
+    };
+
+    // Determine service code based on destination
+    // For international, use Worldwide Expedited or Standard
+    let serviceCode = "03"; // Ground (domestic US)
+    let serviceDescription = "UPS Ground";
+
+    if (toCountryCode !== "US") {
+      // International shipping - use Worldwide Expedited
+      serviceCode = "08"; // Worldwide Expedited
+      serviceDescription = "UPS Worldwide Expedited";
+    } else if (toCountryCode === "US" && fromCountryCode === "US") {
+      // Domestic US
+      serviceCode = "03"; // Ground
+      serviceDescription = "UPS Ground";
+    }
+
     // UPS Rate API request
     const rateRequest = {
       RateRequest: {
@@ -58,32 +103,23 @@ export async function POST(request) {
               City: fromAddress.city,
               StateProvinceCode: fromAddress.state,
               PostalCode: fromAddress.zip,
-              CountryCode: "US",
+              CountryCode: fromCountryCode,
             },
           },
           ShipTo: {
-            Name: `${toAddress.firstName} ${toAddress.lastName}`,
-            Address: {
-              AddressLine: [toAddress.address1],
-              City: toAddress.city,
-              StateProvinceCode: toAddress.state,
-              PostalCode: toAddress.zip,
-              CountryCode: "US",
-            },
+            Name:
+              `${toAddress.firstName || ""} ${
+                toAddress.lastName || ""
+              }`.trim() || "Customer",
+            Address: shipToAddress,
           },
           ShipFrom: {
             Name: "BMR Suspension",
-            Address: {
-              AddressLine: [fromAddress.address1],
-              City: fromAddress.city,
-              StateProvinceCode: fromAddress.state,
-              PostalCode: fromAddress.zip,
-              CountryCode: "US",
-            },
+            Address: shipFromAddress,
           },
           Service: {
-            Code: "03", // Ground service
-            Description: "UPS Ground",
+            Code: serviceCode,
+            Description: serviceDescription,
           },
           Package: {
             PackagingType: {
@@ -181,25 +217,40 @@ export async function POST(request) {
 
     if (rateData.RateResponse?.RatedShipment) {
       const shipment = rateData.RateResponse.RatedShipment;
+      const serviceName =
+        shipment.Service?.Code === "08"
+          ? "UPS Worldwide Expedited"
+          : shipment.Service?.Code === "03"
+          ? "UPS Ground"
+          : shipment.Service?.Description || "UPS Shipping";
+
       shippingOptions.push({
-        service: "UPS Ground",
-        code: "03",
+        service: serviceName,
+        code: shipment.Service?.Code || serviceCode,
         cost: parseFloat(shipment.TotalCharges?.MonetaryValue || "0"),
         currency: shipment.TotalCharges?.CurrencyCode || "USD",
-        deliveryDays: shipment.GuaranteedDeliveryTime || "1-5 business days",
-        description: "Standard ground shipping",
+        deliveryDays:
+          shipment.GuaranteedDeliveryTime ||
+          shipment.ScheduledDeliveryTime ||
+          "5-10 business days",
+        description:
+          toCountryCode !== "US"
+            ? "International shipping"
+            : "Standard ground shipping",
       });
     }
 
-    // Add free shipping option for BMR products
-    shippingOptions.unshift({
-      service: "FREE SHIPPING",
-      code: "FREE",
-      cost: 0,
-      currency: "USD",
-      deliveryDays: "1-5 business days",
-      description: "Free shipping on all BMR products",
-    });
+    // Add free shipping option for BMR products (only for domestic US)
+    if (toCountryCode === "US") {
+      shippingOptions.unshift({
+        service: "FREE SHIPPING",
+        code: "FREE",
+        cost: 0,
+        currency: "USD",
+        deliveryDays: "1-5 business days",
+        description: "Free shipping on all BMR products",
+      });
+    }
 
     return NextResponse.json({
       success: true,

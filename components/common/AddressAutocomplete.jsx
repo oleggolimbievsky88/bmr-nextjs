@@ -26,12 +26,24 @@ export default function AddressAutocomplete({
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (address.address1 && address.city && address.state && address.zip) {
-        setIsValidating(true);
-        const result = await validateAddress(address);
-        setIsValidating(false);
+        try {
+          setIsValidating(true);
+          const result = await validateAddress(address);
+          setIsValidating(false);
 
-        if (onValidationComplete) {
-          onValidationComplete(result);
+          if (onValidationComplete) {
+            onValidationComplete(result);
+          }
+        } catch (error) {
+          // Silently handle validation errors - don't block user input
+          setIsValidating(false);
+          if (onValidationComplete) {
+            onValidationComplete({
+              isValid: false,
+              error: error.message,
+              correctedAddress: null,
+            });
+          }
         }
       }
     }, 1000); // 1 second delay
@@ -82,10 +94,16 @@ export default function AddressAutocomplete({
       if (data.predictions) {
         setSuggestions(data.predictions);
         setShowSuggestions(true);
+      } else {
+        // API unavailable or no results - silently continue
+        setSuggestions([]);
+        setShowSuggestions(false);
       }
     } catch (error) {
-      console.error("Error fetching suggestions:", error);
+      // Silently handle autocomplete errors - API may not be configured
+      // User can still type address manually
       setSuggestions([]);
+      setShowSuggestions(false);
     } finally {
       setIsLoadingSuggestions(false);
     }
@@ -133,7 +151,8 @@ export default function AddressAutocomplete({
         setShowSuggestions(false);
       }
     } catch (error) {
-      console.error("Error fetching place details:", error);
+      // Silently handle place details errors - user can still enter address manually
+      setShowSuggestions(false);
     } finally {
       setIsLoadingSuggestions(false);
     }

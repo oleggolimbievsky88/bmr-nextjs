@@ -25,14 +25,29 @@ export async function GET(request) {
       `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}&sessiontoken=${sessionToken}&fields=address_components,formatted_address`
     );
 
-    if (!response.ok) {
-      throw new Error(`Google Places API error: ${response.status}`);
-    }
-
     const data = await response.json();
 
+    if (!response.ok) {
+      console.error("Google Place Details API error:", {
+        status: response.status,
+        statusText: response.statusText,
+        apiStatus: data.status,
+        errorMessage: data.error_message,
+      });
+      throw new Error(
+        data.error_message ||
+          `Google Places API error: ${response.status} - ${data.status}`
+      );
+    }
+
     if (data.status !== "OK") {
-      throw new Error(`Google Places API error: ${data.status}`);
+      console.error("Google Place Details API status error:", {
+        status: data.status,
+        errorMessage: data.error_message,
+      });
+      throw new Error(
+        data.error_message || `Google Places API error: ${data.status}`
+      );
     }
 
     // Parse address components

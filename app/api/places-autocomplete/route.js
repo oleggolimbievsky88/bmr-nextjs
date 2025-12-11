@@ -24,14 +24,29 @@ export async function GET(request) {
       )}&key=${apiKey}&sessiontoken=${sessionToken}&types=address&components=country:us`
     );
 
-    if (!response.ok) {
-      throw new Error(`Google Places API error: ${response.status}`);
-    }
-
     const data = await response.json();
 
+    if (!response.ok) {
+      console.error("Google Places API error:", {
+        status: response.status,
+        statusText: response.statusText,
+        apiStatus: data.status,
+        errorMessage: data.error_message,
+      });
+      throw new Error(
+        data.error_message ||
+          `Google Places API error: ${response.status} - ${data.status}`
+      );
+    }
+
     if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
-      throw new Error(`Google Places API error: ${data.status}`);
+      console.error("Google Places API status error:", {
+        status: data.status,
+        errorMessage: data.error_message,
+      });
+      throw new Error(
+        data.error_message || `Google Places API error: ${data.status}`
+      );
     }
 
     return NextResponse.json({

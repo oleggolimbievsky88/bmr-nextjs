@@ -26,7 +26,8 @@ export const useAddressValidation = () => {
       setValidationResult(result);
       return result;
     } catch (error) {
-      console.error("Address validation error:", error);
+      // Silently handle validation errors - API may not be configured
+      // Validation is optional, so we don't log errors to avoid console noise
       setValidationResult({
         isValid: false,
         error: error.message,

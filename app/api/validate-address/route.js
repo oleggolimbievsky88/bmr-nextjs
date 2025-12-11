@@ -41,7 +41,15 @@ export async function POST(request) {
     );
 
     if (!response.ok) {
-      throw new Error(`Google API error: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.error?.message || `Google API error: ${response.status}`;
+      console.error("Google Address Validation API error:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData.error,
+      });
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
