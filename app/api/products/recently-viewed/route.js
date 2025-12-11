@@ -27,7 +27,7 @@ export async function POST(request) {
 
     const cookies = parseCookie(request.headers.get("cookie"));
     const current = cookies[COOKIE_NAME]
-      ? JSON.parse(currentSafe(cookies[COOKIE_NAME]))
+      ? currentSafe(cookies[COOKIE_NAME])
       : [];
 
     // Put new id at front, de-dupe, clamp length
@@ -51,16 +51,14 @@ export async function POST(request) {
 
 function currentSafe(val) {
   try {
-    return val;
+    return JSON.parse(val);
   } catch (e) {
-    return "[]";
+    return [];
   }
 }
 
 export async function GET(request) {
   const cookies = parseCookie(request.headers.get("cookie"));
-  const items = cookies[COOKIE_NAME]
-    ? JSON.parse(currentSafe(cookies[COOKIE_NAME]))
-    : [];
+  const items = cookies[COOKIE_NAME] ? currentSafe(cookies[COOKIE_NAME]) : [];
   return NextResponse.json({ items });
 }

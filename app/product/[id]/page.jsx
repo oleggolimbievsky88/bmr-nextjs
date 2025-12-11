@@ -86,12 +86,11 @@ export default async function ProductDetails({ params, searchParams }) {
   // Extract platform slug and category names for breadcrumbs
   const platform = platformInfo?.name || "Platform";
   const platformSlug = platformInfo?.slug || "Platform";
-  const platformNameFormatted =
-    platformInfo?.startYear +
-    "-" +
-    platformInfo?.endYear +
-    " " +
-    platformInfo?.name;
+  const platformNameFormatted = platformInfo
+    ? `${platformInfo.startYear || ""}-${platformInfo.endYear || ""} ${
+        platformInfo.name || ""
+      }`.trim() || "Platform"
+    : "Platform";
   const category = currentCategory?.CatName || "Category";
 
   return (
