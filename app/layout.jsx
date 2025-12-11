@@ -64,6 +64,8 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     setScrollDirection("up");
+    const lastScrollY = { current: window.scrollY };
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
@@ -82,8 +84,6 @@ export default function RootLayout({ children }) {
 
       lastScrollY.current = currentScrollY;
     };
-
-    const lastScrollY = { current: window.scrollY };
 
     // Add scroll event listener
     window.addEventListener("scroll", handleScroll);
@@ -118,10 +118,12 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     const header = document.querySelector("header");
-    if (scrollDirection == "up") {
-      header.style.top = "0px";
-    } else {
-      header.style.top = "-185px";
+    if (header) {
+      if (scrollDirection == "up") {
+        header.style.top = "0px";
+      } else {
+        header.style.top = "-185px";
+      }
     }
   }, [scrollDirection]);
 
