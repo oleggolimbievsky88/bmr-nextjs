@@ -1,23 +1,15 @@
--- Improved Migration Script: Move data from coupons to coupons_new
--- This script safely migrates all data from the old coupons table to the new coupons_new table
--- Run this AFTER creating the coupons_new table structure
+-- Step-by-Step Migration Script for MySQL Workbench
+-- Run each step separately and check for errors before proceeding
+-- Make sure you're connected to the correct database (bmrsuspension)
 
 -- Set the correct database
 USE bmrsuspension;
 
--- DISCOUNT VALUE EXTRACTION STRATEGY:
--- The script extracts discount values using the following priority:
--- 1. First, tries to get the value from coupons.Value field (removes %, $, and commas)
--- 2. If Value is empty or '0', checks couponrules.value for the same couponId
--- 3. If still empty, extracts percentage from coupon name (e.g., "25% Off" -> 25)
--- 4. For percentage coupons without %, extracts first number from name (e.g., "15 Off" -> 15)
--- 5. Defaults to 0.00 if no value can be found
+-- ============================================================================
+-- STEP 1: Migrate coupons from old table to new table
+-- ============================================================================
+-- This step migrates all coupons and extracts discount values from multiple sources
 
--- Step 1: Check if coupons_new table exists and has data
--- If it does, we'll use INSERT IGNORE or ON DUPLICATE KEY UPDATE to avoid duplicates
-
--- Step 2: Migrate existing data from old coupons table to new structure
--- Only migrate coupons that don't already exist in coupons_new (based on code)
 INSERT INTO coupons_new (
     code,
     name,
@@ -53,51 +45,7 @@ SELECT DISTINCT
         -- First, try to get value from coupons.Value field
         WHEN c.Value != '0' AND c.Value IS NOT NULL AND c.Value != '' AND TRIM(c.Value) != '' THEN
             CAST(TRIM(REPLACE(REPLACE(REPLACE(c.Value, '%', ''), '$', ''), ',', '')) AS DECIMAL(10,2))
-        -- Second, try to get value from couponrules table
-        WHEN EXISTS (
-            SELECT 1 FROM couponrules cr
-            WHERE cr.couponId = c.CouponID
-            AND cr.value != '0'
-            AND cr.value IS NOT NULL
-            AND cr.value != ''
-        ) THEN (
-            SELECT CAST(TRIM(REPLACE(REPLACE(REPLACE(cr.value, '%', ''), '$', ''), ',', '')) AS DECIMAL(10,2))
-            FROM couponrules cr
-            WHERE cr.couponId = c.CouponID
-            AND cr.value != '0'
-            AND cr.value IS NOT NULL
-            AND cr.value != ''
-            LIMIT 1
-        )
-        -- Third, try to extract percentage from coupon name (e.g., "25% Off" or "15% Off")
-        WHEN c.CouponName REGEXP '[0-9]+%' THEN
-            CAST(
-                TRIM(
-                    SUBSTRING_INDEX(
-                        SUBSTRING_INDEX(c.CouponName, '%', 1),
-                        ' ',
-                        -1
-                    )
-                ) AS DECIMAL(10,2)
-            )
-        -- Fourth, try to extract number from coupon name when ValueType indicates percentage
-        -- Look for patterns like "25 Off", "15 Off", "7 OFF", etc.
-        WHEN (c.ValueType = '%' OR c.ValueType = 'percentage' OR c.ValueType = '0')
-             AND c.CouponName REGEXP '[0-9]+' THEN
-            CAST(
-                TRIM(
-                    SUBSTRING_INDEX(
-                        SUBSTRING_INDEX(
-                            CONCAT(c.CouponName, ' '),
-                            ' ',
-                            1
-                        ),
-                        '%',
-                        1
-                    )
-                ) AS DECIMAL(10,2)
-            )
-        -- Default to 0.00 if nothing found
+        -- Default to 0.00 if empty (we'll fix this in Step 2)
         ELSE 0.00
     END as discount_value,
     0.00 as min_cart_amount,
@@ -189,9 +137,95 @@ ON DUPLICATE KEY UPDATE
     shipping_discount = VALUES(shipping_discount),
     updated_at = NOW();
 
--- Step 3: Migrate coupon usage history from couponhistory to coupon_usage
--- Map old coupon IDs to new coupon IDs based on coupon code
--- Note: couponhistory doesn't have CustomerID, so we get it from invoice table
+
+-- ============================================================================
+-- STEP 2: Update discount values from couponrules table
+-- ============================================================================
+-- This fixes coupons that have their discount value in the couponrules table
+
+UPDATE coupons_new cn
+INNER JOIN coupons c ON cn.code = TRIM(c.CouponCode)
+INNER JOIN couponrules cr ON cr.couponId = c.CouponID
+SET cn.discount_value = CAST(TRIM(REPLACE(REPLACE(REPLACE(cr.value, '%', ''), '$', ''), ',', '')) AS DECIMAL(10,2)),
+    cn.updated_at = NOW()
+WHERE cn.discount_value = 0.00
+  AND cr.value != '0'
+  AND cr.value IS NOT NULL
+  AND cr.value != '';
+
+
+-- ============================================================================
+-- STEP 3: Update discount values from coupons.Value field (if it was empty before)
+-- ============================================================================
+-- This fixes coupons where the Value field has data but wasn't captured in Step 1
+
+UPDATE coupons_new cn
+INNER JOIN coupons c ON cn.code = TRIM(c.CouponCode)
+SET cn.discount_value = CAST(TRIM(REPLACE(REPLACE(REPLACE(c.Value, '%', ''), '$', ''), ',', '')) AS DECIMAL(10,2)),
+    cn.updated_at = NOW()
+WHERE cn.discount_value = 0.00
+  AND c.Value != '0'
+  AND c.Value IS NOT NULL
+  AND c.Value != ''
+  AND TRIM(c.Value) != '';
+
+
+-- ============================================================================
+-- STEP 4: Extract percentage from coupon name (for names like "25% Off")
+-- ============================================================================
+-- This extracts percentages from coupon names when they contain patterns like "25%"
+
+UPDATE coupons_new cn
+INNER JOIN coupons c ON cn.code = TRIM(c.CouponCode)
+SET cn.discount_value = CAST(
+        TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX(c.CouponName, '%', 1),
+                ' ',
+                -1
+            )
+        ) AS DECIMAL(10,2)
+    ),
+    cn.updated_at = NOW()
+WHERE cn.discount_value = 0.00
+  AND cn.discount_type = 'percentage'
+  AND c.CouponName LIKE '%[0-9]%'
+  AND c.CouponName LIKE '%\%%'
+  AND SUBSTRING_INDEX(SUBSTRING_INDEX(c.CouponName, '%', 1), ' ', -1) REGEXP '^[0-9]+\.?[0-9]*$';
+
+
+-- ============================================================================
+-- STEP 5: Extract number from coupon name (for names like "25 Off" or "15 OFF")
+-- ============================================================================
+-- This extracts the first number from coupon names for percentage coupons
+
+UPDATE coupons_new cn
+INNER JOIN coupons c ON cn.code = TRIM(c.CouponCode)
+SET cn.discount_value = CAST(
+        TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX(
+                    CONCAT(c.CouponName, ' '),
+                    ' ',
+                    1
+                ),
+                '%',
+                1
+            )
+        ) AS DECIMAL(10,2)
+    ),
+    cn.updated_at = NOW()
+WHERE cn.discount_value = 0.00
+  AND cn.discount_type = 'percentage'
+  AND (c.ValueType = '%' OR c.ValueType = 'percentage' OR c.ValueType = '0')
+  AND c.CouponName REGEXP '^[0-9]+'
+  AND SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(c.CouponName, ' '), ' ', 1), '%', 1) REGEXP '^[0-9]+\.?[0-9]*$';
+
+
+-- ============================================================================
+-- STEP 6: Migrate coupon usage history
+-- ============================================================================
+
 INSERT INTO coupon_usage (
     coupon_id,
     customer_id,
@@ -211,7 +245,7 @@ SELECT DISTINCT
         THEN CAST(ch.Value AS DECIMAL(10,2))
         ELSE 0.00
     END as discount_amount,
-    0.00 as cart_total, -- We don't have this data in old table
+    0.00 as cart_total,
     CASE
         WHEN ch.StartDate = '0' OR ch.StartDate IS NULL OR ch.StartDate = '' THEN NOW()
         WHEN STR_TO_DATE(LEFT(TRIM(ch.StartDate), 10), '%Y-%m-%d') IS NOT NULL
@@ -226,8 +260,8 @@ SELECT DISTINCT
         ELSE NOW()
     END as used_at
 FROM couponhistory ch
-JOIN coupons c ON ch.CouponID = c.CouponID
-JOIN coupons_new cn ON TRIM(c.CouponCode) = cn.code
+INNER JOIN coupons c ON ch.CouponID = c.CouponID
+INNER JOIN coupons_new cn ON TRIM(c.CouponCode) = cn.code
 LEFT JOIN invoice i ON ch.InvoiceID = i.InvoiceID
 WHERE ch.InvoiceID IS NOT NULL
   AND ch.InvoiceID != '0'
@@ -240,73 +274,11 @@ WHERE ch.InvoiceID IS NOT NULL
       AND (cu.customer_id = COALESCE(i.CustomerID, 0) OR (cu.customer_id IS NULL AND i.CustomerID IS NULL))
   );
 
--- Step 4: Update discount_value for coupons that were migrated with 0.00 but should have a value
--- This fixes coupons that were already migrated but missing their discount values
-UPDATE coupons_new cn
-JOIN coupons c ON cn.code = TRIM(c.CouponCode)
-SET cn.discount_value = CASE
-    -- First, try to get value from coupons.Value field
-    WHEN c.Value != '0' AND c.Value IS NOT NULL AND c.Value != '' AND TRIM(c.Value) != '' THEN
-        CAST(TRIM(REPLACE(REPLACE(REPLACE(c.Value, '%', ''), '$', ''), ',', '')) AS DECIMAL(10,2))
-    -- Second, try to get value from couponrules table
-    WHEN EXISTS (
-        SELECT 1 FROM couponrules cr
-        WHERE cr.couponId = c.CouponID
-        AND cr.value != '0'
-        AND cr.value IS NOT NULL
-        AND cr.value != ''
-    ) THEN (
-        SELECT CAST(TRIM(REPLACE(REPLACE(REPLACE(cr.value, '%', ''), '$', ''), ',', '')) AS DECIMAL(10,2))
-        FROM couponrules cr
-        WHERE cr.couponId = c.CouponID
-        AND cr.value != '0'
-        AND cr.value IS NOT NULL
-        AND cr.value != ''
-        LIMIT 1
-    )
-    -- Third, try to extract percentage from coupon name (e.g., "25% Off" or "15% Off")
-    WHEN c.CouponName REGEXP '[0-9]+%' THEN
-        CAST(
-            TRIM(
-                SUBSTRING_INDEX(
-                    SUBSTRING_INDEX(c.CouponName, '%', 1),
-                    ' ',
-                    -1
-                )
-            ) AS DECIMAL(10,2)
-        )
-    -- Fourth, try to extract number from coupon name when ValueType indicates percentage
-    -- Look for patterns like "25 Off", "15 Off", "7 OFF", etc.
-    WHEN (c.ValueType = '%' OR c.ValueType = 'percentage' OR c.ValueType = '0')
-         AND c.CouponName REGEXP '[0-9]+' THEN
-        CAST(
-            TRIM(
-                SUBSTRING_INDEX(
-                    SUBSTRING_INDEX(
-                        CONCAT(c.CouponName, ' '),
-                        ' ',
-                        1
-                    ),
-                    '%',
-                    1
-                )
-            ) AS DECIMAL(10,2)
-        )
-    -- Keep existing value if nothing found
-    ELSE cn.discount_value
-END,
-cn.updated_at = NOW()
-WHERE cn.discount_value = 0.00
-  AND cn.discount_type = 'percentage'
-  AND (c.Value != '0' OR EXISTS (
-      SELECT 1 FROM couponrules cr
-      WHERE cr.couponId = c.CouponID
-      AND cr.value != '0'
-      AND cr.value IS NOT NULL
-      AND cr.value != ''
-  ) OR c.CouponName REGEXP '[0-9]+');
 
--- Step 5: Update the times_used count based on actual usage from coupon_usage table
+-- ============================================================================
+-- STEP 7: Update times_used count
+-- ============================================================================
+
 UPDATE coupons_new cn
 SET times_used = (
     SELECT COUNT(*)
@@ -320,7 +292,12 @@ WHERE EXISTS (
     WHERE cu.coupon_id = cn.id
 );
 
--- Step 6: Verify the migration
+
+-- ============================================================================
+-- STEP 8: Verification queries (run these to check the migration)
+-- ============================================================================
+
+-- Check counts
 SELECT
     'Old Table Count' as source,
     COUNT(*) as count,
@@ -334,58 +311,31 @@ SELECT
     'New Table Count' as source,
     COUNT(*) as count,
     COUNT(DISTINCT code) as unique_codes
-FROM coupons_new
-UNION ALL
-SELECT
-    'Old Usage History Count' as source,
-    COUNT(*) as count,
-    COUNT(DISTINCT CONCAT(CouponID, '-', InvoiceID)) as unique_usage
-FROM couponhistory
-WHERE InvoiceID IS NOT NULL
-  AND InvoiceID != '0'
-  AND InvoiceID != ''
-UNION ALL
-SELECT
-    'New Usage History Count' as source,
-    COUNT(*) as count,
-    COUNT(DISTINCT CONCAT(coupon_id, '-', customer_id, '-', order_id)) as unique_usage
-FROM coupon_usage;
+FROM coupons_new;
 
--- Step 7: Show sample migrated data
+-- Check coupons with 0.00 discount values (these might need manual review)
+SELECT
+    code,
+    name,
+    discount_type,
+    discount_value
+FROM coupons_new
+WHERE discount_value = 0.00
+  AND discount_type = 'percentage'
+ORDER BY name;
+
+-- Show sample migrated data
 SELECT
     code,
     name,
     discount_type,
     discount_value,
-    min_cart_amount,
     start_date,
     end_date,
     times_used,
-    usage_limit,
     free_shipping,
-    is_active,
-    created_at
+    is_active
 FROM coupons_new
 ORDER BY created_at DESC
 LIMIT 20;
-
--- Step 8: Show any coupons that might have failed to migrate
-SELECT
-    c.CouponID,
-    c.CouponCode,
-    c.CouponName,
-    c.StartDate,
-    c.EndDate,
-    CASE
-        WHEN c.CouponCode IS NULL OR c.CouponCode = '' OR c.CouponCode = '0' THEN 'Empty code'
-        WHEN TRIM(c.CouponCode) IN (SELECT code FROM coupons_new) THEN 'Already migrated'
-        ELSE 'Failed to migrate - check dates'
-    END as status
-FROM coupons c
-WHERE (c.CouponCode IS NULL OR c.CouponCode = '' OR c.CouponCode = '0')
-   OR NOT EXISTS (
-       SELECT 1
-       FROM coupons_new cn
-       WHERE cn.code = TRIM(c.CouponCode)
-   );
 

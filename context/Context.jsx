@@ -139,6 +139,9 @@ export default function Context({ children }) {
     setCouponDiscount(0);
     setFreeShipping(false);
     localStorage.removeItem("cartList");
+    localStorage.removeItem("appliedCoupon");
+    localStorage.removeItem("couponDiscount");
+    localStorage.removeItem("freeShipping");
   };
 
   const applyCoupon = async (couponCode) => {
@@ -156,10 +159,30 @@ export default function Context({ children }) {
 
       const result = await response.json();
 
+      console.log("Coupon validation result:", result);
+      console.log("Discount amount:", result.coupon?.discountAmount);
+      console.log("Discount value:", result.coupon?.discountValue);
+      console.log("Discount type:", result.coupon?.discountType);
+
       if (result.valid) {
+        const discountAmount = result.coupon.discountAmount || 0;
+        console.log("Setting coupon discount to:", discountAmount);
+        console.log("Full coupon result:", result.coupon);
+
         setAppliedCoupon(result.coupon);
-        setCouponDiscount(result.coupon.discountAmount);
+        setCouponDiscount(discountAmount);
         setFreeShipping(result.coupon.freeShipping);
+
+        // Persist coupon to localStorage
+        try {
+          localStorage.setItem("appliedCoupon", JSON.stringify(result.coupon));
+          localStorage.setItem("couponDiscount", discountAmount.toString());
+          localStorage.setItem("freeShipping", result.coupon.freeShipping.toString());
+          console.log("Coupon saved to localStorage");
+        } catch (error) {
+          console.error("Error saving coupon to localStorage:", error);
+        }
+
         return { success: true, coupon: result.coupon };
       } else {
         return { success: false, message: result.message };
@@ -174,6 +197,11 @@ export default function Context({ children }) {
     setAppliedCoupon(null);
     setCouponDiscount(0);
     setFreeShipping(false);
+
+    // Remove coupon from localStorage
+    localStorage.removeItem("appliedCoupon");
+    localStorage.removeItem("couponDiscount");
+    localStorage.removeItem("freeShipping");
   };
 
   const addToWishlist = (id) => {
@@ -221,6 +249,33 @@ export default function Context({ children }) {
       console.log("Valid items from localStorage:", validItems);
       setCartProducts(validItems);
     }
+
+    // Restore coupon from localStorage
+    const savedCoupon = localStorage.getItem("appliedCoupon");
+    const savedDiscount = localStorage.getItem("couponDiscount");
+    const savedFreeShipping = localStorage.getItem("freeShipping");
+
+    if (savedCoupon) {
+      try {
+        const coupon = JSON.parse(savedCoupon);
+        const discount = parseFloat(savedDiscount || 0);
+        const freeShip = savedFreeShipping === "true";
+
+        console.log("Restoring coupon from localStorage:", coupon);
+        console.log("Restored discount amount:", discount);
+
+        // Set the coupon - it will be re-validated when cartProducts loads
+        setAppliedCoupon(coupon);
+        setCouponDiscount(discount);
+        setFreeShipping(freeShip);
+      } catch (error) {
+        console.error("Error restoring coupon from localStorage:", error);
+        localStorage.removeItem("appliedCoupon");
+        localStorage.removeItem("couponDiscount");
+        localStorage.removeItem("freeShipping");
+      }
+    }
+
     setCartLoading(false);
   }, []);
 
@@ -248,6 +303,37 @@ export default function Context({ children }) {
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishList));
   }, [wishList]);
+
+  // Re-validate coupon when cart products change (but not on initial load)
+  useEffect(() => {
+    if (cartLoading || !appliedCoupon?.code || cartProducts.length === 0) {
+      return;
+    }
+
+    const revalidateCoupon = async () => {
+      console.log("Re-validating coupon after cart change:", appliedCoupon.code);
+      console.log("Current cart products:", cartProducts);
+      try {
+        const result = await applyCoupon(appliedCoupon.code);
+        console.log("Re-validation result:", result);
+        if (!result.success) {
+          console.log("Coupon no longer valid, removing:", result.message);
+          removeCoupon();
+        } else {
+          console.log("Coupon re-validated, new discount amount:", result.coupon.discountAmount);
+        }
+      } catch (error) {
+        console.error("Error re-validating coupon:", error);
+      }
+    };
+
+    // Small delay to avoid re-validation on initial load and ensure cart is ready
+    const timer = setTimeout(() => {
+      revalidateCoupon();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [cartProducts, cartLoading]);
 
   const contextElement = {
     cartProducts,

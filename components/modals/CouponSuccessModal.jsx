@@ -34,21 +34,24 @@ export default function CouponSuccessModal({ coupon, show, onClose }) {
   if (!shouldRender || !coupon) return null;
 
   // Handle both old and new coupon field names
-  const discountType = coupon.discountType || coupon.valueType;
-  const discountValue = coupon.discountValue || coupon.value;
+  const discountType = coupon.discountType || coupon.valueType || coupon.discount_type;
+  const discountValue = coupon.discountValue !== undefined
+    ? coupon.discountValue
+    : (coupon.value !== undefined ? coupon.value : coupon.discount_value || 0);
 
+  // Only show discount badge if there's an actual discount value
   const discountText =
-    discountType === "percentage" ||
-    discountType === "%" ||
-    discountType === "0"
-      ? `${discountValue}% OFF`
-      : discountType === "fixed_amount" ||
-        discountType === "fixed" ||
-        discountType === "$"
-      ? `$${discountValue} OFF`
-      : discountValue > 0
-      ? `$${discountValue} OFF`
-      : "Discount Applied";
+    discountValue > 0 && discountType
+      ? discountType === "percentage" ||
+        discountType === "%" ||
+        discountType === "0"
+        ? `${discountValue}% OFF`
+        : discountType === "fixed_amount" ||
+          discountType === "fixed" ||
+          discountType === "$"
+        ? `$${discountValue} OFF`
+        : `$${discountValue} OFF`
+      : null;
 
   return (
     <div
@@ -122,8 +125,10 @@ export default function CouponSuccessModal({ coupon, show, onClose }) {
           )}
 
           <div className="coupon-modal-discount">
-            <span className="discount-badge">{discountText}</span>
-            {coupon.freeShipping && (
+            {discountText && (
+              <span className="discount-badge">{discountText}</span>
+            )}
+            {(coupon.freeShipping || coupon.free_shipping) && (
               <span className="shipping-badge">FREE SHIPPING</span>
             )}
           </div>
