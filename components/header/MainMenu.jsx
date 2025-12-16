@@ -226,8 +226,7 @@ export default function MainMenu({ initialMenuData }) {
           top: "100%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "100vw",
-          maxWidth: "1400px",
+          maxWidth: "calc(100vw - 30px)",
           zIndex: 9999,
           opacity: 1,
           visibility: "visible",
@@ -434,7 +433,7 @@ export default function MainMenu({ initialMenuData }) {
             </li>
 
             {/* Static Links */}
-            <li className="nav-item">
+            <li className="nav-item nav-item-installation">
               <Link href="/installation" className="nav-link">
                 Installation
               </Link>

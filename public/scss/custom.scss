@@ -121,12 +121,89 @@
   position: static;
 }
 
+/* Prevent horizontal scrollbar globally */
+html {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100%;
+  position: relative;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure containers don't exceed viewport */
+.container,
+.container-fluid {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Prevent any element from causing horizontal scroll */
+#wrapper {
+  max-width: 100vw;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+#header,
+.main-header,
+.header-bottom {
+  max-width: 100vw;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.header-bottom .container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix navbar to prevent overflow */
+.navbar,
+.navbar-nav,
+.navbar-collapse {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Hide Installation tab at medium breakpoint (before mobile menu) */
+@media (max-width: 1300px) {
+  .nav-item-installation {
+    display: none !important;
+  }
+}
+
+/* Show mobile menu before stacking occurs */
+@media (max-width: 1149px) {
+  .header-bottom .box-navigation {
+    display: none !important;
+  }
+
+  .header-bottom {
+    .tf-md-hidden {
+      display: block !important;
+    }
+  }
+}
+
 .dropdown-menu.mega-menu {
   width: 100%;
-  max-width: 1400px;
+  max-width: calc(100vw - 30px);
   margin: 0 auto;
-  left: 0;
-  right: 0;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%);
   padding: 0;
   margin-top: 0;
   border: 1px solid #000;
@@ -134,6 +211,15 @@
   background-color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   z-index: 9999 !important;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @media (max-width: 991px) {
+    max-width: 100vw;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none;
+  }
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
@@ -147,9 +233,10 @@
   display: flex;
   flex-direction: column;
   max-height: 700px;  /* Reduced from 800px for more compact layout */
-  min-width: 1000px;
   width: 100%;
+  max-width: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 
   /* Responsive height adjustments */
   @media (max-height: 900px) {
@@ -772,6 +859,9 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  flex-wrap: wrap;
 }
 
 .dropdown-menu {
@@ -1030,6 +1120,8 @@
 .navbar {
   background-color: #000;
   padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .navbar-nav {
@@ -1037,12 +1129,22 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  overflow-y: visible !important;
+  height: auto !important;
+}
+
+.navbar-collapse,
+#navbarNavDropdown {
+  overflow-y: visible !important;
+  height: auto !important;
 }
 
 .nav-item {
   position: static;
   padding-right: 15px;  /* Reduced from 20px */
-  height: 40px;
+  height: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-link {
@@ -1054,6 +1156,7 @@
   transition: all .3s ease;
   font-family: Arial, sans-serif;
   letter-spacing: 0.8px;  /* Reduced from 1px */
+  white-space: nowrap;
 }
 
 .nav-link:hover,
