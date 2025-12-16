@@ -12,7 +12,8 @@ import {
 	ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
 import pool from './lib/db.js'
-import * as queries from './lib/queries.js'
+// Note: queries.js imports db without .js extension, so we'll implement needed functions directly
+// import * as queries from './lib/queries.js'
 
 const server = new Server(
 	{
@@ -228,14 +229,44 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 			}
 
 			case 'get_menu_data': {
-				const menuData = await queries.getMenuData()
-				return {
-					content: [
-						{
-							type: 'text',
-							text: JSON.stringify(menuData, null, 2),
-						},
-					],
+				// Implement menu data query directly since queries.js has import issues
+				try {
+					const query = `
+						SELECT b.BodyID, b.Name, b.StartYear, b.EndYear, b.BodyOrder, b.slug,
+						       bc.BodyCatID, bc.BodyCatName, bc.Position
+						FROM bodies b
+						JOIN bodycats bc ON b.BodyCatID = bc.BodyCatID
+						ORDER BY bc.Position, b.BodyOrder
+					`
+					const [bodies] = await pool.query(query)
+
+					// Group by categories
+					const menuData = {
+						fordLinks: bodies.filter(b => b.BodyCatName.includes('Ford')),
+						gmLateModelLinks: bodies.filter(b => b.BodyCatName.includes('GM Late Model')),
+						gmMidMuscleLinks: bodies.filter(b => b.BodyCatName.includes('GM Mid Muscle')),
+						gmClassicMuscleLinks: bodies.filter(b => b.BodyCatName.includes('GM Classic Muscle')),
+						moparLinks: bodies.filter(b => b.BodyCatName.includes('Mopar')),
+					}
+
+					return {
+						content: [
+							{
+								type: 'text',
+								text: JSON.stringify(menuData, null, 2),
+							},
+						],
+					}
+				} catch (error) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Error fetching menu data: ${error.message}`,
+							},
+						],
+						isError: true,
+					}
 				}
 			}
 

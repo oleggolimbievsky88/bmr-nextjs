@@ -4,5 +4,24 @@
         "**/node_modules/**": true
     },
     "liveServer.settings.multiRootWorkspaceName": "ecomus-nextjs",
-    "gitlens.outputLevel": "warn"
+    "gitlens.outputLevel": "warn",
+    "json.schemas": [
+
+    ],
+
+        "mcpServers": {
+          "ecomus-nextjs": {
+            "command": "node",
+            "args": ["/home/oleg/projects/ecomus-package/ecomus-nextjs/mcp-server.mjs"],
+            "cwd": "/home/oleg/projects/ecomus-package/ecomus-nextjs",
+            "env": {
+              "MYSQL_HOST": "localhost",
+              "MYSQL_PORT": "3306",
+              "MYSQL_USER": "root",
+              "MYSQL_PASSWORD": "Amelia1",
+              "MYSQL_DATABASE": "bmrsuspension"
+            }
+          }
+        }
+
 }

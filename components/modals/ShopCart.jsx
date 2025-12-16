@@ -44,6 +44,21 @@ export default function ShopCart() {
     router.push("/checkout");
   };
 
+  const handleViewCartClick = () => {
+    // Close the shopping cart modal
+    const bootstrap = require("bootstrap");
+    const modalElement = document.getElementById("shoppingCart");
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+
+    // Navigate to view cart page
+    router.push("/view-cart");
+  };
+
   const addNoteRef = useRef();
   const addGiftRef = useRef();
   const addShipingRef = useRef();
@@ -520,12 +535,12 @@ export default function ShopCart() {
                     </label>
                   </div> */}
                   <div className="tf-mini-cart-view-checkout">
-                    <Link
-                      href={`/view-cart`}
+                    <button
+                      onClick={handleViewCartClick}
                       className="tf-btn btn-outline radius-3 link w-100 justify-content-center"
                     >
                       View cart
-                    </Link>
+                    </button>
                     <button
                       onClick={handleCheckoutClick}
                       className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"

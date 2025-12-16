@@ -1,55 +1,30 @@
 # MCP Server Quick Start
 
-## Quick Setup for Chrome DevTools
+## Important Note
 
-### 1. Start the MCP Server
+**MCP (Model Context Protocol) servers are designed for AI coding assistants, NOT Chrome DevTools.**
 
-```bash
-pnpm run mcp:server
-```
+Chrome DevTools does **not** have native MCP server support. MCP servers work with:
+- **Cursor IDE** (which you're already using!) ✅
+- Claude Desktop
+- Other MCP-compatible AI assistants
 
-The server will run on stdio and wait for connections from Chrome DevTools.
+## Use with Cursor IDE (Recommended & Only Supported Method)
 
-### 2. Configure Chrome DevTools
+Since you're already using Cursor IDE, **this is the way** to use your MCP server:
 
-Chrome DevTools (version 143+) supports MCP servers. To connect:
+1. **Start the MCP Server:**
+   ```bash
+   pnpm run mcp:server
+   ```
+   Keep this running in a terminal.
 
-1. **Open Chrome DevTools** (F12)
-2. **Go to Settings** → **Experiments** → Enable "MCP server"
-3. **Configure the MCP server** in Chrome's settings:
+2. **Configure in Cursor Settings** (see `CURSOR_MCP_SETUP.md` for detailed instructions)
+3. **Restart Cursor**
+4. **Use the AI assistant** - it will have access to all your database and application tools!
 
-   On Linux, create/edit: `~/.config/google-chrome/MCP.json` (or `~/.config/chromium/MCP.json`)
-
-   On macOS: `~/Library/Application Support/Google/Chrome/MCP.json`
-
-   On Windows: `%LOCALAPPDATA%\Google\Chrome\User Data\MCP.json`
-
-   Add this configuration (update the paths):
-
-```json
-{
-  "mcpServers": {
-    "ecomus-nextjs": {
-      "command": "node",
-      "args": ["/home/oleg/projects/ecomus-package/ecomus-nextjs/mcp-server.mjs"],
-      "cwd": "/home/oleg/projects/ecomus-package/ecomus-nextjs",
-      "env": {
-        "MYSQL_HOST": "localhost",
-        "MYSQL_PORT": "3306",
-        "MYSQL_USER": "root",
-        "MYSQL_PASSWORD": "Amelia1",
-        "MYSQL_DATABASE": "bmrsuspension"
-      }
-    }
-  }
-}
-```
-
-### 3. Use in Chrome DevTools
-
-Once configured, Chrome DevTools will automatically connect to your MCP server. You can:
-
-- Query your database directly from DevTools
+The MCP server will allow Cursor's AI to:
+- Query your database directly
 - Access product information
 - Search products
 - Get application statistics
@@ -73,10 +48,12 @@ Once configured, Chrome DevTools will automatically connect to your MCP server. 
 - Make sure MySQL is running
 - Check database credentials in `.mcp.json` or environment variables
 
-**Chrome can't connect:**
-- Verify the absolute path to `mcp-server.mjs` is correct
-- Make sure the server is running
-- Check Chrome DevTools console for errors
+**Cursor can't connect:**
+- Verify the absolute path to `mcp-server.mjs` is correct in Cursor settings
+- Make sure the server is running (`pnpm run mcp:server`)
+- Check Cursor's developer console for errors (Help → Toggle Developer Tools)
 
-For more details, see `MCP_SERVER_SETUP.md`.
+**Note:** Chrome DevTools does not support MCP servers. Use Cursor IDE instead.
+
+For detailed setup instructions, see `CURSOR_MCP_SETUP.md`.
 
