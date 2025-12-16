@@ -121,61 +121,6 @@
   position: static;
 }
 
-/* Prevent horizontal scrollbar globally */
-html {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  width: 100%;
-}
-
-body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  width: 100%;
-  position: relative;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Ensure containers don't exceed viewport */
-.container,
-.container-fluid {
-  max-width: 100%;
-  overflow-x: hidden;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/* Prevent any element from causing horizontal scroll */
-#wrapper {
-  max-width: 100vw;
-  overflow-x: hidden;
-  width: 100%;
-  position: relative;
-}
-
-#header,
-.main-header,
-.header-bottom {
-  max-width: 100vw;
-  overflow-x: hidden;
-  width: 100%;
-}
-
-.header-bottom .container {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Fix navbar to prevent overflow */
-.navbar,
-.navbar-nav,
-.navbar-collapse {
-  max-width: 100%;
-  overflow-x: hidden;
-}
 
 /* Hide Installation tab at medium breakpoint (before mobile menu) */
 @media (max-width: 1300px) {
