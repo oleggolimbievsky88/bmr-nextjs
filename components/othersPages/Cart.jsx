@@ -32,6 +32,13 @@ export default function Cart() {
       setOrderNotes(savedNotes);
     }
   }, []);
+
+  // Remove coupon when cart becomes empty
+  useEffect(() => {
+    if (cartProducts.length === 0 && appliedCoupon) {
+      removeCoupon();
+    }
+  }, [cartProducts, appliedCoupon, removeCoupon]);
   const setQuantity = (id, quantity) => {
     if (quantity >= 1) {
       const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
@@ -341,9 +348,16 @@ export default function Cart() {
                             <div className="wg-quantity">
                               <span
                                 className="btn-quantity minus-btn"
-                                onClick={() =>
-                                  setQuantity(elm.ProductID, elm.quantity - 1)
-                                }
+                                onClick={() => {
+                                  if (elm.quantity === 1) {
+                                    removeItem(elm.ProductID);
+                                  } else {
+                                    setQuantity(
+                                      elm.ProductID,
+                                      elm.quantity - 1
+                                    );
+                                  }
+                                }}
                               >
                                 <svg
                                   className="d-inline-block"

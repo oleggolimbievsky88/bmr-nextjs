@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import pool from "@/lib/db";
+import nodemailer from "nodemailer";
 
 async function getNextOrderNumber() {
   try {
@@ -52,6 +54,9 @@ export async function POST(request) {
       );
     }
 
+    // Ensure tables exist
+    await ensureOrderTablesExist();
+
     const orderData = await request.json();
 
     // Generate order number (sequential starting from 660000)
@@ -101,9 +106,20 @@ export async function POST(request) {
       message: "Order processed successfully",
     });
   } catch (error) {
-    console.error("Error processing order:", error);
+    console.error("Error processing order:", {
+      error: error.message,
+      stack: error.stack,
+      orderData: orderData ? {
+        itemsCount: orderData.items?.length,
+        billingEmail: orderData.billing?.email,
+      } : null,
+    });
     return NextResponse.json(
-      { success: false, message: "Failed to process order" },
+      {
+        success: false,
+        message: "Failed to process order",
+        error: process.env.NODE_ENV === "development" ? error.message : undefined,
+      },
       { status: 500 }
     );
   }
@@ -157,8 +173,21 @@ async function createOrder(orderData) {
     orderData.notes || "",
   ];
 
-  const result = await query(sql, values);
-  return result.insertId;
+  try {
+    // Use pool.execute directly to get insertId for INSERT statements
+    const [result] = await pool.execute(sql, values);
+    if (!result || !result.insertId) {
+      throw new Error("Failed to insert order - no insertId returned");
+    }
+    return result.insertId;
+  } catch (error) {
+    console.error("Error creating order:", {
+      error: error.message,
+      sql: sql.substring(0, 100),
+      valuesCount: values.length,
+    });
+    throw error;
+  }
 }
 
 async function createOrderItems(orderId, items) {
@@ -172,23 +201,134 @@ async function createOrderItems(orderId, items) {
 
     const values = [
       orderId,
-      item.productId,
+      item.productId || null,
       item.name,
       item.partNumber,
       item.quantity,
       item.price,
-      item.color,
-      item.platform,
-      item.yearRange,
+      item.color || "",
+      item.platform || "",
+      item.yearRange || "",
       item.image || "",
     ];
 
-    await query(sql, values);
+    try {
+      await pool.execute(sql, values);
+    } catch (error) {
+      console.error("Error creating order item:", {
+        error: error.message,
+        orderId,
+        item: item.name,
+      });
+      throw error;
+    }
+  }
+}
+
+async function ensureOrderTablesExist() {
+  try {
+    // Check if new_orders table exists by trying to query it
+    try {
+      await query("SELECT 1 FROM new_orders LIMIT 1");
+      // Table exists, return early
+      return;
+    } catch (error) {
+      // Table doesn't exist, create it
+      if (error.code === "ER_NO_SUCH_TABLE" || error.code === 1146) {
+        console.log("Creating new_orders and new_order_items tables...");
+
+        // Create new_orders table
+        const createOrdersTable = `
+          CREATE TABLE IF NOT EXISTS \`new_orders\` (
+            \`new_order_id\` int unsigned NOT NULL AUTO_INCREMENT,
+            \`order_number\` varchar(50) NOT NULL,
+            \`customer_id\` int unsigned DEFAULT NULL,
+            \`billing_first_name\` varchar(100) NOT NULL,
+            \`billing_last_name\` varchar(100) NOT NULL,
+            \`billing_address1\` varchar(255) NOT NULL,
+            \`billing_address2\` varchar(255) DEFAULT '',
+            \`billing_city\` varchar(100) NOT NULL,
+            \`billing_state\` varchar(50) NOT NULL,
+            \`billing_zip\` varchar(20) NOT NULL,
+            \`billing_country\` varchar(100) NOT NULL DEFAULT 'United States',
+            \`billing_phone\` varchar(20) DEFAULT '',
+            \`billing_email\` varchar(100) NOT NULL,
+            \`shipping_first_name\` varchar(100) NOT NULL,
+            \`shipping_last_name\` varchar(100) NOT NULL,
+            \`shipping_address1\` varchar(255) NOT NULL,
+            \`shipping_address2\` varchar(255) DEFAULT '',
+            \`shipping_city\` varchar(100) NOT NULL,
+            \`shipping_state\` varchar(50) NOT NULL,
+            \`shipping_zip\` varchar(20) NOT NULL,
+            \`shipping_country\` varchar(100) NOT NULL DEFAULT 'United States',
+            \`shipping_method\` varchar(100) DEFAULT 'Standard Shipping',
+            \`shipping_cost\` decimal(10,2) DEFAULT 0.00,
+            \`tax\` decimal(10,2) DEFAULT 0.00,
+            \`discount\` decimal(10,2) DEFAULT 0.00,
+            \`subtotal\` decimal(10,2) DEFAULT 0.00,
+            \`total\` decimal(10,2) NOT NULL,
+            \`coupon_code\` varchar(50) DEFAULT '',
+            \`payment_method\` varchar(50) DEFAULT 'Credit Card',
+            \`payment_status\` varchar(50) DEFAULT 'pending',
+            \`order_date\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            \`status\` varchar(50) DEFAULT 'pending',
+            \`notes\` text DEFAULT NULL,
+            PRIMARY KEY (\`new_order_id\`),
+            UNIQUE KEY \`order_number\` (\`order_number\`),
+            KEY \`customer_id\` (\`customer_id\`),
+            KEY \`order_date\` (\`order_date\`),
+            KEY \`status\` (\`status\`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `;
+        await query(createOrdersTable);
+
+        // Create new_order_items table
+        const createOrderItemsTable = `
+          CREATE TABLE IF NOT EXISTS \`new_order_items\` (
+            \`new_order_item_id\` int unsigned NOT NULL AUTO_INCREMENT,
+            \`new_order_id\` int unsigned NOT NULL,
+            \`product_id\` int unsigned DEFAULT NULL,
+            \`product_name\` varchar(255) NOT NULL,
+            \`part_number\` varchar(100) NOT NULL,
+            \`quantity\` int unsigned NOT NULL DEFAULT 1,
+            \`price\` decimal(10,2) NOT NULL,
+            \`color\` varchar(50) DEFAULT '',
+            \`platform\` varchar(100) DEFAULT '',
+            \`year_range\` varchar(50) DEFAULT '',
+            \`image\` varchar(255) DEFAULT '',
+            PRIMARY KEY (\`new_order_item_id\`),
+            KEY \`new_order_id\` (\`new_order_id\`),
+            KEY \`product_id\` (\`product_id\`),
+            CONSTRAINT \`new_order_items_ibfk_1\` FOREIGN KEY (\`new_order_id\`) REFERENCES \`new_orders\` (\`new_order_id\`) ON DELETE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `;
+        await query(createOrderItemsTable);
+
+        console.log("Order tables created successfully");
+      } else {
+        // Some other error occurred, log it
+        console.error("Error checking for new_orders table:", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error ensuring order tables exist:", error);
+    // Don't throw - tables might already exist with different structure
   }
 }
 
 async function sendConfirmationEmail(emailData) {
   try {
+    // Check if SMTP is configured
+    if (
+      !process.env.SMTP_HOST ||
+      !process.env.SMTP_USER ||
+      !process.env.SMTP_PASS
+    ) {
+      console.warn("SMTP not configured - skipping email send");
+      console.log("Email would be sent to:", emailData.customerEmail);
+      return;
+    }
+
     // Email template
     const emailHtml = `
       <!DOCTYPE html>
@@ -236,7 +376,7 @@ async function sendConfirmationEmail(emailData) {
                   (item) => `
                 <div class="item-row">
                   <strong>${item.name}</strong><br>
-                  Part #: ${item.partNumber} | Color: ${item.color}<br>
+                  Part #: ${item.partNumber} | Color: ${item.color || 'N/A'}<br>
                   Quantity: ${item.quantity} | Price: $${parseFloat(
                     item.price
                   ).toFixed(2)}<br>
@@ -299,26 +439,34 @@ async function sendConfirmationEmail(emailData) {
       </html>
     `;
 
-    // Send email using your preferred email service
-    // For now, we'll use a simple console log to simulate sending
-    console.log("Email would be sent to:", emailData.customerEmail);
-    console.log("Email content:", emailHtml);
-
-    // TODO: Integrate with actual email service (SendGrid, Nodemailer, etc.)
-    // Example with Nodemailer:
-    /*
-    const nodemailer = require('nodemailer')
+    // Create transporter
     const transporter = nodemailer.createTransport({
-      // Your email configuration
-    })
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || "587"),
+      secure: process.env.SMTP_PORT === "465",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
-    await transporter.sendMail({
-      from: 'WebSales@bmrsuspension.com',
+    // Send email
+    const mailOptions = {
+      from:
+        process.env.SMTP_FROM ||
+        process.env.SMTP_USER ||
+        "noreply@bmrsuspension.com",
       to: emailData.customerEmail,
       subject: `Order Confirmation - ${emailData.orderNumber}`,
-      html: emailHtml
-    })
-    */
+      html: emailHtml,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Confirmation email sent successfully:", {
+      messageId: info.messageId,
+      to: emailData.customerEmail,
+      orderNumber: emailData.orderNumber,
+    });
   } catch (error) {
     console.error("Error sending confirmation email:", error);
     // Don't throw error here as we don't want to fail the order if email fails
