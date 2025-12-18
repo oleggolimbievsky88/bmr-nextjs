@@ -33,6 +33,7 @@ export default function ResetPass() {
                   autoComplete="abc@xyz.com"
                   required
                   name=""
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="">
                   Email *

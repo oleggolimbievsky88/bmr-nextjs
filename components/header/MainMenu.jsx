@@ -86,7 +86,7 @@ export default function MainMenu({ initialMenuData }) {
         const firstVehicle = platformLinks[0];
         handleVehicleHover(firstVehicle.slug, firstVehicle.bodyId);
       }
-    }, 500);
+    }, 0);
   };
 
   // Function to handle platform leave
@@ -95,7 +95,7 @@ export default function MainMenu({ initialMenuData }) {
     hoverTimeoutRef.current = setTimeout(() => {
       setActivePlatform(null);
       setActiveVehicle(null);
-    }, 500);
+    }, 150);
   };
 
   // Function to handle vehicle hover and fetch relevant data
@@ -207,8 +207,13 @@ export default function MainMenu({ initialMenuData }) {
 
   // Render function for the new mega menu
   const renderMegaMenu = (links, baseLink) => {
-    if (links.length === 0 && isLoading) {
-      return <div className="dropdown-menu mega-menu loading">Loading...</div>;
+    if (!links || links.length === 0) {
+      if (isLoading) {
+        return (
+          <div className="dropdown-menu mega-menu loading">Loading...</div>
+        );
+      }
+      return null;
     }
 
     // Get the currently selected vehicle details
@@ -220,13 +225,15 @@ export default function MainMenu({ initialMenuData }) {
       <div
         className="dropdown-menu mega-menu show"
         ref={megaMenuContainerRef}
+        onMouseEnter={() => clearTimeout(hoverTimeoutRef.current)}
+        onMouseLeave={handlePlatformLeave}
         style={{
           display: "block !important",
           position: "absolute",
           top: "100%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          maxWidth: "calc(100vw - 30px)",
+          left: 0,
+          right: 0,
+          width: "100%",
           zIndex: 9999,
           opacity: 1,
           visibility: "visible",
@@ -344,14 +351,28 @@ export default function MainMenu({ initialMenuData }) {
   };
 
   return (
-    <nav className="navbar navbar-expand-xxl text-center">
-      <div className="container-fluid">
+    <nav
+      className="navbar navbar-expand-xxl text-center"
+      style={{ position: "relative", overflow: "visible" }}
+    >
+      <div
+        className="container-fluid"
+        style={{ position: "relative", overflow: "visible" }}
+      >
         <div
           className="collapse navbar-collapse"
           id="navbarNavDropdown"
-          style={{ display: "flex", justifyContent: "center" }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            position: "relative",
+            overflow: "visible",
+          }}
         >
-          <ul className="navbar-nav">
+          <ul
+            className="navbar-nav"
+            style={{ position: "relative", overflow: "visible" }}
+          >
             {/* <li className="nav-item">
               <Link href="/" className="nav-link">
                 Home

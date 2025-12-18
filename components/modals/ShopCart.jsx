@@ -344,6 +344,7 @@ export default function ShopCart() {
                                 onChange={(e) =>
                                   setQuantity(elm, e.target.value / 1)
                                 }
+                                suppressHydrationWarning
                               />
                               <span
                                 className="btn-quantity plus-btn"
@@ -579,6 +580,7 @@ export default function ShopCart() {
                     id="Cart-note"
                     placeholder="Order notes (optional)"
                     defaultValue={""}
+                    suppressHydrationWarning
                   />
                   <div className="tf-cart-tool-btns justify-content-center">
                     <div
@@ -675,6 +677,7 @@ export default function ShopCart() {
                       id="ShippingCountry_CartDrawer-Form"
                       name="address[country]"
                       data-default=""
+                      suppressHydrationWarning
                     >
                       <option value="---" data-provinces="[]">
                         ---
@@ -812,7 +815,12 @@ export default function ShopCart() {
                   </div>
                   <div className="field">
                     <p>Zip code</p>
-                    <input type="text" name="text" placeholder="" />
+                    <input
+                      type="text"
+                      name="text"
+                      placeholder=""
+                      suppressHydrationWarning
+                    />
                   </div>
                   <div className="tf-cart-tool-btns">
                     <a

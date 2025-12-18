@@ -89,6 +89,7 @@ export default function FooterNewsletter() {
                 tabIndex={0}
                 aria-required="true"
                 autoComplete="abc@xyz.com"
+                suppressHydrationWarning
               />
             </fieldset>
             <div className="button-submit">

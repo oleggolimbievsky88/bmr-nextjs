@@ -168,6 +168,7 @@ export default function VehicleSearch() {
           value={year}
           onChange={handleYearChange}
           className={styles["search-input"]}
+          suppressHydrationWarning
         >
           <option value="">Year</option>
           {years.map((y) => (
@@ -182,6 +183,7 @@ export default function VehicleSearch() {
           onChange={handleMakeChange}
           className={styles["search-input"]}
           disabled={!year}
+          suppressHydrationWarning
         >
           <option value="">Make</option>
           {makes.map((m) => (
@@ -196,6 +198,7 @@ export default function VehicleSearch() {
           onChange={handleModelChange}
           className={styles["search-input"]}
           disabled={!make}
+          suppressHydrationWarning
         >
           <option value="">Model</option>
           {models.map((m) => (
@@ -210,6 +213,7 @@ export default function VehicleSearch() {
           onChange={handleSubModelChange}
           className={styles["search-input"]}
           disabled={!model || subModels.length === 0}
+          suppressHydrationWarning
         >
           <option value="">Sub Model (optional)</option>
           {subModels.map((sm) => (

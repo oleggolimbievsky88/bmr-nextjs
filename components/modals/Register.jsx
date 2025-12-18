@@ -27,6 +27,7 @@ export default function Register() {
                   name="firstName"
                   id="register-firstName"
                   autoComplete="given-name"
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="register-firstName">
                   First name
@@ -41,6 +42,7 @@ export default function Register() {
                   name="lastName"
                   id="register-lastName"
                   autoComplete="family-name"
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="register-lastName">
                   Last name
@@ -55,6 +57,7 @@ export default function Register() {
                   required
                   name="email"
                   id="register-email"
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="register-email">
                   Email *
@@ -69,6 +72,7 @@ export default function Register() {
                   name="password"
                   id="register-password"
                   autoComplete="new-password"
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="register-password">
                   Password *

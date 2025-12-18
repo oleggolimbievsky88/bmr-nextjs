@@ -56,6 +56,7 @@ export default function ShareModal() {
                   defaultValue="https://themesflat.co/html/ecomus/"
                   tabIndex={0}
                   aria-required="true"
+                  suppressHydrationWarning
                 />
               </fieldset>
               <div className="button-submit">

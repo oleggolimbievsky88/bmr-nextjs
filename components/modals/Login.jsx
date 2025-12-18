@@ -31,6 +31,7 @@ export default function Login() {
                   id="login-email"
                   required
                   autoComplete="email"
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="login-email">
                   Email *
@@ -45,6 +46,7 @@ export default function Login() {
                   id="login-password"
                   required
                   autoComplete="current-password"
+                  suppressHydrationWarning
                 />
                 <label className="tf-field-label" htmlFor="login-password">
                   Password *

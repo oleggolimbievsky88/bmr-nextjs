@@ -181,6 +181,11 @@ li {
   margin-right: unset;
   max-width: 100%;
   margin-left: auto;
+
+  @media (max-width: 1440px) {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 // form //

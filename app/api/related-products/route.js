@@ -34,6 +34,24 @@ export async function GET(request) {
       const product = productRows[0];
 
       // Query to fetch related products from the same body and category
+      // Use FIND_IN_SET to handle comma-separated category IDs in p.CatID
+      // If product.CatID contains multiple categories, we need to check if any match
+      // Split the comma-separated CatID and create a condition for each category
+      const categoryIds = product.CatID
+        ? product.CatID.split(",")
+            .map((id) => id.trim())
+            .filter(Boolean)
+        : [];
+
+      if (categoryIds.length === 0) {
+        return NextResponse.json({ products: [] });
+      }
+
+      // Build FIND_IN_SET conditions for each category ID
+      const categoryConditions = categoryIds
+        .map(() => `FIND_IN_SET(?, p.CatID)`)
+        .join(" OR ");
+
       const [rows] = await pool.query(
         `SELECT p.*,
                CONCAT(b.StartYear, '-', b.EndYear) AS YearRange,
@@ -41,13 +59,13 @@ export async function GET(request) {
                c.CatName AS CategoryName
         FROM products p
         JOIN bodies b ON p.BodyID = b.BodyID
-        LEFT JOIN categories c ON p.CatID = c.CatID
+        LEFT JOIN categories c ON FIND_IN_SET(c.CatID, p.CatID)
         WHERE p.BodyID = ?
-          AND p.CatID = ?
+          AND (${categoryConditions})
           AND p.ProductID != ?
           AND p.Display = 1
         LIMIT 4`,
-        [product.BodyID, product.CatID, productId]
+        [product.BodyID, ...categoryIds, productId]
       );
 
       return NextResponse.json({ products: rows });

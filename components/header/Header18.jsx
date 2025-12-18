@@ -541,7 +541,7 @@ export default function Header18({ initialMenuData }) {
               </div>
               <nav className="box-navigation text-center">
                 <div className="align-items-center justify-content-center ">
-                  <MainMenu />
+                  <MainMenu initialMenuData={menuData} />
                 </div>
               </nav>
             </div>

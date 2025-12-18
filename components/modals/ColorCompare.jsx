@@ -22,6 +22,7 @@ export default function ColorCompare() {
                 type="checkbox"
                 className="sr-only"
                 id="remove-compare-color-beige-1"
+                suppressHydrationWarning
               />
               <div className="tf-compare-color-item">
                 <div className="tf-compare-color-top">
@@ -46,7 +47,11 @@ export default function ColorCompare() {
                     <span>Beige</span>
                   </div>
                   <form onSubmit={(e) => e.preventDefault()} className="">
-                    <select className="tf-select" name="id">
+                    <select
+                      className="tf-select"
+                      name="id"
+                      suppressHydrationWarning
+                    >
                       <option value={46633906045232}>S - $8.00</option>
                       <option value={47256262738224}>M - $8.00</option>
                       <option value={47256262770992}>L - $8.00</option>
@@ -65,6 +70,7 @@ export default function ColorCompare() {
                 type="checkbox"
                 className="sr-only"
                 id="remove-compare-color-beige-2"
+                suppressHydrationWarning
               />
               <div className="tf-compare-color-item">
                 <div className="tf-compare-color-top">
@@ -89,7 +95,12 @@ export default function ColorCompare() {
                     <span>Blue</span>
                   </div>
                   <form onSubmit={(e) => e.preventDefault()} className="">
-                    <select className="tf-select" name="id" required>
+                    <select
+                      className="tf-select"
+                      name="id"
+                      required
+                      suppressHydrationWarning
+                    >
                       <option value={46633906045232}>S - $8.00</option>
                       <option value={47256262738224}>M - $8.00</option>
                       <option value={47256262770992}>L - $8.00</option>
@@ -109,6 +120,7 @@ export default function ColorCompare() {
                 type="checkbox"
                 className="sr-only"
                 id="remove-compare-color-beige-3"
+                suppressHydrationWarning
               />
               <div className="tf-compare-color-item">
                 <div className="tf-compare-color-top">
@@ -133,7 +145,11 @@ export default function ColorCompare() {
                     <span>Black</span>
                   </div>
                   <form onSubmit={(e) => e.preventDefault()} className="">
-                    <select className="tf-select" name="id">
+                    <select
+                      className="tf-select"
+                      name="id"
+                      suppressHydrationWarning
+                    >
                       <option value={46633906045232}>S - $8.00</option>
                       <option value={47256262738224}>M - $8.00</option>
                       <option value={47256262770992}>L - $8.00</option>
@@ -152,6 +168,7 @@ export default function ColorCompare() {
                 type="checkbox"
                 className="sr-only"
                 id="remove-compare-color-beige-4"
+                suppressHydrationWarning
               />
               <div className="tf-compare-color-item">
                 <div className="tf-compare-color-top">
@@ -176,7 +193,11 @@ export default function ColorCompare() {
                     <span>White</span>
                   </div>
                   <form onSubmit={(e) => e.preventDefault()} className="">
-                    <select className="tf-select" name="id">
+                    <select
+                      className="tf-select"
+                      name="id"
+                      suppressHydrationWarning
+                    >
                       <option value={46633906045232}>S - $8.00</option>
                       <option value={47256262738224}>M - $8.00</option>
                       <option value={47256262770992}>L - $8.00</option>

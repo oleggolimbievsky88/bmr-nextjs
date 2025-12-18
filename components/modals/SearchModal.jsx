@@ -33,6 +33,7 @@ export default function SearchModal() {
                   defaultValue=""
                   aria-required="true"
                   required
+                  suppressHydrationWarning
                 />
               </fieldset>
               <button className="" type="submit">

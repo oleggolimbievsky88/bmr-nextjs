@@ -29,6 +29,7 @@ export default function AskQuestion() {
                   defaultValue=""
                   aria-required="true"
                   required
+                  suppressHydrationWarning
                 />
               </fieldset>
               <fieldset className="">
@@ -43,6 +44,7 @@ export default function AskQuestion() {
                   aria-required="true"
                   required
                   autoComplete="abc@xyz.com"
+                  suppressHydrationWarning
                 />
               </fieldset>
               <fieldset className="">
@@ -56,6 +58,7 @@ export default function AskQuestion() {
                   defaultValue=""
                   aria-required="true"
                   required
+                  suppressHydrationWarning
                 />
               </fieldset>
               <fieldset className="">
@@ -69,6 +72,7 @@ export default function AskQuestion() {
                   aria-required="true"
                   required
                   defaultValue={""}
+                  suppressHydrationWarning
                 />
               </fieldset>
               <button

@@ -172,6 +172,7 @@ export default function SearchInput({ initialQuery = "" }) {
               }
             }}
             autoComplete="on"
+            suppressHydrationWarning
           />
           <button
             className="search-btn-inside"

@@ -42,6 +42,7 @@ export default function LanguageSelect({
         <select
           className="image-select center style-default type-languages"
           tabIndex="null"
+          suppressHydrationWarning
         >
           {languageOptions.map((option, i) => (
             <option key={i} value={option.id}>
