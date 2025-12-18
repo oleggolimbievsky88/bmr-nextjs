@@ -43,19 +43,28 @@ GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 
 ### Step 3: Get Credentials
 Once approved, you'll receive:
-- Username
-- Password
-- Access Key
-- Account Number
+- **Client ID** (OAuth 2.0)
+- **Client Secret** (OAuth 2.0)
+- **Billing Account Number**
+
+**Note**: UPS now uses OAuth 2.0 Client Credentials flow, which is more secure than the old username/password method.
 
 ### Step 4: Configure Environment Variables
 Add to your `.env.local` file:
 ```
-UPS_USERNAME=your_ups_username
-UPS_PASSWORD=your_ups_password
-UPS_ACCESS_KEY=your_ups_access_key
-UPS_ACCOUNT_NUMBER=your_ups_account_number
+UPS_CLIENT_ID=your_ups_client_id
+UPS_CLIENT_SECRET=your_ups_client_secret
+UPS_ACCOUNT_NUMBER=your_ups_billing_account_number
 ```
+
+**Example** (for reference only - use your actual credentials):
+```
+UPS_CLIENT_ID=281ZfMGZtGIIoUDcOpvLHuoYrdVhyG68PEAUpdfy8k53MemE
+UPS_CLIENT_SECRET=SrxbT15HqjMGbWMdXkr8phm6qpURdLcAG3f4AZqfzpaosxoFdrBgd3Qpaqen5hXR
+UPS_ACCOUNT_NUMBER=3A54E9
+```
+
+**Note**: The callback URL configured in UPS Developer Portal (`https://preview.bmrsuspension.com/api/ups/callback`) is registered but not actively used since we're using Client Credentials flow (not Authorization Code flow). This is normal and expected.
 
 **⚠️ SECURITY WARNING**: Never commit actual UPS credentials to version control. If credentials were previously exposed, immediately rotate them in your UPS Developer Portal account.
 

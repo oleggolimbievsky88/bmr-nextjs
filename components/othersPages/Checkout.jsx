@@ -539,6 +539,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             />
                           </div>
                         </div>
@@ -558,6 +559,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             />
                           </div>
                         </div>
@@ -587,6 +589,7 @@ export default function Checkout() {
                             })
                           }
                           required
+                          suppressHydrationWarning
                         />
                       </div>
 
@@ -602,6 +605,7 @@ export default function Checkout() {
                             })
                           }
                           required
+                          suppressHydrationWarning
                         >
                           <option value="United States">United States</option>
                           <option value="Canada">Canada</option>
@@ -623,6 +627,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             />
                           </div>
                         </div>
@@ -639,6 +644,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             >
                               <option value="">Select State</option>
                               <option value="AL">Alabama</option>
@@ -711,6 +717,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             />
                           </div>
                         </div>
@@ -730,6 +737,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             />
                           </div>
                         </div>
@@ -799,6 +807,7 @@ export default function Checkout() {
                                     })
                                   }
                                   required
+                                  suppressHydrationWarning
                                 />
                               </div>
                             </div>
@@ -818,6 +827,7 @@ export default function Checkout() {
                                     })
                                   }
                                   required
+                                  suppressHydrationWarning
                                 />
                               </div>
                             </div>
@@ -851,6 +861,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             />
                           </div>
 
@@ -866,6 +877,7 @@ export default function Checkout() {
                                 })
                               }
                               required
+                              suppressHydrationWarning
                             >
                               <option value="United States">
                                 United States
@@ -889,6 +901,7 @@ export default function Checkout() {
                                     })
                                   }
                                   required
+                                  suppressHydrationWarning
                                 />
                               </div>
                             </div>
@@ -905,6 +918,7 @@ export default function Checkout() {
                                     })
                                   }
                                   required
+                                  suppressHydrationWarning
                                 >
                                   <option value="">Select State</option>
                                   <option value="AL">Alabama</option>
@@ -979,6 +993,7 @@ export default function Checkout() {
                                     })
                                   }
                                   required
+                                  suppressHydrationWarning
                                 />
                               </div>
                             </div>
@@ -998,6 +1013,7 @@ export default function Checkout() {
                                     })
                                   }
                                   required
+                                  suppressHydrationWarning
                                 />
                               </div>
                             </div>
@@ -1443,6 +1459,7 @@ export default function Checkout() {
                     placeholder="Type here..."
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
+                    suppressHydrationWarning
                   />
                   <button
                     type="button"

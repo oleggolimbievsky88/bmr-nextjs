@@ -213,6 +213,7 @@ export default function AddressAutocomplete({
           className={`form-control ${getStatusColor()}`}
           required={required}
           autoComplete="street-address"
+          suppressHydrationWarning
         />
 
         {showSuggestions &&
@@ -314,6 +315,7 @@ export default function AddressAutocomplete({
           placeholder="Apartment, suite, unit, building, floor, etc."
           className="form-control mt-1"
           autoComplete="address-line2"
+          suppressHydrationWarning
         />
       </div>
     </div>

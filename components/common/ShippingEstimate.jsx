@@ -12,16 +12,12 @@ export default function ShippingEstimate({
   const { cartProducts = [] } = useContextElement();
   const [showForm, setShowForm] = useState(false); // Collapsed by default
   const [estimateAddress, setEstimateAddress] = useState({
-    firstName: "",
-    lastName: "",
     address1: "",
     address2: "",
     city: "",
     state: "",
     zip: "",
     country: "United States",
-    phone: "",
-    email: "",
   });
   const [addressValid, setAddressValid] = useState(false);
   const [validationError, setValidationError] = useState(null);
@@ -66,9 +62,10 @@ export default function ShippingEstimate({
     };
 
     const toAddress = {
-      firstName: estimateAddress.firstName || "Customer",
-      lastName: estimateAddress.lastName || "",
+      firstName: "Customer",
+      lastName: "",
       address1: estimateAddress.address1,
+      address2: estimateAddress.address2 || "",
       city: estimateAddress.city,
       state: estimateAddress.state || "",
       zip: estimateAddress.zip,
@@ -112,16 +109,12 @@ export default function ShippingEstimate({
 
   const handleReset = () => {
     setEstimateAddress({
-      firstName: "",
-      lastName: "",
       address1: "",
       address2: "",
       city: "",
       state: "",
       zip: "",
       country: "United States",
-      phone: "",
-      email: "",
     });
     setAddressValid(false);
     setValidationError(null);
@@ -163,45 +156,6 @@ export default function ShippingEstimate({
                 handleCalculateEstimate();
               }}
             >
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="form-group">
-                    <label htmlFor="estimate-first-name">
-                      First Name (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      id="estimate-first-name"
-                      value={estimateAddress.firstName}
-                      onChange={(e) =>
-                        setEstimateAddress({
-                          ...estimateAddress,
-                          firstName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="form-group">
-                    <label htmlFor="estimate-last-name">
-                      Last Name (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      id="estimate-last-name"
-                      value={estimateAddress.lastName}
-                      onChange={(e) =>
-                        setEstimateAddress({
-                          ...estimateAddress,
-                          lastName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
               <AddressAutocomplete
                 address={estimateAddress}
                 onAddressChange={setEstimateAddress}
@@ -222,6 +176,7 @@ export default function ShippingEstimate({
                 <input
                   type="text"
                   id="estimate-city"
+                  className="form-control"
                   value={estimateAddress.city}
                   onChange={(e) =>
                     setEstimateAddress({
@@ -230,6 +185,7 @@ export default function ShippingEstimate({
                     })
                   }
                   required
+                  suppressHydrationWarning
                 />
               </div>
 
@@ -237,6 +193,7 @@ export default function ShippingEstimate({
                 <label htmlFor="estimate-country">Country*</label>
                 <select
                   id="estimate-country"
+                  className="form-control"
                   value={estimateAddress.country}
                   onChange={(e) =>
                     setEstimateAddress({
@@ -245,6 +202,7 @@ export default function ShippingEstimate({
                     })
                   }
                   required
+                  suppressHydrationWarning
                 >
                   {countries.map((country) => (
                     <option key={country} value={country}>
@@ -257,10 +215,11 @@ export default function ShippingEstimate({
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-group">
-                    <label htmlFor="estimate-zip">Postal Code*</label>
+                    <label htmlFor="estimate-zip">Zip Code*</label>
                     <input
                       type="text"
                       id="estimate-zip"
+                      className="form-control"
                       value={estimateAddress.zip}
                       onChange={(e) =>
                         setEstimateAddress({
@@ -269,6 +228,7 @@ export default function ShippingEstimate({
                         })
                       }
                       required
+                      suppressHydrationWarning
                     />
                   </div>
                 </div>
@@ -280,21 +240,91 @@ export default function ShippingEstimate({
                         ? "State/Province*"
                         : "State/Province (Optional)"}
                     </label>
-                    <input
-                      type="text"
-                      id="estimate-state"
-                      value={estimateAddress.state}
-                      onChange={(e) =>
-                        setEstimateAddress({
-                          ...estimateAddress,
-                          state: e.target.value,
-                        })
-                      }
-                      required={
-                        estimateAddress.country === "United States" ||
-                        estimateAddress.country === "Canada"
-                      }
-                    />
+                    {estimateAddress.country === "United States" ? (
+                      <select
+                        id="estimate-state"
+                        className="form-control"
+                        value={estimateAddress.state}
+                        onChange={(e) =>
+                          setEstimateAddress({
+                            ...estimateAddress,
+                            state: e.target.value,
+                          })
+                        }
+                        required
+                        suppressHydrationWarning
+                      >
+                        <option value="">Select State</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        id="estimate-state"
+                        className="form-control"
+                        value={estimateAddress.state}
+                        onChange={(e) =>
+                          setEstimateAddress({
+                            ...estimateAddress,
+                            state: e.target.value,
+                          })
+                        }
+                        required={
+                          estimateAddress.country === "United States" ||
+                          estimateAddress.country === "Canada"
+                        }
+                        suppressHydrationWarning
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -315,7 +345,7 @@ export default function ShippingEstimate({
                       Calculating...
                     </>
                   ) : (
-                    "Get Estimate"
+                    "Estimate"
                   )}
                 </button>
                 <button
@@ -394,47 +424,6 @@ export default function ShippingEstimate({
               handleCalculateEstimate();
             }}
           >
-            <div className="row">
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label htmlFor="estimate-first-name-inline">
-                    First Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="estimate-first-name-inline"
-                    className="form-control"
-                    value={estimateAddress.firstName}
-                    onChange={(e) =>
-                      setEstimateAddress({
-                        ...estimateAddress,
-                        firstName: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label htmlFor="estimate-last-name-inline">
-                    Last Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="estimate-last-name-inline"
-                    className="form-control"
-                    value={estimateAddress.lastName}
-                    onChange={(e) =>
-                      setEstimateAddress({
-                        ...estimateAddress,
-                        lastName: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-
             <AddressAutocomplete
               address={estimateAddress}
               onAddressChange={setEstimateAddress}
@@ -464,6 +453,7 @@ export default function ShippingEstimate({
                   })
                 }
                 required
+                suppressHydrationWarning
               />
             </div>
 
@@ -480,6 +470,7 @@ export default function ShippingEstimate({
                   })
                 }
                 required
+                suppressHydrationWarning
               >
                 {countries.map((country) => (
                   <option key={country} value={country}>
@@ -492,7 +483,7 @@ export default function ShippingEstimate({
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <label htmlFor="estimate-zip-inline">Postal Code*</label>
+                  <label htmlFor="estimate-zip-inline">Zip Code*</label>
                   <input
                     type="text"
                     id="estimate-zip-inline"
@@ -505,6 +496,7 @@ export default function ShippingEstimate({
                       })
                     }
                     required
+                    suppressHydrationWarning
                   />
                 </div>
               </div>
@@ -516,22 +508,91 @@ export default function ShippingEstimate({
                       ? "State/Province*"
                       : "State/Province (Optional)"}
                   </label>
-                  <input
-                    type="text"
-                    id="estimate-state-inline"
-                    className="form-control"
-                    value={estimateAddress.state}
-                    onChange={(e) =>
-                      setEstimateAddress({
-                        ...estimateAddress,
-                        state: e.target.value,
-                      })
-                    }
-                    required={
-                      estimateAddress.country === "United States" ||
-                      estimateAddress.country === "Canada"
-                    }
-                  />
+                  {estimateAddress.country === "United States" ? (
+                    <select
+                      id="estimate-state-inline"
+                      className="form-control"
+                      value={estimateAddress.state}
+                      onChange={(e) =>
+                        setEstimateAddress({
+                          ...estimateAddress,
+                          state: e.target.value,
+                        })
+                      }
+                      required
+                      suppressHydrationWarning
+                    >
+                      <option value="">Select State</option>
+                      <option value="AL">Alabama</option>
+                      <option value="AK">Alaska</option>
+                      <option value="AZ">Arizona</option>
+                      <option value="AR">Arkansas</option>
+                      <option value="CA">California</option>
+                      <option value="CO">Colorado</option>
+                      <option value="CT">Connecticut</option>
+                      <option value="DE">Delaware</option>
+                      <option value="FL">Florida</option>
+                      <option value="GA">Georgia</option>
+                      <option value="HI">Hawaii</option>
+                      <option value="ID">Idaho</option>
+                      <option value="IL">Illinois</option>
+                      <option value="IN">Indiana</option>
+                      <option value="IA">Iowa</option>
+                      <option value="KS">Kansas</option>
+                      <option value="KY">Kentucky</option>
+                      <option value="LA">Louisiana</option>
+                      <option value="ME">Maine</option>
+                      <option value="MD">Maryland</option>
+                      <option value="MA">Massachusetts</option>
+                      <option value="MI">Michigan</option>
+                      <option value="MN">Minnesota</option>
+                      <option value="MS">Mississippi</option>
+                      <option value="MO">Missouri</option>
+                      <option value="MT">Montana</option>
+                      <option value="NE">Nebraska</option>
+                      <option value="NV">Nevada</option>
+                      <option value="NH">New Hampshire</option>
+                      <option value="NJ">New Jersey</option>
+                      <option value="NM">New Mexico</option>
+                      <option value="NY">New York</option>
+                      <option value="NC">North Carolina</option>
+                      <option value="ND">North Dakota</option>
+                      <option value="OH">Ohio</option>
+                      <option value="OK">Oklahoma</option>
+                      <option value="OR">Oregon</option>
+                      <option value="PA">Pennsylvania</option>
+                      <option value="RI">Rhode Island</option>
+                      <option value="SC">South Carolina</option>
+                      <option value="SD">South Dakota</option>
+                      <option value="TN">Tennessee</option>
+                      <option value="TX">Texas</option>
+                      <option value="UT">Utah</option>
+                      <option value="VT">Vermont</option>
+                      <option value="VA">Virginia</option>
+                      <option value="WA">Washington</option>
+                      <option value="WV">West Virginia</option>
+                      <option value="WI">Wisconsin</option>
+                      <option value="WY">Wyoming</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      id="estimate-state-inline"
+                      className="form-control"
+                      value={estimateAddress.state}
+                      onChange={(e) =>
+                        setEstimateAddress({
+                          ...estimateAddress,
+                          state: e.target.value,
+                        })
+                      }
+                      required={
+                        estimateAddress.country === "United States" ||
+                        estimateAddress.country === "Canada"
+                      }
+                      suppressHydrationWarning
+                    />
+                  )}
                 </div>
               </div>
             </div>

@@ -70,79 +70,76 @@ export async function POST(request) {
       CountryCode: fromCountryCode,
     };
 
-    // Determine service code based on destination
-    // For international, use Worldwide Expedited or Standard
-    let serviceCode = "03"; // Ground (domestic US)
-    let serviceDescription = "UPS Ground";
+    // Define service codes to request based on destination
+    // For domestic US, request common services
+    // For international, request worldwide services
+    let serviceCodesToRequest = [];
 
-    if (toCountryCode !== "US") {
-      // International shipping - use Worldwide Expedited
-      serviceCode = "08"; // Worldwide Expedited
-      serviceDescription = "UPS Worldwide Expedited";
-    } else if (toCountryCode === "US" && fromCountryCode === "US") {
-      // Domestic US
-      serviceCode = "03"; // Ground
-      serviceDescription = "UPS Ground";
+    if (toCountryCode === "US" && fromCountryCode === "US") {
+      // Domestic US services
+      serviceCodesToRequest = [
+        { code: "03", name: "UPS Ground" },
+        { code: "02", name: "UPS 2nd Day Air" },
+        { code: "01", name: "UPS Next Day Air" },
+        { code: "13", name: "UPS Next Day Air Saver" },
+        { code: "12", name: "UPS 3 Day Select" },
+        { code: "59", name: "UPS 2nd Day Air AM" },
+      ];
+    } else {
+      // International services
+      serviceCodesToRequest = [
+        { code: "08", name: "UPS Worldwide Expedited" },
+        { code: "11", name: "UPS Standard" },
+        { code: "65", name: "UPS Saver" },
+        { code: "07", name: "UPS Worldwide Express" },
+        { code: "54", name: "UPS Worldwide Express Plus" },
+      ];
     }
 
-    // UPS Rate API request
-    const rateRequest = {
-      RateRequest: {
-        Request: {
-          RequestOption: "Rate",
-          TransactionReference: {
-            CustomerContext: "BMR Suspension Rate Request",
-          },
+    // Base shipment structure
+    const baseShipment = {
+      Shipper: {
+        Name: "BMR Suspension",
+        ShipperNumber: upsAccountNumber,
+        Address: {
+          AddressLine: [fromAddress.address1],
+          City: fromAddress.city,
+          StateProvinceCode: fromAddress.state,
+          PostalCode: fromAddress.zip,
+          CountryCode: fromCountryCode,
         },
-        Shipment: {
-          Shipper: {
-            Name: "BMR Suspension",
-            ShipperNumber: upsAccountNumber,
-            Address: {
-              AddressLine: [fromAddress.address1],
-              City: fromAddress.city,
-              StateProvinceCode: fromAddress.state,
-              PostalCode: fromAddress.zip,
-              CountryCode: fromCountryCode,
-            },
+      },
+      ShipTo: {
+        Name:
+          `${toAddress.firstName || ""} ${
+            toAddress.lastName || ""
+          }`.trim() || "Customer",
+        Address: shipToAddress,
+      },
+      ShipFrom: {
+        Name: "BMR Suspension",
+        Address: shipFromAddress,
+      },
+      Package: {
+        PackagingType: {
+          Code: "02", // Customer Supplied Package
+          Description: "Package",
+        },
+        Dimensions: {
+          UnitOfMeasurement: {
+            Code: "IN",
+            Description: "Inches",
           },
-          ShipTo: {
-            Name:
-              `${toAddress.firstName || ""} ${
-                toAddress.lastName || ""
-              }`.trim() || "Customer",
-            Address: shipToAddress,
+          Length: maxLength.toString(),
+          Width: maxWidth.toString(),
+          Height: maxHeight.toString(),
+        },
+        PackageWeight: {
+          UnitOfMeasurement: {
+            Code: "LBS",
+            Description: "Pounds",
           },
-          ShipFrom: {
-            Name: "BMR Suspension",
-            Address: shipFromAddress,
-          },
-          Service: {
-            Code: serviceCode,
-            Description: serviceDescription,
-          },
-          Package: {
-            PackagingType: {
-              Code: "02", // Customer Supplied Package
-              Description: "Package",
-            },
-            Dimensions: {
-              UnitOfMeasurement: {
-                Code: "IN",
-                Description: "Inches",
-              },
-              Length: maxLength.toString(),
-              Width: maxWidth.toString(),
-              Height: maxHeight.toString(),
-            },
-            PackageWeight: {
-              UnitOfMeasurement: {
-                Code: "LBS",
-                Description: "Pounds",
-              },
-              Weight: totalWeight.toString(),
-            },
-          },
+          Weight: totalWeight.toString(),
         },
       },
     };
@@ -192,53 +189,167 @@ export async function POST(request) {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    // Make rate request
-    const rateResponse = await fetch(`${baseUrl}/api/rating/v1/Rate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-        transId: "BMR-Rate-" + Date.now(),
-        transactionSrc: "BMR Suspension",
-      },
-      body: JSON.stringify(rateRequest),
+    // Make multiple rate requests for different services
+    const ratePromises = serviceCodesToRequest.map(async (serviceInfo) => {
+      const rateRequest = {
+        RateRequest: {
+          Request: {
+            RequestOption: "Rate",
+            TransactionReference: {
+              CustomerContext: `BMR Suspension Rate Request - ${serviceInfo.code}`,
+            },
+          },
+          Shipment: {
+            ...baseShipment,
+            Service: {
+              Code: serviceInfo.code,
+              Description: serviceInfo.name,
+            },
+          },
+        },
+      };
+
+      try {
+        const rateResponse = await fetch(`${baseUrl}/api/rating/v1/Rate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+            transId: `BMR-Rate-${serviceInfo.code}-${Date.now()}`,
+            transactionSrc: "BMR Suspension",
+          },
+          body: JSON.stringify(rateRequest),
+        });
+
+        if (rateResponse.ok) {
+          const rateData = await rateResponse.json();
+          return rateData;
+        } else {
+          // Log but don't fail - some services may not be available
+          const errorText = await rateResponse.text();
+          console.log(
+            `UPS Rate API error for service ${serviceInfo.code}:`,
+            errorText
+          );
+          return null;
+        }
+      } catch (error) {
+        console.log(`Error fetching rate for service ${serviceInfo.code}:`, error);
+        return null;
+      }
     });
 
-    if (!rateResponse.ok) {
-      const errorText = await rateResponse.text();
-      console.error("UPS Rate API error:", errorText);
-      throw new Error(`UPS Rate API error: ${rateResponse.status}`);
-    }
+    // Wait for all requests to complete
+    const rateResults = await Promise.all(ratePromises);
 
-    const rateData = await rateResponse.json();
+    // Combine all successful rate responses
+    const allShipments = [];
+    rateResults.forEach((rateData) => {
+      if (rateData?.RateResponse?.RatedShipment) {
+        const shipment = rateData.RateResponse.RatedShipment;
+        if (Array.isArray(shipment)) {
+          allShipments.push(...shipment);
+        } else {
+          allShipments.push(shipment);
+        }
+      }
+    });
 
-    // Extract shipping options
+    // Extract shipping options - Shop option returns RatedShipment array
     const shippingOptions = [];
 
-    if (rateData.RateResponse?.RatedShipment) {
-      const shipment = rateData.RateResponse.RatedShipment;
+    // Service code mapping for better display names
+    const serviceCodeMap = {
+      "01": "UPS Next Day Air",
+      "02": "UPS 2nd Day Air",
+      "03": "UPS Ground",
+      "12": "UPS 3 Day Select",
+      "13": "UPS Next Day Air Saver",
+      "14": "UPS Next Day Air Early AM",
+      "15": "UPS Next Day Air Early AM (Commercial)",
+      "16": "UPS Next Day Air Early AM (Residential)",
+      "17": "UPS Worldwide Express",
+      "18": "UPS Worldwide Express Plus",
+      "20": "UPS Worldwide Express (Commercial)",
+      "21": "UPS Worldwide Express Plus (Commercial)",
+      "32": "UPS Next Day Air (Commercial)",
+      "33": "UPS 2nd Day Air (Commercial)",
+      "59": "UPS 2nd Day Air AM",
+      "65": "UPS Saver",
+      "66": "UPS Worldwide Express (Residential)",
+      "68": "UPS Worldwide Express Plus (Residential)",
+      "70": "UPS Access Point Economy",
+      "71": "UPS Worldwide Expedited",
+      "72": "UPS Worldwide Saver",
+      "74": "UPS Express 12:00",
+      "82": "UPS Today Standard",
+      "83": "UPS Today Dedicated Courier",
+      "84": "UPS Today Intercity",
+      "85": "UPS Today Express",
+      "86": "UPS Today Express Saver",
+      "96": "UPS Worldwide Express Freight",
+      "08": "UPS Worldwide Expedited",
+    };
+
+    // Process all shipments from multiple service requests
+    allShipments.forEach((shipment) => {
+      const serviceCode = shipment.Service?.Code || "";
       const serviceName =
-        shipment.Service?.Code === "08"
-          ? "UPS Worldwide Expedited"
-          : shipment.Service?.Code === "03"
-          ? "UPS Ground"
-          : shipment.Service?.Description || "UPS Shipping";
+        serviceCodeMap[serviceCode] ||
+        shipment.Service?.Description ||
+        "UPS Shipping";
+
+      // Skip if no cost information
+      const cost = parseFloat(shipment.TotalCharges?.MonetaryValue || "0");
+      if (isNaN(cost)) return;
+
+      // Determine delivery time estimate
+      let deliveryDays = "5-10 business days";
+      if (shipment.GuaranteedDeliveryTime) {
+        deliveryDays = shipment.GuaranteedDeliveryTime;
+      } else if (shipment.ScheduledDeliveryTime) {
+        deliveryDays = shipment.ScheduledDeliveryTime;
+      } else {
+        // Estimate based on service code
+        if (serviceCode === "01" || serviceCode === "13" || serviceCode === "14") {
+          deliveryDays = "1 business day";
+        } else if (serviceCode === "02" || serviceCode === "59") {
+          deliveryDays = "2 business days";
+        } else if (serviceCode === "12") {
+          deliveryDays = "3 business days";
+        } else if (serviceCode === "03") {
+          deliveryDays = "1-5 business days";
+        } else if (serviceCode === "08" || serviceCode === "71") {
+          deliveryDays = "2-5 business days";
+        }
+      }
+
+      // Determine description
+      let description = "";
+      if (toCountryCode !== "US") {
+        description = "International shipping";
+      } else if (serviceCode === "01" || serviceCode === "13" || serviceCode === "14") {
+        description = "Next business day delivery";
+      } else if (serviceCode === "02" || serviceCode === "59") {
+        description = "Second business day delivery";
+      } else if (serviceCode === "03") {
+        description = "Standard ground shipping";
+      } else {
+        description = shipment.Service?.Description || "Standard shipping";
+      }
 
       shippingOptions.push({
         service: serviceName,
-        code: shipment.Service?.Code || serviceCode,
-        cost: parseFloat(shipment.TotalCharges?.MonetaryValue || "0"),
+        code: serviceCode,
+        cost: cost,
         currency: shipment.TotalCharges?.CurrencyCode || "USD",
-        deliveryDays:
-          shipment.GuaranteedDeliveryTime ||
-          shipment.ScheduledDeliveryTime ||
-          "5-10 business days",
-        description:
-          toCountryCode !== "US"
-            ? "International shipping"
-            : "Standard ground shipping",
+        deliveryDays: deliveryDays,
+        description: description,
       });
-    }
+    });
+
+    // Sort by cost (cheapest first)
+    shippingOptions.sort((a, b) => a.cost - b.cost);
 
     // Add free shipping option for BMR products (only for domestic US)
     if (toCountryCode === "US") {
