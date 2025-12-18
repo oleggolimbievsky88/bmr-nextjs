@@ -16,6 +16,16 @@ export default function MainMenu({ initialMenuData }) {
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
+
+  // Update menuData when initialMenuData changes (from Header18)
+  useEffect(() => {
+    if (initialMenuData && Object.keys(initialMenuData).length > 0) {
+      console.log("MainMenu: Updating menuData from initialMenuData", initialMenuData);
+      setMenuData(initialMenuData);
+      setIsDataFetched(true);
+      setIsLoading(false);
+    }
+  }, [initialMenuData]);
   const [activeVehicle, setActiveVehicle] = useState(null);
   const [categoriesByMainCat, setCategoriesByMainCat] = useState([]);
   const [bodyDetails, setBodyDetails] = useState(null);
@@ -75,18 +85,21 @@ export default function MainMenu({ initialMenuData }) {
   // Function to handle platform hover with delay
   const handlePlatformHover = (platform) => {
     clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
-      setActivePlatform(platform);
 
-      // Get the links array for the selected platform
-      const platformLinks = menuData[`${platform}Links`];
+    // Set platform immediately
+    setActivePlatform(platform);
 
-      // If there are vehicles in the list, automatically select the first one
-      if (platformLinks && platformLinks.length > 0) {
-        const firstVehicle = platformLinks[0];
-        handleVehicleHover(firstVehicle.slug, firstVehicle.bodyId);
-      }
-    }, 0);
+    // Get the links array for the selected platform
+    const platformLinks = menuData[`${platform}Links`];
+
+    // Debug logging
+    console.log("Hovering over platform:", platform, "Links:", platformLinks);
+
+    // If there are vehicles in the list, automatically select the first one
+    if (platformLinks && platformLinks.length > 0) {
+      const firstVehicle = platformLinks[0];
+      handleVehicleHover(firstVehicle.slug, firstVehicle.bodyId);
+    }
   };
 
   // Function to handle platform leave
@@ -206,11 +219,18 @@ export default function MainMenu({ initialMenuData }) {
   };
 
   // Render function for the new mega menu
-  const renderMegaMenu = (links, baseLink) => {
+  const renderMegaMenu = (links, baseLink, platform) => {
+    // Only show if this platform is active
+    const isActive = activePlatform === platform;
+
+    if (!isActive) {
+      return null;
+    }
+
     if (!links || links.length === 0) {
       if (isLoading) {
         return (
-          <div className="dropdown-menu mega-menu loading">Loading...</div>
+          <div className="dropdown-menu mega-menu loading show">Loading...</div>
         );
       }
       return null;
@@ -388,8 +408,7 @@ export default function MainMenu({ initialMenuData }) {
               <Link href="/products/ford" className="nav-link dropdown-toggle">
                 Ford
               </Link>
-              {activePlatform === "ford" &&
-                renderMegaMenu(menuData.fordLinks, "/products/ford")}
+              {renderMegaMenu(menuData.fordLinks || [], "/products/ford", "ford")}
             </li>
 
             {/* GM Late Model Dropdown */}
@@ -404,8 +423,7 @@ export default function MainMenu({ initialMenuData }) {
               >
                 GM Late Model Cars
               </Link>
-              {activePlatform === "gmLateModel" &&
-                renderMegaMenu(menuData.gmLateModelLinks, "/products/gm")}
+              {renderMegaMenu(menuData.gmLateModelLinks || [], "/products/gm", "gmLateModel")}
             </li>
 
             {/* GM Mid Muscle Dropdown */}
@@ -420,8 +438,7 @@ export default function MainMenu({ initialMenuData }) {
               >
                 GM Mid Muscle Cars
               </Link>
-              {activePlatform === "gmMidMuscle" &&
-                renderMegaMenu(menuData.gmMidMuscleLinks, "/products/gm")}
+              {renderMegaMenu(menuData.gmMidMuscleLinks || [], "/products/gm", "gmMidMuscle")}
             </li>
 
             {/* GM Classic Muscle Dropdown */}
@@ -436,8 +453,7 @@ export default function MainMenu({ initialMenuData }) {
               >
                 GM Classic Muscle Cars
               </Link>
-              {activePlatform === "gmClassicMuscle" &&
-                renderMegaMenu(menuData.gmClassicMuscleLinks, "/products/gm")}
+              {renderMegaMenu(menuData.gmClassicMuscleLinks || [], "/products/gm", "gmClassicMuscle")}
             </li>
 
             {/* Mopar Dropdown */}
@@ -449,8 +465,7 @@ export default function MainMenu({ initialMenuData }) {
               <Link href="/products/mopar" className="nav-link dropdown-toggle">
                 Mopar
               </Link>
-              {activePlatform === "mopar" &&
-                renderMegaMenu(menuData.moparLinks, "/products/mopar")}
+              {renderMegaMenu(menuData.moparLinks || [], "/products/mopar", "mopar")}
             </li>
 
             {/* Static Links */}
