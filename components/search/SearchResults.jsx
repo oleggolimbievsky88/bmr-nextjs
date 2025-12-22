@@ -247,9 +247,13 @@ export default function SearchResults({
                   className="col-lg-3 col-md-4 col-sm-6 col-12 mb-3"
                 >
                   <Link
-                    href={`/homes/home-search?q=${encodeURIComponent(
-                      vehicle.Make + " " + vehicle.Model
-                    )}`}
+                    href={
+                      vehicle.PlatformSlug
+                        ? `/products/${vehicle.PlatformSlug}`
+                        : `/homes/home-search?q=${encodeURIComponent(
+                            vehicle.Make + " " + vehicle.Model
+                          )}`
+                    }
                     className="card h-100 text-decoration-none search-result-card"
                     style={{
                       borderRadius: "15px",

@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function SearchInput({ initialQuery = "" }) {
   const [query, setQuery] = useState(initialQuery);
@@ -9,9 +10,14 @@ export default function SearchInput({ initialQuery = "" }) {
     categories: [],
     vehicles: [],
     brands: [],
+    platforms: [],
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const containerRef = useRef(null);
+  const inputRef = useRef(null);
+  const debounceTimerRef = useRef(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -42,6 +48,15 @@ export default function SearchInput({ initialQuery = "" }) {
     setQuery(initialQuery);
   }, [initialQuery]);
 
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
   // Click outside handler to close dropdown
   useEffect(() => {
     function handleClickOutside(event) {
@@ -50,6 +65,7 @@ export default function SearchInput({ initialQuery = "" }) {
         !containerRef.current.contains(event.target)
       ) {
         setShowSuggestions(false);
+        setSelectedIndex(-1);
       }
     }
 
@@ -61,6 +77,47 @@ export default function SearchInput({ initialQuery = "" }) {
     }
   }, [showSuggestions]);
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!showSuggestions) return;
+
+      const allItems = [
+        ...(grouped.products || []),
+        ...(grouped.platforms || []),
+        ...(grouped.categories || []),
+        ...(grouped.vehicles || []),
+        ...(grouped.brands || []),
+      ];
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) =>
+          prev < allItems.length - 1 ? prev + 1 : prev
+        );
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+      } else if (e.key === "Enter" && selectedIndex >= 0) {
+        e.preventDefault();
+        const selectedItem = allItems[selectedIndex];
+        // Determine type based on which array it came from
+        let type = "product";
+        if (grouped.platforms?.includes(selectedItem)) type = "platform";
+        else if (grouped.categories?.includes(selectedItem)) type = "category";
+        else if (grouped.vehicles?.includes(selectedItem)) type = "vehicle";
+        else if (grouped.brands?.includes(selectedItem)) type = "brand";
+        handleSuggestionClick(selectedItem, type);
+      } else if (e.key === "Escape") {
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showSuggestions, selectedIndex, grouped]);
+
   const handleSearch = async (searchQuery = query) => {
     if (searchQuery.trim()) {
       const params = new URLSearchParams(searchParams);
@@ -70,36 +127,66 @@ export default function SearchInput({ initialQuery = "" }) {
     }
   };
 
-  const handleInputChange = async (e) => {
-    const value = e.target.value;
-    setQuery(value);
-
-    if (value.trim().length > 2) {
-      try {
-        const results = await fetch(
-          `/api/search/suggestions?q=${encodeURIComponent(value)}`
-        );
-        const data = await results.json();
-        setGrouped(data || {});
-        setShowSuggestions(true);
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-        setGrouped({
-          products: [],
-          categories: [],
-          vehicles: [],
-          brands: [],
-        });
-      }
-    } else {
+  // Debounced search function
+  const fetchSuggestions = useCallback(async (searchValue) => {
+    if (!searchValue || searchValue.trim().length < 2) {
       setGrouped({
         products: [],
         categories: [],
         vehicles: [],
         brands: [],
+        platforms: [],
       });
       setShowSuggestions(false);
+      setIsLoading(false);
+      return;
     }
+
+    setIsLoading(true);
+    try {
+      const results = await fetch(
+        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`
+      );
+      const data = await results.json();
+      setGrouped(
+        data || {
+          products: [],
+          categories: [],
+          vehicles: [],
+          brands: [],
+          platforms: [],
+        }
+      );
+      setShowSuggestions(true);
+      setSelectedIndex(-1);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setGrouped({
+        products: [],
+        categories: [],
+        vehicles: [],
+        brands: [],
+        platforms: [],
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    setSelectedIndex(-1);
+
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Debounce API calls - wait 300ms after user stops typing
+    debounceTimerRef.current = setTimeout(() => {
+      fetchSuggestions(value);
+    }, 300);
   };
 
   const handleFormSubmit = (e) => {
@@ -120,11 +207,30 @@ export default function SearchInput({ initialQuery = "" }) {
       return;
     }
 
-    // category: search with category filter (will need to get platform/mainCategory from context later)
+    // platform: navigate to platform page
+    if (type === "platform" && item?.slug) {
+      router.push(`/products/${item.slug}`);
+      setShowSuggestions(false);
+      return;
+    }
+
+    // category: navigate to category page if we have the URL components
     if (type === "category" && item?.CatName) {
-      // For now, search by category name - can enhance later to navigate directly
-      setQuery(item.CatName);
-      handleSearch(item.CatName);
+      if (
+        item.PlatformSlug &&
+        item.MainCatSlug &&
+        (item.CatSlug || item.CatName)
+      ) {
+        const categorySlug =
+          item.CatSlug || item.CatName.toLowerCase().replace(/\s+/g, "-");
+        router.push(
+          `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`
+        );
+      } else {
+        setQuery(item.CatName);
+        handleSearch(item.CatName);
+      }
+      setShowSuggestions(false);
       return;
     }
 
@@ -133,6 +239,7 @@ export default function SearchInput({ initialQuery = "" }) {
       const vehicleQuery = `${item.Make} ${item.Model}`;
       setQuery(vehicleQuery);
       handleSearch(vehicleQuery);
+      setShowSuggestions(false);
       return;
     }
 
@@ -140,6 +247,7 @@ export default function SearchInput({ initialQuery = "" }) {
     if (type === "brand" && item?.ManName) {
       setQuery(item.ManName);
       handleSearch(item.ManName);
+      setShowSuggestions(false);
       return;
     }
 
@@ -154,6 +262,7 @@ export default function SearchInput({ initialQuery = "" }) {
       query;
     setQuery(text);
     handleSearch(text);
+    setShowSuggestions(false);
   };
 
   return (
@@ -161,19 +270,27 @@ export default function SearchInput({ initialQuery = "" }) {
       <form onSubmit={handleFormSubmit} className="search-input-wrapper">
         <div className="search-input-inner">
           <input
+            ref={inputRef}
             type="text"
             className="form-control search-input-field"
-            placeholder="Search by part # or keyword"
+            placeholder="Search by part #, product name, or platform"
             value={query}
             onChange={handleInputChange}
             onFocus={() => {
               if (Object.values(grouped).some((arr) => arr && arr.length > 0)) {
                 setShowSuggestions(true);
+              } else if (query.trim().length >= 2) {
+                fetchSuggestions(query);
               }
             }}
-            autoComplete="on"
+            autoComplete="off"
             suppressHydrationWarning
           />
+          {isLoading && (
+            <div className="search-loading-indicator">
+              <i className="icon icon-spinner icon-spin"></i>
+            </div>
+          )}
           <button
             className="search-btn-inside"
             type="submit"
@@ -186,114 +303,220 @@ export default function SearchInput({ initialQuery = "" }) {
 
       {showSuggestions &&
         Object.values(grouped).some((arr) => arr && arr.length > 0) && (
-          <div className="search-suggestions">
-            {/* Products */}
-            {grouped.products?.length ? (
-              <div>
-                <div
-                  className="px-3 py-2 text-uppercase small"
-                  style={{ color: "var(--primary)" }}
-                >
-                  Products
+          <div className="search-suggestions modern-autocomplete">
+            {/* Platforms - Show first if available */}
+            {grouped.platforms?.length ? (
+              <div className="suggestion-group">
+                <div className="suggestion-group-header">
+                  <i className="icon icon-car"></i> Platforms
                 </div>
-                {grouped.products.map((p) => (
-                  <div
-                    key={`p-${p.ProductID}`}
-                    className="suggestion-item"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSuggestionClick(p, "product");
-                    }}
-                    style={{ cursor: "pointer", pointerEvents: "auto" }}
-                  >
-                    <div className="fw-bold">{p.ProductName}</div>
-                    <div className="text-muted small">
-                      Part #: {p.PartNumber}
+                {grouped.platforms.map((platform, idx) => {
+                  const itemIndex = idx;
+                  const isSelected = selectedIndex === itemIndex;
+                  return (
+                    <div
+                      key={`platform-${platform.BodyID}`}
+                      className={`suggestion-item ${
+                        isSelected ? "selected" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSuggestionClick(platform, "platform");
+                      }}
+                      onMouseEnter={() => setSelectedIndex(itemIndex)}
+                    >
+                      <div className="suggestion-content">
+                        <div className="fw-bold">{platform.Name}</div>
+                        {platform.StartYear && platform.EndYear && (
+                          <div className="text-muted small">
+                            {platform.StartYear}-{platform.EndYear}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+            ) : null}
+
+            {/* Products - Enhanced with images and prices */}
+            {grouped.products?.length ? (
+              <div className="suggestion-group">
+                <div className="suggestion-group-header">
+                  <i className="icon icon-box"></i> Products
+                </div>
+                {grouped.products.map((p, idx) => {
+                  const itemIndex = (grouped.platforms?.length || 0) + idx;
+                  const isSelected = selectedIndex === itemIndex;
+                  const imageUrl =
+                    p.ImageSmall && p.ImageSmall !== "0"
+                      ? `https://bmrsuspension.com/siteart/products/${p.ImageSmall}`
+                      : "/images/products/placeholder.webp";
+
+                  const price = parseFloat(p.Price) || 0;
+                  return (
+                    <div
+                      key={`p-${p.ProductID}`}
+                      className={`suggestion-item product-item ${
+                        isSelected ? "selected" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSuggestionClick(p, "product");
+                      }}
+                      onMouseEnter={() => setSelectedIndex(itemIndex)}
+                    >
+                      <div className="suggestion-content">
+                        <div className="suggestion-image">
+                          <Image
+                            src={imageUrl}
+                            alt={p.ProductName}
+                            width={60}
+                            height={60}
+                            style={{ objectFit: "contain" }}
+                          />
+                        </div>
+                        <div className="suggestion-text">
+                          <div className="fw-bold suggestion-title">
+                            {p.ProductName}
+                          </div>
+                          <div className="text-muted small suggestion-part">
+                            Part #: {p.PartNumber}
+                          </div>
+                          {p.PlatformName && (
+                            <div className="text-muted small suggestion-platform">
+                              {p.PlatformName}
+                            </div>
+                          )}
+                        </div>
+                        {price > 0 && (
+                          <div className="suggestion-price">
+                            ${price.toFixed(2)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : null}
 
             {/* Categories */}
             {grouped.categories?.length ? (
-              <div>
-                <div className="px-3 py-2 text-uppercase small text-muted">
-                  Categories
+              <div className="suggestion-group">
+                <div className="suggestion-group-header">
+                  <i className="icon icon-grid"></i> Categories
                 </div>
-                {grouped.categories.map((c) => (
-                  <div
-                    key={`c-${c.CatID}`}
-                    className="suggestion-item"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSuggestionClick(c, "category");
-                    }}
-                  >
-                    <div className="fw-bold">{c.CatName}</div>
+                {grouped.categories.map((c, idx) => {
+                  const itemIndex =
+                    (grouped.platforms?.length || 0) +
+                    (grouped.products?.length || 0) +
+                    idx;
+                  const isSelected = selectedIndex === itemIndex;
+                  return (
                     <div
-                      className="small"
-                      style={{ color: "#cc0000", fontWeight: "600" }}
+                      key={`c-${c.CatID}`}
+                      className={`suggestion-item ${
+                        isSelected ? "selected" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSuggestionClick(c, "category");
+                      }}
+                      onMouseEnter={() => setSelectedIndex(itemIndex)}
                     >
-                      {getCategoryPlatformLabel(c)}
+                      <div className="suggestion-content">
+                        <div className="fw-bold">{c.CatName}</div>
+                        <div
+                          className="small"
+                          style={{ color: "#cc0000", fontWeight: "600" }}
+                        >
+                          {getCategoryPlatformLabel(c)}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : null}
 
             {/* Vehicles */}
             {grouped.vehicles?.length ? (
-              <div>
-                <div
-                  className="px-3 py-2 text-uppercase small"
-                  style={{ color: "var(--primary)" }}
-                >
-                  Vehicles
+              <div className="suggestion-group">
+                <div className="suggestion-group-header">
+                  <i className="icon icon-car"></i> Vehicles
                 </div>
-                {grouped.vehicles.map((v) => (
-                  <div
-                    key={`v-${v.VehicleID}`}
-                    className="suggestion-item"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSuggestionClick(v, "vehicle");
-                    }}
-                  >
-                    <div className="fw-bold">
-                      {v.Make} {v.Model}
+                {grouped.vehicles.map((v, idx) => {
+                  const itemIndex =
+                    (grouped.platforms?.length || 0) +
+                    (grouped.products?.length || 0) +
+                    (grouped.categories?.length || 0) +
+                    idx;
+                  const isSelected = selectedIndex === itemIndex;
+                  return (
+                    <div
+                      key={`v-${v.VehicleID}`}
+                      className={`suggestion-item ${
+                        isSelected ? "selected" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSuggestionClick(v, "vehicle");
+                      }}
+                      onMouseEnter={() => setSelectedIndex(itemIndex)}
+                    >
+                      <div className="suggestion-content">
+                        <div className="fw-bold">
+                          {v.Make} {v.Model}
+                        </div>
+                        <div className="text-muted small">
+                          {v.StartYear}-{v.EndYear}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-muted small">
-                      {v.StartYear}-{v.EndYear}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : null}
 
             {/* Brands */}
             {grouped.brands?.length ? (
-              <div>
-                <div className="px-3 py-2 text-uppercase small text-muted">
-                  Brands
+              <div className="suggestion-group">
+                <div className="suggestion-group-header">
+                  <i className="icon icon-tag"></i> Brands
                 </div>
-                {grouped.brands.map((m) => (
-                  <div
-                    key={`m-${m.ManID}`}
-                    className="suggestion-item"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSuggestionClick(m, "brand");
-                    }}
-                  >
-                    <div className="fw-bold">{m.ManName}</div>
-                    <div className="text-muted small">Brand</div>
-                  </div>
-                ))}
+                {grouped.brands.map((m, idx) => {
+                  const itemIndex =
+                    (grouped.platforms?.length || 0) +
+                    (grouped.products?.length || 0) +
+                    (grouped.categories?.length || 0) +
+                    (grouped.vehicles?.length || 0) +
+                    idx;
+                  const isSelected = selectedIndex === itemIndex;
+                  return (
+                    <div
+                      key={`m-${m.ManID}`}
+                      className={`suggestion-item ${
+                        isSelected ? "selected" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSuggestionClick(m, "brand");
+                      }}
+                      onMouseEnter={() => setSelectedIndex(itemIndex)}
+                    >
+                      <div className="suggestion-content">
+                        <div className="fw-bold">{m.ManName}</div>
+                        <div className="text-muted small">Brand</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : null}
           </div>
