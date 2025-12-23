@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 
 export default function SearchInput({ initialQuery = "" }) {
   const [query, setQuery] = useState(initialQuery);
@@ -340,21 +339,34 @@ export default function SearchInput({ initialQuery = "" }) {
               </div>
             ) : null}
 
-            {/* Products - Enhanced with images and prices */}
+            {/* Products - Left-aligned like Categories */}
             {grouped.products?.length ? (
               <div className="suggestion-group">
                 <div className="suggestion-group-header">
-                  <i className="icon icon-box"></i> Products
+                  <i className="icon icon-bag"></i> Products
                 </div>
                 {grouped.products.map((p, idx) => {
                   const itemIndex = (grouped.platforms?.length || 0) + idx;
                   const isSelected = selectedIndex === itemIndex;
-                  const imageUrl =
-                    p.ImageSmall && p.ImageSmall !== "0"
-                      ? `https://bmrsuspension.com/siteart/products/${p.ImageSmall}`
-                      : "/images/products/placeholder.webp";
-
                   const price = parseFloat(p.Price) || 0;
+
+                  // Build platform with years string
+                  let platformWithYears = "";
+                  if (p.PlatformName) {
+                    const years = [];
+                    if (p.PlatformStartYear && p.PlatformStartYear !== "0") {
+                      years.push(p.PlatformStartYear);
+                    }
+                    if (p.PlatformEndYear && p.PlatformEndYear !== "0") {
+                      years.push(p.PlatformEndYear);
+                    }
+                    if (years.length > 0) {
+                      platformWithYears = `${years.join("-")} ${p.PlatformName}`;
+                    } else {
+                      platformWithYears = p.PlatformName;
+                    }
+                  }
+
                   return (
                     <div
                       key={`p-${p.ProductID}`}
@@ -369,28 +381,17 @@ export default function SearchInput({ initialQuery = "" }) {
                       onMouseEnter={() => setSelectedIndex(itemIndex)}
                     >
                       <div className="suggestion-content">
-                        <div className="suggestion-image">
-                          <Image
-                            src={imageUrl}
-                            alt={p.ProductName}
-                            width={60}
-                            height={60}
-                            style={{ objectFit: "contain" }}
-                          />
+                        <div className="fw-bold suggestion-title">
+                          {p.ProductName}
                         </div>
-                        <div className="suggestion-text">
-                          <div className="fw-bold suggestion-title">
-                            {p.ProductName}
-                          </div>
-                          <div className="text-muted small suggestion-part">
-                            Part #: {p.PartNumber}
-                          </div>
-                          {p.PlatformName && (
-                            <div className="text-muted small suggestion-platform">
-                              {p.PlatformName}
-                            </div>
-                          )}
+                        <div className="text-muted small suggestion-part">
+                          Part #: {p.PartNumber}
                         </div>
+                        {platformWithYears && (
+                          <div className="small suggestion-platform">
+                            {platformWithYears}
+                          </div>
+                        )}
                         {price > 0 && (
                           <div className="suggestion-price">
                             ${price.toFixed(2)}
