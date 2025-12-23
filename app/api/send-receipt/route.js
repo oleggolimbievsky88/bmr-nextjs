@@ -144,7 +144,7 @@ function generateReceiptHTML(orderData) {
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.VERCEL_URL ||
     "https://bmrsuspension.com";
-  const logoUrl = `${baseUrl}/images/logo/bmr-logo.webp`;
+  const logoUrl = `${baseUrl}/images/logo/bmr-nav-logo.png`;
 
   return `
     <!DOCTYPE html>
