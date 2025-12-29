@@ -24,6 +24,7 @@ import Blogs from "@/components/homes/home/Blogs";
 import ShopCategories from "@/components/homes/home/ShopCategories";
 import SocialMedia from "@/components/homes/home/SocialMedia";
 import Topbar2 from "@/components/header/Topbar2";
+import VehicleSearch from "@/components/common/VehicleSearch";
 
 export const metadata = {
   title: "BMR Suspension | Performance Suspension & Chassis Parts",
@@ -35,7 +36,15 @@ export default function page() {
     <>
       <Topbar2 />
       <Header18 />
-      <Hero /> <br />
+      <div className="vehicle-search-desktop-wrapper">
+        <div className="container vehicle-search-desktop">
+          <VehicleSearch />
+        </div>
+      </div>
+      <Hero />
+      <div className="container vehicle-search-mobile">
+        <VehicleSearch />
+      </div>
       {/* <ShopCategories /> <br /> <br /> */}
       {/* <ThreeColumnLayout /> */}
       {/* <Categories /> */}

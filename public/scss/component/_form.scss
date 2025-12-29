@@ -430,28 +430,33 @@
 
 .tf-form-search {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+
   .search-box {
     position: relative;
+    width: 100%;
     input {
-      font-size: 16px;
-      padding-right: 40px;
+      font-size: 14px;
+      padding-right: 70px;
       color: var(--main);
       border-radius: 20px;
-      padding-top: 11px;
-      padding-bottom: 11px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      width: 100%;
     }
     .tf-btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      right: 5px;
+      right: 3px;
       background-color: var(--main);
       border-radius: 60px;
-      width: 81px;
-      height: 36px;
+      width: 65px;
+      height: 30px;
       justify-content: center;
       .icon {
-        font-size: 18px;
+        font-size: 16px;
         color: var(--white);
       }
       &:hover {

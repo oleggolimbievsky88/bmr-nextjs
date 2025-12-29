@@ -3,7 +3,6 @@ import MainMenu from "./MainMenu";
 import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength";
-import VehicleSearch from "../common/VehicleSearch";
 import SearchInput from "../search/SearchInput";
 import { useState, useEffect, Suspense } from "react";
 
@@ -44,7 +43,7 @@ export default function Header18({ initialMenuData }) {
       <div className="main-header">
         <div className="container">
           <div className="row wrapper-header align-items-center">
-            <div className="col-md-4 col-3 tf-lg-hidden">
+            <div className="col-md-2 col-2 tf-lg-hidden">
               <a
                 href="#mobileMenu"
                 data-bs-toggle="offcanvas"
@@ -64,7 +63,7 @@ export default function Header18({ initialMenuData }) {
                 </svg>
               </a>
             </div>
-            <div className="col-xl-2 col-md-4 col-12">
+            <div className="col-xl-2 col-md-8 col-8 d-flex align-items-center justify-content-between">
               <Link href={`/`} className="logo-header">
                 <Image
                   alt="logo"
@@ -75,9 +74,26 @@ export default function Header18({ initialMenuData }) {
                   style={{ width: "100%", height: "auto" }}
                 />{" "}
               </Link>
+              <div className="tf-md-hidden d-flex align-items-center mobile-search-icon">
+                <ul className="nav-icon d-flex justify-content-end align-items-center mb-0">
+                  <li className="nav-search">
+                    <a
+                      href="#canvasSearch"
+                      data-bs-toggle="offcanvas"
+                      aria-controls="offcanvasRight"
+                      className="nav-icon-item"
+                    >
+                      <i className="icon icon-search" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div className="col-xl-10 col-md-8 col-12 my-10 py-0">
-              <div className="tf-form-search">
+            <div className="col-xl-10 col-md-2 col-2 tf-md-hidden">
+              <div
+                className="tf-form-search"
+                style={{ maxWidth: "100%", width: "100%" }}
+              >
                 <Suspense
                   fallback={
                     <div className="search-input-container">
@@ -155,7 +171,7 @@ export default function Header18({ initialMenuData }) {
           </div>
         </div>
       </div>
-      <div className="header-bottom tf-md-hidden">
+      <div className="header-bottom">
         <div className="container">
           <div
             className="justify-content-between align-items-center"
@@ -164,7 +180,7 @@ export default function Header18({ initialMenuData }) {
               paddingTop: "0px",
             }}
           >
-            <div>
+            <div className="tf-md-hidden">
               <div className="tf-list-categories">
                 {/* <a href="#" className="categories-title">
                   <svg
@@ -539,7 +555,7 @@ export default function Header18({ initialMenuData }) {
                   </div> */}
                 </div>
               </div>
-              <nav className="box-navigation text-center">
+              <nav className="box-navigation text-center tf-md-hidden">
                 <div className="align-items-center justify-content-center ">
                   <MainMenu initialMenuData={menuData} />
                 </div>
@@ -582,9 +598,6 @@ export default function Header18({ initialMenuData }) {
               </div>
             </div> */}
           </div>
-        </div>
-        <div>
-          <VehicleSearch />
         </div>
       </div>
     </header>

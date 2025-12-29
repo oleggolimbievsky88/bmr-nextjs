@@ -122,40 +122,500 @@
 }
 
 
-/* Hide Installation tab at medium breakpoint (before mobile menu) */
-@media (max-width: 1300px) {
+/* Hide Installation link and main menu at 1400px and below to prevent stacking */
+@media (max-width: 1400px) {
   .nav-item-installation {
+    display: none !important;
+  }
+
+  /* Hide main menu navigation completely - override all other rules */
+  .header-bottom .box-navigation,
+  .header-bottom nav.box-navigation,
+  .header-bottom nav.box-navigation.tf-md-hidden,
+  .box-navigation,
+  .box-navigation.tf-md-hidden,
+  .navbar-nav,
+  .navbar,
+  .navbar-collapse,
+  #navbarNavDropdown,
+  .container-fluid .navbar-collapse,
+  .header-bottom .container .box-navigation,
+  nav.box-navigation.text-center.tf-md-hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide all nav items and links */
+  .nav-item,
+  .nav-link {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Override tf-md-hidden display block rule from responsive.scss */
+  .header-bottom .tf-md-hidden.box-navigation,
+  .header-bottom nav.tf-md-hidden {
+    display: none !important;
+  }
+
+  /* Show hamburger menu at 1400px and below */
+  .tf-lg-hidden {
+    display: block !important;
+  }
+}
+
+/* Ensure main menu is hidden on mobile (below 768px) */
+@media (max-width: 767px) {
+  .header-bottom .box-navigation,
+  .box-navigation {
+    display: none !important;
+  }
+
+  .navbar-nav {
     display: none !important;
   }
 }
 
-/* Show mobile menu before stacking occurs */
-@media (max-width: 1149px) {
-  .header-bottom .box-navigation {
-    display: none !important;
-  }
+/* Ensure search bar and logo are on same line */
+.main-header {
+  position: relative;
+  z-index: 1001;
+  .row.wrapper-header {
+    align-items: center;
 
-  .header-bottom {
-    .tf-md-hidden {
-      display: block !important;
+    .col-xl-2 {
+      display: flex;
+      align-items: center;
+    }
+
+    .col-xl-10.tf-md-hidden {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Mobile: Logo and search icon side by side */
+    @media (max-width: 767px) {
+      .col-md-8.col-8 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding-right: 0 !important;
+        margin-right: 0 !important;
+
+        .logo-header {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .mobile-search-icon {
+          flex-shrink: 0;
+          margin-left: auto;
+          margin-right: 0 !important;
+          padding-right: 0 !important;
+          position: relative;
+          right: -15px; /* Compensate for container padding */
+
+          .nav-icon {
+            margin: 0;
+            padding: 0;
+
+            .nav-search {
+              .nav-icon-item {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: auto;
+                height: auto;
+                color: white;
+                font-size: 24px;
+                background-color: transparent;
+                border: none;
+                padding: 8px 0;
+                transition: opacity 0.3s ease;
+
+                &:hover {
+                  opacity: 0.7;
+                  transform: none;
+                }
+
+                .icon {
+                  font-size: 24px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      /* Remove container padding on mobile for header to allow search icon at edge */
+      .main-header .container {
+        padding-right: 0 !important;
+        padding-left: 15px !important;
+      }
+
+      .wrapper-header {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+      }
+
+      /* Ensure search icon column has no right padding */
+      .col-md-8.col-8 {
+        padding-right: 0 !important;
+      }
+    }
+
+    /* Hide search icon on desktop */
+    @media (min-width: 768px) {
+      .mobile-search-icon {
+        display: none !important;
+      }
     }
   }
 }
 
-.dropdown-menu.mega-menu {
-  width: 100%;
+/* Mobile-specific header styles */
+@media (max-width: 767px) {
+  /* Ensure offcanvas mobile menu appears above search bar */
+  .offcanvas.canvas-mb {
+    z-index: 10000 !important;
+  }
+
+  .offcanvas-backdrop {
+    z-index: 9999 !important;
+  }
+
+  /* Hide search bar when mobile menu is open */
+  .offcanvas.show ~ .main-header .tf-form-search,
+  body:has(.offcanvas.show) .main-header .tf-form-search,
+  .offcanvas.show ~ header .tf-form-search,
+  body:has(.offcanvas.show) header .tf-form-search {
+    display: none !important;
+  }
+
+  /* Hide search bar on mobile */
+  .tf-form-search,
+  .search-input-container {
+    display: none !important;
+  }
+
+  /* Show search icon in mobile menu */
+  .tf-lg-hidden .nav-icon {
+    display: flex !important;
+  }
+
+  /* Ensure VehicleSearch is visible on mobile */
+  .header-bottom {
+    position: relative;
+    z-index: 1001;
+    display: block !important;
+
+    > div {
+      padding: 10px 15px;
+    }
+  }
+
+  /* Remove gap after Hero banner on mobile */
+  .tf-slideshow {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    position: relative;
+    z-index: 1; /* Ensure banner stays below header (z-index: 888) and mega menu (z-index: 9999) */
+  }
+
+  .tf-slideshow + * {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* Remove any spacing from sections after Hero */
+  section.tf-slideshow + div,
+  section.tf-slideshow + section {
+    margin-top: 0 !important;
+  }
+
+
+  /* Remove all spacing from slideshow section on mobile */
+  section.tf-slideshow.pb_0 {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Ensure no gap between slideshow and next element */
+  section.tf-slideshow {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+
+    & + * {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+
+    .wrap-slider {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .swiper {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .swiper-wrapper {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  }
+
+
+  /* Also target the section itself to remove any bottom spacing */
+  section.tf-slideshow {
+    position: relative;
+    z-index: -1 !important; /* Negative z-index to ensure it's below header */
+    &::after {
+      display: none !important;
+    }
+  }
+
+  /* Remove any spacing from the section element itself */
+  section {
+    &.tf-slideshow {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+
+      &.slider-collection {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+
+      &.pb_0 {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+    }
+  }
+
+  /* Target any element that comes after slideshow */
+  section.tf-slideshow ~ * {
+    &:first-of-type {
+      margin-top: 0 !important;
+      padding-top: 5px !important;
+    }
+  }
+
+  /* Remove spacing from Swiper elements */
+  .tf-slideshow .swiper,
+  .tf-slideshow .swiper-wrapper,
+  .tf-slideshow .wrap-slider {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    position: relative !important;
+    z-index: -1 !important;
+  }
+
+  /* Override Swiper defaults for banner - must override Swiper's z-index: 1 */
+  .tf-slideshow .swiper {
+    z-index: -1 !important;
+  }
+
+  .tf-slideshow .swiper-wrapper {
+    z-index: -1 !important;
+  }
+
+  .tf-slideshow .swiper-slide {
+    z-index: -1 !important;
+  }
+
+  .tf-slideshow .swiper-pagination {
+    z-index: -1 !important;
+  }
+
+  .tf-slideshow .swiper-button-next,
+  .tf-slideshow .swiper-button-prev {
+    z-index: -1 !important;
+  }
+
+  /* Remove margin from pagination dots that's causing the gap */
+  .tf-slideshow.hover-sw-nav .sw-dots {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Remove spacing from wrap-slider */
+  .tf-slideshow .wrap-slider {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Remove spacing from collection-item */
+  .tf-slideshow .collection-item {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Remove spacing from collection-inner */
+  .tf-slideshow .collection-inner {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Remove all spacing from Swiper slides */
+  .tf-slideshow .swiper-slide {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Remove spacing from Image component */
+  .tf-slideshow img {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    display: block;
+  }
+
+  /* Target the actual section element and remove all spacing */
+  section.tf-slideshow.slider-collection.hover-sw-nav.pb_0 {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+
+    &::after {
+      display: none !important;
+      content: none !important;
+    }
+
+    .wrap-slider {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+      height: auto !important;
+    }
+
+    .swiper {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+      height: auto !important;
+    }
+
+    .swiper-wrapper {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .swiper-slide {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .collection-item {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .collection-inner {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    img {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+      display: block;
+      vertical-align: bottom;
+    }
+
+    a {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+      display: block;
+    }
+  }
+}
+
+
+/* Remove gap between banner and vehicle search on all screen sizes */
+.tf-slideshow {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  position: relative;
+  z-index: 0 !important; /* Lower than header to ensure it stays below */
+  isolation: isolate; /* Create isolated stacking context */
+
+  .swiper,
+  .swiper-wrapper,
+  .swiper-slide,
+  .wrap-slider,
+  .collection-item,
+  .collection-inner,
+  .collection-image,
+  img {
+    position: relative !important;
+    z-index: 0 !important;
+  }
+
+  /* Override Swiper default z-index values - must be more specific than Swiper's CSS */
+  .swiper {
+    z-index: 0 !important;
+  }
+
+  .swiper-wrapper {
+    z-index: 0 !important;
+  }
+
+  .swiper-slide {
+    z-index: 0 !important;
+  }
+
+  .swiper-pagination {
+    z-index: 0 !important; /* Lower than mega menu */
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    z-index: 0 !important; /* Lower than mega menu */
+  }
+}
+
+/* Ensure logo and hamburger are on same row */
+.wrapper-header {
+  .col-3 {
+    flex: 0 0 auto;
+    width: 25%;
+    max-width: 25%;
+  }
+
+  .col-9 {
+    flex: 0 0 auto;
+    width: 75%;
+    max-width: 75%;
+  }
+}
+
+.dropdown-menu.mega-menu,
+.dropdown-menu.mega-menu.show,
+.nav-item.dropdown .dropdown-menu.mega-menu,
+.nav-item.dropdown:hover .dropdown-menu.mega-menu {
+  width: 100% !important;
   left: 0 !important;
   right: 0 !important;
   transform: none !important;
   padding: 0 !important;
-  margin-top: 0;
-  border: 1px solid #000;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  z-index: 9999 !important;
-  box-sizing: border-box;
-  overflow-x: hidden;
+  margin-top: 0 !important;
+  border: 1px solid #000 !important;
+  border-radius: 8px !important;
+  background-color: #fff !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+  z-index: 99999 !important;
+  position: absolute !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
   overflow-y: visible !important;
   min-height: auto !important;
   max-height: none !important;
@@ -177,22 +637,36 @@
 
 .nav-item.dropdown {
   position: static !important;
+  z-index: 1001;
+}
+
+.header-bottom {
+  position: relative;
+  z-index: 1001 !important;
 }
 
 .box-navigation {
   position: relative;
   overflow: visible !important;
   width: 100%;
+  z-index: 1001 !important;
 }
 
 .container-fluid {
   position: relative;
   overflow: visible !important;
+  z-index: 1001 !important;
 }
 
 .navbar {
   position: relative;
   overflow: visible !important;
+  z-index: 1001 !important;
+}
+
+.navbar-nav {
+  position: relative;
+  z-index: 1001 !important;
 }
 
 .nav-item.dropdown .dropdown-menu.mega-menu {
@@ -1102,6 +1576,15 @@
   padding: 0;
   max-width: 100%;
   overflow-x: hidden;
+
+  /* Hide at 1400px and below */
+  @media (max-width: 1400px) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
 }
 
 .navbar-nav {
@@ -1111,12 +1594,30 @@
   width: 100%;
   overflow-y: visible !important;
   height: auto !important;
+
+  /* Hide at 1400px and below */
+  @media (max-width: 1400px) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
 }
 
 .navbar-collapse,
 #navbarNavDropdown {
   overflow-y: visible !important;
   height: auto !important;
+
+  /* Hide at 1400px and below */
+  @media (max-width: 1400px) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
 }
 
 .nav-item {
@@ -1491,7 +1992,6 @@
     text-transform: none;
   }
 }
-
 .home-title-description {
   font-size: 1.6rem;
   font-weight: 300;
@@ -1500,6 +2000,13 @@
   padding: 0px;
   font-family: 'Impact', sans-serif;
   letter-spacing: 0.7px;
+}
+
+@media (max-width: 768px) {
+  .home-title-description {
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+  }
 }
 
 .tf-page-title {
@@ -1775,12 +2282,12 @@
 }
 
 .mega-menu {
-  z-index: 9999;
-  position: absolute;
-  background: #fff;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-  border-radius: 8px;
-  padding: 24px 32px;
+  z-index: 99999 !important;
+  position: absolute !important;
+  background: #fff !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+  border-radius: 8px !important;
+  padding: 24px 32px !important;
 }
 
 .tf-product-media-main {

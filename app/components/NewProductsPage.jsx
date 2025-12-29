@@ -42,7 +42,8 @@ export default async function NewProductsPage({ scratchDent = "0" }) {
         <div className="col-lg-12">
           <div className="title-section text-center">
             <h2 className="flat-title">
-              {scratchDent === "1" ? "Scratch & Dent Products" : "New Products"}
+              {scratchDent === "1" ? "Scratch & Dent Products" : "New Products"}{" "}
+              asdf
             </h2>
             <p className="sub-title">
               {scratchDent === "1"

@@ -13,8 +13,11 @@ const slideshowSlides = [
 ];
 export default function Hero() {
   return (
-    <section className="tf-slideshow slider-collection hover-sw-nav pb_0">
-      <div className="wrap-slider">
+    <section
+      className="tf-slideshow slider-collection hover-sw-nav pb_0"
+      style={{ marginBottom: 0, paddingBottom: 0 }}
+    >
+      <div className="wrap-slider" style={{ marginBottom: 0, paddingBottom: 0 }}>
         {/* <Swiper
           slidesPerView={3}
           spaceBetween={0}
@@ -60,7 +63,7 @@ export default function Hero() {
           autoplay={{ delay: 5000 }}
           // Loop through slides
           speed={3000}
-          style={{ backgroundColor: "black" }}
+          style={{ backgroundColor: "black", marginBottom: 0, paddingBottom: 0 }}
         >
           {slideshowSlides.map((imgSrc, index) => (
             <SwiperSlide key={index}>

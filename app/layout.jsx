@@ -119,10 +119,12 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const header = document.querySelector("header");
     if (header) {
-      if (scrollDirection == "up") {
+      if (scrollDirection === "up") {
         header.style.top = "0px";
+        header.style.transform = "translateY(0)";
       } else {
         header.style.top = "-185px";
+        header.style.transform = "translateY(-185px)";
       }
     }
   }, [scrollDirection]);

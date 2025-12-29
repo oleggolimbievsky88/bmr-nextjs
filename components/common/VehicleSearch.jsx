@@ -149,83 +149,86 @@ export default function VehicleSearch() {
 
   return (
     <div className={styles["vehicle-search-form"]}>
-      <span
-        className="fw-5"
-        style={{
-          fontSize: "19px",
-          fontFamily: "Impact",
-          textAlign: "center",
-          display: "block",
-          marginRight: "15px",
-          color: "white",
-        }}
-      >
-        SEARCH BY
-        <br /> VEHICLE
-      </span>
       <form onSubmit={handleSubmit} className={styles["search-form"]}>
-        <select
-          value={year}
-          onChange={handleYearChange}
-          className={styles["search-input"]}
-          suppressHydrationWarning
-        >
-          <option value="">Year</option>
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
+        <div className={styles["vehicle-search-header"]}>
+          <h5 className={styles["vehicle-search-title"]}>SEARCH BY VEHICLE</h5>
+        </div>
+        <div className={styles["form-row"]}>
+          <select
+            value={year}
+            onChange={handleYearChange}
+            className={styles["search-input"]}
+            suppressHydrationWarning
+            name="year"
+          >
+            <option value="">Year</option>
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          value={make}
-          onChange={handleMakeChange}
-          className={styles["search-input"]}
-          disabled={!year}
-          suppressHydrationWarning
-        >
-          <option value="">Make</option>
-          {makes.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
+        <div className={styles["form-row"]}>
+          <select
+            value={make}
+            onChange={handleMakeChange}
+            className={styles["search-input"]}
+            disabled={!year}
+            name="make"
+            suppressHydrationWarning
+          >
+            <option value="">Make</option>
+            {makes.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          value={model}
-          onChange={handleModelChange}
-          className={styles["search-input"]}
-          disabled={!make}
-          suppressHydrationWarning
-        >
-          <option value="">Model</option>
-          {models.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
+        <div className={styles["form-row"]}>
+          <select
+            value={model}
+            onChange={handleModelChange}
+            className={styles["search-input"]}
+            disabled={!make}
+            suppressHydrationWarning
+            name="model"
+          >
+            <option value="">Model</option>
+            {models.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          value={subModel}
-          onChange={handleSubModelChange}
-          className={styles["search-input"]}
-          disabled={!model || subModels.length === 0}
-          suppressHydrationWarning
-        >
-          <option value="">Sub Model (optional)</option>
-          {subModels.map((sm) => (
-            <option key={sm} value={sm}>
-              {sm}
-            </option>
-          ))}
-        </select>
+        <div className={styles["form-row"]}>
+          <select
+            value={subModel}
+            onChange={handleSubModelChange}
+            className={styles["search-input"]}
+            disabled={!model || subModels.length === 0}
+            suppressHydrationWarning
+            name="subModel"
+          >
+            <option value="">Sub Model (optional)</option>
+            {subModels.map((sm) => (
+              <option key={sm} value={sm}>
+                {sm}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <button type="submit" className={styles["search-button"]}>
-          Search
-        </button>
+        <div className={`${styles["form-row"]} ${styles["button-row"]}`}>
+          <button type="submit" className={styles["search-button"]}>
+            Search
+          </button>
+        </div>
       </form>
     </div>
   );

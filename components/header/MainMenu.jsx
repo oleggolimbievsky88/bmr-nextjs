@@ -254,7 +254,7 @@ export default function MainMenu({ initialMenuData }) {
           left: 0,
           right: 0,
           width: "100%",
-          zIndex: 9999,
+          zIndex: 99999,
           opacity: 1,
           visibility: "visible",
         }}

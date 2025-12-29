@@ -1,9 +1,56 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { tfLoopItems } from "@/data/products";
 export default function SearchModal() {
+  const [quickLinks, setQuickLinks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuickLinks = async () => {
+      try {
+        const response = await fetch("/api/menu");
+        if (!response.ok) throw new Error("Failed to fetch menu");
+        const data = await response.json();
+
+        // Build quick links from menu data
+        const links = [];
+        if (data.fordLinks && data.fordLinks.length > 0) {
+          links.push({ name: "Ford", href: `/products/${data.fordLinks[0].slug}` });
+        }
+        if (data.gmLateModelLinks && data.gmLateModelLinks.length > 0) {
+          links.push({ name: "GM Late Model", href: `/products/${data.gmLateModelLinks[0].slug}` });
+        }
+        if (data.gmMidMuscleLinks && data.gmMidMuscleLinks.length > 0) {
+          links.push({ name: "GM Mid Muscle", href: `/products/${data.gmMidMuscleLinks[0].slug}` });
+        }
+        if (data.gmClassicMuscleLinks && data.gmClassicMuscleLinks.length > 0) {
+          links.push({ name: "GM Classic Muscle", href: `/products/${data.gmClassicMuscleLinks[0].slug}` });
+        }
+        if (data.moparLinks && data.moparLinks.length > 0) {
+          links.push({ name: "Mopar", href: `/products/${data.moparLinks[0].slug}` });
+        }
+
+        setQuickLinks(links);
+      } catch (err) {
+        console.error("Error fetching quick links:", err);
+        // Fallback to default links
+        setQuickLinks([
+          { name: "Ford", href: "/shop-default" },
+          { name: "GM Late Model", href: "/shop-default" },
+          { name: "GM Mid Muscle", href: "/shop-default" },
+          { name: "GM Classic Muscle", href: "/shop-default" },
+          { name: "Mopar", href: "/shop-default" },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuickLinks();
+  }, []);
+
   return (
     <div className="offcanvas offcanvas-end canvas-search" id="canvasSearch">
       <div className="canvas-wrapper">
@@ -48,31 +95,17 @@ export default function SearchModal() {
               <div className="tf-col-quicklink">
                 <div className="tf-search-content-title fw-5">Quick links</div>
                 <ul className="tf-quicklink-list">
-                  <li className="tf-quicklink-item">
-                    <Link href={`/shop-default`} className="">
-                      Ford
-                    </Link>
-                  </li>
-                  <li className="tf-quicklink-item">
-                    <Link href={`/shop-default`} className="">
-                      GM Late Model
-                    </Link>
-                  </li>
-                  <li className="tf-quicklink-item">
-                    <Link href={`/shop-default`} className="">
-                      GM Early Model
-                    </Link>
-                  </li>
-                  <li className="tf-quicklink-item">
-                    <Link href={`/shop-default`} className="">
-                      Chevy Late Model
-                    </Link>
-                  </li>
-                  <li className="tf-quicklink-item">
-                    <Link href={`/shop-default`} className="">
-                      Mopar
-                    </Link>
-                  </li>
+                  {isLoading ? (
+                    <li className="tf-quicklink-item">Loading...</li>
+                  ) : (
+                    quickLinks.map((link, index) => (
+                      <li key={index} className="tf-quicklink-item">
+                        <Link href={link.href} className="">
+                          {link.name}
+                        </Link>
+                      </li>
+                    ))
+                  )}
                 </ul>
               </div>
               <div className="tf-col-content">

@@ -452,7 +452,7 @@
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
-  z-index: 9999 !important;
+  z-index: 99999 !important;
   position: absolute !important;
   background: #fff !important;
   min-width: 600px !important;
@@ -870,10 +870,10 @@
   top: 0;
   left: 0;
   right: 0;
-  -webkit-transition: 0.15s ease-out;
-  -o-transition: 0.15s ease-out;
-  transition: 0.15s ease-out;
-  z-index: 888;
+  -webkit-transition: transform 0.3s ease-out, top 0.3s ease-out;
+  -o-transition: transform 0.3s ease-out, top 0.3s ease-out;
+  transition: transform 0.3s ease-out, top 0.3s ease-out;
+  z-index: 1000 !important;
   background-color: var(--white);
   &.header-bg {
     background-color: var(--white);
