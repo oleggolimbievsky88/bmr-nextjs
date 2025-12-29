@@ -202,16 +202,16 @@
       &::before {
         content: "";
         width: 0;
-        height: 1px;
+        height: 2px;
         top: 99%;
         position: absolute;
         left: auto;
         right: 0;
         z-index: 1;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
         -webkit-transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
         -o-transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
         transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
-
       }
     }
     li {
@@ -452,12 +452,11 @@
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
-  z-index: 99999 !important;
+  z-index: 10010 !important;
   position: absolute !important;
   background: #fff !important;
   min-width: 600px !important;
   min-height: 800px !important;
-  border: 2px solid red !important; // for debugging, remove later
   .row-demo {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -875,6 +874,7 @@
   transition: transform 0.3s ease-out, top 0.3s ease-out;
   z-index: 1000 !important;
   background-color: var(--white);
+  isolation: isolate; /* Create stacking context for header and mega menu */
   &.header-bg {
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

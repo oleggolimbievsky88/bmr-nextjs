@@ -326,7 +326,7 @@
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
     position: relative;
-    z-index: 1; /* Ensure banner stays below header (z-index: 888) and mega menu (z-index: 9999) */
+    z-index: 1; /* Ensure banner stays below header (z-index: 1000) and mega menu (z-index: 10010) */
   }
 
   .tf-slideshow + * {
@@ -541,11 +541,12 @@
 
 
 /* Remove gap between banner and vehicle search on all screen sizes */
+section.tf-slideshow,
 .tf-slideshow {
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
   position: relative;
-  z-index: 0 !important; /* Lower than header to ensure it stays below */
+  z-index: 0 !important; /* Lower than header (1000) and mega menu (10010) to ensure it stays below */
   isolation: isolate; /* Create isolated stacking context */
 
   .swiper,
@@ -580,6 +581,11 @@
   .swiper-button-next,
   .swiper-button-prev {
     z-index: 0 !important; /* Lower than mega menu */
+  }
+
+  /* Override pagination z-index from slider.scss */
+  .wrap-pagination {
+    z-index: 0 !important;
   }
 }
 
@@ -1589,11 +1595,15 @@
 
 .navbar-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
   overflow-y: visible !important;
   height: auto !important;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1001;
 
   /* Hide at 1400px and below */
   @media (max-width: 1400px) {
@@ -1609,6 +1619,8 @@
 #navbarNavDropdown {
   overflow-y: visible !important;
   height: auto !important;
+  position: relative;
+  z-index: 1002;
 
   /* Hide at 1400px and below */
   @media (max-width: 1400px) {
@@ -1622,27 +1634,142 @@
 
 .nav-item {
   position: static;
-  padding-right: 15px;  /* Reduced from 20px */
+  padding-right: 0;
   height: auto;
   flex-shrink: 0;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  z-index: 1001;
+
+  // Better spacing for dropdown items
+  &.dropdown {
+    position: static;
+    z-index: 1002;
+  }
 }
 
 .nav-link {
   color: #fff !important;
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 13px;  /* Reduced from 15px */
-  padding: 10px 8px;  /* Reduced from 10px 0px */
-  transition: all .3s ease;
-  font-family: Arial, sans-serif;
-  letter-spacing: 0.8px;  /* Reduced from 1px */
+  font-size: 14px;
+  padding: 12px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.5px;
   white-space: nowrap;
+  position: relative;
+  border-radius: 6px;
+  margin: 0;
+  text-decoration: none;
+
+  // Modern hover effect with background
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  // Underline effect (only for non-dropdown links)
+  &:not(.dropdown-toggle)::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: calc(100% - 32px);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #dc3545, transparent);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  // Enhanced dropdown toggle styling
+  &.dropdown-toggle {
+    padding-right: 28px;
+
+    // Style Bootstrap's default dropdown arrow
+    &::after {
+      border-top-color: currentColor;
+      border-width: 5px 4px 0;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: 8px;
+      vertical-align: 0.2em;
+    }
+  }
+}
+
+.nav-item {
+  position: relative;
+
+  // Active state for dropdown
+  &.dropdown.show,
+  &:hover {
+    .nav-link {
+      color: #dc3545 !important;
+
+      &::before {
+        opacity: 1;
+      }
+
+      &:not(.dropdown-toggle)::after {
+        transform: translateX(-50%) scaleX(1);
+      }
+
+      &.dropdown-toggle::after {
+        transform: rotate(180deg);
+      }
+    }
+  }
 }
 
 .nav-link:hover,
 .nav-link:focus {
   color: #dc3545 !important;
+
+  &::before {
+    opacity: 1;
+  }
+
+  &:not(.dropdown-toggle)::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+// Active state styling
+.nav-link.active,
+.nav-item.active .nav-link {
+  color: #dc3545 !important;
+
+  &::before {
+    opacity: 1;
+    background: rgba(220, 53, 69, 0.1);
+  }
+
+  &:not(.dropdown-toggle)::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+// Focus-visible for better accessibility
+.nav-link:focus-visible {
+  outline: 2px solid #dc3545;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+// Smooth transitions for all interactive states
+.nav-link {
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 /* Dropdown styles */
@@ -1674,6 +1801,8 @@
   width: auto;
   min-width: 600px;
   padding: 20px;
+  z-index: 10010 !important;
+  position: absolute !important;
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {

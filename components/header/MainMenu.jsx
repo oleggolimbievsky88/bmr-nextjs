@@ -254,7 +254,7 @@ export default function MainMenu({ initialMenuData }) {
           left: 0,
           right: 0,
           width: "100%",
-          zIndex: 99999,
+          zIndex: 10010,
           opacity: 1,
           visibility: "visible",
         }}
@@ -373,11 +373,11 @@ export default function MainMenu({ initialMenuData }) {
   return (
     <nav
       className="navbar navbar-expand-xxl text-center"
-      style={{ position: "relative", overflow: "visible" }}
+      style={{ position: "relative", overflow: "visible", zIndex: 1002 }}
     >
       <div
         className="container-fluid"
-        style={{ position: "relative", overflow: "visible" }}
+        style={{ position: "relative", overflow: "visible", zIndex: 1002 }}
       >
         <div
           className="collapse navbar-collapse"
@@ -387,11 +387,12 @@ export default function MainMenu({ initialMenuData }) {
             justifyContent: "center",
             position: "relative",
             overflow: "visible",
+            zIndex: 1002,
           }}
         >
           <ul
             className="navbar-nav"
-            style={{ position: "relative", overflow: "visible" }}
+            style={{ position: "relative", overflow: "visible", zIndex: 1002 }}
           >
             {/* <li className="nav-item">
               <Link href="/" className="nav-link">
