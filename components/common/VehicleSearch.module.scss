@@ -5,7 +5,7 @@
 	border-bottom: 1px solid #e0e0e0;
 	border-left: none;
 	border-right: none;
-	padding: 2px 20px;
+	padding: 1px 20px;
 	margin: 0 auto;
 	max-width: 1200px;
 	width: 100%;
@@ -13,8 +13,8 @@
 	margin-bottom: 0;
 
 	@media (min-width: 768px) {
-		padding-top: 2px;
-		padding-bottom: 2px;
+		padding-top: 1px;
+		padding-bottom: 1px;
 		padding-left: 20px;
 		padding-right: 20px;
 		margin-top: 0;
@@ -389,8 +389,8 @@
 		padding-bottom: 0 !important;
 
 		@media (min-width: 768px) {
-			padding-top: 2px !important;
-			padding-bottom: 2px !important;
+			padding-top: 1px !important;
+			padding-bottom: 1px !important;
 		}
 	}
 }

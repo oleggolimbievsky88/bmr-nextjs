@@ -942,6 +942,19 @@
   text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
+.platform-header-wrapper {
+  width: 100%;
+  background: #000;
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 5px;
+
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .platform-header-container {
   position: relative;
   width: 100%;
@@ -967,9 +980,7 @@
 .platform-header-content {
   position: relative;
   z-index: 2;
-  max-width: 1200px;
-  margin: 0 3vw 0 0;
-  padding-left: 6vw;
+  padding-left: 2rem;
   padding-right: 1rem;
 }
 

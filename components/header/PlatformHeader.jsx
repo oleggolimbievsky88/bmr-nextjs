@@ -32,20 +32,22 @@ export default function PlatformHeader({
         platformData.mainCategory.slice(1));
 
   return (
-    <div className="container-fluid px-0 m-0 p-0">
-      <div
-        className="platform-header-container"
-        style={{
-          backgroundImage: `url(${encodedImageUrl})`,
-        }}
-      >
-        <div className="platform-header-overlay" />
-        <div className="platform-header-content">
-          <h1 className="platform-header-title">
-            {yearDisplay}
-            <br />
-            {platformData.Name} {displayMainCategory && displayMainCategory}
-          </h1>
+    <div className="platform-header-wrapper">
+      <div className="container">
+        <div
+          className="platform-header-container"
+          style={{
+            backgroundImage: `url(${encodedImageUrl})`,
+          }}
+        >
+          <div className="platform-header-overlay" />
+          <div className="platform-header-content">
+            <h1 className="platform-header-title">
+              {yearDisplay}
+              <br />
+              {platformData.Name} {displayMainCategory && displayMainCategory}
+            </h1>
+          </div>
         </div>
       </div>
     </div>
