@@ -1,5 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
+import Header18 from "@/components/header/Header18";
+import PageHeader from "@/components/header/PageHeader";
+import Topbar4 from "@/components/header/Topbar4";
 import Faq1 from "@/components/othersPages/faq/Faq1";
 import Faq2 from "@/components/othersPages/faq/Faq2";
 import Faq3 from "@/components/othersPages/faq/Faq3";
@@ -12,14 +14,10 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Header2 />
+      <Topbar4 />
+      <Header18 />
+      <PageHeader title="FAQ" />
       <>
-        <div className="tf-page-title style-2">
-          <div className="container-full">
-            <div className="heading text-center">FAQ 01</div>
-          </div>
-        </div>
-        {/* /page-title */}
         {/* FAQ */}
         <section className="flat-spacing-11">
           <div className="container">

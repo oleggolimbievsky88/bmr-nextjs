@@ -1600,7 +1600,7 @@ section.tf-slideshow,
   width: 100%;
   overflow-y: visible !important;
   height: auto !important;
-  gap: 12px;
+  gap: 36px;
   flex-wrap: wrap;
   position: relative;
   z-index: 1001;
@@ -1646,6 +1646,17 @@ section.tf-slideshow,
   &.dropdown {
     position: static;
     z-index: 1002;
+
+    // Ensure mega menu is always above banner - break out of stacking context
+    .dropdown-menu.mega-menu,
+    .dropdown-menu.mega-menu.show {
+      z-index: 99999 !important;
+      position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
   }
 }
 
@@ -1797,12 +1808,30 @@ section.tf-slideshow,
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
-  background-color: #fff;
-  width: auto;
-  min-width: 600px;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
   padding: 20px;
-  z-index: 10010 !important;
-  position: absolute !important;
+  z-index: 99999 !important;
+  position: fixed !important;
+  top: 185px !important;
+  left: 0 !important;
+  right: 0 !important;
+  isolation: isolate !important;
+}
+
+.dropdown-menu.mega-menu.show {
+  z-index: 99999 !important;
+  position: fixed !important;
+  top: 185px !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  isolation: isolate !important;
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
@@ -2282,6 +2311,116 @@ section.tf-slideshow,
   }
 }
 
+// About Us Page Styles
+.about-us-intro {
+  padding: 4rem 0;
+}
+
+.about-us-hero {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.about-us-title-wrapper {
+  position: relative;
+  text-align: center;
+  margin-bottom: 4rem;
+  padding: 2.5rem 0;
+}
+
+.about-us-decorative-we {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(10rem, 25vw, 18rem);
+  font-weight: 400;
+  font-family: 'Dancing Script', 'Brush Script MT', 'Allura', cursive, serif;
+  color: rgba(204, 0, 0, 0.1);
+  z-index: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.about-us-main-title {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  line-height: 1.2;
+
+  span {
+    color: var(--primary);
+  }
+}
+
+.about-us-brand {
+  color: var(--primary) !important;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.about-us-content {
+  position: relative;
+  z-index: 1;
+  color: black !important;
+}
+
+.about-us-content p {
+  font-size: 1.375rem;
+  line-height: 1.9;
+  color: #333;
+  margin-bottom: 2.5rem;
+  text-align: left;
+  font-weight: 400;
+}
+
+.about-us-content p:last-child {
+  margin-bottom: 0;
+}
+
+.about-us-intro-text {
+  font-size: 1.5rem;
+  line-height: 2;
+  font-weight: 200;
+}
+
+@media (max-width: 768px) {
+  .about-us-intro {
+    padding: 3rem 0;
+  }
+
+  .about-us-title-wrapper {
+    margin-bottom: 2.5rem;
+    padding: 2rem 0;
+  }
+
+  .about-us-decorative-we {
+    font-size: clamp(7rem, 35vw, 12rem);
+  }
+
+  .about-us-main-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .about-us-content p {
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    line-height: 1.8;
+  }
+
+  .about-us-intro-text {
+    font-size: 1.25rem;
+    line-height: 1.9;
+  }
+}
+
 .video-slider-wrapper {
   position: relative;
   margin: 0 -12px;
@@ -2475,3 +2614,59 @@ section.tf-slideshow,
 	margin-top: 0 !important;
 	padding-top: 0 !important;
 }
+
+/* BMR Custom Racing Styles */
+.bmr-bg-dark {
+  background-color: #0a0a0a;
+}
+
+.bmr-hero {
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Racing Grid/Speed Line Effect */
+.bmr-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Chrome Shimmer Effect for Header */
+.text-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, #ff0000 50%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+  font-style: italic;
+  font-weight: 900;
+}
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+
+.italic-heavy {
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.bmr-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.bmr-card:hover {
+  transform: translateY(-5px);
+  border-color: #dc3545;
+}
+

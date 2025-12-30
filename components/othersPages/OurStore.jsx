@@ -48,7 +48,9 @@ export default function OurStore() {
                 <ul className="tf-social-icon d-flex gap-15 style-default">
                   <li>
                     <a
-                      href="#"
+                      href="https://www.facebook.com/BMRSuspensionInc/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-facebook border-line-black"
                     >
                       <i className="icon fs-16 icon-fb" />
@@ -56,15 +58,9 @@ export default function OurStore() {
                   </li>
                   <li>
                     <a
-                      href="#"
-                      className="box-icon link round social-twiter border-line-black"
-                    >
-                      <i className="icon fs-16 icon-Icon-x" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
+                      href="https://www.instagram.com/bmrsuspension/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-instagram border-line-black"
                     >
                       <i className="icon fs-16 icon-instagram" />
@@ -72,18 +68,22 @@ export default function OurStore() {
                   </li>
                   <li>
                     <a
-                      href="#"
-                      className="box-icon link round social-tiktok border-line-black"
+                      href="https://www.youtube.com/@BMRSuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="box-icon link round social-youtube border-line-black"
                     >
-                      <i className="icon fs-16 icon-tiktok" />
+                      <i className="icon fs-16 icon-youtube" />
                     </a>
                   </li>
                   <li>
                     <a
-                      href="#"
-                      className="box-icon link round social-pinterest border-line-black"
+                      href="https://www.tiktok.com/@bmrsuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="box-icon link round social-tiktok border-line-black"
                     >
-                      <i className="icon fs-16 icon-pinterest-1" />
+                      <i className="icon fs-16 icon-tiktok" />
                     </a>
                   </li>
                 </ul>
@@ -135,7 +135,9 @@ export default function OurStore() {
                 <ul className="tf-social-icon d-flex gap-15 style-default">
                   <li>
                     <a
-                      href="#"
+                      href="https://www.facebook.com/BMRSuspensionInc/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-facebook border-line-black"
                     >
                       <i className="icon fs-16 icon-fb" />
@@ -151,7 +153,9 @@ export default function OurStore() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="https://www.instagram.com/bmrsuspension/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-instagram border-line-black"
                     >
                       <i className="icon fs-16 icon-instagram" />
@@ -159,7 +163,19 @@ export default function OurStore() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="https://www.youtube.com/@BMRSuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="box-icon link round social-youtube border-line-black"
+                    >
+                      <i className="icon fs-16 icon-youtube" />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.tiktok.com/@bmrsuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-tiktok border-line-black"
                     >
                       <i className="icon fs-16 icon-tiktok" />
@@ -242,7 +258,9 @@ export default function OurStore() {
                 <ul className="tf-social-icon d-flex gap-15 style-default">
                   <li>
                     <a
-                      href="#"
+                      href="https://www.facebook.com/BMRSuspensionInc/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-facebook border-line-black"
                     >
                       <i className="icon fs-16 icon-fb" />
@@ -258,7 +276,9 @@ export default function OurStore() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="https://www.instagram.com/bmrsuspension/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-instagram border-line-black"
                     >
                       <i className="icon fs-16 icon-instagram" />
@@ -266,7 +286,19 @@ export default function OurStore() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="https://www.youtube.com/@BMRSuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="box-icon link round social-youtube border-line-black"
+                    >
+                      <i className="icon fs-16 icon-youtube" />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.tiktok.com/@bmrsuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon link round social-tiktok border-line-black"
                     >
                       <i className="icon fs-16 icon-tiktok" />

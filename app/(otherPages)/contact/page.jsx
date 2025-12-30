@@ -1,5 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
+import Header18 from "@/components/header/Header18";
+import Topbar4 from "@/components/header/Topbar4";
+import VehicleSearch from "@/components/common/VehicleSearch";
 import ContactForm2 from "@/components/othersPages/contact/ContactForm2";
 import Map2 from "@/components/othersPages/contact/Map2";
 import React from "react";
@@ -12,7 +14,13 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Header2 />
+      <Topbar4 />
+      <Header18 />
+      <div className="vehicle-search-desktop-wrapper">
+        <div className="container vehicle-search-desktop">
+          <VehicleSearch />
+        </div>
+      </div>
       <div>
         <div
           className="container text-center"
@@ -20,6 +28,9 @@ export default function page() {
         >
           <div className="home-title d-inline-block ">Contact Us</div>
         </div>
+      </div>
+      <div className="container vehicle-search-mobile">
+        <VehicleSearch />
       </div>
       <Map2 />
       <ContactForm2 />

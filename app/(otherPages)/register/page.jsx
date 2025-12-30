@@ -1,5 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
+import Header18 from "@/components/header/Header18";
+import Topbar4 from "@/components/header/Topbar4";
+import VehicleSearch from "@/components/common/VehicleSearch";
 import Register from "@/components/othersPages/Register";
 import React from "react";
 
@@ -10,13 +12,21 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Header2 />
+      <Topbar4 />
+      <Header18 />
+      <div className="vehicle-search-desktop-wrapper">
+        <div className="container vehicle-search-desktop">
+          <VehicleSearch />
+        </div>
+      </div>
       <div className="tf-page-title style-2">
         <div className="container-full">
           <div className="heading text-center">Register</div>
         </div>
       </div>
-
+      <div className="container vehicle-search-mobile">
+        <VehicleSearch />
+      </div>
       <Register />
       <Footer1 />
     </>

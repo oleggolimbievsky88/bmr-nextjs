@@ -19,6 +19,21 @@ export default function Header18({ initialMenuData }) {
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
+
+  useEffect(() => {
+    // Ensure header is always visible on mount
+    if (typeof window !== "undefined") {
+      const header = document.querySelector("header");
+      if (header) {
+        header.style.top = "0px";
+        header.style.transform = "translateY(0)";
+        header.style.display = "block";
+        header.style.visibility = "visible";
+        header.style.opacity = "1";
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (!initialMenuData && !isDataFetched) {
       const fetchMenuData = async () => {
@@ -30,16 +45,24 @@ export default function Header18({ initialMenuData }) {
           setIsDataFetched(true);
         } catch (err) {
           console.error("Error fetching menu:", err);
+          // Use default menu data on error
+          setMenuData(defaultMenuData);
+          setIsDataFetched(true);
         } finally {
           setIsLoading(false);
         }
       };
 
       fetchMenuData();
+    } else if (initialMenuData) {
+      setMenuData(initialMenuData);
+      setIsLoading(false);
+      setIsDataFetched(true);
     }
   }, [initialMenuData, isDataFetched]);
+
   return (
-    <header id="header" className="header-default header-style-2">
+    <header id="header" className="header-default header-style-2" style={{ display: "block", visibility: "visible", opacity: 1 }}>
       <div className="main-header">
         <div className="container">
           <div className="row wrapper-header align-items-center">
@@ -64,18 +87,20 @@ export default function Header18({ initialMenuData }) {
               </a>
             </div>
             <div className="col-xl-2 col-md-8 col-8 d-flex align-items-center justify-content-between">
-              <Link href={`/`} className="logo-header">
+              <Link href={`/`} className="logo-header" style={{ display: "block", minHeight: "50px" }}>
                 <Image
                   alt="logo"
                   className="logo"
                   src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
                   width={230}
                   height={50}
-                  style={{ width: "100%", height: "auto" }}
-                />{" "}
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                  priority
+                  unoptimized
+                />
               </Link>
               <div className="tf-md-hidden d-flex align-items-center mobile-search-icon">
-                <ul className="nav-icon d-flex justify-content-end align-items-center mb-0">
+                <ul className="nav-icon d-flex justify-content-end align-items-center mb-0 gap-3">
                   <li className="nav-search">
                     <a
                       href="#canvasSearch"
@@ -84,6 +109,27 @@ export default function Header18({ initialMenuData }) {
                       className="nav-icon-item"
                     >
                       <i className="icon icon-search" />
+                    </a>
+                  </li>
+                  <li className="nav-account">
+                    <a
+                      href="#login"
+                      data-bs-toggle="modal"
+                      className="nav-icon-item"
+                    >
+                      <i className="icon icon-account" />
+                    </a>
+                  </li>
+                  <li className="nav-cart">
+                    <a
+                      href="#shoppingCart"
+                      data-bs-toggle="modal"
+                      className="nav-icon-item"
+                    >
+                      <i className="icon icon-bag" />
+                      <span className="count-box">
+                        <CartLength />
+                      </span>
                     </a>
                   </li>
                 </ul>
@@ -555,8 +601,8 @@ export default function Header18({ initialMenuData }) {
                   </div> */}
                 </div>
               </div>
-              <nav className="box-navigation text-center tf-md-hidden">
-                <div className="align-items-center justify-content-center ">
+              <nav className="box-navigation text-center tf-md-hidden" style={{ minHeight: "60px", display: "flex", alignItems: "center" }}>
+                <div className="align-items-center justify-content-center" style={{ width: "100%" }}>
                   <MainMenu initialMenuData={menuData} />
                 </div>
               </nav>

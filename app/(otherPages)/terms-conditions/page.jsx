@@ -1,19 +1,16 @@
 import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
+import Header18 from "@/components/header/Header18";
+import PageHeader from "@/components/header/PageHeader";
+import Topbar4 from "@/components/header/Topbar4";
 import React from "react";
 
 export default function page() {
   return (
     <>
-      <Header2 />
+      <Topbar4 />
+      <Header18 />
+      <PageHeader title="Terms & Conditions" />
       <>
-        {/* page-title */}
-        <div className="tf-page-title style-2">
-          <div className="container-full">
-            <div className="heading text-center">Terms &amp; Conditions</div>
-          </div>
-        </div>
-        {/* /page-title */}
         {/* main-page */}
         <section className="flat-spacing-25">
           <div className="container">

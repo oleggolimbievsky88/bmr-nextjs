@@ -8,7 +8,7 @@ export default function BlogDetails({ blog }) {
           <div className="row">
             <div className="col-12">
               <div className="blog-detail-main">
-              
+
                 <div className="blog-detail-main-heading">
                   <ul className="tags-lists justify-content-center">
                     <li>
@@ -156,14 +156,6 @@ export default function BlogDetails({ blog }) {
                           className="box-icon round social-tiktok border-line-black"
                         >
                           <i className="icon fs-14 icon-tiktok" />
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="box-icon round social-pinterest border-line-black"
-                        >
-                          <i className="icon fs-14 icon-pinterest-1" />
                         </a>
                       </li>
                     </ul>

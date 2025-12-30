@@ -13,12 +13,12 @@ export default function Features() {
             <span className="title fw-5">Quality is our priority</span>
             <div>
               <p className="sub-title text_black-2">
-                Our talented stylists have put together outfits that are perfect
-                for the season.
+                Every BMR Suspension product is engineered with precision and tested
+                on our own project vehicles.
               </p>
               <p className="sub-title text_black-2">
-                They've variety of ways to inspire your next fashion-forward
-                look.
+                From street performance to hardcore drag racing, we deliver innovative,
+                quality-oriented suspension solutions made right here in the USA.
               </p>
             </div>
           </div>

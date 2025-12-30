@@ -249,26 +249,20 @@ export const recentCollectionSlides = [
 export const iconBoxes4 = [
   {
     iconClass: "icon-materials",
-    title: "High-Quality Materials",
+    title: "Made in the USA",
     description:
-      "Crafted with precision and excellence, our activewear is meticulously engineered using premium materials to ensure unmatched comfort and durability.",
+      "Every component is manufactured in our facility near Tampa, Florida, using American-made DOM and chrome-moly steel. Our workers cut, bend, notch, drill, and mill each part with precision.",
   },
   {
     iconClass: "icon-design",
-    title: "Laconic Design",
+    title: "Track Tested",
     description:
-      "Simplicity refined. Our activewear embodies the essence of minimalistic design, delivering effortless style that speaks volumes.",
+      "BMR Suspension products are street driven and track tested on our own project vehicles. We race what we build, ensuring every product performs when it matters most.",
   },
   {
     iconClass: "icon-sizes",
-    title: "Various Sizes",
+    title: "Precision Engineering",
     description:
-      "Designed for every body and anyone, our activewear embraces diversity with a wide range of sizes and shapes, celebrating the beauty of individuality.",
-  },
-  {
-    iconClass: "icon-design",
-    title: "Laconic Design",
-    description:
-      "Simplicity refined. Our activewear embodies the essence of minimalistic design, delivering effortless style that speaks volumes.",
+      "Every product is fixture-welded to maintain consistent quality, then bead-blasted and powdercoated using our in-house powdercoating line for durability and performance.",
   },
 ];

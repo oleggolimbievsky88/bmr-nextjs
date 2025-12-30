@@ -89,7 +89,7 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
                 </Link>
               </li>
               <li>
-                <Link href={`#`} className="text-white nav-text">
+                <Link href={`/login`} className="text-white nav-text">
                   My Account
                 </Link>
               </li>

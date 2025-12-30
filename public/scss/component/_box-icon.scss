@@ -36,7 +36,6 @@
     --youtube-cl: rgb(205, 32, 31);
     --tiktok-cl: linear-gradient(#25f4ee, #000, #fe2c55);
     --tiktok-cl2: rgb(254, 44, 85);
-    --pinterest-cl: rgb(203, 32, 39);
     --tumblr-cl: rgb(55, 69, 92);
     --vimeo-cl: rgb(26, 183, 234);
     --snapchat-cl: rgb(255, 221, 0);
@@ -60,10 +59,6 @@
     }
     .social-tiktok:hover {
         background: var(--tiktok-cl);
-        color: var(--white);
-    }
-    .social-pinterest:hover {
-        background: var(--pinterest-cl);
         color: var(--white);
     }
     &.style-white {
@@ -107,15 +102,8 @@
                 border-color: var(--tiktok-cl2);
             }
         }
-        &.social-pinterest {
-            &:hover {
-                background: transparent;
-                color: var(--pinterest-cl);
-                border-color: var(--pinterest-cl);
-            }
-        }
     }
-  
+
     &.style-default {
         li {
             display: inline-flex;
@@ -143,11 +131,6 @@
             .social-tiktok {
                 &:hover {
                     color: var(--tiktok-cl2);
-                }
-            }
-            .social-pinterest {
-                &:hover {
-                    color: var(--pinterest-cl);
                 }
             }
         }

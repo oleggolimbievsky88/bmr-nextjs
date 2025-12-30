@@ -60,9 +60,19 @@ export default function RootLayout({ children }) {
     };
   }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
 
-  const [scrollDirection, setScrollDirection] = useState("down");
+  const [scrollDirection, setScrollDirection] = useState("up");
 
   useEffect(() => {
+    // Ensure header is visible on initial load
+    const header = document.querySelector("header");
+    if (header) {
+      header.style.top = "0px";
+      header.style.transform = "translateY(0)";
+      header.style.display = "block";
+      header.style.visibility = "visible";
+      header.style.opacity = "1";
+    }
+
     setScrollDirection("up");
     const lastScrollY = { current: window.scrollY };
 
@@ -78,8 +88,8 @@ export default function RootLayout({ children }) {
           setScrollDirection("up");
         }
       } else {
-        // Below 250px
-        setScrollDirection("down");
+        // Below 250px - always show header
+        setScrollDirection("up");
       }
 
       lastScrollY.current = currentScrollY;
@@ -118,10 +128,20 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     const header = document.querySelector("header");
-    if (header) {
-      if (scrollDirection === "up") {
+    if (header && typeof window !== "undefined") {
+      // Always show header if near top of page
+      if (window.scrollY <= 250) {
         header.style.top = "0px";
         header.style.transform = "translateY(0)";
+        header.style.display = "block";
+        header.style.visibility = "visible";
+        header.style.opacity = "1";
+      } else if (scrollDirection === "up") {
+        header.style.top = "0px";
+        header.style.transform = "translateY(0)";
+        header.style.display = "block";
+        header.style.visibility = "visible";
+        header.style.opacity = "1";
       } else {
         header.style.top = "-185px";
         header.style.transform = "translateY(-185px)";
@@ -144,6 +164,12 @@ export default function RootLayout({ children }) {
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
         />
       </head>
       <body className="preload-wrapper popup-loader">

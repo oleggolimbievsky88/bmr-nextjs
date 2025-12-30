@@ -52,7 +52,9 @@ export default function Footer1({ bgColor = "background-black" }) {
                   <ul className="tf-social-icon d-flex gap-10 style-white">
                     <li>
                       <a
-                        href="#"
+                        href="https://www.facebook.com/BMRSuspensionInc/"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="box-icon w_34 round social-facebook social-line"
                       >
                         <i className="icon fs-14 icon-fb" />
@@ -60,15 +62,9 @@ export default function Footer1({ bgColor = "background-black" }) {
                     </li>
                     <li>
                       <a
-                        href="#"
-                        className="box-icon w_34 round social-twiter social-line"
-                      >
-                        <i className="icon fs-12 icon-Icon-x" />
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
+                        href="https://www.instagram.com/bmrsuspension/"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="box-icon w_34 round social-instagram social-line"
                       >
                         <i className="icon fs-14 icon-instagram" />
@@ -76,18 +72,22 @@ export default function Footer1({ bgColor = "background-black" }) {
                     </li>
                     <li>
                       <a
-                        href="#"
-                        className="box-icon w_34 round social-tiktok social-line"
+                        href="https://www.youtube.com/@BMRSuspension"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="box-icon w_34 round social-youtube social-line"
                       >
-                        <i className="icon fs-14 icon-tiktok" />
+                        <i className="icon fs-14 icon-youtube" />
                       </a>
                     </li>
                     <li>
                       <a
-                        href="#"
-                        className="box-icon w_34 round social-pinterest social-line"
+                        href="https://www.tiktok.com/@bmrsuspension"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="box-icon w_34 round social-tiktok social-line"
                       >
-                        <i className="icon fs-14 icon-pinterest-1" />
+                        <i className="icon fs-14 icon-tiktok" />
                       </a>
                     </li>
                   </ul>

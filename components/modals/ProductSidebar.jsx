@@ -232,7 +232,9 @@ export default function ProductSidebar() {
                 <ul className="tf-social-icon d-flex gap-10">
                   <li>
                     <a
-                      href="#"
+                      href="https://www.facebook.com/BMRSuspensionInc/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon w_34 round bg_line social-facebook"
                     >
                       <i className="icon fs-14 icon-fb" />
@@ -248,7 +250,9 @@ export default function ProductSidebar() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="https://www.instagram.com/bmrsuspension/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon w_34 round bg_line social-instagram"
                     >
                       <i className="icon fs-14 icon-instagram" />
@@ -256,7 +260,19 @@ export default function ProductSidebar() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="https://www.youtube.com/@BMRSuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="box-icon w_34 round bg_line social-youtube"
+                    >
+                      <i className="icon fs-14 icon-youtube" />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.tiktok.com/@bmrsuspension"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="box-icon w_34 round bg_line social-tiktok"
                     >
                       <i className="icon fs-14 icon-tiktok" />

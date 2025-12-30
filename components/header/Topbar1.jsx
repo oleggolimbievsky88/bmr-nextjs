@@ -13,7 +13,9 @@ export default function Topbar1() {
           <ul className="tf-top-bar_item tf-social-icon d-flex gap-10">
             <li>
               <a
-                href="#"
+                href="https://www.facebook.com/BMRSuspensionInc/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="box-icon w_28 round social-facebook bg_line"
               >
                 <i className="icon fs-12 icon-fb" />
@@ -26,14 +28,31 @@ export default function Topbar1() {
             </li>
             <li>
               <a
-                href="#"
+                href="https://www.instagram.com/bmrsuspension/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="box-icon w_28 round social-instagram bg_line"
               >
                 <i className="icon fs-12 icon-instagram" />
               </a>
             </li>
             <li>
-              <a href="#" className="box-icon w_28 round social-tiktok bg_line">
+              <a
+                href="https://www.youtube.com/@BMRSuspension"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="box-icon w_28 round social-youtube bg_line"
+              >
+                <i className="icon fs-12 icon-youtube" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.tiktok.com/@bmrsuspension"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="box-icon w_28 round social-tiktok bg_line"
+              >
                 <i className="icon fs-12 icon-tiktok" />
               </a>
             </li>

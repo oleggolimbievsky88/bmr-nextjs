@@ -249,14 +249,17 @@ export default function MainMenu({ initialMenuData }) {
         onMouseLeave={handlePlatformLeave}
         style={{
           display: "block !important",
-          position: "absolute",
-          top: "100%",
+          position: "fixed",
+          top: "185px",
           left: 0,
           right: 0,
           width: "100%",
-          zIndex: 10010,
+          zIndex: 99999,
           opacity: 1,
           visibility: "visible",
+          isolation: "isolate",
+          backgroundColor: "#ffffff",
+          background: "#ffffff",
         }}
       >
         <div className="mega-menu-container">
@@ -370,29 +373,30 @@ export default function MainMenu({ initialMenuData }) {
     );
   };
 
+  // Always render the menu structure, even if data is loading
   return (
     <nav
       className="navbar navbar-expand-xxl text-center"
-      style={{ position: "relative", overflow: "visible", zIndex: 1002 }}
+      style={{ position: "static", overflow: "visible", zIndex: 1000, minHeight: "60px" }}
     >
       <div
         className="container-fluid"
-        style={{ position: "relative", overflow: "visible", zIndex: 1002 }}
+        style={{ position: "static", overflow: "visible", zIndex: 1000 }}
       >
         <div
-          className="collapse navbar-collapse"
+          className="collapse navbar-collapse show"
           id="navbarNavDropdown"
           style={{
             display: "flex",
             justifyContent: "center",
-            position: "relative",
+            position: "static",
             overflow: "visible",
-            zIndex: 1002,
+            zIndex: 1000,
           }}
         >
           <ul
             className="navbar-nav"
-            style={{ position: "relative", overflow: "visible", zIndex: 1002 }}
+            style={{ position: "static", overflow: "visible", zIndex: 1000 }}
           >
             {/* <li className="nav-item">
               <Link href="/" className="nav-link">
