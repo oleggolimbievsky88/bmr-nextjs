@@ -1,5 +1,6 @@
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
+import VehicleSearch from "@/components/common/VehicleSearch";
 import StoreLocations from "@/components/othersPages/StoreLocations";
 import React from "react";
 
@@ -11,10 +12,18 @@ export default function page() {
   return (
     <>
       <Header2 />
+      <div className="vehicle-search-desktop-wrapper">
+        <div className="container vehicle-search-desktop">
+          <VehicleSearch />
+        </div>
+      </div>
       <div className="tf-page-title style-2">
         <div className="container-full">
           <div className="heading text-center">Store locations</div>
         </div>
+      </div>
+      <div className="container vehicle-search-mobile">
+        <VehicleSearch />
       </div>
 
       <StoreLocations />

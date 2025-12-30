@@ -3,62 +3,60 @@ import React from "react";
 
 export default function Map2() {
   return (
-    <section className="flat-spacing-9">
+    <section className="flat-spacing-9 contact-map-section">
       <div className="container">
-        <div className="tf-grid-layout gap-0 lg-col-2">
-          <div className="tf-content-left has-mt">
-            <div className="sticky-top">
-              <h4 className="mb_20 bold-font">BMR Suspension</h4>
-              <div className="mb_20">
-                <p className="mb_15">
-                  <strong>Address</strong>
-                </p>
-                <p>
-                  1033 Pine Chase Ave <br />
-                  Lakeland, FL 33815
-                </p>
-              </div>
-              <div className="mb_20">
-                <p className="mb_15">
-                  <strong>Phone</strong>
-                </p>
-                <p>(813) 986-9302</p>
-              </div>
-              <div className="mb_20">
-                <p className="mb_15">
-                  <strong>Email</strong>
-                </p>
-                <p>sales@bmrsuspension.com</p>
-              </div>
-              <div className="mb_36">
-                <p className="mb_15">
-                  <strong>Open Time</strong>
-                </p>
-                <p className="mb_15">Monday - Friday: 8:30AM - 6:00PM</p>
-                <p>Saturday - Sunday: Closed</p>
-              </div>
-              <div>
-                <ul className="tf-social-icon d-flex gap-20 style-default">
-                  {socialLinksWithBorder.map((link, index) => (
-                    <li key={index}>
-                      <a
-                        href={link.href}
-                        className={`box-icon link round ${link.className} ${link.borderClass}`}
-                      >
-                        <i
-                          className={`icon ${link.iconSize} ${link.iconClass}`}
-                        />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <div className="tf-grid-layout gap-30 lg-col-2">
+          <div className="contact-info">
+            <h4 className="mb_20 bold-font">BMR Suspension</h4>
+            <div className="mb_20">
+              <p className="mb_15">
+                <strong>Address</strong>
+              </p>
+              <p>
+                1033 Pine Chase Ave <br />
+                Lakeland, FL 33815
+              </p>
+            </div>
+            <div className="mb_20">
+              <p className="mb_15">
+                <strong>Phone</strong>
+              </p>
+              <p>(813) 986-9302</p>
+            </div>
+            <div className="mb_20">
+              <p className="mb_15">
+                <strong>Email</strong>
+              </p>
+              <p>sales@bmrsuspension.com</p>
+            </div>
+            <div className="mb_36">
+              <p className="mb_15">
+                <strong>Open Time</strong>
+              </p>
+              <p className="mb_15">Monday - Friday: 8:30AM - 6:00PM</p>
+              <p>Saturday - Sunday: Closed</p>
+            </div>
+            <div>
+              <ul className="tf-social-icon d-flex gap-20 style-default">
+                {socialLinksWithBorder.map((link, index) => (
+                  <li key={index}>
+                    <a
+                      href={link.href}
+                      className={`box-icon link round ${link.className} ${link.borderClass}`}
+                    >
+                      <i
+                        className={`icon ${link.iconSize} ${link.iconClass}`}
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-          <div className="w-100 pt-5">
+          <div className="contact-map-wrapper">
             <iframe
               width="100%"
-              height={894}
+              height={400}
               style={{ border: 0 }}
               allowFullScreen=""
               loading="lazy"

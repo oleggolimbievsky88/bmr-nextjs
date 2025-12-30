@@ -1,5 +1,6 @@
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
+import VehicleSearch from "@/components/common/VehicleSearch";
 import Faq1 from "@/components/othersPages/faq/Faq1";
 import Faq2 from "@/components/othersPages/faq/Faq2";
 import Faq3 from "@/components/othersPages/faq/Faq3";
@@ -13,6 +14,11 @@ export default function page() {
   return (
     <>
       <Header2 />
+      <div className="vehicle-search-desktop-wrapper">
+        <div className="container vehicle-search-desktop">
+          <VehicleSearch />
+        </div>
+      </div>
       <>
         {/* page-title */}
         <div className="tf-page-title style-2">
@@ -21,6 +27,9 @@ export default function page() {
           </div>
         </div>
         {/* /page-title */}
+        <div className="container vehicle-search-mobile">
+          <VehicleSearch />
+        </div>
         {/* FAQ */}
         <section className="flat-spacing-11">
           <div className="container">

@@ -1,6 +1,7 @@
 // // import Testimonials from "@/components/common/Testimonials";
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
+import VehicleSearch from "@/components/common/VehicleSearch";
 import Cart from "@/components/othersPages/Cart";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import CartCount from "@/components/common/CartCount";
@@ -18,12 +19,20 @@ export default function page() {
   return (
     <>
       <Header2 />
+      <div className="vehicle-search-desktop-wrapper">
+        <div className="container vehicle-search-desktop">
+          <VehicleSearch />
+        </div>
+      </div>
       <div className="tf-page-title" style={{ paddingBottom: "0px" }}>
         <div className="container-full">
           <div className="Impact-Heading text-center">
             Your Cart (<CartCount />)
           </div>
         </div>
+      </div>
+      <div className="container vehicle-search-mobile">
+        <VehicleSearch />
       </div>
 
       <Cart />

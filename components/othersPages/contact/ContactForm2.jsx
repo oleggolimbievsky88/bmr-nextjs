@@ -59,16 +59,19 @@ export default function ContactForm2() {
                   id="name"
                   required
                   placeholder="Name *"
+                  autoComplete="name"
+                  suppressHydrationWarning
                 />
               </fieldset>
               <fieldset className="w-100">
                 <input
                   type="email"
-                  autoComplete="abc@xyz.com"
+                  autoComplete="email"
                   name="email"
                   id="email"
                   required
                   placeholder="Email *"
+                  suppressHydrationWarning
                 />
               </fieldset>
             </div>
@@ -81,6 +84,7 @@ export default function ContactForm2() {
                 cols={30}
                 rows={10}
                 defaultValue={""}
+                suppressHydrationWarning
               />
             </div>
             <div className="send-wrap">

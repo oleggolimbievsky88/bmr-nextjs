@@ -20,13 +20,14 @@ export default function Login() {
                       placeholder=""
                       required
                       type="email"
-                      autoComplete="abc@xyz.com"
-                      id="property3"
+                      autoComplete="email"
+                      id="recover-email"
                       name="email"
+                      suppressHydrationWarning
                     />
                     <label
                       className="tf-field-label fw-4 text_black-2"
-                      htmlFor="property3"
+                      htmlFor="recover-email"
                     >
                       Email *
                     </label>
@@ -57,13 +58,14 @@ export default function Login() {
                       className="tf-field-input tf-input"
                       placeholder=""
                       type="email"
-                      autoComplete="abc@xyz.com"
-                      id="property3"
+                      autoComplete="email"
+                      id="login-email"
                       name="email"
+                      suppressHydrationWarning
                     />
                     <label
                       className="tf-field-label fw-4 text_black-2"
-                      htmlFor="property3"
+                      htmlFor="login-email"
                     >
                       Email *
                     </label>
@@ -74,13 +76,14 @@ export default function Login() {
                       className="tf-field-input tf-input"
                       placeholder=""
                       type="password"
-                      id="property4"
+                      id="login-password"
                       name="password"
                       autoComplete="current-password"
+                      suppressHydrationWarning
                     />
                     <label
                       className="tf-field-label fw-4 text_black-2"
-                      htmlFor="property4"
+                      htmlFor="login-password"
                     >
                       Password *
                     </label>
