@@ -1,20 +1,37 @@
 .contact-map-section {
 	.tf-grid-layout {
-		align-items: flex-start;
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		align-items: start !important;
+		gap: 30px !important;
+
+		@media (max-width: 991.98px) {
+			grid-template-columns: 1fr !important;
+		}
 	}
 
 	.contact-info {
+		grid-column: 1;
+		order: 1;
+
 		@media (max-width: 991.98px) {
 			margin-bottom: 30px;
+			grid-column: 1;
+			order: 1;
 		}
 	}
 
 	.contact-map-wrapper {
+		grid-column: 2;
+		order: 2;
 		position: sticky;
 		top: 20px;
 		height: fit-content;
+		align-self: start;
 
 		@media (max-width: 991.98px) {
+			grid-column: 1;
+			order: 2;
 			position: static;
 		}
 

@@ -62,7 +62,11 @@ export default function Header18({ initialMenuData }) {
   }, [initialMenuData, isDataFetched]);
 
   return (
-    <header id="header" className="header-default header-style-2" style={{ display: "block", visibility: "visible", opacity: 1 }}>
+    <header
+      id="header"
+      className="header-default header-style-2"
+      style={{ display: "block", visibility: "visible", opacity: 1 }}
+    >
       <div className="main-header">
         <div className="container">
           <div className="row wrapper-header align-items-center">
@@ -87,13 +91,17 @@ export default function Header18({ initialMenuData }) {
               </a>
             </div>
             <div className="col-xl-2 col-md-8 col-8 d-flex align-items-center justify-content-between">
-              <Link href={`/`} className="logo-header" style={{ display: "block", minHeight: "50px" }}>
+              <Link
+                href={`/`}
+                className="logo-header"
+                style={{ display: "block", minHeight: "50px" }}
+              >
                 <Image
                   alt="logo"
                   className="logo"
                   src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
-                  width={230}
-                  height={50}
+                  width={250}
+                  height={60}
                   style={{ width: "100%", height: "auto", display: "block" }}
                   priority
                   unoptimized
@@ -601,8 +609,18 @@ export default function Header18({ initialMenuData }) {
                   </div> */}
                 </div>
               </div>
-              <nav className="box-navigation text-center tf-md-hidden" style={{ minHeight: "60px", display: "flex", alignItems: "center" }}>
-                <div className="align-items-center justify-content-center" style={{ width: "100%" }}>
+              <nav
+                className="box-navigation text-center tf-md-hidden"
+                style={{
+                  minHeight: "60px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  className="align-items-center justify-content-center"
+                  style={{ width: "100%" }}
+                >
                   <MainMenu initialMenuData={menuData} />
                 </div>
               </nav>

@@ -6,8 +6,6 @@ import VehicleSearch from "@/components/common/VehicleSearch";
 import About from "@/components/othersPages/about/About";
 import Features from "@/components/othersPages/about/Features";
 import FlatTitle from "@/components/othersPages/about/FlatTitle";
-import ShopGram from "@/components/othersPages/about/ShopGram";
-import Testimonials from "@/components/othersPages/about/Testimonials";
 import React from "react";
 
 export const metadata = {
@@ -25,27 +23,16 @@ export default function page() {
           <VehicleSearch />
         </div>
       </div>
-      <PageHeader title="About Us" />
+      {/* <PageHeader title="About Us" /> */}
       <div className="container vehicle-search-mobile">
         <VehicleSearch />
       </div>
-      <FlatTitle />
+
       <div className="container">
         <div className="line"></div>
       </div>
-      <About /> <br />
-      <br />
-      <div className="container">
-        <div className="line"></div>
-      </div>{" "}
-      <br /> <br />
+      <About />
       <Features />
-      {/* <Testimonials /> */}
-      <div className="container">
-        <div className="line"></div>
-      </div>{" "}
-      <br />
-      {/* <ShopGram /> */}
       <Footer1 />
     </>
   );

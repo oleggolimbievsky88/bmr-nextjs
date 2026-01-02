@@ -120,12 +120,15 @@ export default function MobileMenu() {
         { href: "/about-us", label: "About us" },
         { href: "/contact-1", label: "Contact" },
         { href: "/faq-1", label: "FAQ" },
-        { href: "/our-store", label: "Our store" },
-        { href: "/store-locations", label: "Store locator" },
-        { href: "/my-account", label: "My account" },
-        { href: "/wishlist", label: "Wishlist" },
+
         { href: "/terms", label: "Terms and conditions" },
       ],
+    },
+    {
+      id: "my-account",
+      href: "/login",
+      label: "Login",
+      type: "link",
     },
   ];
 
@@ -241,10 +244,10 @@ export default function MobileMenu() {
           </ul>
           <div className="mb-other-content">
             <div className="d-flex group-icon">
-              <Link href={`/wishlist`} className="site-nav-icon">
+              {/* <Link href={`/wishlist`} className="site-nav-icon">
                 <i className="icon icon-heart" />
                 Wishlist
-              </Link>
+              </Link> */}
               <Link href={`/homes/home-search`} className="site-nav-icon">
                 <i className="icon icon-search" />
                 Search
@@ -258,10 +261,10 @@ export default function MobileMenu() {
             <ul className="mb-info">
               <li>
                 Address: BMR Suspension <br />
-                Performance Suspension & Chassis Parts
+                1033 Pine Chase Ave, Lakeland, FL 33815
               </li>
               <li>
-                Email: <b>info@bmrsuspension.com</b>
+                Email: <b>sales@bmrsuspension.com</b>
               </li>
               <li>
                 Phone: <b>(813) 986-9302</b>

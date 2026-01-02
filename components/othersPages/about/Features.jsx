@@ -8,17 +8,20 @@ export default function Features() {
   return (
     <section>
       <div className="container">
-        <div className="bg_grey-2 radius-10 flat-wrap-iconbox">
+        <div className="bg_grey-7 radius-20 flat-wrap-iconbox mb-5 mt-5">
           <div className="flat-title lg">
-            <span className="title fw-5">Quality is our priority</span>
+            <span className="title mb-5 italic-heavy">
+              Quality is Our Priority
+            </span>
             <div>
               <p className="sub-title text_black-2">
-                Every BMR Suspension product is engineered with precision and tested
-                on our own project vehicles.
+                Every BMR Suspension product is engineered with precision and
+                tested on our own project vehicles.
               </p>
               <p className="sub-title text_black-2">
-                From street performance to hardcore drag racing, we deliver innovative,
-                quality-oriented suspension solutions made right here in the USA.
+                From street performance to hardcore drag racing, we deliver
+                innovative, quality-oriented suspension solutions made right
+                here in the USA.
               </p>
             </div>
           </div>

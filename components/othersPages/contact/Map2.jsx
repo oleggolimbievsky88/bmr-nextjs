@@ -56,7 +56,7 @@ export default function Map2() {
           <div className="contact-map-wrapper">
             <iframe
               width="100%"
-              height={400}
+              height={500}
               style={{ border: 0 }}
               allowFullScreen=""
               loading="lazy"

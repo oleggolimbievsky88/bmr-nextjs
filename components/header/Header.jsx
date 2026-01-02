@@ -96,6 +96,7 @@ export default function Header({
                 </Link>
               </li> */}
               <li className="nav-cart">
+                asdf
                 <a
                   href="#shoppingCart"
                   data-bs-toggle="modal"

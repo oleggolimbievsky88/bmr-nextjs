@@ -302,10 +302,18 @@
 }
 .logo-header {
   img {
-  padding: 10px 0px;
+  padding: 10px 0px 10px 0px;
     max-width: 100%;
     height: auto;
     object-fit: contain;
+  }
+
+  // tablet logo sizing
+  @media (max-width: 1200px) {
+    img {
+      max-width: 250px;
+      height: auto;
+    }
   }
 
   // Mobile logo sizing
