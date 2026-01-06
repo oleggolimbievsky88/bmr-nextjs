@@ -20,7 +20,7 @@ export default function Header({
     >
       <div className="px_15 lg-px_40">
         <div className="row wrapper-header align-items-center">
-          <div className="col-md-4 col-3 tf-lg-hidden">
+          <div className="col-md-4 col-auto tf-lg-hidden header-left-icon">
             <a
               href="#mobileMenu"
               data-bs-toggle="offcanvas"
@@ -41,14 +41,14 @@ export default function Header({
               </svg>
             </a>
           </div>
-          <div className="col-xl-3 col-md-4 col-6">
+          <div className="col-xl-3 col-md-4 col text-center">
             <Link href={`/`} className="logo-header">
               <Image
                 alt="logo"
                 className="logo"
                 src="https://bmrsuspension.com/siteart/logo/bmr-logo-white.png"
-                width={200}
-                height={40}
+                width={500}
+                height={100}
                 style={{
                   width: "100%",
                   height: "auto",
@@ -66,7 +66,7 @@ export default function Header({
               </ul>
             </nav>
           </div>
-          <div className="col-xl-3 col-md-4 col-3 text-white">
+          <div className="col-xl-3 col-md-4 col-auto text-white header-right-icons">
             <ul className="nav-icon d-flex justify-content-end align-items-center gap-20 text-white">
               <li className="nav-search text-white">
                 <a
@@ -96,7 +96,6 @@ export default function Header({
                 </Link>
               </li> */}
               <li className="nav-cart">
-                asdf
                 <a
                   href="#shoppingCart"
                   data-bs-toggle="modal"

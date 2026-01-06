@@ -185,7 +185,16 @@
   }
 }
 #header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000 !important;
   background-color: #000;
+  -webkit-transition: transform 0.3s ease-out, top 0.3s ease-out;
+  -o-transition: transform 0.3s ease-out, top 0.3s ease-out;
+  transition: transform 0.3s ease-out, top 0.3s ease-out;
 
   .box-nav-ul {
     .item-link {
@@ -301,8 +310,13 @@
   z-index: 999;
 }
 .logo-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
   img {
-  padding: 10px 0px 10px 0px;
+    padding: 10px 0px 10px 0px;
     max-width: 100%;
     height: auto;
     object-fit: contain;
@@ -311,26 +325,65 @@
   // tablet logo sizing
   @media (max-width: 1200px) {
     img {
-      max-width: 250px;
+      max-width: 280px;
       height: auto;
     }
   }
 
-  // Mobile logo sizing
-  @media (max-width: 768px) {
+  // Mobile logo sizing - make it much larger and centered like template
+  @media (max-width: 767px) {
     img {
-      max-width: 180px;
-      height: auto;
+      max-width: 100% !important;
+      width: 100% !important;
+      min-height: 50px !important;
+      height: auto !important;
+      padding: 10px 15px !important;
+      object-fit: contain;
     }
   }
 
   @media (max-width: 480px) {
     img {
-      max-width: 150px;
-      height: auto;
+      max-width: 100% !important;
+      width: 100% !important;
+      min-height: 45px !important;
+      height: auto !important;
+      padding: 8px 10px !important;
+      object-fit: contain;
     }
   }
 }
+
+// Mobile header spacing to match template - equal padding on left and right
+@media (max-width: 767px) {
+  .wrapper-header {
+    .header-left-icon {
+      padding-left: 15px;
+      padding-right: 0;
+      flex: 0 0 auto;
+    }
+
+    .header-right-icons {
+      padding-right: 15px;
+      padding-left: 0;
+      flex: 0 0 auto;
+    }
+
+    .col.text-center {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .nav-icon {
+      gap: 15px !important;
+
+      .nav-icon-item {
+        font-size: 20px;
+      }
+    }
+  }
+}
+
 
 .header-main-title {
   font-family: 'Impact', sans-serif;
