@@ -119,15 +119,7 @@ export default function Header18({ initialMenuData }) {
                       <i className="icon icon-search" />
                     </a>
                   </li>
-                  <li className="nav-account">
-                    <a
-                      href="#login"
-                      data-bs-toggle="modal"
-                      className="nav-icon-item"
-                    >
-                      <i className="icon icon-account" />
-                    </a>
-                  </li>
+
                   <li className="nav-cart">
                     <a
                       href="#shoppingCart"
