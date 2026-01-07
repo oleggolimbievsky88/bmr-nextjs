@@ -7,4 +7,8 @@ node_modules
 .env*.local
 .env*.development
 .env.preview
+.env.local.backup
+.env.local.backup-*
+*.backup
+.vscode/settings.json
 
