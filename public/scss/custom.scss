@@ -617,9 +617,50 @@ section.tf-slideshow,
   position: absolute !important;
   box-sizing: border-box !important;
   overflow-x: hidden !important;
-  overflow-y: visible !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   min-height: auto !important;
   max-height: none !important;
+
+  &::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 
   @media (max-width: 991px) {
     left: 0 !important;
@@ -788,11 +829,40 @@ section.tf-slideshow,
   background-color: #fff;
   max-height: 550px;  /* Reduced from 600px for more compact layout */
   /* Hide scrollbar */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   &::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 }
 
 .selected-vehicle-header {
@@ -829,11 +899,40 @@ section.tf-slideshow,
   height: 100%;
   min-height: 100%;
   /* Hide scrollbar */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   &::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 }
 
 .vehicle-list {
@@ -899,11 +998,40 @@ section.tf-slideshow,
   background-color: #fff;
   /* max-height: 770px; */
   /* Hide scrollbar */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   &::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 }
 
 /* Header with vehicle name and model years */
@@ -950,11 +1078,40 @@ section.tf-slideshow,
   overflow-y: auto;
   max-height: 750px;  /* Increased from 550px */
   /* Hide scrollbar */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   &::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 }
 
 .main-categories-container {
@@ -1109,11 +1266,40 @@ section.tf-slideshow,
   max-height: 300px;
   overflow-y: auto;
   /* Hide scrollbar */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   &::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 }
 
 .vehicle-fitment-list li {
@@ -1815,6 +2001,49 @@ section.tf-slideshow,
   left: 0 !important;
   right: 0 !important;
   isolation: isolate !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+
+  &::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      display: none !important;
+      background: transparent !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      display: none !important;
+      background: transparent !important;
+    }
+  }
 }
 
 .dropdown-menu.mega-menu.show {
@@ -1827,6 +2056,27 @@ section.tf-slideshow,
   background-color: #ffffff !important;
   background: #ffffff !important;
   isolation: isolate !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+
+  &::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
+  }
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {

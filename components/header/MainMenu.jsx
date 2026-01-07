@@ -60,6 +60,7 @@ export default function MainMenu({ initialMenuData }) {
     }
   }, [initialMenuData, isDataFetched]);
 
+
   // Prefetch first vehicle for each platform on mount
   useEffect(() => {
     if (menuData) {
