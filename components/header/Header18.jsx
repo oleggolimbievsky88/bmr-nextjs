@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength.jsx";
@@ -249,7 +249,13 @@ export default function Header18({ initialMenuData }) {
             </div>
             <div className="col-xl-5 col-md-4 d-none d-md-block">
               <div className="tf-form-search">
-                <SearchInput />
+                <Suspense
+                  fallback={
+                    <div className="search-loading">Loading search...</div>
+                  }
+                >
+                  <SearchInput />
+                </Suspense>
               </div>
             </div>
             <div className="col-xl-2 col-md-4 col-4 text-white header-right-icons">

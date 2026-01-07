@@ -109,16 +109,19 @@ export async function POST(request) {
     console.error("Error processing order:", {
       error: error.message,
       stack: error.stack,
-      orderData: orderData ? {
-        itemsCount: orderData.items?.length,
-        billingEmail: orderData.billing?.email,
-      } : null,
+      orderData: orderData
+        ? {
+            itemsCount: orderData.items?.length,
+            billingEmail: orderData.billing?.email,
+          }
+        : null,
     });
     return NextResponse.json(
       {
         success: false,
         message: "Failed to process order",
-        error: process.env.NODE_ENV === "development" ? error.message : undefined,
+        error:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
       },
       { status: 500 }
     );
@@ -174,8 +177,8 @@ async function createOrder(orderData) {
   ];
 
   try {
-    // Use pool.execute directly to get insertId for INSERT statements
-    const [result] = await pool.execute(sql, values);
+    // Use pool.query() which returns [result, fields] for INSERT statements
+    const [result] = await pool.query(sql, values);
     if (!result || !result.insertId) {
       throw new Error("Failed to insert order - no insertId returned");
     }
@@ -213,7 +216,7 @@ async function createOrderItems(orderId, items) {
     ];
 
     try {
-      await pool.execute(sql, values);
+      await pool.query(sql, values);
     } catch (error) {
       console.error("Error creating order item:", {
         error: error.message,
@@ -376,7 +379,7 @@ async function sendConfirmationEmail(emailData) {
                   (item) => `
                 <div class="item-row">
                   <strong>${item.name}</strong><br>
-                  Part #: ${item.partNumber} | Color: ${item.color || 'N/A'}<br>
+                  Part #: ${item.partNumber} | Color: ${item.color || "N/A"}<br>
                   Quantity: ${item.quantity} | Price: $${parseFloat(
                     item.price
                   ).toFixed(2)}<br>

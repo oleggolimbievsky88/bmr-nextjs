@@ -16,7 +16,7 @@ async function addCategorySlugs() {
     console.log("Adding CatSlug column...");
 
     // Add the column if it doesn't exist
-    await pool.execute(`
+    await pool.query(`
       ALTER TABLE categories
       ADD COLUMN IF NOT EXISTS CatSlug VARCHAR(255) NOT NULL DEFAULT ''
     `);
@@ -24,7 +24,7 @@ async function addCategorySlugs() {
     console.log("Generating slugs from category names...");
 
     // Generate slugs from existing category names
-    await pool.execute(`
+    await pool.query(`
       UPDATE categories
       SET CatSlug = LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
           CatName,
@@ -44,7 +44,7 @@ async function addCategorySlugs() {
     console.log("Checking for duplicate slugs...");
 
     // Check for duplicates
-    const [duplicates] = await pool.execute(`
+    const [duplicates] = await pool.query(`
       SELECT CatSlug, COUNT(*) as count, GROUP_CONCAT(CatID) as cat_ids, GROUP_CONCAT(CatName) as names
       FROM categories
       WHERE CatSlug != ''
@@ -67,7 +67,7 @@ async function addCategorySlugs() {
         // Keep the first one as-is, append ID to others
         for (let i = 1; i < catIds.length; i++) {
           const catId = catIds[i];
-          await pool.execute(
+          await pool.query(
             `
             UPDATE categories
             SET CatSlug = CONCAT(?, '-', ?)
@@ -82,7 +82,7 @@ async function addCategorySlugs() {
     console.log("Migration completed successfully!");
 
     // Show some sample results
-    const [samples] = await pool.execute(`
+    const [samples] = await pool.query(`
       SELECT CatID, CatName, CatSlug
       FROM categories
       WHERE CatSlug != ''
