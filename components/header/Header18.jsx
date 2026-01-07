@@ -135,7 +135,7 @@ export default function Header18({ initialMenuData }) {
                       padding: "12px 16px",
                       border: "solid 1px #e5e5e5",
                       transition: "all 0.3s ease",
-                      backgroundColor: "#fafafa",
+                      backgroundColor: "#ffffff",
                     }}
                   >
                     {columnLinks.map((link, idx) => (
@@ -160,6 +160,7 @@ export default function Header18({ initialMenuData }) {
                           padding: "10px 8px",
                           borderRadius: "4px",
                           minWidth: "0",
+                          borderBottom: "1px solid #e5e5e5",
                         }}
                       >
                         {link.image && (
@@ -169,8 +170,8 @@ export default function Header18({ initialMenuData }) {
                             width={40}
                             height={40}
                             style={{
-                              width: "40px",
-                              height: "40px",
+                              width: "60px",
+                              height: "50px",
                               objectFit: "contain",
                               flexShrink: 0,
                               transition: "transform 0.2s ease",
