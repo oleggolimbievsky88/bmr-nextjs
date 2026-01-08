@@ -8,7 +8,10 @@ export default function Features() {
   return (
     <section>
       <div className="container">
-        <div className="bg_grey-7 radius-20 flat-wrap-iconbox mb-5 mt-5">
+        <div
+          className="bg_grey-7 radius-20 flat-wrap-iconbox mb-5 mt-5"
+          style={{ border: "1px solid grey" }}
+        >
           <div className="flat-title lg">
             <span className="title mb-5 italic-heavy">
               Quality is Our Priority

@@ -33,16 +33,22 @@ export default function PlatformHeader({
 
   return (
     <div className="platform-header-wrapper">
-      <div className="container">
+      <div className="container-fluid p-0 m-0">
         <div
           className="platform-header-container"
-          style={{
-            backgroundImage: `url(${encodedImageUrl})`,
-          }}
+          style={{ backgroundImage: `url(${encodedImageUrl})` }}
         >
           <div className="platform-header-overlay" />
-          <div className="platform-header-content">
-            <h1 className="platform-header-title">
+          <div className="platform-header-content ">
+            <h1
+              className="platform-header-title"
+              style={{
+                textAlign: "left",
+                border: "1px solid red",
+                width: "40%",
+                minWidth: "400px",
+              }}
+            >
               {yearDisplay}
               <br />
               {platformData.Name} {displayMainCategory && displayMainCategory}

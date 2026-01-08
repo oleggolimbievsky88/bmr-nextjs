@@ -4,6 +4,17 @@
 
 .product-page{
   background-color: #f3f3f3;
+  overflow-x: hidden;
+  overflow-y: visible;
+
+  /* Ensure mega menu can show on product pages */
+  #header,
+  .header-bottom,
+  .box-navigation,
+  .navbar-nav,
+  .box-nav-ul {
+    overflow: visible !important;
+  }
 }
 
 /* Cart Coupon Styles */
@@ -613,8 +624,8 @@ section.tf-slideshow,
   border-radius: 8px !important;
   background-color: #fff !important;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
-  z-index: 99999 !important;
-  position: absolute !important;
+  z-index: 9999999 !important;
+  position: fixed !important;
   box-sizing: border-box !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
@@ -684,31 +695,33 @@ section.tf-slideshow,
 
 .header-bottom {
   position: relative;
-  z-index: 1001 !important;
+  z-index: 999999 !important;
+  overflow: visible !important;
 }
 
 .box-navigation {
   position: relative;
   overflow: visible !important;
   width: 100%;
-  z-index: 1001 !important;
+  z-index: 999999 !important;
 }
 
 .container-fluid {
   position: relative;
   overflow: visible !important;
-  z-index: 1001 !important;
+  z-index: 999999 !important;
 }
 
 .navbar {
   position: relative;
   overflow: visible !important;
-  z-index: 1001 !important;
+  z-index: 999999 !important;
 }
 
 .navbar-nav {
   position: relative;
-  z-index: 1001 !important;
+  z-index: 999999 !important;
+  overflow: visible !important;
 }
 
 .nav-item.dropdown .dropdown-menu.mega-menu {
@@ -1502,6 +1515,7 @@ section.tf-slideshow,
   margin: 0;
   max-width: 100%;
   overflow-x: hidden;
+  overflow-y: visible !important;
   flex-wrap: wrap;
 }
 
@@ -1780,6 +1794,7 @@ section.tf-slideshow,
   align-items: center;
   width: 100%;
   overflow-y: visible !important;
+  overflow-x: visible !important;
   height: auto !important;
   gap: 36px;
   flex-wrap: wrap;
@@ -1821,17 +1836,17 @@ section.tf-slideshow,
   white-space: nowrap;
   display: flex;
   align-items: center;
-  z-index: 1001;
+  z-index: 999999;
 
   // Better spacing for dropdown items
   &.dropdown {
     position: static;
-    z-index: 1002;
+    z-index: 999999;
 
     // Ensure mega menu is always above banner - break out of stacking context
     .dropdown-menu.mega-menu,
     .dropdown-menu.mega-menu.show {
-      z-index: 99999 !important;
+      z-index: 9999999 !important;
       position: fixed !important;
       left: 0 !important;
       right: 0 !important;
@@ -1995,7 +2010,7 @@ section.tf-slideshow,
   min-width: 100% !important;
   max-width: 100% !important;
   padding: 20px;
-  z-index: 99999 !important;
+  z-index: 9999999 !important;
   position: fixed !important;
   top: 185px !important;
   left: 0 !important;
@@ -2047,7 +2062,7 @@ section.tf-slideshow,
 }
 
 .dropdown-menu.mega-menu.show {
-  z-index: 99999 !important;
+  z-index: 9999999 !important;
   position: fixed !important;
   top: 185px !important;
   left: 0 !important;
@@ -2795,8 +2810,8 @@ section.tf-slideshow,
 }
 
 .mega-menu {
-  z-index: 99999 !important;
-  position: absolute !important;
+  z-index: 9999999 !important;
+  position: fixed !important;
   background: #fff !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
   border-radius: 8px !important;

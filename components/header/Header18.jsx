@@ -102,7 +102,7 @@ export default function Header18({ initialMenuData }) {
               left: 0,
               right: 0,
               width: "100%",
-              zIndex: 99999,
+              zIndex: 9999999,
               opacity: 1,
               visibility: "visible",
               isolation: "isolate",
@@ -296,12 +296,27 @@ export default function Header18({ initialMenuData }) {
           </div>
         </div>
       </div>
-      <div className="header-bottom line d-none d-md-block">
-        <div className="container">
-          <div className="wrapper-header d-flex justify-content-between align-items-center">
-            <div className="box-left" style={{ width: "100%" }}>
-              <nav className="box-navigation text-center">
-                <ul className="box-nav-ul d-flex align-items-center justify-content-center gap-30">
+      <div
+        className="header-bottom line d-none d-md-block"
+        style={{ overflow: "visible" }}
+      >
+        <div className="container" style={{ overflow: "visible" }}>
+          <div
+            className="wrapper-header d-flex justify-content-between align-items-center"
+            style={{ overflow: "visible" }}
+          >
+            <div
+              className="box-left"
+              style={{ width: "100%", overflow: "visible" }}
+            >
+              <nav
+                className="box-navigation text-center"
+                style={{ overflow: "visible" }}
+              >
+                <ul
+                  className="box-nav-ul d-flex align-items-center justify-content-center gap-30"
+                  style={{ overflow: "visible" }}
+                >
                   {renderMegaMenu("Ford", menuData.fordLinks, "/products/ford")}
                   {renderMegaMenu(
                     "GM Late Model Cars",

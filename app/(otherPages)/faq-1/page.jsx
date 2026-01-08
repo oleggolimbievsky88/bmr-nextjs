@@ -9,7 +9,8 @@ import Faq3 from "@/components/othersPages/faq/Faq3";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title: "Faq 1 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Faq 1 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
@@ -53,10 +54,6 @@ export default function page() {
                     className="tf-btn radius-3 btn-fill animate-hover-btn justify-content-center"
                   >
                     Contact us
-                  </Link>
-                  <Link href={`/contact-2`} className="tf-btn btn-line">
-                    Live chat
-                    <i className="icon icon-arrow1-top-left" />
                   </Link>
                 </div>
               </div>
