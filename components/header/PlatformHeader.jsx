@@ -44,7 +44,6 @@ export default function PlatformHeader({
               className="platform-header-title"
               style={{
                 textAlign: "left",
-                border: "1px solid red",
                 width: "40%",
                 minWidth: "400px",
               }}
