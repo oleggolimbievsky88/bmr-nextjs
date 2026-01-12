@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength.jsx";
 import SearchInput from "../search/SearchInput.jsx";
+import VehicleSearch from "../common/VehicleSearch.jsx";
 
 const defaultMenuData = {
   fordLinks: [],
@@ -13,12 +14,18 @@ const defaultMenuData = {
   gmClassicMuscleLinks: [],
 };
 
-export default function Header18({ initialMenuData }) {
+export default function Header18({
+  initialMenuData,
+  showVehicleSearch = true,
+}) {
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
   const [activePlatform, setActivePlatform] = useState(null);
+  const [megaMenuTop, setMegaMenuTop] = useState("120px");
   const hoverTimeoutRef = useRef(null);
+  const headerBottomRef = useRef(null);
+  const navUlRef = useRef(null);
 
   useEffect(() => {
     if (!initialMenuData && !isDataFetched) {
@@ -47,6 +54,114 @@ export default function Header18({ initialMenuData }) {
     }
   }, [initialMenuData, isDataFetched]);
 
+  // Run on mount and when menuData changes
+  useEffect(() => {
+    console.log("Mega menu position useEffect running, menuData:", menuData);
+
+    const updateMegaMenuPosition = () => {
+      // Use headerBottomRef first to get the bottom of the entire header-bottom div
+      // Fall back to navUlRef if headerBottomRef isn't available
+      const targetElement = headerBottomRef.current || navUlRef.current;
+      console.log(
+        "updateMegaMenuPosition - targetElement:",
+        targetElement,
+        "className:",
+        targetElement?.className
+      );
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        // Add gap below the header-bottom div
+        const newTop = rect.bottom + 22;
+        console.log(
+          "Setting megaMenuTop to:",
+          newTop,
+          "rect.bottom:",
+          rect.bottom
+        );
+        setMegaMenuTop(`${newTop}px`);
+      } else {
+        console.log("No target element found");
+      }
+    };
+
+    // Wait for DOM to be ready
+    const checkAndUpdate = () => {
+      console.log(
+        "checkAndUpdate - headerBottomRef:",
+        headerBottomRef.current,
+        "navUlRef:",
+        navUlRef.current
+      );
+      if (headerBottomRef.current || navUlRef.current) {
+        updateMegaMenuPosition();
+      } else {
+        // If refs aren't ready yet, try again
+        console.log("Refs not ready, retrying...");
+        setTimeout(checkAndUpdate, 50);
+      }
+    };
+
+    // Initial calculation with a small delay to ensure DOM is ready
+    const initialTimeout = setTimeout(checkAndUpdate, 100);
+
+    // Update on resize and scroll
+    window.addEventListener("resize", updateMegaMenuPosition);
+    window.addEventListener("scroll", updateMegaMenuPosition);
+
+    // Also update when menu data loads (in case header height changes)
+    const dataTimeout = setTimeout(updateMegaMenuPosition, 200);
+
+    // Use requestAnimationFrame for more accurate positioning after layout
+    const rafId = requestAnimationFrame(() => {
+      updateMegaMenuPosition();
+    });
+
+    return () => {
+      window.removeEventListener("resize", updateMegaMenuPosition);
+      window.removeEventListener("scroll", updateMegaMenuPosition);
+      clearTimeout(initialTimeout);
+      clearTimeout(dataTimeout);
+      cancelAnimationFrame(rafId);
+    };
+  }, [menuData]);
+
+  // Also run on mount regardless of menuData
+  useEffect(() => {
+    console.log("Mega menu position useEffect (mount only) running");
+
+    const updateMegaMenuPosition = () => {
+      // Prioritize headerBottomRef to get the bottom of the entire header-bottom div
+      const targetElement = headerBottomRef.current || navUlRef.current;
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        const newTop = rect.bottom + 22;
+        console.log(
+          "Mount effect - Setting megaMenuTop to:",
+          newTop,
+          "from element:",
+          targetElement.className
+        );
+        setMegaMenuTop(`${newTop}px`);
+      }
+    };
+
+    // Try multiple times to ensure DOM is ready
+    const timeouts = [
+      setTimeout(updateMegaMenuPosition, 100),
+      setTimeout(updateMegaMenuPosition, 300),
+      setTimeout(updateMegaMenuPosition, 500),
+    ];
+
+    window.addEventListener("resize", updateMegaMenuPosition);
+    window.addEventListener("scroll", updateMegaMenuPosition);
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+      window.removeEventListener("resize", updateMegaMenuPosition);
+      window.removeEventListener("scroll", updateMegaMenuPosition);
+    };
+  }, []);
+
   const handlePlatformHover = (platform) => {
     clearTimeout(hoverTimeoutRef.current);
     setActivePlatform(platform);
@@ -55,7 +170,7 @@ export default function Header18({ initialMenuData }) {
   const handlePlatformLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setActivePlatform(null);
-    }, 150);
+    }, 400);
   };
 
   const renderMegaMenu = (platformName, links, baseUrl) => {
@@ -98,7 +213,7 @@ export default function Header18({ initialMenuData }) {
             style={{
               display: "block !important",
               position: "fixed",
-              top: "185px",
+              top: megaMenuTop,
               left: 0,
               right: 0,
               width: "100%",
@@ -108,6 +223,8 @@ export default function Header18({ initialMenuData }) {
               isolation: "isolate",
               backgroundColor: "#ffffff",
               background: "#ffffff",
+              marginTop: 0,
+              paddingTop: 0,
             }}
           >
             <div className="container">
@@ -119,10 +236,10 @@ export default function Header18({ initialMenuData }) {
                     columns.length,
                     4
                   )}, 1fr)`,
-                  columnGap: "30px",
-                  rowGap: "20px",
-                  paddingTop: "40px",
-                  paddingBottom: "50px",
+                  columnGap: "40px",
+                  rowGap: "0px",
+                  paddingTop: "10px",
+                  paddingBottom: "10px",
                 }}
               >
                 {columns.map((columnLinks, colIdx) => (
@@ -130,12 +247,9 @@ export default function Header18({ initialMenuData }) {
                     key={colIdx}
                     className="demo-item"
                     style={{
-                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)",
-                      borderRadius: "8px",
-                      padding: "12px 16px",
-                      border: "solid 1px #e5e5e5",
+                      padding: "20px 16px",
                       transition: "all 0.3s ease",
-                      backgroundColor: "#ffffff",
+                      backgroundColor: "transparent",
                     }}
                   >
                     {columnLinks.map((link, idx) => (
@@ -144,7 +258,7 @@ export default function Header18({ initialMenuData }) {
                         href={`/products/${link.slug}`}
                         className="demo-name"
                         style={{
-                          lineHeight: "1.5",
+                          lineHeight: "1.6",
                           display: "flex",
                           alignItems: "center",
                           gap: "12px",
@@ -156,13 +270,59 @@ export default function Header18({ initialMenuData }) {
                           fontSize: "15px",
                           color: "#333",
                           textDecoration: "none",
-                          transition: "all 0.2s ease",
-                          padding: "10px 8px",
-                          borderRadius: "4px",
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                          padding: "12px 8px 12px 16px",
+                          borderRadius: "0",
                           minWidth: "0",
-                          borderBottom: "1px solid #e5e5e5",
+                          marginBottom:
+                            idx < columnLinks.length - 1 ? "4px" : "0",
+                          position: "relative",
+                          backgroundColor: "transparent",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = "var(--primary)";
+                          const accentLine =
+                            e.currentTarget.querySelector(".accent-line");
+                          if (accentLine) {
+                            accentLine.style.opacity = "1";
+                          }
+                          const image =
+                            e.currentTarget.querySelector(".platform-image");
+                          if (image) {
+                            image.style.transform = "scale(1.1)";
+                            image.style.filter = "brightness(1.1)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = "#333";
+                          const accentLine =
+                            e.currentTarget.querySelector(".accent-line");
+                          if (accentLine) {
+                            accentLine.style.opacity = "0";
+                          }
+                          const image =
+                            e.currentTarget.querySelector(".platform-image");
+                          if (image) {
+                            image.style.transform = "scale(1)";
+                            image.style.filter = "brightness(1)";
+                          }
                         }}
                       >
+                        <span
+                          className="accent-line"
+                          style={{
+                            position: "absolute",
+                            left: "0",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            width: "3px",
+                            height: "60%",
+                            backgroundColor: "var(--primary)",
+                            opacity: "0",
+                            transition:
+                              "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                          }}
+                        />
                         {link.image && (
                           <Image
                             src={link.image}
@@ -174,7 +334,8 @@ export default function Header18({ initialMenuData }) {
                               height: "50px",
                               objectFit: "contain",
                               flexShrink: 0,
-                              transition: "transform 0.2s ease",
+                              transition:
+                                "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                             }}
                             className="platform-image"
                           />
@@ -297,7 +458,8 @@ export default function Header18({ initialMenuData }) {
         </div>
       </div>
       <div
-        className="header-bottom line d-none d-md-block"
+        ref={headerBottomRef}
+        className="header-bottom d-none d-md-block"
         style={{ overflow: "visible" }}
       >
         <div className="container" style={{ overflow: "visible" }}>
@@ -314,6 +476,7 @@ export default function Header18({ initialMenuData }) {
                 style={{ overflow: "visible" }}
               >
                 <ul
+                  ref={navUlRef}
                   className="box-nav-ul d-flex align-items-center justify-content-center gap-30"
                   style={{ overflow: "visible" }}
                 >
@@ -354,6 +517,13 @@ export default function Header18({ initialMenuData }) {
           </div>
         </div>
       </div>
+      {showVehicleSearch && (
+        <div className="header-vehicle-search d-none d-md-block">
+          <div className="container">
+            <VehicleSearch />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
