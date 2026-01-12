@@ -5,7 +5,7 @@ export default function InstallationPage() {
   return (
     <div>
       <Topbar4 />
-      <Header18 />
+      <Header18 showVehicleSearch={false} />
       <div className="container py-5 mt-5">
         <h1 className="home-title text-center mb-4">Installation Guides</h1>
         <div className="row mb-5">

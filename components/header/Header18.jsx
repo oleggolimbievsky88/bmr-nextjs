@@ -71,7 +71,7 @@ export default function Header18({
       if (targetElement) {
         const rect = targetElement.getBoundingClientRect();
         // Add gap below the header-bottom div
-        const newTop = rect.bottom + 22;
+        const newTop = rect.bottom + 222;
         console.log(
           "Setting megaMenuTop to:",
           newTop,
