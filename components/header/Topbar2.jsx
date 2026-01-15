@@ -8,10 +8,10 @@ import { Autoplay } from "swiper/modules";
 export default function Topbar2({ bgColor = "bg_dark" }) {
   return (
     <div className={`tf-top-bar bg_dark line-red`}>
-      <div className="px_15 lg-px_40">
+      <div>
         <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
           <div className="tf-top-bar_left">
-            <div className="d-flex gap-30 text_white fw-5">
+            <div className="d-flex gap-30 text_white">
               <span>(813) 986-9302</span>
               <span>sales@bmrsuspension.com</span>
             </div>

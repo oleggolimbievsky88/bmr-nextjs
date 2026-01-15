@@ -812,6 +812,9 @@ label {
 .line {
   border-bottom: 1px solid var(--line);
 }
+.line-red {
+  border-bottom: 1px solid var(--primary) !important;
+}
 .line-black {
   border-bottom: 1px solid var(--main);
 }

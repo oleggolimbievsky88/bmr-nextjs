@@ -7,6 +7,7 @@
 	],
 	"settings": {
 		"liveServer.settings.multiRootWorkspaceName": "ecomus-nextjs",
-		"gitlens.outputLevel": "warn"
+		"gitlens.outputLevel": "warn",
+		"cursor.composer.shouldChimeAfterChatFinishes": true
 	}
 }

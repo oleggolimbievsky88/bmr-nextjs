@@ -211,7 +211,7 @@ export default function VehicleSearch() {
             value={subModel}
             onChange={handleSubModelChange}
             className={styles["search-input"]}
-            disabled={!model || subModels.length === 0}
+            disabled={!model} //Add later: || subModels.length === 0
             suppressHydrationWarning
             name="subModel"
           >

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 // Provide a default structure to show immediately
 const defaultMenuData = {
@@ -16,25 +15,23 @@ export default function MainMenu({ initialMenuData }) {
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
+  const [megaMenuTop, setMegaMenuTop] = useState(null);
 
   // Update menuData when initialMenuData changes (from Header18)
   useEffect(() => {
     if (initialMenuData && Object.keys(initialMenuData).length > 0) {
-      console.log("MainMenu: Updating menuData from initialMenuData", initialMenuData);
+      console.log(
+        "MainMenu: Updating menuData from initialMenuData",
+        initialMenuData
+      );
       setMenuData(initialMenuData);
       setIsDataFetched(true);
       setIsLoading(false);
     }
   }, [initialMenuData]);
   const [activeVehicle, setActiveVehicle] = useState(null);
-  const [categoriesByMainCat, setCategoriesByMainCat] = useState([]);
-  const [bodyDetails, setBodyDetails] = useState(null);
-  const [vehicleList, setVehicleList] = useState([]);
-  const [error, setError] = useState(null);
   const [activePlatform, setActivePlatform] = useState(null);
   const hoverTimeoutRef = useRef(null);
-  const megaMenuContainerRef = useRef(null);
-  const dataCacheRef = useRef({}); // { [bodyId]: { bodyDetails, categoriesByMainCat, vehicleList } }
 
   // Fetch data immediately when component mounts
   useEffect(() => {
@@ -47,10 +44,8 @@ export default function MainMenu({ initialMenuData }) {
           const data = await response.json();
           setMenuData(data);
           setIsDataFetched(true);
-          setError(null);
         } catch (err) {
           console.error("Error fetching menu:", err);
-          setError("Failed to load menu. Please try again later.");
         } finally {
           setIsLoading(false);
         }
@@ -60,47 +55,41 @@ export default function MainMenu({ initialMenuData }) {
     }
   }, [initialMenuData, isDataFetched]);
 
-
-  // Prefetch first vehicle for each platform on mount
-  useEffect(() => {
-    if (menuData) {
-      [
-        "ford",
-        "gmLateModel",
-        "gmMidMuscle",
-        "gmClassicMuscle",
-        "mopar",
-      ].forEach((platform) => {
-        const links = menuData[platform + "Links"];
-        if (links && links[0] && links[0].bodyId) {
-          const { slug, bodyId } = links[0];
-          if (!dataCacheRef.current[bodyId]) {
-            handleVehicleHover(slug, bodyId, true);
-          }
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuData]);
-
   // Function to handle platform hover with delay
-  const handlePlatformHover = (platform) => {
+  const handlePlatformHover = (platform, e) => {
     clearTimeout(hoverTimeoutRef.current);
 
     // Set platform immediately
     setActivePlatform(platform);
+    setActiveVehicle(null);
+
+    // Position mega menu directly under the hovered nav item
+    if (e?.currentTarget?.getBoundingClientRect) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      let topbarOffset = 0;
+      const topbar = document.querySelector(".tf-top-bar");
+      if (topbar?.getBoundingClientRect) {
+        const topbarRect = topbar.getBoundingClientRect();
+        const topbarStyle = window.getComputedStyle(topbar);
+        const isTopbarVisible =
+          topbarStyle.display !== "none" &&
+          topbarStyle.visibility !== "hidden" &&
+          topbarRect.height > 0 &&
+          topbarRect.bottom > 0 &&
+          topbarRect.top < window.innerHeight;
+        if (isTopbarVisible) {
+          topbarOffset = Math.round(topbarRect.height);
+        }
+      }
+
+      setMegaMenuTop(Math.round(rect.bottom - topbarOffset));
+    }
 
     // Get the links array for the selected platform
     const platformLinks = menuData[`${platform}Links`];
 
     // Debug logging
     console.log("Hovering over platform:", platform, "Links:", platformLinks);
-
-    // If there are vehicles in the list, automatically select the first one
-    if (platformLinks && platformLinks.length > 0) {
-      const firstVehicle = platformLinks[0];
-      handleVehicleHover(firstVehicle.slug, firstVehicle.bodyId);
-    }
   };
 
   // Function to handle platform leave
@@ -112,104 +101,8 @@ export default function MainMenu({ initialMenuData }) {
     }, 150);
   };
 
-  // Function to handle vehicle hover and fetch relevant data
-  const handleVehicleHover = async (
-    vehicleSlug,
-    bodyId,
-    prefetchOnly = false
-  ) => {
-    // console.log("🔍 handleVehicleHover called with:", {
-    //   vehicleSlug,
-    //   bodyId,
-    //   prefetchOnly,
-    // });
+  const handleVehicleHover = (vehicleSlug) => {
     setActiveVehicle(vehicleSlug);
-    if (!bodyId) return;
-    // Use cache if available
-    if (dataCacheRef.current[bodyId]) {
-      console.log("🔍 Using cached data for bodyId:", bodyId);
-      const { bodyDetails, categoriesByMainCat, vehicleList } =
-        dataCacheRef.current[bodyId];
-      setBodyDetails(bodyDetails);
-      setCategoriesByMainCat(categoriesByMainCat);
-      setVehicleList(vehicleList);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
-    try {
-      setIsLoading(true);
-      // console.log("🔍 Making API calls for bodyId:", bodyId);
-
-      const platformUrl = `/api/platform-by-id?bodyId=${bodyId}`;
-      const categoriesUrl = `/api/categories?bodyId=${bodyId}`;
-      const vehiclesUrl = `/api/vehicles?bodyId=${bodyId}`;
-
-      // console.log("🔍 API URLs:", { platformUrl, categoriesUrl, vehiclesUrl });
-      // console.log(
-      //   "🔍 Full platform URL:",
-      //   `${window.location.origin}${platformUrl}`
-      // );
-
-      const [platformResponse, catResponse, vehiclesResponse] =
-        await Promise.all([
-          fetch(platformUrl),
-          fetch(categoriesUrl),
-          fetch(vehiclesUrl),
-        ]);
-
-      // console.log("🔍 API Responses:", {
-      //   platform: { ok: platformResponse.ok, status: platformResponse.status },
-      //   categories: { ok: catResponse.ok, status: catResponse.status },
-      //   vehicles: { ok: vehiclesResponse.ok, status: vehiclesResponse.status },
-      // });
-
-      if (!platformResponse.ok || !catResponse.ok || !vehiclesResponse.ok) {
-        console.error("❌ API call failed:", {
-          platform: {
-            ok: platformResponse.ok,
-            status: platformResponse.status,
-          },
-          categories: { ok: catResponse.ok, status: catResponse.status },
-          vehicles: {
-            ok: vehiclesResponse.ok,
-            status: vehiclesResponse.status,
-          },
-        });
-        throw new Error("Failed to fetch data");
-      }
-
-      const platformData = await platformResponse.json();
-      const catData = await catResponse.json();
-      const vehiclesData = await vehiclesResponse.json();
-
-      // console.log("🔍 API Data received:", {
-      //   platform: platformData,
-      //   categories: catData,
-      //   vehicles: vehiclesData,
-      // });
-
-      const cacheObj = {
-        bodyDetails: platformData.platformInfo,
-        categoriesByMainCat: catData,
-        vehicleList: vehiclesData,
-      };
-      dataCacheRef.current[bodyId] = cacheObj;
-      if (!prefetchOnly) {
-        setBodyDetails(cacheObj.bodyDetails);
-        setCategoriesByMainCat(cacheObj.categoriesByMainCat);
-        setVehicleList(cacheObj.vehicleList);
-        setError(null);
-      }
-    } catch (err) {
-      console.error("❌ Error fetching data:", err);
-      if (!prefetchOnly)
-        setError(
-          "Failed to load data for this vehicle. Please try again later."
-        );
-    } finally {
-      if (!prefetchOnly) setIsLoading(false);
-    }
   };
 
   // Function to handle image error
@@ -219,14 +112,57 @@ export default function MainMenu({ initialMenuData }) {
     e.target.src = "https://bmrsuspension.com/siteart/logo/bmr-logo-white.png";
   };
 
-  // Render function for the new mega menu
-  const renderMegaMenu = (links, baseLink, platform) => {
-    // Only show if this platform is active
-    const isActive = activePlatform === platform;
+  // Group vehicles by name (e.g., Camaro, Corvette, CTS-V)
+  const groupVehiclesByName = (links) => {
+    if (!links || links.length === 0) return [];
 
-    if (!isActive) {
-      return null;
-    }
+    const grouped = {};
+    links.forEach((vehicle) => {
+      // Extract vehicle name from heading
+      // Formats: "2016 - 2021 Camaro", "2024 Mustang", "C8 Corvette"
+      let vehicleName = vehicle.heading;
+
+      // Try to extract name after year range (e.g., "2016 - 2021 Camaro" -> "Camaro")
+      const yearRangeMatch = vehicle.heading.match(/\d{4}\s*-\s*\d{4}\s+(.+)$/);
+      if (yearRangeMatch) {
+        vehicleName = yearRangeMatch[1].trim();
+      } else {
+        // Try single year format (e.g., "2024 Mustang" -> "Mustang")
+        const singleYearMatch = vehicle.heading.match(/\d{4}\s+(.+)$/);
+        if (singleYearMatch) {
+          vehicleName = singleYearMatch[1].trim();
+        } else {
+          // Try model-first format (e.g., "C8 Corvette" -> "Corvette")
+          const modelFirstMatch = vehicle.heading.match(/^[A-Z0-9]+\s+(.+)$/);
+          if (modelFirstMatch) {
+            vehicleName = modelFirstMatch[1].trim();
+          }
+        }
+      }
+
+      if (!grouped[vehicleName]) {
+        grouped[vehicleName] = [];
+      }
+      grouped[vehicleName].push(vehicle);
+    });
+
+    // Convert to array and sort vehicles within each group by start year (newest first)
+    return Object.keys(grouped)
+      .sort()
+      .map((name) => ({
+        name,
+        vehicles: grouped[name].sort((a, b) => {
+          const aYear = parseInt(a.heading.match(/^(\d{4})/)?.[1] || "0");
+          const bYear = parseInt(b.heading.match(/^(\d{4})/)?.[1] || "0");
+          return bYear - aYear; // Newest first
+        }),
+      }));
+  };
+
+  // Render function for the mega menu
+  const renderMegaMenu = (links, platform) => {
+    const isActive = activePlatform === platform;
+    if (!isActive) return null;
 
     if (!links || links.length === 0) {
       if (isLoading) {
@@ -237,21 +173,17 @@ export default function MainMenu({ initialMenuData }) {
       return null;
     }
 
-    // Get the currently selected vehicle details
-    const selectedVehicle = links.find(
-      (section) => section.slug === activeVehicle
-    );
+    const vehicleGroups = groupVehiclesByName(links);
 
     return (
       <div
         className="dropdown-menu mega-menu show"
-        ref={megaMenuContainerRef}
         onMouseEnter={() => clearTimeout(hoverTimeoutRef.current)}
         onMouseLeave={handlePlatformLeave}
         style={{
-          display: "block !important",
+          display: "block",
           position: "fixed",
-          top: "185px",
+          top: megaMenuTop !== null ? `${megaMenuTop}px` : undefined,
           left: 0,
           right: 0,
           width: "100%",
@@ -264,110 +196,26 @@ export default function MainMenu({ initialMenuData }) {
         }}
       >
         <div className="mega-menu-container">
-          {/* NEW: Horizontal Vehicle Grid at Top */}
           <div className="mega-menu-vehicles">
             <div className="vehicle-grid">
-              {links.map((section, idx) => (
-                <Link
-                  key={idx}
-                  href={`/products/${section.slug}`}
-                  className={`vehicle-card ${
-                    activeVehicle === section.slug ? "active" : ""
-                  }`}
-                  onMouseEnter={() =>
-                    handleVehicleHover(section.slug, section.bodyId)
-                  }
-                >
-                  {section.heading}
-                </Link>
+              {vehicleGroups.map((group, groupIdx) => (
+                <div key={groupIdx} className="vehicle-group-column">
+                  <h4 className="vehicle-group-header">{group.name}</h4>
+                  {group.vehicles.map((vehicle) => (
+                    <Link
+                      key={`${group.name}-${vehicle.slug}`}
+                      href={`/products/${vehicle.slug}`}
+                      className={`vehicle-card ${
+                        activeVehicle === vehicle.slug ? "active" : ""
+                      }`}
+                      onMouseEnter={() => handleVehicleHover(vehicle.slug)}
+                    >
+                      {vehicle.heading}
+                    </Link>
+                  ))}
+                </div>
               ))}
             </div>
-          </div>
-
-          {/* NEW: Categories Section at Bottom */}
-          <div className="mega-menu-categories">
-            {error && (
-              <div className="error-message">
-                <p>{error}</p>
-              </div>
-            )}
-
-            {!error && activeVehicle && selectedVehicle && (
-              <>
-                {/* Header showing selected vehicle */}
-                <div className="selected-vehicle-header">
-                  <div className="selected-vehicle-name">
-                    {selectedVehicle.heading}
-                  </div>
-                </div>
-
-                {/* Main categories and subcategories */}
-                <div className="category-section">
-                  {isLoading ? (
-                    <div className="loading-categories">
-                      Loading categories...
-                    </div>
-                  ) : categoriesByMainCat && categoriesByMainCat.length > 0 ? (
-                    <div className="main-categories-container">
-                      {categoriesByMainCat.map((mainCatGroup, mainIdx) => (
-                        <div key={mainIdx} className="main-category-group">
-                          <div className="main-category-header">
-                            {mainCatGroup.mainCategory.image && (
-                              <div className="main-category-image">
-                                <Image
-                                  src={`https://bmrsuspension.com/siteart/categories/${mainCatGroup.mainCategory.image}`}
-                                  alt={mainCatGroup.mainCategory.name}
-                                  width={200}
-                                  height={100}
-                                  style={{ objectFit: "contain" }}
-                                  onError={handleImageError}
-                                  unoptimized={true}
-                                />
-                              </div>
-                            )}
-                            <div>
-                              <h3 className="main-category-title">
-                                <Link
-                                  href={`/products/${selectedVehicle.slug}/${mainCatGroup.mainCategory.slug}`}
-                                >
-                                  {mainCatGroup.mainCategory.name}
-                                </Link>
-                              </h3>
-                            </div>
-                          </div>
-                          <div className="subcategories-list">
-                            {mainCatGroup.subCategories.map((cat, catIdx) => (
-                              <div key={catIdx} className="subcategory-item">
-                                <Link
-                                  href={`/products/${selectedVehicle.slug}/${mainCatGroup.mainCategory.slug}/${cat.CatNameSlug}`}
-                                  className="subcategory-link"
-                                >
-                                  {cat.CatName}
-                                  {cat.productCount > 0 && (
-                                    <span className="product-count">
-                                      {cat.productCount}
-                                    </span>
-                                  )}
-                                </Link>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="no-categories">No categories found</div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* If no vehicle is hovered, show a message */}
-            {!error && !activeVehicle && (
-              <div className="no-selection">
-                <p>Hover over a vehicle above to see available products</p>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -378,7 +226,12 @@ export default function MainMenu({ initialMenuData }) {
   return (
     <nav
       className="navbar navbar-expand-xxl text-center"
-      style={{ position: "static", overflow: "visible", zIndex: 1000, minHeight: "60px" }}
+      style={{
+        position: "static",
+        overflow: "visible",
+        zIndex: 1000,
+        minHeight: "44px",
+      }}
     >
       <div
         className="container-fluid"
@@ -408,19 +261,19 @@ export default function MainMenu({ initialMenuData }) {
             {/* Ford Dropdown */}
             <li
               className="nav-item dropdown position-static"
-              onMouseEnter={() => handlePlatformHover("ford")}
+              onMouseEnter={(e) => handlePlatformHover("ford", e)}
               onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/ford" className="nav-link dropdown-toggle">
                 Ford
               </Link>
-              {renderMegaMenu(menuData.fordLinks || [], "/products/ford", "ford")}
+              {renderMegaMenu(menuData.fordLinks || [], "ford")}
             </li>
 
             {/* GM Late Model Dropdown */}
             <li
               className="nav-item dropdown position-static"
-              onMouseEnter={() => handlePlatformHover("gmLateModel")}
+              onMouseEnter={(e) => handlePlatformHover("gmLateModel", e)}
               onMouseLeave={handlePlatformLeave}
             >
               <Link
@@ -429,13 +282,13 @@ export default function MainMenu({ initialMenuData }) {
               >
                 GM Late Model Cars
               </Link>
-              {renderMegaMenu(menuData.gmLateModelLinks || [], "/products/gm", "gmLateModel")}
+              {renderMegaMenu(menuData.gmLateModelLinks || [], "gmLateModel")}
             </li>
 
             {/* GM Mid Muscle Dropdown */}
             <li
               className="nav-item dropdown position-static"
-              onMouseEnter={() => handlePlatformHover("gmMidMuscle")}
+              onMouseEnter={(e) => handlePlatformHover("gmMidMuscle", e)}
               onMouseLeave={handlePlatformLeave}
             >
               <Link
@@ -444,13 +297,13 @@ export default function MainMenu({ initialMenuData }) {
               >
                 GM Mid Muscle Cars
               </Link>
-              {renderMegaMenu(menuData.gmMidMuscleLinks || [], "/products/gm", "gmMidMuscle")}
+              {renderMegaMenu(menuData.gmMidMuscleLinks || [], "gmMidMuscle")}
             </li>
 
             {/* GM Classic Muscle Dropdown */}
             <li
               className="nav-item dropdown position-static"
-              onMouseEnter={() => handlePlatformHover("gmClassicMuscle")}
+              onMouseEnter={(e) => handlePlatformHover("gmClassicMuscle", e)}
               onMouseLeave={handlePlatformLeave}
             >
               <Link
@@ -459,19 +312,22 @@ export default function MainMenu({ initialMenuData }) {
               >
                 GM Classic Muscle Cars
               </Link>
-              {renderMegaMenu(menuData.gmClassicMuscleLinks || [], "/products/gm", "gmClassicMuscle")}
+              {renderMegaMenu(
+                menuData.gmClassicMuscleLinks || [],
+                "gmClassicMuscle"
+              )}
             </li>
 
             {/* Mopar Dropdown */}
             <li
               className="nav-item dropdown position-static"
-              onMouseEnter={() => handlePlatformHover("mopar")}
+              onMouseEnter={(e) => handlePlatformHover("mopar", e)}
               onMouseLeave={handlePlatformLeave}
             >
               <Link href="/products/mopar" className="nav-link dropdown-toggle">
                 Mopar
               </Link>
-              {renderMegaMenu(menuData.moparLinks || [], "/products/mopar", "mopar")}
+              {renderMegaMenu(menuData.moparLinks || [], "mopar")}
             </li>
 
             {/* Static Links */}
