@@ -132,6 +132,26 @@
   position: static;
 }
 
+/* Force header background to always be black (all pages) */
+header,
+#header {
+	background-color: #000 !important;
+}
+
+#header .wrapper-header,
+#header .main-header,
+#header .header-bottom,
+#header .px_15,
+#header .lg-px_40 {
+	background-color: #000 !important;
+}
+
+#header .box-nav-ul .item-link,
+#header .nav-icon .nav-icon-item,
+#header .nav-icon .text {
+	color: #fff !important;
+}
+
 
 /* Hide Installation link and main menu at 1400px and below to prevent stacking */
 @media (max-width: 1400px) {
@@ -3295,6 +3315,7 @@ section.tf-slideshow,
 	width: 100%;
 	max-width: 100%;
 	overflow: visible;
+	margin-bottom: 24px;
 }
 
 .platform-header-wrapper .platform-header-container {
@@ -3309,6 +3330,9 @@ section.tf-slideshow,
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
+
+	border: 1px solid var(--primary, #cc0000);
+	box-sizing: border-box;
 
 	min-height: 260px;
 	display: flex;
@@ -3325,6 +3349,19 @@ section.tf-slideshow,
 .platform-header-wrapper .platform-header-content {
 	position: relative;
 	width: 100%;
-	padding: 28px 20px;
+	padding: 0;
+}
+
+.platform-header-wrapper .platform-header-content > .container {
+	padding-top: 28px;
+	padding-bottom: 28px;
+}
+
+.platform-header-wrapper .platform-header-title {
+	color: #fff;
+	text-align: left;
+	margin: 0;
+	max-width: 720px;
+	text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 

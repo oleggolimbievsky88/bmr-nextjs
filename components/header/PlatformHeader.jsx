@@ -39,19 +39,14 @@ export default function PlatformHeader({
           style={{ backgroundImage: `url(${encodedImageUrl})` }}
         >
           <div className="platform-header-overlay" />
-          <div className="platform-header-content ">
-            <h1
-              className="platform-header-title"
-              style={{
-                textAlign: "left",
-                width: "40%",
-                minWidth: "400px",
-              }}
-            >
-              {yearDisplay}
-              <br />
-              {platformData.Name} {displayMainCategory && displayMainCategory}
-            </h1>
+          <div className="platform-header-content">
+            <div className="container">
+              <h1 className="platform-header-title">
+                {yearDisplay}
+                <br />
+                {platformData.Name} {displayMainCategory && displayMainCategory}
+              </h1>
+            </div>
           </div>
         </div>
       </div>

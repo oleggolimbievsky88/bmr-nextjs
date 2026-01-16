@@ -11,7 +11,7 @@ export default function PageHeader({ title, subtitle = null }) {
 
   return (
     <div className="platform-header-wrapper">
-      <div className="container">
+      <div className="container-fluid p-0 m-0">
         <div
           className="platform-header-container"
           style={{
@@ -21,15 +21,17 @@ export default function PageHeader({ title, subtitle = null }) {
         >
           <div className="platform-header-overlay" />
           <div className="platform-header-content">
-            <h1 className="platform-header-title">
-              {title}
-              {subtitle && (
-                <>
-                  <br />
-                  {subtitle}
-                </>
-              )}
-            </h1>
+            <div className="container">
+              <h1 className="platform-header-title">
+                {title}
+                {subtitle && (
+                  <>
+                    <br />
+                    {subtitle}
+                  </>
+                )}
+              </h1>
+            </div>
           </div>
         </div>
       </div>
