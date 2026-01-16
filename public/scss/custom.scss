@@ -196,7 +196,10 @@
 /* Ensure search bar and logo are on same line */
 .main-header {
   position: relative;
-  z-index: 1001;
+  // Must be above `.header-bottom` / `.navbar` (999998-999999) so the
+  // autocomplete dropdown can overlay the menu + vehicle search.
+  // Keep below the mega menu (99999999).
+  z-index: 1000000;
   .row.wrapper-header {
     align-items: center;
 
@@ -3285,5 +3288,43 @@ section.tf-slideshow,
 .bmr-card:hover {
   transform: translateY(-5px);
   border-color: #dc3545;
+}
+
+/* Platform page banner: full-bleed + no-repeat */
+.platform-header-wrapper {
+	width: 100%;
+	max-width: 100%;
+	overflow: visible;
+}
+
+.platform-header-wrapper .platform-header-container {
+	// Full-bleed even if rendered inside a `.container`
+	position: relative;
+	left: 50%;
+	right: 50%;
+	margin-left: -50vw;
+	margin-right: -50vw;
+	width: 100vw;
+
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+
+	min-height: 260px;
+	display: flex;
+	align-items: flex-end;
+}
+
+.platform-header-wrapper .platform-header-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.25);
+	pointer-events: none;
+}
+
+.platform-header-wrapper .platform-header-content {
+	position: relative;
+	width: 100%;
+	padding: 28px 20px;
 }
 
