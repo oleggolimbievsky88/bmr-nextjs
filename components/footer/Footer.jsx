@@ -18,9 +18,13 @@ export default function Footer1({ bgColor = "background-black" }) {
                       <Image
                         src="/images/logo/bmr-logo-white.webp"
                         alt="BMR Logo"
-                        width={165}
-                        height={35}
-                        style={{ width: "100%", height: "auto" }}
+                        width={330}
+                        height={70}
+                        style={{
+                          width: "auto",
+                          height: "auto",
+                          maxWidth: "100%",
+                        }}
                       />
                     </Link>
                   </div>

@@ -3354,7 +3354,7 @@ section.tf-slideshow,
 
 .platform-header-wrapper .platform-header-content > .container {
 	padding-top: 28px;
-	padding-bottom: 28px;
+	padding-bottom: 48px;
 }
 
 .platform-header-wrapper .platform-header-title {
@@ -3363,5 +3363,24 @@ section.tf-slideshow,
 	margin: 0;
 	max-width: 720px;
 	text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+	font-size: 3rem;
+	line-height: 1.3;
+	margin-left: 5rem;
+  text-transform: uppercase;
+}
+
+/* Footer logo - make it larger */
+.footer-logo {
+	img {
+		width: 220px !important;
+		height: auto !important;
+		max-width: 100%;
+	}
+
+	@media (max-width: 767px) {
+		img {
+			width: 180px !important;
+		}
+	}
 }
 
