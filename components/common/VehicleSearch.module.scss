@@ -61,7 +61,7 @@
 		}
 
 		.vehicle-search-title {
-			font-size: 26px;
+			font-size: 24px;
 			font-weight: 600;
 			color: #ffffff;
 			margin: 0;
@@ -71,11 +71,11 @@
 			white-space: nowrap;
 
 			@media (max-width: 767px) {
-				font-size: 22px;
+				font-size: 24px;
 			}
 
 			@media (min-width: 768px) {
-				font-size: 14px;
+				font-size: 18px;
 				margin-bottom: 0;
 			}
 		}
@@ -237,13 +237,13 @@
 		}
 
 		.vehicle-search-title {
-			font-size: 26px !important;
+			font-size: 22px !important;
 			display: block !important;
 			text-align: center;
 			width: 100%;
 
 			@media (max-width: 480px) {
-				font-size: 24px !important;
+				font-size: 26px !important;
 			}
 		}
 

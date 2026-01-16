@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function SearchInput({ initialQuery = "" }) {
   const [query, setQuery] = useState(initialQuery);
@@ -18,7 +18,6 @@ export default function SearchInput({ initialQuery = "" }) {
   const inputRef = useRef(null);
   const debounceTimerRef = useRef(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const getCategoryPlatformLabel = (category) => {
     if (!category) return "Platform";
@@ -119,7 +118,9 @@ export default function SearchInput({ initialQuery = "" }) {
 
   const handleSearch = async (searchQuery = query) => {
     if (searchQuery.trim()) {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(
+        typeof window !== "undefined" ? window.location.search : ""
+      );
       params.set("q", searchQuery.trim());
       router.push(`/homes/home-search?${params.toString()}`);
       setShowSuggestions(false);

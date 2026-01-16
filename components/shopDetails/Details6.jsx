@@ -14,12 +14,11 @@ import {
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
 import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 
 export default function ou({ product, initialColor, searchParams }) {
   const router = useRouter();
-  const searchParamsHook = useSearchParams();
   const { addProductToCart, isAddedToCartProducts, clearCart } =
     useContextElement();
 
@@ -224,7 +223,9 @@ export default function ou({ product, initialColor, searchParams }) {
           setColorOptions(filteredColors);
 
           // Check if initial color from URL matches any filtered colors
-          const urlColorSlug = searchParamsHook.get("color");
+          const urlColorSlug = new URLSearchParams(
+            typeof window !== "undefined" ? window.location.search : ""
+          ).get("color");
           console.log("URL Color Slug:", urlColorSlug);
 
           if (urlColorSlug) {
