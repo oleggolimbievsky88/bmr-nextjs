@@ -12,9 +12,13 @@ export default function Header18({ showVehicleSearch = true }) {
   const [menuData, setMenuData] = useState(null);
 
   useEffect(() => {
+    // Prefetch menu data immediately on mount with caching
     const fetchMenuData = async () => {
       try {
-        const response = await fetch("/api/menu");
+        // Fetch with caching - this will use browser cache and Next.js cache
+        const response = await fetch("/api/menu", {
+          next: { revalidate: 3600 },
+        });
         if (!response.ok) throw new Error("Failed to fetch menu");
         const data = await response.json();
         setMenuData(data);
@@ -23,6 +27,7 @@ export default function Header18({ showVehicleSearch = true }) {
       }
     };
 
+    // Fetch immediately, don't wait
     fetchMenuData();
   }, []);
 

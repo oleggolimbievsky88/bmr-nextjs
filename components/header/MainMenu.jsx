@@ -20,10 +20,6 @@ export default function MainMenu({ initialMenuData }) {
   // Update menuData when initialMenuData changes (from Header18)
   useEffect(() => {
     if (initialMenuData && Object.keys(initialMenuData).length > 0) {
-      console.log(
-        "MainMenu: Updating menuData from initialMenuData",
-        initialMenuData
-      );
       setMenuData(initialMenuData);
       setIsDataFetched(true);
       setIsLoading(false);
@@ -39,7 +35,10 @@ export default function MainMenu({ initialMenuData }) {
       const fetchMenuData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch("/api/menu");
+          // Fetch with caching - this will use browser cache and Next.js cache
+          const response = await fetch("/api/menu", {
+            next: { revalidate: 3600 },
+          });
           if (!response.ok) throw new Error("Failed to fetch menu");
           const data = await response.json();
           setMenuData(data);
@@ -87,9 +86,6 @@ export default function MainMenu({ initialMenuData }) {
 
     // Get the links array for the selected platform
     const platformLinks = menuData[`${platform}Links`];
-
-    // Debug logging
-    console.log("Hovering over platform:", platform, "Links:", platformLinks);
   };
 
   // Function to handle platform leave
@@ -112,54 +108,7 @@ export default function MainMenu({ initialMenuData }) {
     e.target.src = "https://bmrsuspension.com/siteart/logo/bmr-logo-white.png";
   };
 
-  // Group vehicles by name (e.g., Camaro, Corvette, CTS-V)
-  const groupVehiclesByName = (links) => {
-    if (!links || links.length === 0) return [];
-
-    const grouped = {};
-    links.forEach((vehicle) => {
-      // Extract vehicle name from heading
-      // Formats: "2016 - 2021 Camaro", "2024 Mustang", "C8 Corvette"
-      let vehicleName = vehicle.heading;
-
-      // Try to extract name after year range (e.g., "2016 - 2021 Camaro" -> "Camaro")
-      const yearRangeMatch = vehicle.heading.match(/\d{4}\s*-\s*\d{4}\s+(.+)$/);
-      if (yearRangeMatch) {
-        vehicleName = yearRangeMatch[1].trim();
-      } else {
-        // Try single year format (e.g., "2024 Mustang" -> "Mustang")
-        const singleYearMatch = vehicle.heading.match(/\d{4}\s+(.+)$/);
-        if (singleYearMatch) {
-          vehicleName = singleYearMatch[1].trim();
-        } else {
-          // Try model-first format (e.g., "C8 Corvette" -> "Corvette")
-          const modelFirstMatch = vehicle.heading.match(/^[A-Z0-9]+\s+(.+)$/);
-          if (modelFirstMatch) {
-            vehicleName = modelFirstMatch[1].trim();
-          }
-        }
-      }
-
-      if (!grouped[vehicleName]) {
-        grouped[vehicleName] = [];
-      }
-      grouped[vehicleName].push(vehicle);
-    });
-
-    // Convert to array and sort vehicles within each group by start year (newest first)
-    return Object.keys(grouped)
-      .sort()
-      .map((name) => ({
-        name,
-        vehicles: grouped[name].sort((a, b) => {
-          const aYear = parseInt(a.heading.match(/^(\d{4})/)?.[1] || "0");
-          const bYear = parseInt(b.heading.match(/^(\d{4})/)?.[1] || "0");
-          return bYear - aYear; // Newest first
-        }),
-      }));
-  };
-
-  // Render function for the mega menu
+  // Render function for the mega menu - simple list with thumbnails
   const renderMegaMenu = (links, platform) => {
     const isActive = activePlatform === platform;
     if (!isActive) return null;
@@ -172,8 +121,6 @@ export default function MainMenu({ initialMenuData }) {
       }
       return null;
     }
-
-    const vehicleGroups = groupVehiclesByName(links);
 
     return (
       <div
@@ -196,23 +143,40 @@ export default function MainMenu({ initialMenuData }) {
         }}
       >
         <div className="mega-menu-container">
-          <div className="mega-menu-vehicles">
-            <div className="vehicle-grid">
-              {vehicleGroups.map((group, groupIdx) => (
-                <div key={groupIdx} className="vehicle-group-column">
-                  <h4 className="vehicle-group-header">{group.name}</h4>
-                  {group.vehicles.map((vehicle) => (
-                    <Link
-                      key={`${group.name}-${vehicle.slug}`}
-                      href={`/products/${vehicle.slug}`}
-                      className={`vehicle-card ${
-                        activeVehicle === vehicle.slug ? "active" : ""
-                      }`}
-                      onMouseEnter={() => handleVehicleHover(vehicle.slug)}
-                    >
-                      {vehicle.heading}
-                    </Link>
-                  ))}
+          <div className="container">
+            <div className="row g-2 p-4">
+              {links.map((platformItem) => (
+                <div
+                  key={platformItem.slug || platformItem.bodyId}
+                  className="col-12 col-md-6 col-lg-4"
+                >
+                  <Link
+                    href={`/products/${encodeURIComponent(
+                      platformItem.slug
+                    )}`}
+                    className="platform-menu-item d-flex align-items-center text-decoration-none"
+                  >
+                    {platformItem.image && (
+                      <div className="platform-thumbnail me-3 flex-shrink-0">
+                        <img
+                          src={platformItem.image}
+                          alt={platformItem.heading}
+                          className="img-fluid"
+                          style={{
+                            objectFit: "contain",
+                            maxHeight: "50px",
+                            maxWidth: "80px",
+                            width: "auto",
+                            transition: "transform 0.3s ease",
+                          }}
+                          onError={handleImageError}
+                        />
+                      </div>
+                    )}
+                    <div className="text-dark fw-semibold small">
+                      {platformItem.heading}
+                    </div>
+                  </Link>
                 </div>
               ))}
             </div>
