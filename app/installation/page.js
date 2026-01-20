@@ -251,11 +251,37 @@ export default function InstallationPage() {
 														</td>
 														<td>{product.ProductName}</td>
 														<td>
-															{product.PlatformName ||
-																(selectedPlatform && platforms.find(p => (p.id || p.BodyID) == selectedPlatform)?.name) ||
-																product.PlatformStartYear && product.PlatformEndYear
-																	? `${product.PlatformStartYear}-${product.PlatformEndYear}`
-																	: 'Unknown Platform'}
+															{(() => {
+																// First try to use PlatformName from API (already formatted)
+																if (product.PlatformName) {
+																	return product.PlatformName
+																}
+
+																// If not available, try to find from platforms array
+																if (selectedPlatform) {
+																	const platform = platforms.find(p => (p.id || p.BodyID) == selectedPlatform)
+																	if (platform) {
+																		const yearPart = platform.startYear && platform.startYear !== '0' && platform.endYear && platform.endYear !== '0'
+																			? `${platform.startYear}-${platform.endYear} `
+																			: ''
+																		return `${yearPart}${platform.name || platform.Name}`
+																	}
+																}
+
+																// If we have years but no name, try to construct from product data
+																if (product.PlatformStartYear && product.PlatformEndYear && product.PlatformStartYear !== '0' && product.PlatformEndYear !== '0') {
+																	// Try to find platform by BodyID from product
+																	if (product.BodyID) {
+																		const platform = platforms.find(p => (p.id || p.BodyID) == product.BodyID)
+																		if (platform) {
+																			return `${product.PlatformStartYear}-${product.PlatformEndYear} ${platform.name || platform.Name}`
+																		}
+																	}
+																	return `${product.PlatformStartYear}-${product.PlatformEndYear}`
+																}
+
+																return 'Unknown Platform'
+															})()}
 														</td>
 														<td>
 															{product.CategoryNames || product.FullCategoryNames || 'N/A'}
