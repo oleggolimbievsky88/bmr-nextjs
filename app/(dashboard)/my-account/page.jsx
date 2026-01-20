@@ -1,5 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
+import Header18 from "@/components/header/Header18";
+import PageHeader from "@/components/header/PageHeader";
+import Topbar4 from "@/components/header/Topbar4";
 import DashboardNav from "@/components/othersPages/dashboard/DashboardNav";
 import MyAccount from "@/components/othersPages/dashboard/MyAccount";
 import React from "react";
@@ -11,12 +13,9 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Header2 />
-      <div className="tf-page-title">
-        <div className="container-full">
-          <div className="heading text-center">My Account</div>
-        </div>
-      </div>
+      <Topbar4 />
+      <Header18 showVehicleSearch={false} />
+      <PageHeader title="MY ACCOUNT" />
       <section className="flat-spacing-11">
         <div className="container">
           <div className="row">

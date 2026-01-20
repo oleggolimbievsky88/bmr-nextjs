@@ -2,7 +2,6 @@ import Footer1 from "@/components/footer/Footer";
 import Header18 from "@/components/header/Header18";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
-import VehicleSearch from "@/components/common/VehicleSearch";
 import Faq1 from "@/components/othersPages/faq/Faq1";
 import Faq2 from "@/components/othersPages/faq/Faq2";
 import Faq3 from "@/components/othersPages/faq/Faq3";
@@ -10,23 +9,15 @@ import React from "react";
 import Link from "next/link";
 export const metadata = {
   title:
-    "Faq 1 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+    "FAQ | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
   return (
     <>
       <Topbar4 />
-      <Header18 />
-      <div className="vehicle-search-desktop-wrapper">
-        <div className="container vehicle-search-desktop">
-          <VehicleSearch />
-        </div>
-      </div>
+      <Header18 showVehicleSearch={false} />
       <PageHeader title="FAQ" />
-      <div className="container vehicle-search-mobile">
-        <VehicleSearch />
-      </div>
       <>
         {/* FAQ */}
         <section className="flat-spacing-11">

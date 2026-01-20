@@ -165,7 +165,7 @@ export default function ({
               </div>
               <div className="iconbox-content">
                 <h4 className="iconbox-title">Free shipping</h4>
-                <p className="iconbox-desc">Free shopping for all US order</p>
+                <p className="iconbox-desc">Free shipping for all US orders!</p>
               </div>
             </li>
             <li className="iconbox-item">
@@ -204,8 +204,8 @@ export default function ({
                 </svg>
               </div>
               <div className="iconbox-content">
-                <h4 className="iconbox-title">30 Days Return</h4>
-                <p className="iconbox-desc">You have 30 days to return</p>
+                <h4 className="iconbox-title">90 Days Return</h4>
+                <p className="iconbox-desc">You have 90 days to return.<br />Subject to a 15% restocking fee.</p>
               </div>
             </li>
           </ul>

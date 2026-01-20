@@ -751,14 +751,22 @@ section.tf-slideshow,
 .nav-item.dropdown .dropdown-menu.mega-menu {
   opacity: 0;
   visibility: hidden;
-  display: none;
+  display: block !important; // Keep in DOM for transitions
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.25s ease-out,
+              visibility 0.25s ease-out,
+              transform 0.25s ease-out;
 }
 
 .nav-item.dropdown:hover .dropdown-menu.mega-menu,
-.nav-item.dropdown .dropdown-menu.mega-menu.show {
+.nav-item.dropdown .dropdown-menu.mega-menu.show,
+.nav-item.dropdown .dropdown-menu.mega-menu.active {
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 /* Mega Menu Column Layout */
@@ -813,15 +821,20 @@ section.tf-slideshow,
 }
 
 /* Platform Menu Item Styles */
+.mega-menu-platform-col {
+	padding: 0px 12px;
+}
+
 .platform-menu-item {
-	padding: 12px 16px;
+	padding: 5px 12px;
 	border-radius: 8px;
 	transition: all 0.3s ease;
 	background-color: transparent;
 	border: 1px solid transparent;
+	margin: 0;
 
 	.text-dark {
-		font-size: 0.9375rem; /* 15px - 1px larger than small (14px) */
+		font-size: 1rem; /* 15px - 1px larger than small (14px) */
 		line-height: 1.5;
 	}
 
@@ -2015,93 +2028,74 @@ section.tf-slideshow,
 .dropdown-menu.mega-menu {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  transform: translateY(-10px);
+  transition: opacity 0.25s ease-out,
+              visibility 0.25s ease-out,
+              transform 0.25s ease-out;
   background-color: #ffffff !important;
   background: #ffffff !important;
   width: 100% !important;
   min-width: 100% !important;
   max-width: 100% !important;
-  padding: 20px;
-  z-index: 99999999 !important; // Highest z-index to ensure it's above everything
+  padding: 0;
+  z-index: 99999999 !important;
   position: fixed !important;
-  /* top is set dynamically via inline styles */
   left: 0 !important;
   right: 0 !important;
   isolation: isolate !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+  overflow: hidden;
+  pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0);
+  display: block !important; // Always display, control with opacity/visibility
+
+  // Inner content wrapper for better animation
+  .mega-menu-inner {
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease-out 0.05s,
+                transform 0.2s ease-out 0.05s;
+  }
 
   &::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
-    background: transparent !important;
-  }
-
-  &::-webkit-scrollbar-track {
-    display: none !important;
-    background: transparent !important;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    display: none !important;
     background: transparent !important;
   }
 
   * {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
-
-    &::-webkit-scrollbar {
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-      background: transparent !important;
-    }
-
-    &::-webkit-scrollbar-track {
-      display: none !important;
-      background: transparent !important;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      display: none !important;
-      background: transparent !important;
-    }
   }
 }
 
-.dropdown-menu.mega-menu.show {
-  z-index: 99999999 !important; // Highest z-index to ensure it's above everything
+.dropdown-menu.mega-menu.show,
+.dropdown-menu.mega-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 99999999 !important;
   position: fixed !important;
-  /* top is set dynamically via inline styles */
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
   background-color: #ffffff !important;
   background: #ffffff !important;
   isolation: isolate !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+
+  .mega-menu-inner {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
   &::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
-    background: transparent !important;
-  }
-
-  &::-webkit-scrollbar-track {
-    display: none !important;
-    background: transparent !important;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    display: none !important;
     background: transparent !important;
   }
 }
@@ -2109,6 +2103,13 @@ section.tf-slideshow,
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
   opacity: 1;
   visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+
+  .mega-menu-inner {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-menu.mega-menu.loading {
@@ -3550,3 +3551,413 @@ section.tf-slideshow,
 	}
 }
 
+/* Installation Page Styles */
+.installation-hero {
+	width: 100%;
+	margin-bottom: 20px;
+  border-bottom:2px solid var(--primary);
+}
+
+.installation-hero-bg {
+	position: relative;
+	width: 100%;
+	min-height: 300px;
+	background-image: url('/images/slider/S650 Mustang_Banner.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: #000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+
+
+.installation-hero-content {
+	position: relative;
+	width: 100%;
+	z-index: 1;
+}
+
+.installation-hero-content .container {
+	padding-left: 2rem;
+}
+
+.installation-hero-title {
+	color: #fff;
+	font-size: 3.5rem;
+	font-weight: 900;
+	text-transform: uppercase;
+	text-align: left;
+	text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
+	margin: 0;
+	padding: 60px 20px;
+	letter-spacing: 2px;
+	line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+	.installation-hero-content .container {
+		padding-left: 1rem;
+	}
+
+	.installation-hero-title {
+		font-size: 2rem;
+		padding: 40px 20px;
+	}
+}
+
+.installation-content-wrapper {
+	background-color: #fff;
+	padding-bottom: 60px;
+}
+
+.installation-main-heading {
+	font-size: 4rem;
+	color: #000000;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+  font-family: impact;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+	.installation-main-heading {
+		font-size: 1.5rem;
+	}
+}
+
+.installation-search-section {
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	padding: 20px;
+}
+
+.installation-section-title {
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 0;
+}
+
+.installation-preview-wrapper {
+	display: flex;
+	align-items: center;
+	background-color: #f8f9fa;
+	border: 2px solid #dee2e6;
+	border-radius: 8px;
+	padding: 30px;
+	gap: 30px;
+	flex-wrap: wrap;
+}
+
+.installation-preview-image {
+	text-align: center;
+	flex-shrink: 0;
+}
+
+.installation-preview-image img {
+	max-width: 200px;
+	height: auto;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.installation-preview-label {
+	margin-top: 10px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #333;
+}
+
+.installation-preview-arrow {
+	flex-shrink: 0;
+	font-size: 3rem;
+	color: var(--primary, #dc3545);
+}
+
+.installation-preview-text {
+	flex: 1;
+	min-width: 200px;
+}
+
+.installation-preview-text p {
+	font-size: 1.1rem;
+	color: #666;
+	margin-bottom: 0;
+}
+
+.installation-info-box {
+	background-color: #f8f9fa;
+	border: 2px solid #dee2e6;
+	border-radius: 8px;
+	padding: 30px;
+	text-align: center;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.installation-info-title {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 15px;
+	line-height: 1.4;
+}
+
+.installation-support-hours {
+	font-size: 1rem;
+	color: #666;
+	margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+	.installation-preview-wrapper {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.installation-preview-arrow {
+		transform: rotate(90deg);
+	}
+}
+
+/* Installation Page Styles */
+.installation-hero {
+	width: 100%;
+	margin-bottom: 40px;
+}
+
+.installation-hero-bg {
+	position: relative;
+	width: 100%;
+	min-height: 300px;
+	background-image: url('/images/pageHeaders/Installation_Header.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: #000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.installation-hero-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.installation-hero-content {
+	position: relative;
+	width: 100%;
+	z-index: 1;
+}
+
+.installation-hero-title {
+	color: #fff;
+	font-size: 3.5rem;
+	font-weight: 900;
+	text-transform: uppercase;
+	text-align: left;
+	text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
+	margin: 0;
+	padding: 60px 20px;
+	letter-spacing: 2px;
+	line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+	.installation-hero-title {
+		font-size: 2rem;
+		padding: 40px 20px;
+	}
+}
+
+.installation-content-wrapper {
+	background-color: #fff;
+	padding-bottom: 60px;
+}
+
+.installation-main-heading {
+	font-size: 3rem;
+	color: #000000;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-family: impact;
+  padding-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+	.installation-main-heading {
+		font-size: 1.5rem;
+	}
+}
+
+.installation-search-section {
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	padding: 20px;
+}
+
+.installation-section-title {
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 0;
+}
+
+.installation-preview-wrapper {
+	display: flex;
+	align-items: center;
+	background-color: #f8f9fa;
+	border: 2px solid #dee2e6;
+	border-radius: 8px;
+	padding: 30px;
+	gap: 30px;
+	flex-wrap: wrap;
+}
+
+.installation-preview-image {
+	text-align: center;
+	flex-shrink: 0;
+}
+
+.installation-preview-image img {
+	max-width: 200px;
+	height: auto;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.installation-preview-label {
+	margin-top: 10px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #333;
+}
+
+.installation-preview-arrow {
+	flex-shrink: 0;
+	font-size: 3rem;
+	color: var(--primary, #dc3545);
+}
+
+.installation-preview-text {
+	flex: 1;
+	min-width: 200px;
+}
+
+.installation-preview-text p {
+	font-size: 1.1rem;
+	color: #666;
+	margin-bottom: 0;
+}
+
+.installation-info-box {
+	background-color: #f8f9fa;
+	border: 2px solid #dee2e6;
+	border-radius: 8px;
+	padding: 30px;
+	text-align: center;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.installation-info-title {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 15px;
+	line-height: 1.4;
+}
+
+.installation-support-hours {
+	font-size: 1rem;
+	color: #666;
+	margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+	.installation-preview-wrapper {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.installation-preview-arrow {
+		transform: rotate(90deg);
+	}
+}
+
+.installation-products-list {
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	padding: 30px;
+}
+
+.installation-list-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #333;
+	margin-bottom: 0;
+}
+
+.installation-products-list .table {
+	margin-bottom: 0;
+	background-color: #fff;
+}
+
+.installation-products-list .table thead {
+	background-color: var(--primary, #dc3545);
+	color: #fff;
+}
+
+.installation-products-list .table thead th {
+	border: none;
+	padding: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	font-size: 0.875rem;
+	letter-spacing: 0.5px;
+}
+
+.installation-products-list .table tbody td {
+	padding: 12px;
+	vertical-align: middle;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.installation-products-list .table tbody tr:hover {
+	background-color: #f8f9fa;
+}
+
+.installation-products-list .table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+@media (max-width: 768px) {
+	.installation-products-list {
+		padding: 15px;
+	}
+
+	.installation-products-list .table-responsive {
+		font-size: 0.875rem;
+	}
+
+	.installation-products-list .table thead th,
+	.installation-products-list .table tbody td {
+		padding: 8px;
+	}
+
+	.installation-list-title {
+		font-size: 1.25rem;
+	}
+}

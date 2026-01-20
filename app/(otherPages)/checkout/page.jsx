@@ -1,6 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
-import Header2 from "@/components/header/Header";
-import VehicleSearch from "@/components/common/VehicleSearch";
+import Header18 from "@/components/header/Header18";
+import PageHeader from "@/components/header/PageHeader";
+import Topbar4 from "@/components/header/Topbar4";
 import Checkout from "@/components/othersPages/Checkout";
 import React from "react";
 
@@ -15,17 +16,10 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Header2 />
-      <div className="vehicle-search-desktop-wrapper">
-        <div className="container vehicle-search-desktop">
-          <VehicleSearch />
-        </div>
-      </div>
-
+      <Topbar4 />
+      <Header18 showVehicleSearch={false} />
+      <PageHeader title="CHECKOUT" />
       <Checkout />
-      <div className="container vehicle-search-mobile">
-        <VehicleSearch />
-      </div>
       <Footer1 />
     </>
   );

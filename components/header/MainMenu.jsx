@@ -111,44 +111,27 @@ export default function MainMenu({ initialMenuData }) {
   // Render function for the mega menu - simple list with thumbnails
   const renderMegaMenu = (links, platform) => {
     const isActive = activePlatform === platform;
-    if (!isActive) return null;
 
-    if (!links || links.length === 0) {
-      if (isLoading) {
-        return (
-          <div className="dropdown-menu mega-menu loading show">Loading...</div>
-        );
-      }
-      return null;
-    }
-
-    return (
-      <div
-        className="dropdown-menu mega-menu show"
-        onMouseEnter={() => clearTimeout(hoverTimeoutRef.current)}
-        onMouseLeave={handlePlatformLeave}
-        style={{
-          display: "block",
-          position: "fixed",
-          top: megaMenuTop !== null ? `${megaMenuTop}px` : undefined,
-          left: 0,
-          right: 0,
-          width: "100%",
-          zIndex: 99999,
-          opacity: 1,
-          visibility: "visible",
-          isolation: "isolate",
-          backgroundColor: "#ffffff",
-          background: "#ffffff",
-        }}
-      >
-        <div className="mega-menu-container">
+    // Always render the menu, but control visibility with CSS classes
+    const menuContent = (!links || links.length === 0) ? (
+      isLoading ? (
+        <div className="mega-menu-inner">
           <div className="container">
             <div className="row g-2 p-4">
+              <div className="col-12 text-center py-4">Loading...</div>
+            </div>
+          </div>
+        </div>
+      ) : null
+    ) : (
+      <div className="mega-menu-inner">
+        <div className="mega-menu-container">
+          <div className="container">
+            <div className="row g-3 px-5">
               {links.map((platformItem) => (
                 <div
                   key={platformItem.slug || platformItem.bodyId}
-                  className="col-12 col-md-6 col-lg-4"
+                  className="col-12 col-md-6 col-lg-4 mega-menu-platform-col"
                 >
                   <Link
                     href={`/products/${encodeURIComponent(
@@ -182,6 +165,27 @@ export default function MainMenu({ initialMenuData }) {
             </div>
           </div>
         </div>
+      </div>
+    );
+
+    return (
+      <div
+        className={`dropdown-menu mega-menu ${isActive ? 'show active' : ''}`}
+        onMouseEnter={() => clearTimeout(hoverTimeoutRef.current)}
+        onMouseLeave={handlePlatformLeave}
+        style={{
+          position: "fixed",
+          top: megaMenuTop !== null ? `${megaMenuTop}px` : '100%',
+          left: 0,
+          right: 0,
+          width: "100%",
+          zIndex: 99999,
+          isolation: "isolate",
+          backgroundColor: "#ffffff",
+          background: "#ffffff",
+        }}
+      >
+        {menuContent}
       </div>
     );
   };
