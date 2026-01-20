@@ -192,7 +192,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
             style={{
               position: "relative",
               width: "100%",
-              height: "500px",
+              maxHeight: "500px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -248,6 +248,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
         <Swiper
           spaceBetween={10}
           slidesPerView={1}
+          autoHeight={true}
           navigation={{
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
@@ -260,47 +261,57 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
             setMainSwiper(swiper);
           }}
         >
-          {images.map((slide, index) => (
-            <SwiperSlide key={index}>
-              <Item
-                original={slide.imgSrc}
-                thumbnail={slide.imgSrc}
-                width={slide.width}
-                height={slide.height || 500}
-              >
-                {({ ref, open }) => (
-                  <a
-                    className="item"
-                    data-pswp-width={slide.width}
-                    data-pswp-height={slide.height || 500}
-                    onClick={open}
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      height: "auto",
-                      display: "block",
-                    }}
-                  >
-                    <Image
-                      className="tf-image-zoom lazyload"
-                      data-zoom={slide.imgSrc}
-                      src={slide.imgSrc}
-                      alt={slide.alt}
-                      width={slide.width}
-                      height={slide.height || 500}
-                      ref={ref}
+          {images.map((slide, index) => {
+            // Calculate display dimensions - scale down to max 600px width while maintaining aspect ratio
+            const maxDisplayWidth = 600;
+            const originalWidth = slide.width || 600;
+            const originalHeight = slide.height || 500;
+            const aspectRatio = originalHeight / originalWidth;
+            const displayWidth = Math.min(originalWidth, maxDisplayWidth);
+            const displayHeight = Math.round(displayWidth * aspectRatio);
+
+            return (
+              <SwiperSlide key={index}>
+                <Item
+                  original={slide.imgSrc}
+                  thumbnail={slide.imgSrc}
+                  width={originalWidth}
+                  height={originalHeight}
+                >
+                  {({ ref, open }) => (
+                    <a
+                      className="item"
+                      data-pswp-width={originalWidth}
+                      data-pswp-height={originalHeight}
+                      onClick={open}
                       style={{
+                        position: "relative",
                         width: "100%",
                         height: "auto",
-                        objectFit: "contain",
-                        objectPosition: "center",
+                        display: "block",
                       }}
-                    />
-                  </a>
-                )}
-              </Item>
-            </SwiperSlide>
-          ))}
+                    >
+                      <Image
+                        className="tf-image-zoom lazyload"
+                        data-zoom={slide.imgSrc}
+                        src={slide.imgSrc}
+                        alt={slide.alt}
+                        width={displayWidth}
+                        height={displayHeight}
+                        ref={ref}
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          objectFit: "contain",
+                          objectPosition: "center",
+                        }}
+                      />
+                    </a>
+                  )}
+                </Item>
+              </SwiperSlide>
+            );
+          })}
           <div className="swiper-button-next button-style-arrow thumbs-next"></div>
           <div className="swiper-button-prev button-style-arrow thumbs-prev"></div>
         </Swiper>

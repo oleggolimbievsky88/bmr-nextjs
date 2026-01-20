@@ -3354,6 +3354,11 @@ section.tf-slideshow,
 	margin-top: 0 !important;
 }
 
+// Ensure sticky product images stay below header
+.tf-product-media-wrap.sticky-top {
+	z-index: 100 !important; // Lower than header (z-index: 888) and navbar (z-index: 999999)
+}
+
 /* Additional specificity for the container */
 .thumbs-bottom .tf-product-media-main {
 	margin-bottom: 0 !important;
@@ -3374,6 +3379,43 @@ section.tf-slideshow,
 .tf-product-media-thumbs.swiper {
 	margin-top: 0 !important;
 	padding-top: 0 !important;
+}
+
+/* Override more specific rules from _product.scss for thumbs-bottom layout */
+.tf-product-media-wrap.thumbs-bottom .thumbs-slider .tf-product-media-main {
+	margin-bottom: 0 !important;
+	padding-bottom: 0 !important;
+	min-height: unset !important;
+}
+
+.tf-product-media-wrap.thumbs-bottom .thumbs-slider .tf-product-media-thumbs {
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+
+/* Fix product image height - prevent full-size image height from being used */
+.tf-product-media-main .item {
+	height: auto !important;
+	max-height: none !important;
+}
+
+.tf-product-media-main .item img {
+	height: auto !important;
+	object-fit: contain !important;
+}
+
+.tf-product-media-main .swiper-slide {
+	height: auto !important;
+}
+
+.tf-product-media-main.swiper {
+	height: auto !important;
+}
+
+.tf-product-media-main .swiper-wrapper {
+	max-height: 550px !important;
+	align-items: flex-start !important;
 }
 
 /* BMR Custom Racing Styles */

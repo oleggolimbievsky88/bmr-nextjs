@@ -433,21 +433,11 @@ export default function ou({ product, initialColor, searchParams }) {
             <div className="row">
               <div className="col-md-6">
                 <div className="tf-product-media-wrap thumbs-bottom sticky-top">
-                  <div
-                    className="thumbs-slider"
-                    style={{
-                      height: "auto",
-                      minHeight: 500,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
-                      paddingBottom: 0,
-                    }}
-                  >
-                    <Slider3BottomThumbs
+                  <div className="thumbs-slider">
+                    {/* <Slider3BottomThumbs
                       productId={product.ProductID}
                       selectedColor={currentColor}
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>
@@ -492,18 +482,8 @@ export default function ou({ product, initialColor, searchParams }) {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-              <div className="tf-product-media-wrap thumbs-bottom sticky-top">
-                <div
-                  className="thumbs-slider"
-                  style={{
-                    height: "auto",
-                    minHeight: 500,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    paddingBottom: 0,
-                  }}
-                >
+            <div className="tf-product-media-wrap thumbs-bottom sticky-top">
+            <div className="thumbs-slider">
                   <Slider3BottomThumbs
                     productId={product.ProductID}
                     selectedColor={currentColor}
