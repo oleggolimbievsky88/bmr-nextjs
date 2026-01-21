@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getOrderById, getOrderItems } from "@/lib/queries";
 
 export async function GET(request, { params }) {
   try {
@@ -14,25 +14,17 @@ export async function GET(request, { params }) {
     const { orderId } = params;
 
     // Fetch order details - try by order_number first (e.g., "BMR-660000"), then by ID
-    const orderSql = `
-      SELECT * FROM new_orders WHERE order_number = ? OR new_order_id = ?
-    `;
-    const orderResult = await query(orderSql, [orderId, orderId]);
+    const order = await getOrderById(orderId);
 
-    if (orderResult.length === 0) {
+    if (!order) {
       return NextResponse.json(
         { success: false, message: "Order not found" },
         { status: 404 }
       );
     }
 
-    const order = orderResult[0];
-
     // Fetch order items using the actual database ID
-    const itemsSql = `
-      SELECT * FROM new_order_items WHERE new_order_id = ?
-    `;
-    const itemsResult = await query(itemsSql, [order.new_order_id]);
+    const itemsResult = await getOrderItems(order.new_order_id);
 
     // Format the order data
     const orderData = {

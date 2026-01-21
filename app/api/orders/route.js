@@ -1,50 +1,16 @@
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import pool from "@/lib/db";
 import nodemailer from "nodemailer";
-
-async function getNextOrderNumber() {
-  try {
-    // Get the highest order number from the database
-    const sql = `
-      SELECT order_number
-      FROM new_orders
-      ORDER BY new_order_id DESC
-      LIMIT 100
-    `;
-
-    const rows = await query(sql);
-    let nextOrderNumber = 660000;
-    let maxFound = 0;
-
-    // Extract numbers from order numbers (handles both "BMR-660001" and "660001" formats)
-    if (rows && rows.length > 0) {
-      for (const row of rows) {
-        const orderNum = row.order_number || "";
-        // Extract number from "BMR-660001" format or just number
-        const match = orderNum.match(/(\d+)$/);
-        if (match) {
-          const num = parseInt(match[1]);
-          if (num >= 660000 && num > maxFound) {
-            maxFound = num;
-          }
-        }
-      }
-
-      if (maxFound >= 660000) {
-        nextOrderNumber = maxFound + 1;
-      }
-    }
-
-    return nextOrderNumber;
-  } catch (error) {
-    console.error("Error getting next order number:", error);
-    // Fallback to 660000
-    return 660000;
-  }
-}
+import {
+  getNextOrderNumber,
+  ensureOrderTablesExist,
+  createOrder,
+  createOrderItems,
+  recordCouponUsage,
+} from "@/lib/queries";
 
 export async function POST(request) {
+  let orderData = null;
+
   try {
     // Check if database connection is available
     if (!process.env.MYSQL_HOST) {
@@ -55,9 +21,21 @@ export async function POST(request) {
     }
 
     // Ensure tables exist
-    await ensureOrderTablesExist();
+    const tablesExist = await ensureOrderTablesExist();
+    if (!tablesExist) {
+      console.error("Failed to ensure order tables exist");
+      // Continue anyway - tables might already exist
+    }
 
-    const orderData = await request.json();
+    orderData = await request.json();
+
+    // Validate required fields
+    if (!orderData.billing || !orderData.shipping || !orderData.items || orderData.items.length === 0) {
+      return NextResponse.json(
+        { success: false, message: "Missing required order data" },
+        { status: 400 }
+      );
+    }
 
     // Generate order number (sequential starting from 660000)
     const orderNumberValue = await getNextOrderNumber();
@@ -66,7 +44,7 @@ export async function POST(request) {
 
     // Calculate totals
     const subtotal = orderData.items.reduce((total, item) => {
-      return total + parseFloat(item.price) * item.quantity;
+      return total + parseFloat(item.price || 0) * (item.quantity || 1);
     }, 0);
 
     const total =
@@ -74,6 +52,13 @@ export async function POST(request) {
       parseFloat(orderData.shippingCost || 0) +
       parseFloat(orderData.tax || 0) -
       parseFloat(orderData.discount || 0);
+
+    console.log("Creating order:", {
+      orderNumber,
+      subtotal,
+      total,
+      itemsCount: orderData.items.length,
+    });
 
     // Create order record
     const orderId = await createOrder({
@@ -84,20 +69,49 @@ export async function POST(request) {
       total,
     });
 
+    console.log("Order created with ID:", orderId);
+
     // Create order items
     await createOrderItems(orderId, orderData.items);
 
+    console.log("Order items created successfully");
+
+    // Record coupon usage if a coupon was applied
+    if (orderData.couponId && orderData.discount > 0) {
+      try {
+        await recordCouponUsage(
+          orderData.couponId,
+          orderData.customerId || null,
+          orderId, // Using new_order_id as the order_id for coupon_usage
+          orderData.discount,
+          orderData.subtotal
+        );
+        console.log("Coupon usage recorded successfully:", {
+          couponId: orderData.couponId,
+          discount: orderData.discount,
+        });
+      } catch (couponError) {
+        // Log error but don't fail the order if coupon recording fails
+        console.error("Error recording coupon usage:", couponError);
+      }
+    }
+
     // Send confirmation email
-    await sendConfirmationEmail({
-      orderNumber,
-      orderDate,
-      customerEmail: orderData.billing.email,
-      customerName: `${orderData.billing.firstName} ${orderData.billing.lastName}`,
-      orderData,
-      subtotal,
-      total,
-      notes: orderData.notes || "",
-    });
+    try {
+      await sendConfirmationEmail({
+        orderNumber,
+        orderDate,
+        customerEmail: orderData.billing.email,
+        customerName: `${orderData.billing.firstName} ${orderData.billing.lastName}`,
+        orderData,
+        subtotal,
+        total,
+        notes: orderData.notes || "",
+      });
+    } catch (emailError) {
+      // Log email error but don't fail the order
+      console.error("Error sending confirmation email:", emailError);
+    }
 
     return NextResponse.json({
       success: true,
@@ -109,10 +123,14 @@ export async function POST(request) {
     console.error("Error processing order:", {
       error: error.message,
       stack: error.stack,
+      code: error.code,
+      sqlState: error.sqlState,
+      sqlMessage: error.sqlMessage,
       orderData: orderData
         ? {
             itemsCount: orderData.items?.length,
             billingEmail: orderData.billing?.email,
+            orderNumber: orderData.orderNumber,
           }
         : null,
     });
@@ -128,196 +146,6 @@ export async function POST(request) {
   }
 }
 
-async function createOrder(orderData) {
-  const sql = `
-    INSERT INTO new_orders (
-      order_number, customer_id, billing_first_name, billing_last_name,
-      billing_address1, billing_address2, billing_city, billing_state,
-      billing_zip, billing_country, billing_phone, billing_email,
-      shipping_first_name, shipping_last_name, shipping_address1,
-      shipping_address2, shipping_city, shipping_state, shipping_zip,
-      shipping_country, shipping_method, subtotal, shipping_cost,
-      tax, discount, total, coupon_code, payment_method, order_date,
-      status, notes
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    orderData.orderNumber,
-    orderData.customerId || null,
-    orderData.billing.firstName,
-    orderData.billing.lastName,
-    orderData.billing.address1,
-    orderData.billing.address2 || "",
-    orderData.billing.city,
-    orderData.billing.state,
-    orderData.billing.zip,
-    orderData.billing.country,
-    orderData.billing.phone || "",
-    orderData.billing.email,
-    orderData.shipping.firstName,
-    orderData.shipping.lastName,
-    orderData.shipping.address1,
-    orderData.shipping.address2 || "",
-    orderData.shipping.city,
-    orderData.shipping.state,
-    orderData.shipping.zip,
-    orderData.shipping.country,
-    orderData.shippingMethod || "Standard Shipping",
-    orderData.subtotal,
-    orderData.shippingCost || 0,
-    orderData.tax || 0,
-    orderData.discount || 0,
-    orderData.total,
-    orderData.couponCode || "",
-    orderData.paymentMethod || "Credit Card",
-    orderData.orderDate,
-    "pending",
-    orderData.notes || "",
-  ];
-
-  try {
-    // Use pool.query() which returns [result, fields] for INSERT statements
-    const [result] = await pool.query(sql, values);
-    if (!result || !result.insertId) {
-      throw new Error("Failed to insert order - no insertId returned");
-    }
-    return result.insertId;
-  } catch (error) {
-    console.error("Error creating order:", {
-      error: error.message,
-      sql: sql.substring(0, 100),
-      valuesCount: values.length,
-    });
-    throw error;
-  }
-}
-
-async function createOrderItems(orderId, items) {
-  for (const item of items) {
-    const sql = `
-      INSERT INTO new_order_items (
-        new_order_id, product_id, product_name, part_number, quantity,
-        price, color, platform, year_range, image
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const values = [
-      orderId,
-      item.productId || null,
-      item.name,
-      item.partNumber,
-      item.quantity,
-      item.price,
-      item.color || "",
-      item.platform || "",
-      item.yearRange || "",
-      item.image || "",
-    ];
-
-    try {
-      await pool.query(sql, values);
-    } catch (error) {
-      console.error("Error creating order item:", {
-        error: error.message,
-        orderId,
-        item: item.name,
-      });
-      throw error;
-    }
-  }
-}
-
-async function ensureOrderTablesExist() {
-  try {
-    // Check if new_orders table exists by trying to query it
-    try {
-      await query("SELECT 1 FROM new_orders LIMIT 1");
-      // Table exists, return early
-      return;
-    } catch (error) {
-      // Table doesn't exist, create it
-      if (error.code === "ER_NO_SUCH_TABLE" || error.code === 1146) {
-        console.log("Creating new_orders and new_order_items tables...");
-
-        // Create new_orders table
-        const createOrdersTable = `
-          CREATE TABLE IF NOT EXISTS \`new_orders\` (
-            \`new_order_id\` int unsigned NOT NULL AUTO_INCREMENT,
-            \`order_number\` varchar(50) NOT NULL,
-            \`customer_id\` int unsigned DEFAULT NULL,
-            \`billing_first_name\` varchar(100) NOT NULL,
-            \`billing_last_name\` varchar(100) NOT NULL,
-            \`billing_address1\` varchar(255) NOT NULL,
-            \`billing_address2\` varchar(255) DEFAULT '',
-            \`billing_city\` varchar(100) NOT NULL,
-            \`billing_state\` varchar(50) NOT NULL,
-            \`billing_zip\` varchar(20) NOT NULL,
-            \`billing_country\` varchar(100) NOT NULL DEFAULT 'United States',
-            \`billing_phone\` varchar(20) DEFAULT '',
-            \`billing_email\` varchar(100) NOT NULL,
-            \`shipping_first_name\` varchar(100) NOT NULL,
-            \`shipping_last_name\` varchar(100) NOT NULL,
-            \`shipping_address1\` varchar(255) NOT NULL,
-            \`shipping_address2\` varchar(255) DEFAULT '',
-            \`shipping_city\` varchar(100) NOT NULL,
-            \`shipping_state\` varchar(50) NOT NULL,
-            \`shipping_zip\` varchar(20) NOT NULL,
-            \`shipping_country\` varchar(100) NOT NULL DEFAULT 'United States',
-            \`shipping_method\` varchar(100) DEFAULT 'Standard Shipping',
-            \`shipping_cost\` decimal(10,2) DEFAULT 0.00,
-            \`tax\` decimal(10,2) DEFAULT 0.00,
-            \`discount\` decimal(10,2) DEFAULT 0.00,
-            \`subtotal\` decimal(10,2) DEFAULT 0.00,
-            \`total\` decimal(10,2) NOT NULL,
-            \`coupon_code\` varchar(50) DEFAULT '',
-            \`payment_method\` varchar(50) DEFAULT 'Credit Card',
-            \`payment_status\` varchar(50) DEFAULT 'pending',
-            \`order_date\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            \`status\` varchar(50) DEFAULT 'pending',
-            \`notes\` text DEFAULT NULL,
-            PRIMARY KEY (\`new_order_id\`),
-            UNIQUE KEY \`order_number\` (\`order_number\`),
-            KEY \`customer_id\` (\`customer_id\`),
-            KEY \`order_date\` (\`order_date\`),
-            KEY \`status\` (\`status\`)
-          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        `;
-        await query(createOrdersTable);
-
-        // Create new_order_items table
-        const createOrderItemsTable = `
-          CREATE TABLE IF NOT EXISTS \`new_order_items\` (
-            \`new_order_item_id\` int unsigned NOT NULL AUTO_INCREMENT,
-            \`new_order_id\` int unsigned NOT NULL,
-            \`product_id\` int unsigned DEFAULT NULL,
-            \`product_name\` varchar(255) NOT NULL,
-            \`part_number\` varchar(100) NOT NULL,
-            \`quantity\` int unsigned NOT NULL DEFAULT 1,
-            \`price\` decimal(10,2) NOT NULL,
-            \`color\` varchar(50) DEFAULT '',
-            \`platform\` varchar(100) DEFAULT '',
-            \`year_range\` varchar(50) DEFAULT '',
-            \`image\` varchar(255) DEFAULT '',
-            PRIMARY KEY (\`new_order_item_id\`),
-            KEY \`new_order_id\` (\`new_order_id\`),
-            KEY \`product_id\` (\`product_id\`),
-            CONSTRAINT \`new_order_items_ibfk_1\` FOREIGN KEY (\`new_order_id\`) REFERENCES \`new_orders\` (\`new_order_id\`) ON DELETE CASCADE
-          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        `;
-        await query(createOrderItemsTable);
-
-        console.log("Order tables created successfully");
-      } else {
-        // Some other error occurred, log it
-        console.error("Error checking for new_orders table:", error);
-      }
-    }
-  } catch (error) {
-    console.error("Error ensuring order tables exist:", error);
-    // Don't throw - tables might already exist with different structure
-  }
-}
 
 async function sendConfirmationEmail(emailData) {
   try {

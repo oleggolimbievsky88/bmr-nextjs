@@ -45,17 +45,42 @@ export const useShippingRates = () => {
         return result;
       } catch (error) {
         console.error("Shipping rates error:", error);
-        setError(error.message);
+        setError(null); // Don't show error to user, just use fallback options
 
-        // Fallback to free shipping
+        // Fallback shipping options when UPS API is unavailable
+        // Always show multiple options so customers can choose faster shipping
         const fallbackOptions = [
           {
-            service: "FREE SHIPPING",
+            service: "FREE Standard Shipping",
             code: "FREE",
             cost: 0,
             currency: "USD",
-            deliveryDays: "1-5 business days",
-            description: "Free shipping on all BMR products",
+            deliveryDays: "5-7 business days",
+            description: "Free ground shipping on all BMR products",
+          },
+          {
+            service: "UPS 3 Day Select",
+            code: "12",
+            cost: 24.99,
+            currency: "USD",
+            deliveryDays: "3 business days",
+            description: "Guaranteed 3-day delivery",
+          },
+          {
+            service: "UPS 2nd Day Air",
+            code: "02",
+            cost: 34.99,
+            currency: "USD",
+            deliveryDays: "2 business days",
+            description: "Second business day delivery",
+          },
+          {
+            service: "UPS Next Day Air",
+            code: "01",
+            cost: 49.99,
+            currency: "USD",
+            deliveryDays: "1 business day",
+            description: "Next business day delivery",
           },
         ];
 

@@ -14,11 +14,14 @@ export async function POST(request) {
     // Google Address Validation API
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
+    // If no API key, return a graceful "unavailable" response
     if (!apiKey) {
-      return NextResponse.json(
-        { error: "Google Maps API key not configured" },
-        { status: 500 }
-      );
+      return NextResponse.json({
+        isValid: true,
+        apiUnavailable: true,
+        correctedAddress: null,
+        message: "Address validation unavailable - proceeding without validation",
+      });
     }
 
     const response = await fetch(
@@ -49,6 +52,20 @@ export async function POST(request) {
         statusText: response.statusText,
         error: errorData.error,
       });
+      
+      // Check if it's a permission/suspension error - return graceful response
+      if (response.status === 403 || 
+          errorMessage.includes('suspended') || 
+          errorMessage.includes('Permission denied') ||
+          errorMessage.includes('disabled')) {
+        return NextResponse.json({
+          isValid: true,
+          apiUnavailable: true,
+          correctedAddress: null,
+          message: "Address validation service temporarily unavailable",
+        });
+      }
+      
       throw new Error(errorMessage);
     }
 
@@ -90,9 +107,13 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error("Address validation error:", error);
-    return NextResponse.json(
-      { error: "Failed to validate address" },
-      { status: 500 }
-    );
+    // Return a graceful response instead of 500 error
+    // This allows checkout to continue even if validation fails
+    return NextResponse.json({
+      isValid: true,
+      apiUnavailable: true,
+      correctedAddress: null,
+      message: "Address validation unavailable - proceeding without validation",
+    });
   }
 }

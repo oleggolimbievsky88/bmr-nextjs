@@ -11,10 +11,11 @@ export async function GET(request) {
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
-      { error: "Google Maps API key not configured" },
-      { status: 500 }
-    );
+    // Return empty predictions instead of error - user can still type manually
+    return NextResponse.json({ 
+      predictions: [],
+      apiUnavailable: true,
+    });
   }
 
   try {
@@ -33,10 +34,24 @@ export async function GET(request) {
         apiStatus: data.status,
         errorMessage: data.error_message,
       });
-      throw new Error(
-        data.error_message ||
-          `Google Places API error: ${response.status} - ${data.status}`
-      );
+      // Return empty predictions instead of throwing - user can still type manually
+      return NextResponse.json({ 
+        predictions: [],
+        apiUnavailable: true,
+      });
+    }
+
+    // Check for API disabled/suspended status
+    if (data.status === "REQUEST_DENIED" || data.status === "OVER_QUERY_LIMIT") {
+      console.error("Google Places API status error:", {
+        status: data.status,
+        errorMessage: data.error_message,
+      });
+      // Return empty predictions - user can still type manually
+      return NextResponse.json({ 
+        predictions: [],
+        apiUnavailable: true,
+      });
     }
 
     if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
@@ -44,9 +59,11 @@ export async function GET(request) {
         status: data.status,
         errorMessage: data.error_message,
       });
-      throw new Error(
-        data.error_message || `Google Places API error: ${data.status}`
-      );
+      // Return empty predictions instead of throwing
+      return NextResponse.json({ 
+        predictions: [],
+        apiUnavailable: true,
+      });
     }
 
     return NextResponse.json({
@@ -54,9 +71,10 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error("Places Autocomplete error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch address suggestions" },
-      { status: 500 }
-    );
+    // Return empty predictions instead of error - user can still type manually
+    return NextResponse.json({ 
+      predictions: [],
+      apiUnavailable: true,
+    });
   }
 }

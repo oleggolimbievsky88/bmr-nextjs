@@ -430,11 +430,17 @@ export default function ShopCart() {
                               >
                                 {elm.ProductName || "Product"}
                               </Link>
+                              {elm.PlatformName && (
+                                <div className="item-platform" style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>
+                                  {elm.YearRange ? `${elm.YearRange} ` : ""}
+                                  {elm.PlatformName}
+                                </div>
+                              )}
                               <div className="price">
                                 ${(parseFloat(elm.Price) || 0).toFixed(2)}
                               </div>
                             </div>
-                            <div className="tf-minicart-recommendations-item-quickview">
+                            {/* <div className="tf-minicart-recommendations-item-quickview">
                               <a
                                 href="#quick_view"
                                 data-bs-toggle="modal"
@@ -443,7 +449,7 @@ export default function ShopCart() {
                               >
                                 <span className="icon icon-view" />
                               </a>
-                            </div>
+                            </div> */}
                           </div>
                         </SwiperSlide>
                       ))}

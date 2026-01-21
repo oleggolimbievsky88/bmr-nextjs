@@ -25,7 +25,13 @@ export default function InstallationPage() {
 				const res = await fetch('/api/platforms-list')
 				if (res.ok) {
 					const data = await res.json()
-					setPlatforms(data.platforms || [])
+					// Filter out platforms that don't start with years (exclude '0', empty, or non-numeric years)
+					const filteredPlatforms = (data.platforms || []).filter(platform => {
+						const startYear = platform.startYear || platform.StartYear
+						// Only include platforms with valid start years (numeric and not '0')
+						return startYear && startYear !== '0' && startYear !== '' && !isNaN(parseInt(startYear))
+					})
+					setPlatforms(filteredPlatforms)
 				}
 			} catch (error) {
 				console.error('Error fetching platforms:', error)
@@ -343,7 +349,7 @@ export default function InstallationPage() {
 									Still need help? Give our helpful techs a call!
 								</h3>
 								<p className="installation-support-hours mb-3">
-									Available 8:30-5:30 PM ET Monday-Friday
+									Available 8:30-5:30 PM EST Monday-Friday
 								</p>
 								<a
 									href="tel:8139869302"

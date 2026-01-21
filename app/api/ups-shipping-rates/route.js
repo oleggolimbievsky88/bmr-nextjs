@@ -41,9 +41,16 @@ export async function POST(request) {
       0
     );
 
-    // Get country codes - ensure we have valid codes
-    const toCountryCode = toAddress.country || "US";
-    const fromCountryCode = fromAddress.country || "US";
+    // Get country codes - convert country names to ISO codes
+    const toCountryCode = getCountryCode(toAddress.country) || "US";
+    const fromCountryCode = getCountryCode(fromAddress.country) || "US";
+    
+    console.log("Country code conversion:", {
+      originalTo: toAddress.country,
+      convertedTo: toCountryCode,
+      originalFrom: fromAddress.country,
+      convertedFrom: fromCountryCode,
+    });
 
     // Build ShipTo address - handle international addresses
     const shipToAddress = {
@@ -380,17 +387,42 @@ export async function POST(request) {
   } catch (error) {
     console.error("UPS shipping rates error:", error);
 
-    // Fallback to free shipping if UPS API fails
+    // Fallback shipping options when UPS API fails
+    // Always provide multiple options so customers can choose faster delivery
     return NextResponse.json({
       success: true,
       shippingOptions: [
         {
-          service: "FREE SHIPPING",
+          service: "FREE Standard Shipping",
           code: "FREE",
           cost: 0,
           currency: "USD",
-          deliveryDays: "1-5 business days",
-          description: "Free shipping on all BMR products",
+          deliveryDays: "5-7 business days",
+          description: "Free ground shipping on all BMR products",
+        },
+        {
+          service: "UPS 3 Day Select",
+          code: "12",
+          cost: 24.99,
+          currency: "USD",
+          deliveryDays: "3 business days",
+          description: "Guaranteed 3-day delivery",
+        },
+        {
+          service: "UPS 2nd Day Air",
+          code: "02",
+          cost: 34.99,
+          currency: "USD",
+          deliveryDays: "2 business days",
+          description: "Second business day delivery",
+        },
+        {
+          service: "UPS Next Day Air",
+          code: "01",
+          cost: 49.99,
+          currency: "USD",
+          deliveryDays: "1 business day",
+          description: "Next business day delivery",
         },
       ],
       error: "Using fallback shipping rates",

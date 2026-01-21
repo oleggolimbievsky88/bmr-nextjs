@@ -371,6 +371,7 @@ export default function Checkout() {
             tax: 0,
             discount: couponDiscount || 0,
             couponCode: appliedCoupon?.code || "",
+            couponId: appliedCoupon?.id || null,
             notes: orderNotes,
           }),
         });
@@ -488,21 +489,7 @@ export default function Checkout() {
   return (
     <section className="flat-spacing-11">
       <div className="container">
-        <div className="row">
-          <div className="col-12">
-            <h2
-              className="text-center mb-5 mt-0"
-              style={{
-                fontFamily: "Impact",
-                fontWeight: "600",
-                color: "#000000",
-                letterSpacing: "1.5px",
-              }}
-            >
-              CHECKOUT
-            </h2>
-          </div>
-        </div>
+
 
         <div className="row">
           {/* Left Column - Checkout Steps */}
@@ -1022,9 +1009,12 @@ export default function Checkout() {
                       )}
 
                       <div className="form-group">
-                        <label htmlFor="shipping-options">
-                          Shipping Options
-                        </label>
+                        <div className="shipping-options-header">
+                          <h4>Choose Your Shipping Speed</h4>
+                          <span className="shipping-note">
+                            Need it faster? Select an expedited option below
+                          </span>
+                        </div>
                         {shippingLoading ? (
                           <div className="text-center py-3">
                             <div
@@ -1042,7 +1032,24 @@ export default function Checkout() {
                         ) : shippingOptions.length > 0 ? (
                           <div className="shipping-options">
                             {shippingOptions.map((option, index) => (
-                              <div key={index} className="shipping-option">
+                              <div
+                                key={index}
+                                className={`shipping-option ${
+                                  option.cost === 0 ? "free-shipping" : ""
+                                } ${
+                                  option.code === "01" ? "express-shipping" : ""
+                                }`}
+                              >
+                                {option.cost === 0 && (
+                                  <span className="shipping-badge">
+                                    Most Popular
+                                  </span>
+                                )}
+                                {option.code === "01" && (
+                                  <span className="shipping-badge">
+                                    Fastest
+                                  </span>
+                                )}
                                 <label className="shipping-option-label">
                                   <input
                                     type="radio"
@@ -1054,26 +1061,36 @@ export default function Checkout() {
                                     onChange={() =>
                                       selectShippingOption(option)
                                     }
-                                    className="me-2"
                                   />
                                   <div className="shipping-option-details">
-                                    <div className="shipping-service">
-                                      {option.service}
-                                      {option.cost === 0 && (
-                                        <span className="text-success ms-2">
-                                          FREE
+                                    <div className="shipping-info">
+                                      <div className="shipping-service">
+                                        {option.service}
+                                        {option.cost === 0 && (
+                                          <span className="free-badge">
+                                            FREE
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="shipping-details">
+                                        {option.description}
+                                      </div>
+                                      <div className="shipping-delivery">
+                                        <span className="delivery-icon">📦</span>
+                                        {option.deliveryDays}
+                                      </div>
+                                    </div>
+                                    <div className="shipping-price">
+                                      {option.cost === 0 ? (
+                                        <span className="shipping-cost-free">
+                                          $0.00
+                                        </span>
+                                      ) : (
+                                        <span className="shipping-cost">
+                                          ${option.cost.toFixed(2)}
                                         </span>
                                       )}
                                     </div>
-                                    <div className="shipping-details">
-                                      {option.description} •{" "}
-                                      {option.deliveryDays}
-                                    </div>
-                                    {option.cost > 0 && (
-                                      <div className="shipping-cost">
-                                        ${option.cost.toFixed(2)}
-                                      </div>
-                                    )}
                                   </div>
                                 </label>
                               </div>
@@ -1541,6 +1558,7 @@ export default function Checkout() {
                     checked={termsAgreed}
                     onChange={(e) => setTermsAgreed(e.target.checked)}
                     required
+                    suppressHydrationWarning
                   />
                   I agree to BMR Suspension's{" "}
                   <Link href="/terms-conditions">Terms & Conditions</Link>
@@ -1553,6 +1571,7 @@ export default function Checkout() {
                     type="checkbox"
                     checked={emailConsent}
                     onChange={(e) => setEmailConsent(e.target.checked)}
+                    suppressHydrationWarning
                   />
                   I agree to receive texts and emails from BMR
                 </label>
