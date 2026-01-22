@@ -335,7 +335,7 @@ header + .installation-hero {
     pointer-events: none;
     background-color: transparent;
   }
-  
+
   /* On mobile, ensure backdrop is visible and functional */
   @media (max-width: 767px) {
     body:has(.canvas-search.show) .offcanvas-backdrop {
@@ -2550,7 +2550,7 @@ section.tf-slideshow,
 }
 
 /* Hide header navigation row on screens smaller than large (below lg breakpoint) */
-@media (max-width: 991px) {
+@media (max-width: 1400px) {
 	.header-navigation-row {
 		display: none !important;
 	}
@@ -4055,11 +4055,11 @@ body:has(.canvas-search.show) .offcanvas-backdrop {
 			transform: translateX(0) !important;
 			visibility: visible !important;
 		}
-		
+
 		.tf-search-head {
 			position: relative;
 			z-index: 1;
-			
+
 			.close {
 				display: flex !important;
 				visibility: visible !important;
@@ -4067,7 +4067,7 @@ body:has(.canvas-search.show) .offcanvas-backdrop {
 				position: relative;
 				z-index: 10002 !important;
 				cursor: pointer;
-				
+
 				.icon-close-popup {
 					display: block !important;
 					visibility: visible !important;

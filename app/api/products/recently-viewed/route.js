@@ -15,6 +15,14 @@ function parseCookie(cookieHeader) {
   );
 }
 
+function currentSafe(val) {
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return [];
+  }
+}
+
 export async function POST(request) {
   try {
     const { productId } = await request.json();
@@ -46,14 +54,6 @@ export async function POST(request) {
     return res;
   } catch (e) {
     return NextResponse.json({ error: "failed" }, { status: 500 });
-  }
-}
-
-function currentSafe(val) {
-  try {
-    return JSON.parse(val);
-  } catch (e) {
-    return [];
   }
 }
 

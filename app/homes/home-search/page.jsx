@@ -63,12 +63,12 @@ export default async function page({ searchParams }) {
       <Topbar2 />
       <Header2 />
       <PageHeader
-        title="Search Products"
+        title="Search "
         subtitle={searchQuery ? `Results for "${searchQuery}"` : null}
       />
 
       <div className="container">
-        <div className="row justify-content-center mt_5">
+        {/* <div className="row justify-content-center mt_5">
           <div className="col-md-8 col-lg-6">
             <Suspense
               fallback={
@@ -90,7 +90,7 @@ export default async function page({ searchParams }) {
               <SearchInput initialQuery={searchQuery} />
             </Suspense>
           </div>
-        </div>
+        </div> */}
         {searchQuery && (
           <div className="text-center mt_3">
             <p className="text-2 text_black-2">

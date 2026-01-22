@@ -243,7 +243,7 @@ export default function MobileMenu() {
                                               {platform.heading}
                                             </Link>
                                           </li>
-                                        )
+                                        ),
                                       )
                                     ) : (
                                       <li>
@@ -275,16 +275,12 @@ export default function MobileMenu() {
             ))}
           </ul>
           <div className="mb-other-content">
-            <div className="d-flex group-icon">
-              {/* <Link href={`/wishlist`} className="site-nav-icon">
-                <i className="icon icon-heart" />
-                Wishlist
-              </Link> */}
+            {/* <div className="d-flex group-icon">
               <Link href={`/homes/home-search`} className="site-nav-icon">
                 <i className="icon icon-search" />
                 Search
               </Link>
-            </div>
+            </div> */}
             <div className="mb-notice">
               <Link href={`/contact-1`} className="text-need">
                 Need help ?

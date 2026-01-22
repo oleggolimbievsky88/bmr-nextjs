@@ -7,6 +7,7 @@ import {
   getNewProducts,
   getFilteredProductsPaginated,
   getPlatformBySlug,
+  getPlatformById,
   getMainCategoryIdBySlugAndPlatform,
   getCategoryIdBySlugAndMainCat,
 } from "@/lib/queries";
@@ -43,18 +44,27 @@ export async function GET(request) {
   categoryId = catId;
 
   // 2. Try new slugs if legacy params are missing
+  let platformSlug = platform;
   if (!platformId && platform) {
     const platformObj = await getPlatformBySlug(platform);
     platformId = platformObj?.id;
+    platformSlug = platform;
+  } else if (platformId && !platform) {
+    // Legacy params: get platform slug from platformId
+    const platformObj = await getPlatformById(platformId);
+    if (platformObj) {
+      platformSlug = platformObj.slug;
+    }
   }
   if (!platformId) {
     return NextResponse.json({ error: "Platform not found" }, { status: 404 });
   }
 
   // Only get mainCategoryId if no specific category is provided
-  if (!mainCategoryId && mainCategory && platformId) {
+  // Ensure we have platformSlug before calling getMainCategoryIdBySlugAndPlatform
+  if (!mainCategoryId && mainCategory && platformId && platformSlug) {
     mainCategoryId = await getMainCategoryIdBySlugAndPlatform(
-      platform,
+      platformSlug,
       mainCategory
     );
   }
