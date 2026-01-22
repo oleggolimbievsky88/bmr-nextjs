@@ -303,7 +303,7 @@ export default function MobileMenu() {
         <div className="mb-bottom">
           <Link href={`/login`} className="site-nav-icon">
             <i className="icon icon-account" />
-            Login
+            Login/Register
           </Link>
           <div className="bottom-bar-language">
             <div className="tf-currencies">

@@ -20,12 +20,18 @@ Copy and paste these into your Vercel project settings under **Settings → Envi
 
 ```
 NEXTAUTH_URL=https://dev.bmrsuspension.com
-NEXTAUTH_SECRET=TiLrSdizORV066dgs3NsNooRYgKz88rNiRc5Y8/jlMM=
-SMTP_HOST=mail2.ezhostingserver.com
+NEXTAUTH_SECRET=your-secret-key-here
+MYSQL_HOST=your_host
+MYSQL_PORT=3306
+MYSQL_USER=your_user
+MYSQL_PASSWORD=your_password
+MYSQL_DATABASE=bmrsuspension
+MYSQL_SSL=true
+SMTP_HOST=your-smtp-server.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=noreply@bmrsuspension.comm
-SMTP_PASS=Camaro416*
+SMTP_USER=your-email@yourdomain.com
+SMTP_PASS=your-smtp-password
 SMTP_FROM=noreply@bmrsuspension.com
 SMTP_FROM_NAME=BMR Suspension
 ```
@@ -79,7 +85,7 @@ Or use an online generator: https://generate-secret.vercel.app/32
 
 ```
 NEXTAUTH_URL=https://dev.bmrsuspension.com
-NEXTAUTH_SECRET=TiLrSdizORV066dgs3NsNooRYgKz88rNiRc5Y8/jlMM=
+NEXTAUTH_SECRET=your-secret-key-here
 MYSQL_HOST=your_host
 MYSQL_PORT=3306
 MYSQL_USER=your_user

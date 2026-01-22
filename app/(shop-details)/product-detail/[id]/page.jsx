@@ -1,4 +1,4 @@
-// app/products/[id]/page.js
+// app/(shop-details)/product-detail/[id]/page.jsx
 
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
@@ -9,6 +9,9 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
+import { getProductById } from "@/lib/queries";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title:
@@ -19,17 +22,13 @@ export const metadata = {
 export default async function ProductPage({ params }) {
   const { id } = await params;
 
-  // Fetch product data from API
-  const res = await fetch(`/api/product-detail?id=${id}`, {
-    cache: "no-store",
-  });
+  // Fetch product data directly from database (more efficient than API call)
+  const product = await getProductById(id);
 
-  if (!res.ok) {
-    // Handle product not found or server error
+  if (!product) {
+    // Handle product not found
     return <p>Product not found.</p>;
   }
-
-  const { product } = await res.json();
 
   return (
     <>

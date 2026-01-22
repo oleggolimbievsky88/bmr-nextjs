@@ -6,7 +6,8 @@ import Login from "@/components/othersPages/Login";
 import React from "react";
 
 export const metadata = {
-  title: "Login | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Login | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {

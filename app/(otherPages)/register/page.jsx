@@ -3,7 +3,6 @@ import Header18 from '@/components/header/Header18'
 import PageHeader from '@/components/header/PageHeader'
 import Topbar4 from '@/components/header/Topbar4'
 import Register from '@/components/othersPages/Register'
-import { Suspense } from 'react'
 
 export const metadata = {
 	title:
@@ -17,9 +16,7 @@ export default function page () {
 			<Topbar4 />
 			<Header18 showVehicleSearch={false} />
 			<PageHeader title="REGISTER" />
-			<Suspense fallback={<div className='container py-5' />}>
-				<Register />
-			</Suspense>
+			<Register />
 			<Footer1 />
 		</>
 	)

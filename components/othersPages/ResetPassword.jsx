@@ -123,6 +123,7 @@ export default function ResetPasswordClient() {
 										required
 										minLength={8}
 										disabled={isLoading}
+										suppressHydrationWarning
 									/>
 									<label
 										className="tf-field-label fw-4 text_black-2"
@@ -143,6 +144,7 @@ export default function ResetPasswordClient() {
 										required
 										minLength={8}
 										disabled={isLoading}
+										suppressHydrationWarning
 									/>
 									<label
 										className="tf-field-label fw-4 text_black-2"

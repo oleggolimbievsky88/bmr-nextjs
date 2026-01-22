@@ -249,10 +249,20 @@ textarea {
 /* Placeholder color */
 ::-webkit-input-placeholder {
   color: var(--text-2);
+  padding-left: 18px;
 }
 
 :-moz-placeholder {
   color: var(--text-2);
+  padding-left: 18px;
+  }
+  ::-webkit-input-placeholder {
+  color: var(--text-2);
+  padding-left: 18px;
+}
+:-moz-placeholder {
+  color: var(--text-2);
+  padding-left: 18px;
 }
 
 ::-moz-placeholder {
