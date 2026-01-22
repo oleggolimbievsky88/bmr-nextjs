@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SessionProvider } from "next-auth/react";
 
 import "../public/scss/main.scss";
 import "photoswipe/dist/photoswipe.css";
@@ -173,8 +174,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="preload-wrapper popup-loader">
-        <Context>
-          <div id="wrapper">{children}</div>
+        <SessionProvider>
+          <Context>
+            <div id="wrapper">{children}</div>
           {/* <QuickView /> */}
           {/* <QuickAdd /> */}
           <ProductSidebar />
@@ -193,7 +195,8 @@ export default function RootLayout({ children }) {
           <ToolbarBottom />
           <ToolbarShop />
           <ShareModal />
-        </Context>
+          </Context>
+        </SessionProvider>
         <ScrollTop />
         <Analytics />
       </body>

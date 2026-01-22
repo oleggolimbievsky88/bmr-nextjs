@@ -3,9 +3,9 @@ const nextConfig = {
   // External packages for server components (updated syntax for Next.js 15)
   serverExternalPackages: ["mysql2"],
 
-  // Suppress middleware deprecation warning (Next.js 16)
+  // Suppress proxy deprecation warning (Next.js 16)
   experimental: {
-    middlewarePrefetch: "strict",
+    proxyPrefetch: "strict",
   },
 
   // Image configuration for external domains

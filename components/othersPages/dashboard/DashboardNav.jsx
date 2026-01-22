@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+
 const accountLinks = [
   { href: "/my-account", label: "Dashboard" },
   { href: "/my-account-orders", label: "Orders" },
@@ -11,6 +13,11 @@ const accountLinks = [
 
 export default function DashboardNav() {
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/" });
+  };
+
   return (
     <ul className="my-account-nav">
       {accountLinks.map((link, index) => (
@@ -26,9 +33,19 @@ export default function DashboardNav() {
         </li>
       ))}
       <li>
-        <Link href={`/login`} className="my-account-nav-item">
+        <button
+          onClick={handleLogout}
+          className="my-account-nav-item"
+          style={{
+            background: "none",
+            border: "none",
+            width: "100%",
+            textAlign: "left",
+            cursor: "pointer",
+          }}
+        >
           Logout
-        </Link>
+        </button>
       </li>
     </ul>
   );
