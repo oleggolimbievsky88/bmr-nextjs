@@ -1,4 +1,4 @@
-// app/api/auth/register/route.js
+ // app/api/auth/register/route.js
 // User registration endpoint
 
 import { NextResponse } from 'next/server'

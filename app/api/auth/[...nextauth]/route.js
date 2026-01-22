@@ -40,10 +40,10 @@ export const authOptions = {
 					return null
 				}
 
-				// Check if email is verified (optional - you can make this required)
-				// if (!user.emailVerified) {
-				//   throw new Error('Please verify your email before logging in')
-				// }
+				//Check if email is verified (optional - you can make this required)
+				if (!user.emailVerified) {
+				  throw new Error('Please verify your email before logging in')
+				}
 
 				return {
 					id: user.CustomerID.toString(),
@@ -114,9 +114,9 @@ export const authOptions = {
 					} else {
 						// Create new user from OAuth
 						const [result] = await pool.query(
-							`INSERT INTO customers 
-							(email, firstname, lastname, emailVerified, role, datecreated) 
-							VALUES (?, ?, ?, NOW(), 'customer', NOW())`,
+							`INSERT INTO customers
+							(email, firstname, lastname, emailVerified, role, datecreated, address2, shippingaddress2)
+							VALUES (?, ?, ?, NOW(), 'customer', NOW(), '', '')`,
 							[
 								user.email,
 								profile?.given_name || user.name?.split(' ')[0] || '',

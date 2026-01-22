@@ -1,0 +1,455 @@
+[
+  {
+    "nodeId": "app/api/anglefinder/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/forgot-password/route.js",
+    "imports": [
+      "lib/auth.js",
+      "lib/email.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/my-orders/route.js",
+    "imports": [
+      "app/api/auth/[...nextauth]/route.js",
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/my-profile/route.js",
+    "imports": [
+      "app/api/auth/[...nextauth]/route.js",
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/register/route.js",
+    "imports": [
+      "lib/auth.js",
+      "lib/email.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/reset-password/route.js",
+    "imports": [
+      "lib/auth.js",
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/update-profile/route.js",
+    "imports": [
+      "app/api/auth/[...nextauth]/route.js",
+      "lib/auth.js",
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/auth/verify-email/route.js",
+    "imports": [
+      "lib/auth.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/banner/route.js"
+  },
+  {
+    "nodeId": "app/api/bodies/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/categories/[catId]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/categories/by-maincat/[mainCatId]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/categories/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/categories-by-maincat/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/category-by-id/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/colors/route.js",
+    "imports": [
+      "lib/queries.js",
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/debug-coupon/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/debug-megamenu/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/featured-products/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/get-next-order-number/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/grease/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/hardware/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/installation/categories/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/installation/products/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/installation/search/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/legacy-redirect/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/maincategories/[mainCategoryId]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/maincategories/lookup/[platform]/[mainCategorySlug]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/maincategory-by-id/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/manufacturers/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/menu/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/orders/[orderId]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/orders/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/peopleAlsoBought/route.js"
+  },
+  {
+    "nodeId": "app/api/place-details/route.js"
+  },
+  {
+    "nodeId": "app/api/places-autocomplete/route.js"
+  },
+  {
+    "nodeId": "app/api/platform/[id]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platform-by-id/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platform-by-slug/route.js",
+    "imports": [
+      "lib/db.js",
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platform-category/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platform-maincategory/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platforms/[platform]/[mainCategory]/[categoryId]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platforms/[platform]/[mainCategory]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platforms/[platform]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/platforms-list/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/product/[id]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/product-by-id/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/product-detail/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/product-types/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/products/[id]/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/products/featured/[platform]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/products/featured/route.js"
+  },
+  {
+    "nodeId": "app/api/products/new-products/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/products/peopleAlsoBought/route.js"
+  },
+  {
+    "nodeId": "app/api/products/platform/[id]/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/products/recently-viewed/route.js"
+  },
+  {
+    "nodeId": "app/api/products/related/route.js"
+  },
+  {
+    "nodeId": "app/api/products/route.js",
+    "imports": [
+      "lib/db.js",
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/products-by-platform/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/related-products/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/search/suggestions/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/send-footer-email/route.js"
+  },
+  {
+    "nodeId": "app/api/send-receipt/route.js"
+  },
+  {
+    "nodeId": "app/api/subcategories/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/test-db/route.js"
+  },
+  {
+    "nodeId": "app/api/test-email/route.js"
+  },
+  {
+    "nodeId": "app/api/test-mcp/route.js"
+  },
+  {
+    "nodeId": "app/api/test-megamenu/route.js"
+  },
+  {
+    "nodeId": "app/api/test-menu/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/test-platform/route.js"
+  },
+  {
+    "nodeId": "app/api/test-simple/route.js"
+  },
+  {
+    "nodeId": "app/api/ups-shipping-rates/route.js",
+    "imports": [
+      "lib/countryCodes.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/users/route.js",
+    "imports": [
+      "lib/db.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/validate-address/route.js"
+  },
+  {
+    "nodeId": "app/api/validate-coupon/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/vehicles/route.js",
+    "imports": [
+      "lib/queries.js"
+    ]
+  },
+  {
+    "nodeId": "app/api/youtube/route.js"
+  },
+  {
+    "nodeId": "app/api/auth/[...nextauth]/route.js",
+    "imports": [
+      "lib/auth.js",
+      "lib/db.js"
+    ],
+    "exports": [
+      "app/api/auth/my-orders/route.js",
+      "app/api/auth/my-profile/route.js",
+      "app/api/auth/update-profile/route.js"
+    ]
+  },
+  {
+    "nodeId": "lib/auth.js",
+    "imports": [
+      "lib/db.js"
+    ],
+    "exports": [
+      "app/api/auth/forgot-password/route.js",
+      "app/api/auth/register/route.js",
+      "app/api/auth/reset-password/route.js",
+      "app/api/auth/update-profile/route.js",
+      "app/api/auth/verify-email/route.js",
+      "app/api/auth/[...nextauth]/route.js"
+    ]
+  },
+  {
+    "nodeId": ".devcontainer/devcontainer.json"
+  },
+  {
+    "nodeId": ".github/dependabot.yml"
+  },
+  {
+    "nodeId": "qodana.yaml"
+  }
+]

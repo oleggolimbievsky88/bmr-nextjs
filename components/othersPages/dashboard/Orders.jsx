@@ -71,6 +71,7 @@ export default function Orders() {
 									<th className="fw-6">Order</th>
 									<th className="fw-6">Date</th>
 									<th className="fw-6">Status</th>
+									<th className="fw-6">Tracking</th>
 									<th className="fw-6">Total</th>
 									<th className="fw-6">Items</th>
 									<th className="fw-6">Actions</th>
@@ -86,9 +87,9 @@ export default function Orders() {
 										<td>
 											<span
 												className={`badge ${
-													order.status === "completed"
+													order.status === "completed" || order.status === "delivered"
 														? "bg-success"
-														: order.status === "processing"
+														: order.status === "processed"
 														? "bg-warning"
 														: order.status === "shipped"
 														? "bg-info"
@@ -97,6 +98,15 @@ export default function Orders() {
 											>
 												{order.status}
 											</span>
+										</td>
+										<td>
+											{order.status === "shipped" && order.tracking_number ? (
+												<span className="text-info">{order.tracking_number}</span>
+											) : order.status === "shipped" ? (
+												<span className="text-muted">Pending</span>
+											) : (
+												<span className="text-muted">-</span>
+											)}
 										</td>
 										<td>${parseFloat(order.total).toFixed(2)}</td>
 										<td>{order.item_count} items</td>

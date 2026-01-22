@@ -30,6 +30,7 @@ export async function GET(request) {
 				o.shipping_cost,
 				o.tax,
 				o.discount,
+				o.tracking_number,
 				COUNT(oi.new_order_item_id) as item_count
 			FROM new_orders o
 			LEFT JOIN new_order_items oi ON o.new_order_id = oi.new_order_id

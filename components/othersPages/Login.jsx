@@ -42,9 +42,17 @@ export default function Login() {
         return;
       }
 
-      // Success - redirect to account page
-      router.push("/my-account");
-      router.refresh();
+      // Success - check user role and redirect accordingly
+      // Fetch session to get user role
+      const sessionResponse = await fetch('/api/auth/session')
+      const session = await sessionResponse.json()
+      
+      if (session?.user?.role === 'admin') {
+        router.push("/admin")
+      } else {
+        router.push("/my-account")
+      }
+      router.refresh()
     } catch (error) {
       console.error("Login error:", error);
       setError("An error occurred. Please try again.");
