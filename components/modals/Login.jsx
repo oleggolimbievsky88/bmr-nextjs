@@ -143,8 +143,10 @@ export default function Login() {
 							}
 						}
 					}
-					router.push("/admin");
-					router.refresh();
+					await new Promise((r) => setTimeout(r, 100));
+					const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
+					const session = await sessionRes.json();
+					window.location.href = session?.user?.role === "admin" ? "/admin" : "/my-account";
 				}
 			}, 2000);
 		} catch (error) {

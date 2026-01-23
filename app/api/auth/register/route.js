@@ -62,7 +62,13 @@ export async function POST(request) {
 
 		if (!emailResult.success) {
 			console.error('Failed to send verification email:', emailResult.error)
-			// Don't fail registration if email fails, but log it
+			const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+			const verifyUrl = `${baseUrl}/verify-email?token=${token}`
+			console.error('---')
+			console.error('Dev workaround: Copy this verification link into your browser:')
+			console.error(verifyUrl)
+			console.error('Fix SMTP (535 = bad credentials): .env.local SMTP_USER/SMTP_PASS, or try /api/test-email')
+			console.error('---')
 		}
 
 		return NextResponse.json(

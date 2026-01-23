@@ -6,7 +6,11 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
 	function proxy(req) {
-		// Handle admin authentication
+		// /admin/login is allowed without auth (handled in authorized callback)
+		if (req.nextUrl.pathname === "/admin/login") {
+			return NextResponse.next();
+		}
+		// Redirect unauthenticated /admin requests to admin login
 		if (
 			req.nextUrl.pathname.startsWith("/admin") &&
 			req.nextauth.token?.role !== "admin"
@@ -33,7 +37,11 @@ export default withAuth(
 	{
 		callbacks: {
 			authorized: ({ token, req }) => {
-				// Admin routes require admin role
+				// Allow /admin/login without auth so users can reach the login page
+				if (req.nextUrl.pathname === "/admin/login") {
+					return true;
+				}
+				// Other admin routes require admin role
 				if (req.nextUrl.pathname.startsWith("/admin")) {
 					return token?.role === "admin";
 				}

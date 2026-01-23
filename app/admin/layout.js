@@ -1,15 +1,18 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
 
 export default function AdminLayout({ children }) {
 	const { data: session, status } = useSession()
 	const router = useRouter()
+	const pathname = usePathname()
+	const isLoginPage = pathname === '/admin/login'
 
 	useEffect(() => {
+		if (isLoginPage) return
 		if (status === 'loading') return
 
 		if (!session) {
@@ -17,12 +20,15 @@ export default function AdminLayout({ children }) {
 			return
 		}
 
-		// Check if user is admin
 		if (session.user?.role !== 'admin') {
 			router.push('/')
 			return
 		}
-	}, [session, status, router])
+	}, [session, status, router, isLoginPage])
+
+	if (isLoginPage) {
+		return <>{children}</>
+	}
 
 	if (status === 'loading') {
 		return (
@@ -110,4 +116,4 @@ export default function AdminLayout({ children }) {
 			<main className="container mx-auto px-4 py-8">{children}</main>
 		</div>
 	)
-} 
+}
