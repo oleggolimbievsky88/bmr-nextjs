@@ -42,17 +42,22 @@ export default function Login() {
         return;
       }
 
-      // Success - check user role and redirect accordingly
+      // Success - wait a moment for session to be established, then check user role and redirect
+      // Use a small delay to ensure the session is properly set
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       // Fetch session to get user role
-      const sessionResponse = await fetch('/api/auth/session')
-      const session = await sessionResponse.json()
-      
-      if (session?.user?.role === 'admin') {
-        router.push("/admin")
+      const sessionResponse = await fetch("/api/auth/session", {
+        cache: "no-store",
+      });
+      const session = await sessionResponse.json();
+
+      // Use window.location for a full page navigation to avoid router state issues
+      if (session?.user?.role === "admin") {
+        window.location.href = "/admin";
       } else {
-        router.push("/my-account")
+        window.location.href = "/my-account";
       }
-      router.refresh()
     } catch (error) {
       console.error("Login error:", error);
       setError("An error occurred. Please try again.");

@@ -44,7 +44,16 @@ export default function Login() {
 				return;
 			}
 
-			// Success - redirect to admin dashboard
+			// Success - wait a moment for session to be established, then check user role and redirect
+			await new Promise(resolve => setTimeout(resolve, 100));
+			
+			// Fetch session to get user role
+			const sessionResponse = await fetch('/api/auth/session', {
+				cache: 'no-store'
+			});
+			const session = await sessionResponse.json();
+			
+			// Close modal if open
 			if (typeof window !== "undefined" && window.bootstrap) {
 				const modalElement = document.getElementById("login");
 				if (modalElement) {
@@ -54,8 +63,13 @@ export default function Login() {
 					}
 				}
 			}
-			router.push("/admin");
-			router.refresh();
+			
+			// Use window.location for a full page navigation to avoid router state issues
+			if (session?.user?.role === 'admin') {
+				window.location.href = "/admin";
+			} else {
+				window.location.href = "/my-account";
+			}
 		} catch (error) {
 			console.error("Login error:", error);
 			setError("An error occurred. Please try again.");

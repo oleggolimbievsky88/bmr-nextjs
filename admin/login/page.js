@@ -14,7 +14,7 @@ export default function LoginPage() {
 
     try {
       const res = await signIn('credentials', {
-        username: formData.get('username'),
+        email: formData.get('username'), // NextAuth expects 'email' but we'll use username field value
         password: formData.get('password'),
         redirect: false,
       })
@@ -22,8 +22,10 @@ export default function LoginPage() {
       if (res.error) {
         setError('Invalid credentials')
       } else {
-        router.push('/admin/import')
-        router.refresh()
+        // Wait a moment for session to be established
+        await new Promise(resolve => setTimeout(resolve, 100));
+        // Use window.location for a full page navigation to avoid router state issues
+        window.location.href = '/admin/import'
       }
     } catch (error) {
       setError('An error occurred')
