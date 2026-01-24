@@ -90,117 +90,117 @@ export default function AdminCustomersPage() {
 
 	if (loading && customers.length === 0) {
 		return (
-			<div className="text-center py-12">
-				<div className="spinner-border" role="status">
+			<div className="text-center py-5">
+				<div className="spinner-border text-primary" role="status">
 					<span className="visually-hidden">Loading...</span>
 				</div>
-				<p className="mt-2">Loading customers...</p>
+				<p className="mt-3 mb-0">Loading customers...</p>
 			</div>
 		)
 	}
 
 	return (
 		<div>
-			<div className="flex justify-between items-center mb-6">
-				<h1 className="text-3xl font-bold">Customer Management</h1>
-				<div className="flex gap-2">
+			<div className="admin-page-header">
+				<h1 className="admin-page-title">Customer Management</h1>
+				<div className="admin-toolbar">
 					<input
 						type="text"
 						placeholder="Search by name or email..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						className="border rounded px-3 py-2"
-						style={{ minWidth: '300px' }}
+						className="form-control"
+						style={{ minWidth: '260px', maxWidth: '320px' }}
 					/>
 					<button
+						type="button"
 						onClick={fetchCustomers}
-						className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+						className="admin-btn-primary"
 					>
 						Refresh
 					</button>
 				</div>
 			</div>
 
-			{error && (
-				<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-					{error}
-				</div>
-			)}
+			{error && <div className="admin-alert-error">{error}</div>}
 
 			{editingCustomer && (
-				<div className="bg-white rounded-lg shadow p-6 mb-6">
-					<h2 className="text-2xl font-bold mb-4">
-						Edit Customer: {editingCustomer.firstname} {editingCustomer.lastname}
+				<div className="admin-card mb-4">
+					<h2 className="h5 fw-6 mb-4">
+						Edit Customer: {editingCustomer.firstname}{' '}
+						{editingCustomer.lastname}
 					</h2>
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div className="grid grid-cols-3 gap-4">
-							<div>
-								<label className="block text-sm font-medium mb-1">Role *</label>
-								<select
-									name="role"
-									value={formData.role}
-									onChange={(e) =>
-										setFormData({ ...formData, role: e.target.value })
-									}
-									required
-									className="w-full border rounded px-3 py-2"
-								>
-									<option value="customer">Customer</option>
-									<option value="admin">Admin</option>
-									<option value="vendor">Vendor</option>
-								</select>
+					<form onSubmit={handleSubmit}>
+						<div className="row g-3 mb-4">
+							<div className="col-md-4">
+								<div className="admin-form-group">
+									<label htmlFor="edit-role">Role *</label>
+									<select
+										id="edit-role"
+										name="role"
+										value={formData.role}
+										onChange={(e) =>
+											setFormData({ ...formData, role: e.target.value })
+										}
+										required
+										className="form-select"
+									>
+										<option value="customer">Customer</option>
+										<option value="admin">Admin</option>
+										<option value="vendor">Vendor</option>
+									</select>
+								</div>
 							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Dealer Tier (1-8)
-								</label>
-								<input
-									type="number"
-									name="dealerTier"
-									value={formData.dealerTier}
-									onChange={(e) =>
-										setFormData({
-											...formData,
-											dealerTier: parseInt(e.target.value) || 0,
-										})
-									}
-									min="0"
-									max="8"
-									className="w-full border rounded px-3 py-2"
-								/>
+							<div className="col-md-4">
+								<div className="admin-form-group">
+									<label htmlFor="edit-tier">Dealer Tier (1-8)</label>
+									<input
+										id="edit-tier"
+										type="number"
+										name="dealerTier"
+										value={formData.dealerTier}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												dealerTier: parseInt(e.target.value) || 0,
+											})
+										}
+										min="0"
+										max="8"
+										className="form-control"
+									/>
+								</div>
 							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Dealer Discount (%)
-								</label>
-								<input
-									type="number"
-									name="dealerDiscount"
-									value={formData.dealerDiscount}
-									onChange={(e) =>
-										setFormData({
-											...formData,
-											dealerDiscount: parseFloat(e.target.value) || 0,
-										})
-									}
-									min="0"
-									max="100"
-									step="0.01"
-									className="w-full border rounded px-3 py-2"
-								/>
+							<div className="col-md-4">
+								<div className="admin-form-group">
+									<label htmlFor="edit-discount">Dealer Discount (%)</label>
+									<input
+										id="edit-discount"
+										type="number"
+										name="dealerDiscount"
+										value={formData.dealerDiscount}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												dealerDiscount: parseFloat(e.target.value) || 0,
+											})
+										}
+										min="0"
+										max="100"
+										step="0.01"
+										className="form-control"
+									/>
+								</div>
 							</div>
 						</div>
-						<div className="flex gap-2">
-							<button
-								type="submit"
-								className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-							>
+						<div className="admin-toolbar">
+							<button type="submit" className="admin-btn-primary">
 								Update Customer
 							</button>
 							<button
 								type="button"
 								onClick={() => setEditingCustomer(null)}
-								className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+								className="admin-btn-secondary"
 							>
 								Cancel
 							</button>
@@ -209,84 +209,70 @@ export default function AdminCustomersPage() {
 				</div>
 			)}
 
-			<div className="bg-white rounded-lg shadow overflow-hidden">
-				<table className="min-w-full divide-y divide-gray-200">
-					<thead className="bg-gray-50">
-						<tr>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Customer
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Email
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Role
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Tier
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Discount
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Joined
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Actions
-							</th>
-						</tr>
-					</thead>
-					<tbody className="bg-white divide-y divide-gray-200">
-						{customers.length === 0 ? (
+			<div className="admin-card">
+				<div className="admin-table-wrap">
+					<table className="admin-table">
+						<thead>
 							<tr>
-								<td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-									No customers found
-								</td>
+								<th>Customer</th>
+								<th>Email</th>
+								<th>Role</th>
+								<th className="text-center">Tier</th>
+								<th className="text-center">Discount</th>
+								<th>Joined</th>
+								<th>Actions</th>
 							</tr>
-						) : (
-							customers.map((customer) => (
-								<tr key={customer.CustomerID} className="hover:bg-gray-50">
-									<td className="px-6 py-4 whitespace-nowrap">
-										{customer.firstname} {customer.lastname}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										{customer.email}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										<span
-											className={`px-2 py-1 rounded-full text-xs font-medium ${
-												customer.role === 'admin'
-													? 'bg-red-100 text-red-800'
-													: customer.role === 'vendor'
-													? 'bg-blue-100 text-blue-800'
-													: 'bg-gray-100 text-gray-800'
-											}`}
-										>
-											{customer.role || 'customer'}
-										</span>
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap text-center">
-										{customer.dealerTier || 0}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap text-center">
-										{customer.dealerDiscount || 0}%
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										{formatDate(customer.datecreated)}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-										<button
-											onClick={() => handleEdit(customer)}
-											className="text-blue-600 hover:text-blue-900"
-										>
-											Edit
-										</button>
+						</thead>
+						<tbody>
+							{customers.length === 0 ? (
+								<tr>
+									<td colSpan="7" className="text-center text-secondary py-4">
+										No customers found
 									</td>
 								</tr>
-							))
-						)}
-					</tbody>
-				</table>
+							) : (
+								customers.map((customer) => (
+									<tr key={customer.CustomerID}>
+										<td>
+											{customer.firstname} {customer.lastname}
+										</td>
+										<td>{customer.email}</td>
+										<td>
+											<span
+												className={`admin-status-badge ${
+													customer.role === 'admin'
+														? 'cancelled'
+														: customer.role === 'vendor'
+														? 'processed'
+														: 'pending'
+												}`}
+											>
+												{customer.role || 'customer'}
+											</span>
+										</td>
+										<td className="text-center">
+											{customer.dealerTier || 0}
+										</td>
+										<td className="text-center">
+											{customer.dealerDiscount || 0}%
+										</td>
+										<td>{formatDate(customer.datecreated)}</td>
+										<td>
+											<button
+												type="button"
+												onClick={() => handleEdit(customer)}
+												className="admin-btn-secondary"
+												style={{ padding: '0.25rem 0.5rem', fontSize: '13px' }}
+											>
+												Edit
+											</button>
+										</td>
+									</tr>
+								))
+							)}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	)

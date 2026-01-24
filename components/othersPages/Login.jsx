@@ -37,9 +37,12 @@ export default function Login() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
-        setIsLoading(false);
-        return;
+        const msg = result.error === 'CredentialsSignin'
+          ? 'Invalid email or password'
+          : result.error
+        setError(typeof msg === 'string' ? msg : 'Invalid email or password')
+        setIsLoading(false)
+        return
       }
 
       // Success - wait a moment for session to be established, then check user role and redirect

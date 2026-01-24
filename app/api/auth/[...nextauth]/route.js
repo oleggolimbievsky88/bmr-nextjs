@@ -40,9 +40,12 @@ export const authOptions = {
 					return null
 				}
 
-				//Check if email is verified (optional - you can make this required)
-				if (!user.emailVerified) {
-				  throw new Error('Please verify your email before logging in')
+				// Require email verification except in dev / when explicitly skipped
+				const skipVerification =
+					process.env.NODE_ENV === 'development' ||
+					process.env.SKIP_EMAIL_VERIFICATION === 'true'
+				if (!skipVerification && !user.emailVerified) {
+					throw new Error('Please verify your email before logging in')
 				}
 
 				return {

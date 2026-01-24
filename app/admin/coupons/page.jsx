@@ -203,247 +203,244 @@ export default function AdminCouponsPage() {
 
 	if (loading && coupons.length === 0) {
 		return (
-			<div className="text-center py-12">
-				<div className="spinner-border" role="status">
+			<div className="text-center py-5">
+				<div className="spinner-border text-primary" role="status">
 					<span className="visually-hidden">Loading...</span>
 				</div>
-				<p className="mt-2">Loading coupons...</p>
+				<p className="mt-3 mb-0">Loading coupons...</p>
 			</div>
 		)
 	}
 
 	return (
 		<div>
-			<div className="flex justify-between items-center mb-6">
-				<h1 className="text-3xl font-bold">Coupons Management</h1>
+			<div className="admin-page-header">
+				<h1 className="admin-page-title">Coupons Management</h1>
 				<button
+					type="button"
 					onClick={() => {
 						resetForm()
 						setShowForm(true)
 					}}
-					className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+					className="admin-btn-primary"
 				>
 					+ Add New Coupon
 				</button>
 			</div>
 
-			{error && (
-				<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-					{error}
-				</div>
-			)}
+			{error && <div className="admin-alert-error">{error}</div>}
 
 			{showForm && (
-				<div className="bg-white rounded-lg shadow p-6 mb-6">
-					<h2 className="text-2xl font-bold mb-4">
+				<div className="admin-card mb-4">
+					<h2 className="h5 fw-6 mb-4">
 						{editingCoupon ? 'Edit Coupon' : 'Create New Coupon'}
 					</h2>
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Coupon Code *
-								</label>
-								<input
-									type="text"
-									name="code"
-									value={formData.code}
-									onChange={handleInputChange}
-									required
-									className="w-full border rounded px-3 py-2"
-									placeholder="SAVE20"
-								/>
+					<form onSubmit={handleSubmit}>
+						<div className="row g-3 mb-3">
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Coupon Code *</label>
+									<input
+										type="text"
+										name="code"
+										value={formData.code}
+										onChange={handleInputChange}
+										required
+										className="form-control"
+										placeholder="SAVE20"
+									/>
+								</div>
 							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Coupon Name *
-								</label>
-								<input
-									type="text"
-									name="name"
-									value={formData.name}
-									onChange={handleInputChange}
-									required
-									className="w-full border rounded px-3 py-2"
-									placeholder="Save $20"
-								/>
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Coupon Name *</label>
+									<input
+										type="text"
+										name="name"
+										value={formData.name}
+										onChange={handleInputChange}
+										required
+										className="form-control"
+										placeholder="Save $20"
+									/>
+								</div>
 							</div>
 						</div>
-
-						<div>
-							<label className="block text-sm font-medium mb-1">
-								Description
-							</label>
+						<div className="admin-form-group mb-3">
+							<label>Description</label>
 							<textarea
 								name="description"
 								value={formData.description}
 								onChange={handleInputChange}
-								className="w-full border rounded px-3 py-2"
-								rows="3"
+								className="form-control"
+								rows={3}
 							/>
 						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Discount Type *
-								</label>
-								<select
-									name="discount_type"
-									value={formData.discount_type}
-									onChange={handleInputChange}
-									required
-									className="w-full border rounded px-3 py-2"
-								>
-									<option value="percentage">Percentage</option>
-									<option value="fixed_amount">Fixed Amount</option>
-									<option value="free_shipping">Free Shipping</option>
-								</select>
+						<div className="row g-3 mb-3">
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Discount Type *</label>
+									<select
+										name="discount_type"
+										value={formData.discount_type}
+										onChange={handleInputChange}
+										required
+										className="form-select"
+									>
+										<option value="percentage">Percentage</option>
+										<option value="fixed_amount">Fixed Amount</option>
+										<option value="free_shipping">Free Shipping</option>
+									</select>
+								</div>
 							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Discount Value *
-								</label>
-								<input
-									type="number"
-									name="discount_value"
-									value={formData.discount_value}
-									onChange={handleInputChange}
-									required
-									step="0.01"
-									min="0"
-									className="w-full border rounded px-3 py-2"
-									placeholder="10 or 20.00"
-								/>
-							</div>
-						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Minimum Cart Amount
-								</label>
-								<input
-									type="number"
-									name="min_cart_amount"
-									value={formData.min_cart_amount}
-									onChange={handleInputChange}
-									step="0.01"
-									min="0"
-									className="w-full border rounded px-3 py-2"
-									placeholder="0.00"
-								/>
-							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Max Discount Amount
-								</label>
-								<input
-									type="number"
-									name="max_discount_amount"
-									value={formData.max_discount_amount}
-									onChange={handleInputChange}
-									step="0.01"
-									min="0"
-									className="w-full border rounded px-3 py-2"
-									placeholder="Leave empty for no limit"
-								/>
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Discount Value *</label>
+									<input
+										type="number"
+										name="discount_value"
+										value={formData.discount_value}
+										onChange={handleInputChange}
+										required
+										step="0.01"
+										min="0"
+										className="form-control"
+										placeholder="10 or 20.00"
+									/>
+								</div>
 							</div>
 						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Start Date *
-								</label>
-								<input
-									type="date"
-									name="start_date"
-									value={formData.start_date}
-									onChange={handleInputChange}
-									required
-									className="w-full border rounded px-3 py-2"
-								/>
+						<div className="row g-3 mb-3">
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Minimum Cart Amount</label>
+									<input
+										type="number"
+										name="min_cart_amount"
+										value={formData.min_cart_amount}
+										onChange={handleInputChange}
+										step="0.01"
+										min="0"
+										className="form-control"
+										placeholder="0.00"
+									/>
+								</div>
 							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									End Date *
-								</label>
-								<input
-									type="date"
-									name="end_date"
-									value={formData.end_date}
-									onChange={handleInputChange}
-									required
-									className="w-full border rounded px-3 py-2"
-								/>
-							</div>
-						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Usage Limit
-								</label>
-								<input
-									type="number"
-									name="usage_limit"
-									value={formData.usage_limit}
-									onChange={handleInputChange}
-									min="0"
-									className="w-full border rounded px-3 py-2"
-									placeholder="Leave empty for unlimited"
-								/>
-							</div>
-							<div>
-								<label className="block text-sm font-medium mb-1">
-									Usage Limit Per Customer
-								</label>
-								<input
-									type="number"
-									name="usage_limit_per_customer"
-									value={formData.usage_limit_per_customer}
-									onChange={handleInputChange}
-									min="1"
-									className="w-full border rounded px-3 py-2"
-								/>
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Max Discount Amount</label>
+									<input
+										type="number"
+										name="max_discount_amount"
+										value={formData.max_discount_amount}
+										onChange={handleInputChange}
+										step="0.01"
+										min="0"
+										className="form-control"
+										placeholder="Leave empty for no limit"
+									/>
+								</div>
 							</div>
 						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<div className="flex items-center">
+						<div className="row g-3 mb-3">
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Start Date *</label>
+									<input
+										type="date"
+										name="start_date"
+										value={formData.start_date}
+										onChange={handleInputChange}
+										required
+										className="form-control"
+									/>
+								</div>
+							</div>
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>End Date *</label>
+									<input
+										type="date"
+										name="end_date"
+										value={formData.end_date}
+										onChange={handleInputChange}
+										required
+										className="form-control"
+									/>
+								</div>
+							</div>
+						</div>
+						<div className="row g-3 mb-3">
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Usage Limit</label>
+									<input
+										type="number"
+										name="usage_limit"
+										value={formData.usage_limit}
+										onChange={handleInputChange}
+										min="0"
+										className="form-control"
+										placeholder="Leave empty for unlimited"
+									/>
+								</div>
+							</div>
+							<div className="col-md-6">
+								<div className="admin-form-group">
+									<label>Usage Limit Per Customer</label>
+									<input
+										type="number"
+										name="usage_limit_per_customer"
+										value={formData.usage_limit_per_customer}
+										onChange={handleInputChange}
+										min="1"
+										className="form-control"
+									/>
+								</div>
+							</div>
+						</div>
+						<div className="d-flex flex-wrap gap-3 mb-4">
+							<div className="form-check">
 								<input
 									type="checkbox"
 									name="free_shipping"
+									id="coupon-free-shipping"
 									checked={formData.free_shipping}
 									onChange={handleInputChange}
-									className="mr-2"
+									className="form-check-input"
 								/>
-								<label className="text-sm font-medium">Free Shipping</label>
+								<label
+									htmlFor="coupon-free-shipping"
+									className="form-check-label"
+								>
+									Free Shipping
+								</label>
 							</div>
-							<div className="flex items-center">
+							<div className="form-check">
 								<input
 									type="checkbox"
 									name="is_active"
+									id="coupon-is-active"
 									checked={formData.is_active}
 									onChange={handleInputChange}
-									className="mr-2"
+									className="form-check-input"
 								/>
-								<label className="text-sm font-medium">Active</label>
+								<label
+									htmlFor="coupon-is-active"
+									className="form-check-label"
+								>
+									Active
+								</label>
 							</div>
 						</div>
-
-						<div className="flex gap-2">
-							<button
-								type="submit"
-								className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-							>
+						<div className="admin-toolbar">
+							<button type="submit" className="admin-btn-primary">
 								{editingCoupon ? 'Update Coupon' : 'Create Coupon'}
 							</button>
 							<button
 								type="button"
 								onClick={resetForm}
-								className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+								className="admin-btn-secondary"
 							>
 								Cancel
 							</button>
@@ -452,98 +449,91 @@ export default function AdminCouponsPage() {
 				</div>
 			)}
 
-			<div className="bg-white rounded-lg shadow overflow-hidden">
-				<table className="min-w-full divide-y divide-gray-200">
-					<thead className="bg-gray-50">
-						<tr>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Code
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Name
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Discount
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Valid Period
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Usage
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Status
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Actions
-							</th>
-						</tr>
-					</thead>
-					<tbody className="bg-white divide-y divide-gray-200">
-						{coupons.length === 0 ? (
+			<div className="admin-card">
+				<div className="admin-table-wrap">
+					<table className="admin-table">
+						<thead>
 							<tr>
-								<td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-									No coupons found. Click "Add New Coupon" to create one.
-								</td>
+								<th>Code</th>
+								<th>Name</th>
+								<th>Discount</th>
+								<th>Valid Period</th>
+								<th>Usage</th>
+								<th>Status</th>
+								<th>Actions</th>
 							</tr>
-						) : (
-							coupons.map((coupon) => (
-								<tr key={coupon.id} className="hover:bg-gray-50">
-									<td className="px-6 py-4 whitespace-nowrap">
-										<strong>{coupon.code}</strong>
-									</td>
-									<td className="px-6 py-4">{coupon.name}</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										{coupon.discount_type === 'percentage' && (
-											<span>{coupon.discount_value}%</span>
-										)}
-										{coupon.discount_type === 'fixed_amount' && (
-											<span>${coupon.discount_value}</span>
-										)}
-										{coupon.discount_type === 'free_shipping' && (
-											<span>Free Shipping</span>
-										)}
-									</td>
-									<td className="px-6 py-4">
-										{formatDate(coupon.start_date)} - {formatDate(coupon.end_date)}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										{coupon.usage_limit
-											? `${coupon.times_used || 0} / ${coupon.usage_limit}`
-											: `${coupon.times_used || 0} / ∞`}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										<span
-											className={`px-2 py-1 rounded-full text-xs font-medium ${
-												coupon.is_active === 1 || coupon.is_active === true
-													? 'bg-green-100 text-green-800'
-													: 'bg-red-100 text-red-800'
-											}`}
-										>
-											{coupon.is_active === 1 || coupon.is_active === true
-												? 'Active'
-												: 'Inactive'}
-										</span>
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-										<button
-											onClick={() => handleEdit(coupon)}
-											className="text-blue-600 hover:text-blue-900 mr-3"
-										>
-											Edit
-										</button>
-										<button
-											onClick={() => handleDelete(coupon.id)}
-											className="text-red-600 hover:text-red-900"
-										>
-											Delete
-										</button>
+						</thead>
+						<tbody>
+							{coupons.length === 0 ? (
+								<tr>
+									<td colSpan="7" className="text-center text-secondary py-4">
+										No coupons found. Click &quot;Add New Coupon&quot; to create one.
 									</td>
 								</tr>
-							))
-						)}
-					</tbody>
-				</table>
+							) : (
+								coupons.map((coupon) => (
+									<tr key={coupon.id}>
+										<td>
+											<strong>{coupon.code}</strong>
+										</td>
+										<td>{coupon.name}</td>
+										<td>
+											{coupon.discount_type === 'percentage' && (
+												<span>{coupon.discount_value}%</span>
+											)}
+											{coupon.discount_type === 'fixed_amount' && (
+												<span>${coupon.discount_value}</span>
+											)}
+											{coupon.discount_type === 'free_shipping' && (
+												<span>Free Shipping</span>
+											)}
+										</td>
+										<td>
+											{formatDate(coupon.start_date)} -{' '}
+											{formatDate(coupon.end_date)}
+										</td>
+										<td>
+											{coupon.usage_limit
+												? `${coupon.times_used || 0} / ${coupon.usage_limit}`
+												: `${coupon.times_used || 0} / ∞`}
+										</td>
+										<td>
+											<span
+												className={`admin-status-badge ${
+													coupon.is_active === 1 || coupon.is_active === true
+														? 'badge-active'
+														: 'badge-inactive'
+												}`}
+											>
+												{coupon.is_active === 1 || coupon.is_active === true
+													? 'Active'
+													: 'Inactive'}
+											</span>
+										</td>
+										<td>
+											<button
+												type="button"
+												onClick={() => handleEdit(coupon)}
+												className="admin-btn-secondary me-2"
+												style={{ padding: '0.25rem 0.5rem', fontSize: '13px' }}
+											>
+												Edit
+											</button>
+											<button
+												type="button"
+												onClick={() => handleDelete(coupon.id)}
+												className="admin-btn-danger"
+												style={{ padding: '0.25rem 0.5rem', fontSize: '13px' }}
+											>
+												Delete
+											</button>
+										</td>
+									</tr>
+								))
+							)}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	)

@@ -18,10 +18,19 @@ export default function AdminLoginPage() {
 			})
 
 			if (res.error) {
-				setError(res.error === 'CredentialsSignin' ? 'Invalid email or password' : res.error)
+				setError(
+					res.error === 'CredentialsSignin'
+						? 'Invalid email or password'
+						: res.error
+				)
 			} else {
 				await new Promise((resolve) => setTimeout(resolve, 100))
-				window.location.href = '/admin'
+				const sessionRes = await fetch('/api/auth/session', {
+					cache: 'no-store',
+				})
+				const session = await sessionRes.json()
+				window.location.href =
+					session?.user?.role === 'admin' ? '/admin' : '/my-account'
 			}
 		} catch (err) {
 			setError('An error occurred')
@@ -29,42 +38,42 @@ export default function AdminLoginPage() {
 	}
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gray-50">
-			<div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-				<h2 className="text-center text-3xl font-extrabold text-gray-900">Admin Login</h2>
-				<form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-					{error && <div className="text-red-500 text-center">{error}</div>}
-					<div>
-						<label htmlFor="email" className="sr-only">Email</label>
+		<div className="d-flex align-items-center justify-content-center py-5">
+			<div className="admin-card" style={{ maxWidth: '400px', width: '100%' }}>
+				<h2 className="h4 fw-6 text-center mb-4">Admin Login</h2>
+				<form onSubmit={handleSubmit}>
+					{error && (
+						<div className="admin-alert-error mb-3" role="alert">
+							{error}
+						</div>
+					)}
+					<div className="admin-form-group mb-3">
+						<label htmlFor="admin-login-email">Email</label>
 						<input
-							id="email"
+							id="admin-login-email"
 							name="email"
 							type="email"
 							required
 							autoComplete="email"
-							className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							className="form-control"
 							placeholder="Email"
 						/>
 					</div>
-					<div>
-						<label htmlFor="password" className="sr-only">Password</label>
+					<div className="admin-form-group mb-4">
+						<label htmlFor="admin-login-password">Password</label>
 						<input
-							id="password"
+							id="admin-login-password"
 							name="password"
 							type="password"
 							required
-							className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							autoComplete="current-password"
+							className="form-control"
 							placeholder="Password"
 						/>
 					</div>
-					<div>
-						<button
-							type="submit"
-							className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-						>
-							Sign in
-						</button>
-					</div>
+					<button type="submit" className="admin-btn-primary w-100">
+						Sign in
+					</button>
 				</form>
 			</div>
 		</div>

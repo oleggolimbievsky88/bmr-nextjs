@@ -3,7 +3,10 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-import Link from 'next/link'
+import Topbar4 from '@/components/header/Topbar4'
+import Header18 from '@/components/header/Header18'
+import AdminNav from '@/components/admin/AdminNav'
+import Footer1 from '@/components/footer/Footer'
 
 export default function AdminLayout({ children }) {
 	const { data: session, status } = useSession()
@@ -27,17 +30,26 @@ export default function AdminLayout({ children }) {
 	}, [session, status, router, isLoginPage])
 
 	if (isLoginPage) {
-		return <>{children}</>
+		return (
+			<>
+				<Topbar4 />
+				<Header18 showVehicleSearch={false} />
+				<main className="admin-page">
+					<div className="container">{children}</div>
+				</main>
+				<Footer1 />
+			</>
+		)
 	}
 
 	if (status === 'loading') {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
+			<div className="min-vh-100 d-flex align-items-center justify-content-center">
 				<div className="text-center">
-					<div className="spinner-border" role="status">
+					<div className="spinner-border text-primary" role="status">
 						<span className="visually-hidden">Loading...</span>
 					</div>
-					<p className="mt-2">Loading...</p>
+					<p className="mt-3 mb-0">Loading...</p>
 				</div>
 			</div>
 		)
@@ -48,72 +60,14 @@ export default function AdminLayout({ children }) {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-100">
-			<nav className="bg-gray-800 text-white shadow-lg">
-				<div className="container mx-auto px-4">
-					<div className="flex items-center justify-between h-16">
-						<div className="flex items-center space-x-8">
-							<Link href="/admin" className="text-xl font-bold">
-								Admin Dashboard
-							</Link>
-							<ul className="flex space-x-4">
-								<li>
-									<Link
-										href="/admin"
-										className="hover:text-gray-300 transition"
-									>
-										Dashboard
-									</Link>
-								</li>
-								<li>
-									<Link
-										href="/admin/orders"
-										className="hover:text-gray-300 transition"
-									>
-										Orders
-									</Link>
-								</li>
-								<li>
-									<Link
-										href="/admin/coupons"
-										className="hover:text-gray-300 transition"
-									>
-										Coupons
-									</Link>
-								</li>
-								<li>
-									<Link
-										href="/admin/customers"
-										className="hover:text-gray-300 transition"
-									>
-										Customers
-									</Link>
-								</li>
-								<li>
-									<Link
-										href="/admin/import"
-										className="hover:text-gray-300 transition"
-									>
-										Import ACES/PIES
-									</Link>
-								</li>
-							</ul>
-						</div>
-						<div className="flex items-center space-x-4">
-							<span className="text-sm">
-								{session.user?.name || session.user?.email}
-							</span>
-							<Link
-								href="/api/auth/signout"
-								className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition"
-							>
-								Logout
-							</Link>
-						</div>
-					</div>
-				</div>
-			</nav>
-			<main className="container mx-auto px-4 py-8">{children}</main>
-		</div>
+		<>
+			<Topbar4 />
+			<Header18 showVehicleSearch={false} />
+			<AdminNav user={session.user} />
+			<main className="admin-page">
+				<div className="container">{children}</div>
+			</main>
+			<Footer1 />
+		</>
 	)
 }
