@@ -7,6 +7,8 @@ export default function AdminNav({ user }) {
 	const pathname = usePathname()
 	const navLinks = [
 		{ href: '/admin', label: 'Dashboard' },
+		{ href: '/admin/products', label: 'Products' },
+		{ href: '/admin/categories', label: 'Categories' },
 		{ href: '/admin/orders', label: 'Orders' },
 		{ href: '/admin/coupons', label: 'Coupons' },
 		{ href: '/admin/customers', label: 'Customers' },

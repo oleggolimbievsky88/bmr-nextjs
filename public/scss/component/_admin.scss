@@ -479,3 +479,65 @@
 		color: #991b1b;
 	}
 }
+
+/* Admin Products & Categories Pages */
+.admin-products-page,
+.admin-categories-page {
+	.admin-form-section {
+		background: var(--bg-2);
+		border-radius: 8px;
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
+		border: 1px solid var(--line);
+
+		.admin-form-section-title {
+			font-size: 18px;
+			font-weight: 600;
+			color: var(--main);
+			margin-bottom: 1.25rem;
+			padding-bottom: 0.75rem;
+			border-bottom: 2px solid var(--primary);
+		}
+	}
+
+	.admin-product-form,
+	.admin-category-form,
+	.admin-maincategory-form {
+		.admin-form-actions {
+			display: flex;
+			gap: 1rem;
+			margin-top: 2rem;
+			padding-top: 1.5rem;
+			border-top: 1px solid var(--line);
+		}
+	}
+
+	.form-check {
+		margin-bottom: 0.5rem;
+
+		.form-check-label {
+			margin-left: 0.5rem;
+			font-weight: 500;
+			color: var(--text);
+		}
+	}
+}
+
+/* Image previews */
+.admin-image-preview {
+	max-width: 200px;
+	max-height: 200px;
+	border-radius: 6px;
+	border: 1px solid var(--line);
+	margin-top: 0.5rem;
+}
+
+/* Tab navigation */
+.btn-group {
+	.admin-nav-link {
+		&.active {
+			background: var(--primary);
+			color: var(--white);
+		}
+	}
+}
