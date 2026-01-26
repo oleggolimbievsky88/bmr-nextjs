@@ -57,6 +57,7 @@ export default function AdminLoginPage() {
 							autoComplete="email"
 							className="form-control"
 							placeholder="Email"
+							suppressHydrationWarning
 						/>
 					</div>
 					<div className="admin-form-group mb-4">
@@ -69,6 +70,7 @@ export default function AdminLoginPage() {
 							autoComplete="current-password"
 							className="form-control"
 							placeholder="Password"
+							suppressHydrationWarning
 						/>
 					</div>
 					<button type="submit" className="admin-btn-primary w-100">

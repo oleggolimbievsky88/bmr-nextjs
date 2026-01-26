@@ -83,7 +83,9 @@ export async function POST(request) {
     // Generate order number (sequential starting from 660000)
     const orderNumberValue = await getNextOrderNumber();
     const orderNumber = `BMR-${orderNumberValue}`;
-    const orderDate = new Date().toISOString();
+    // Format date for MySQL datetime column (YYYY-MM-DD HH:MM:SS)
+    const now = new Date();
+    const orderDate = now.toISOString().slice(0, 19).replace('T', ' ');
 
     // Calculate totals
     const subtotal = orderData.items.reduce((total, item) => {
