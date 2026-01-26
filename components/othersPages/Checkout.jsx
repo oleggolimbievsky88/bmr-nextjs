@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
 import CartSkeleton from "@/components/common/CartSkeleton";
 import CreditCardIcons from "@/components/common/CreditCardIcons";
@@ -12,9 +13,11 @@ import { useShippingRates } from "@/hooks/useShippingRates";
 import { useCreditCard } from "@/hooks/useCreditCard";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 import ShippingEstimate from "@/components/common/ShippingEstimate";
+import CheckoutAuthStep from "@/components/othersPages/CheckoutAuthStep";
 
 export default function Checkout() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const {
     cartProducts,
     setCartProducts,
@@ -27,7 +30,12 @@ export default function Checkout() {
     removeCoupon,
   } = useContextElement();
 
-  const [activeStep, setActiveStep] = useState("billing");
+  // Initialize activeStep based on session - default to "account" for unauthenticated users
+  const [activeStep, setActiveStep] = useState(() => {
+    // Will be set by useEffect based on actual session status
+    return "account";
+  });
+  const [accountStepCompleted, setAccountStepCompleted] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
   const [showCouponModal, setShowCouponModal] = useState(false);
@@ -113,6 +121,161 @@ export default function Checkout() {
       router.push("/products");
     }
   }, [cartLoading, cartProducts.length, router, isRedirecting]);
+
+  // Calculate if we should show account step: user is not logged in AND hasn't completed account step
+  // Check session more explicitly - NextAuth might return empty object
+  const hasSession = session && session.user && session.user.email;
+  const showAccountStep = status !== "loading" && !hasSession && !accountStepCompleted;
+
+  // Sync active step with auth: show account step when unauthenticated and not yet completed
+  useEffect(() => {
+    if (status === "loading") return;
+    
+    const hasSession = session && session.user && session.user.email;
+    if (hasSession) {
+      // User is logged in - skip account step
+      setAccountStepCompleted(true);
+      if (activeStep === "account") {
+        setActiveStep("billing");
+      }
+    } else {
+      // User is not logged in - force account step if not completed
+      if (!accountStepCompleted) {
+        setActiveStep("account");
+      }
+    }
+  }, [status, !!session, accountStepCompleted, activeStep]);
+
+  // Helper function to clean database values (treat "0" as empty)
+  const cleanValue = useCallback((value) => {
+    if (!value || value === "0" || value === 0 || (typeof value === "string" && value.trim() === "")) {
+      return "";
+    }
+    return value;
+  }, []);
+
+  // Track if we've attempted to pre-fill to avoid overwriting user input
+  const hasPrefilledRef = useRef(false);
+
+  // Pre-fill form data when user is already logged in (only once)
+  useEffect(() => {
+    const hasSession = session && session.user && session.user.email;
+    const isBillingEmpty =
+      !billingData.firstName &&
+      !billingData.lastName &&
+      !billingData.email &&
+      (!billingData.address1 || billingData.address1 === "0");
+
+    if (
+      status === "authenticated" &&
+      hasSession &&
+      isBillingEmpty &&
+      !hasPrefilledRef.current
+    ) {
+      // User is logged in and form is empty - pre-fill from profile (only once)
+      hasPrefilledRef.current = true;
+      const prefillProfile = async () => {
+        try {
+          const res = await fetch("/api/auth/my-profile", { cache: "no-store" });
+          const data = await res.json();
+          if (res.ok && data?.user) {
+            const u = data.user;
+            setBillingData({
+              firstName: cleanValue(u.firstname),
+              lastName: cleanValue(u.lastname),
+              address1: cleanValue(u.address1),
+              address2: cleanValue(u.address2),
+              city: cleanValue(u.city),
+              state: cleanValue(u.state),
+              zip: cleanValue(u.zip),
+              country: cleanValue(u.country) || "United States",
+              phone: cleanValue(u.phonenumber),
+              email: cleanValue(u.email),
+            });
+            if (sameAsBilling) {
+              setShippingData({
+                firstName: cleanValue(u.shippingfirstname) || cleanValue(u.firstname),
+                lastName: cleanValue(u.shippinglastname) || cleanValue(u.lastname),
+                address1: cleanValue(u.shippingaddress1) || cleanValue(u.address1),
+                address2: cleanValue(u.shippingaddress2) || cleanValue(u.address2),
+                city: cleanValue(u.shippingcity) || cleanValue(u.city),
+                state: cleanValue(u.shippingstate) || cleanValue(u.state),
+                zip: cleanValue(u.shippingzip) || cleanValue(u.zip),
+                country: cleanValue(u.shippingcountry) || cleanValue(u.country) || "United States",
+                phone: cleanValue(u.phonenumber),
+                email: cleanValue(u.email),
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Failed to pre-fill profile:", err);
+        }
+      };
+      prefillProfile();
+    }
+  }, [status, session, billingData.firstName, billingData.lastName, billingData.email, billingData.address1, sameAsBilling, cleanValue]);
+
+  // Debug logging (remove in production)
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      const hasSession = session && session.user && session.user.email;
+      console.log("Checkout Debug:", {
+        status,
+        session: session ? "exists" : "null",
+        hasSession,
+        accountStepCompleted,
+        showAccountStep,
+        activeStep,
+      });
+    }
+  }, [status, session, accountStepCompleted, showAccountStep, activeStep]);
+
+  const handleAuthSuccess = useCallback(async () => {
+    setAccountStepCompleted(true);
+    setBillingAddressValid(false);
+    setShippingAddressValid(false);
+    try {
+      const res = await fetch("/api/auth/my-profile", { cache: "no-store" });
+      const data = await res.json();
+      if (res.ok && data?.user) {
+        const u = data.user;
+        setBillingData({
+          firstName: cleanValue(u.firstname),
+          lastName: cleanValue(u.lastname),
+          address1: cleanValue(u.address1),
+          address2: cleanValue(u.address2),
+          city: cleanValue(u.city),
+          state: cleanValue(u.state),
+          zip: cleanValue(u.zip),
+          country: cleanValue(u.country) || "United States",
+          phone: cleanValue(u.phonenumber),
+          email: cleanValue(u.email),
+        });
+        if (sameAsBilling) {
+          setShippingData({
+            firstName: cleanValue(u.shippingfirstname) || cleanValue(u.firstname),
+            lastName: cleanValue(u.shippinglastname) || cleanValue(u.lastname),
+            address1: cleanValue(u.shippingaddress1) || cleanValue(u.address1),
+            address2: cleanValue(u.shippingaddress2) || cleanValue(u.address2),
+            city: cleanValue(u.shippingcity) || cleanValue(u.city),
+            state: cleanValue(u.shippingstate) || cleanValue(u.state),
+            zip: cleanValue(u.shippingzip) || cleanValue(u.zip),
+            country: cleanValue(u.shippingcountry) || cleanValue(u.country) || "United States",
+            phone: cleanValue(u.phonenumber),
+            email: cleanValue(u.email),
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Failed to pre-fill profile:", err);
+    }
+    setActiveStep("billing");
+  }, [sameAsBilling, cleanValue]);
+
+  const handleContinueAsGuest = useCallback(() => {
+    setAccountStepCompleted(true);
+    setActiveStep("billing");
+  }, []);
 
   const calculateShippingRatesForCurrentAddress = useCallback(async () => {
     // Prevent multiple simultaneous calls
@@ -228,28 +391,57 @@ export default function Checkout() {
   };
 
   const handleOrderSubmission = async () => {
-    // Validate all required fields
+    // Clean and validate all required fields (treat "0" as empty)
+    const cleanBilling = {
+      firstName: cleanValue(billingData.firstName),
+      lastName: cleanValue(billingData.lastName),
+      address1: cleanValue(billingData.address1),
+      address2: cleanValue(billingData.address2),
+      city: cleanValue(billingData.city),
+      state: cleanValue(billingData.state),
+      zip: cleanValue(billingData.zip),
+      country: cleanValue(billingData.country) || "United States",
+      phone: cleanValue(billingData.phone),
+      email: cleanValue(billingData.email),
+    };
+
     if (
-      !billingData.firstName ||
-      !billingData.lastName ||
-      !billingData.address1 ||
-      !billingData.city ||
-      !billingData.state ||
-      !billingData.zip ||
-      !billingData.email
+      !cleanBilling.firstName ||
+      !cleanBilling.lastName ||
+      !cleanBilling.address1 ||
+      !cleanBilling.city ||
+      !cleanBilling.state ||
+      !cleanBilling.zip ||
+      !cleanBilling.email
     ) {
       setSubmitError("Please fill in all required billing fields");
       return;
     }
 
+    // Clean shipping data
+    const cleanShipping = sameAsBilling
+      ? cleanBilling
+      : {
+          firstName: cleanValue(shippingData.firstName),
+          lastName: cleanValue(shippingData.lastName),
+          address1: cleanValue(shippingData.address1),
+          address2: cleanValue(shippingData.address2),
+          city: cleanValue(shippingData.city),
+          state: cleanValue(shippingData.state),
+          zip: cleanValue(shippingData.zip),
+          country: cleanValue(shippingData.country) || "United States",
+          phone: cleanValue(shippingData.phone),
+          email: cleanValue(shippingData.email),
+        };
+
     if (
       !sameAsBilling &&
-      (!shippingData.firstName ||
-        !shippingData.lastName ||
-        !shippingData.address1 ||
-        !shippingData.city ||
-        !shippingData.state ||
-        !shippingData.zip)
+      (!cleanShipping.firstName ||
+        !cleanShipping.lastName ||
+        !cleanShipping.address1 ||
+        !cleanShipping.city ||
+        !cleanShipping.state ||
+        !cleanShipping.zip)
     ) {
       setSubmitError("Please fill in all required shipping fields");
       return;
@@ -355,37 +547,198 @@ export default function Checkout() {
       });
 
       // Create order in database first
-      let orderId = `BMR-660000`; // Fallback
+      let orderId = null;
       try {
-        const orderResponse = await fetch("/api/orders", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            billing: billingData,
-            shipping: sameAsBilling ? billingData : shippingData,
-            items: orderItems,
-            shippingMethod: selectedOption?.name || "Standard Shipping",
-            shippingCost: selectedOption?.cost || 0,
-            tax: 0,
-            discount: couponDiscount || 0,
-            couponCode: appliedCoupon?.code || "",
-            couponId: appliedCoupon?.id || null,
-            notes: orderNotes,
-          }),
-        });
+        // cleanShipping is already defined above
 
-        if (orderResponse.ok) {
-          const orderResult = await orderResponse.json();
-          orderId = orderResult.orderNumber || orderId;
-        } else {
-          console.error("Failed to create order:", await orderResponse.json());
-          // Continue with fallback order ID
+        const orderPayload = {
+          billing: cleanBilling,
+          shipping: cleanShipping,
+          items: orderItems,
+          shippingMethod: selectedOption?.name || "Standard Shipping",
+          shippingCost: selectedOption?.cost || 0,
+          tax: 0,
+          discount: couponDiscount || 0,
+          couponCode: appliedCoupon?.code || "",
+          couponId: appliedCoupon?.id || null,
+          notes: orderNotes,
+          customerId:
+            session?.user?.id != null
+              ? parseInt(session.user.id, 10)
+              : null,
+        };
+
+        if (process.env.NODE_ENV === "development") {
+          console.log("Submitting order with payload:", {
+            ...orderPayload,
+            items: orderPayload.items.map((item) => ({
+              productId: item.productId,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+          });
+        }
+
+        let orderResponse;
+        try {
+          orderResponse = await fetch("/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderPayload),
+          });
+        } catch (fetchError) {
+          console.error("Network error fetching order API:", fetchError);
+          setSubmitError(
+            "Network error: Could not connect to server. Please check your connection and try again."
+          );
+          setIsRedirecting(false);
+          setIsSubmitting(false);
+          return;
+        }
+
+        let orderResult;
+        let responseText = "";
+        try {
+          responseText = await orderResponse.text();
+          if (!responseText) {
+            throw new Error("Empty response from server");
+          }
+          try {
+            orderResult = JSON.parse(responseText);
+          } catch (parseError) {
+            // Response is not valid JSON
+            console.error("Response is not valid JSON:", {
+              status: orderResponse.status,
+              statusText: orderResponse.statusText,
+              responseText: responseText.substring(0, 500), // First 500 chars
+            });
+            setSubmitError(
+              `Server returned invalid response (${orderResponse.status}). Please try again.`
+            );
+            setIsRedirecting(false);
+            setIsSubmitting(false);
+            return;
+          }
+        } catch (textError) {
+          console.error("Failed to read order response:", textError);
+          setSubmitError(
+            `Failed to read server response: ${textError.message}. Please try again.`
+          );
+          setIsRedirecting(false);
+          setIsSubmitting(false);
+          return;
+        }
+
+        if (!orderResponse.ok) {
+          // Log full error details - expand the result object
+          console.error("=== ORDER CREATION FAILED ===");
+          console.error("Status:", orderResponse.status, orderResponse.statusText);
+          console.error("Full Response Text:", responseText);
+          console.error("Parsed Result:", orderResult);
+          if (orderResult) {
+            console.error("Error field:", orderResult.error);
+            console.error("Message field:", orderResult.message);
+            console.error("Details:", orderResult.details);
+            console.error("Stack:", orderResult.stack);
+          }
+          console.error("=============================");
+          
+          // Try to extract error message from various possible formats
+          let errorMessage = "Failed to save order. Please try again.";
+          if (orderResult) {
+            if (orderResult.error) {
+              errorMessage = orderResult.error;
+            } else if (orderResult.message) {
+              errorMessage = orderResult.message;
+            } else if (typeof orderResult === "string") {
+              errorMessage = orderResult;
+            } else if (responseText && responseText.length < 200) {
+              // If response is short, show it directly
+              errorMessage = responseText;
+            }
+          }
+          
+          // Add status code if we have one
+          if (orderResponse.status) {
+            errorMessage = `${errorMessage} (HTTP ${orderResponse.status})`;
+          }
+          
+          setSubmitError(errorMessage);
+          setIsRedirecting(false);
+          setIsSubmitting(false);
+          return;
+        }
+
+        orderId = orderResult.orderNumber || orderResult.orderId;
+
+        // Save address and phone to customer profile if logged in
+        const hasSession = session && session.user && session.user.email;
+        if (hasSession) {
+          try {
+            const profileUpdate = {
+              firstname: cleanBilling.firstName,
+              lastname: cleanBilling.lastName,
+              address1: cleanBilling.address1,
+              address2: cleanBilling.address2,
+              city: cleanBilling.city,
+              state: cleanBilling.state,
+              zip: cleanBilling.zip,
+              country: cleanBilling.country,
+              phonenumber: cleanBilling.phone,
+              email: cleanBilling.email,
+            };
+
+            // Add shipping address if different from billing
+            if (!sameAsBilling) {
+              profileUpdate.shippingfirstname = cleanShipping.firstName;
+              profileUpdate.shippinglastname = cleanShipping.lastName;
+              profileUpdate.shippingaddress1 = cleanShipping.address1;
+              profileUpdate.shippingaddress2 = cleanShipping.address2;
+              profileUpdate.shippingcity = cleanShipping.city;
+              profileUpdate.shippingstate = cleanShipping.state;
+              profileUpdate.shippingzip = cleanShipping.zip;
+              profileUpdate.shippingcountry = cleanShipping.country;
+            } else {
+              // If same as billing, copy billing to shipping
+              profileUpdate.shippingfirstname = cleanBilling.firstName;
+              profileUpdate.shippinglastname = cleanBilling.lastName;
+              profileUpdate.shippingaddress1 = cleanBilling.address1;
+              profileUpdate.shippingaddress2 = cleanBilling.address2;
+              profileUpdate.shippingcity = cleanBilling.city;
+              profileUpdate.shippingstate = cleanBilling.state;
+              profileUpdate.shippingzip = cleanBilling.zip;
+              profileUpdate.shippingcountry = cleanBilling.country;
+            }
+
+            const profileResponse = await fetch("/api/auth/update-profile", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(profileUpdate),
+            });
+
+            if (profileResponse.ok) {
+              console.log("Customer profile updated with address and phone");
+            } else {
+              const profileError = await profileResponse.json();
+              console.warn("Failed to update customer profile:", profileError);
+              // Don't fail the order if profile update fails
+            }
+          } catch (profileError) {
+            console.error("Error updating customer profile:", profileError);
+            // Don't fail the order if profile update fails
+          }
         }
       } catch (orderError) {
         console.error("Failed to create order:", orderError);
-        // Continue with fallback order ID
+        setSubmitError("Could not connect to save your order. Please check your connection and try again.");
+        setIsRedirecting(false);
+        setIsSubmitting(false);
+        return;
       }
 
       // Clear cart (but keep notes until after order is confirmed)
@@ -495,6 +848,44 @@ export default function Checkout() {
           {/* Left Column - Checkout Steps */}
           <div className="col-lg-8">
             <div className="checkout-steps">
+              {status === "loading" ? (
+                <div className="checkout-step active">
+                  <div className="step-header">
+                    <h3>Account</h3>
+                    <div className="step-line"></div>
+                  </div>
+                  <div className="step-content">
+                    <div className="text-center py-5">
+                      <div
+                        className="spinner-border text-danger"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                      <p className="mt-2 mb-0">Loading...</p>
+                    </div>
+                  </div>
+                </div>
+              ) : showAccountStep ? (
+                <div className="checkout-step active">
+                  <div className="step-header">
+                    <h3>Account</h3>
+                    <div className="step-line"></div>
+                  </div>
+                  <div className="step-content">
+                    <p className="mb-3">
+                      Log in or create an account to speed up checkout, or
+                      continue as a guest.
+                    </p>
+                    <CheckoutAuthStep
+                      onAuthSuccess={handleAuthSuccess}
+                      onContinueAsGuest={handleContinueAsGuest}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {status !== "loading" && !showAccountStep && (
+                <>
               {/* Billing Section */}
               <div
                 className={`checkout-step ${
@@ -1329,6 +1720,8 @@ export default function Checkout() {
                   </div>
                 )}
               </div>
+                </>
+              )}
             </div>
           </div>
 

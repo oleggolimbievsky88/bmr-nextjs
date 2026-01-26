@@ -1,11 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react"; // Still needed for credentials login
-import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || null;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -58,6 +60,8 @@ export default function Login() {
       // Use window.location for a full page navigation to avoid router state issues
       if (session?.user?.role === "admin") {
         window.location.href = "/admin";
+      } else if (callbackUrl && callbackUrl.startsWith("/")) {
+        window.location.href = callbackUrl;
       } else {
         window.location.href = "/my-account";
       }

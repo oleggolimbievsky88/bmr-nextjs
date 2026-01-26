@@ -7,6 +7,7 @@ import CartLength from "../common/CartLength";
 import MainMenu from "./MainMenu";
 import VehicleSearch from "../common/VehicleSearch";
 import SearchInput from "../search/SearchInput";
+import UserAccountMenu from "./UserAccountMenu";
 
 export default function Header18({ showVehicleSearch = true }) {
   const [menuData, setMenuData] = useState(null);
@@ -87,18 +88,7 @@ export default function Header18({ showVehicleSearch = true }) {
                   <i className="icon icon-search" />
                 </a>
               </li>
-              <li className="nav-account tf-md-hidden">
-                <a
-                  href="#login"
-                  data-bs-toggle="modal"
-                  className="nav-icon-item align-items-center gap-10"
-                >
-                  <i className="icon icon-account" />
-                  <span className="text" style={{ fontSize: "14px" }}>
-                    My Account
-                  </span>
-                </a>
-              </li>
+              <UserAccountMenu />
               <li className="nav-cart cart-md">
                 <a
                   href="#shoppingCart"

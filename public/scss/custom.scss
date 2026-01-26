@@ -1852,7 +1852,7 @@ section.tf-slideshow,
 
 .navbar-nav {
   display: flex;
-  justify-content: center;
+  justify-content:space-between !important;
   align-items: center;
   width: 100%;
   overflow-y: visible !important;
@@ -1862,6 +1862,7 @@ section.tf-slideshow,
   flex-wrap: wrap;
   position: relative;
   z-index: 1001;
+
 
   /* Hide at 1400px and below */
   @media (max-width: 1400px) {
@@ -2506,8 +2507,38 @@ section.tf-slideshow,
 }
 
 .header-vehicle-row {
-  border-top: 1px solid red;
   padding: 10px 0 18px;
+
+  /* Ensure search button is hidden when search bar is hidden */
+  &[style*="display: none"],
+  &[style*="display:none"],
+  &[style*="visibility: hidden"],
+  &[style*="visibility:hidden"] {
+    .search-button,
+    .vehicle-search-form .search-button,
+    .form-row.button-row,
+    .button-row {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
+}
+
+/* Hide search button when header is scrolled/hidden */
+header[style*="top: -"],
+header[style*="transform: translateY(-"],
+header[style*="transform:translateY(-"] {
+  .header-vehicle-row .search-button,
+  .header-vehicle-row .vehicle-search-form .search-button,
+  .header-vehicle-row .form-row.button-row,
+  .header-vehicle-row .button-row {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 }
 
 @media (min-width: 768px) {
@@ -2535,6 +2566,7 @@ section.tf-slideshow,
 	z-index: 1100;	position: relative;
 	width: 100%;
 	z-index: 1100;
+
 
 	.navbar-nav {
 		display: flex;
@@ -3537,7 +3569,7 @@ section.tf-slideshow,
 	background-position: center;
 	background-size: cover;
 
-	border: 1px solid var(--primary, #cc0000);
+	border-bottom: 2px solid var(--primary, #cc0000);
 	box-sizing: border-box;
 
 	min-height: 260px;

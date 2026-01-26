@@ -1,0 +1,54 @@
+GET http://localhost:3000/api/health
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.3.2
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-01-24T215743.200.json
+
+###
+
+GET http://localhost:3000/api/health
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.3.2
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-01-24T215034.200.json
+
+###
+
+GET http://localhost:3000/api/health
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.3.2
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-01-24T214705.200.json
+
+###
+
+GET http://localhost:3000/api/health
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.3.2
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-01-24T214511.200.json
+
+###
+
+GET http://localhost:3000/api/health
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.3.2
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-01-24T214303.404.html
+
+###
+
+GET http://localhost:3000/api/health
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.3.2
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-01-24T213720.404.html
+
+###
+

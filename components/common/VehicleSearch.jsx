@@ -23,10 +23,10 @@ export default function VehicleSearch() {
       new Set(
         Object.values(vehicles).flatMap((make) =>
           Object.values(make).flatMap((model) =>
-            model.map((vehicle) => vehicle.year)
-          )
-        )
-      )
+            model.map((vehicle) => vehicle.year),
+          ),
+        ),
+      ),
     ).sort((a, b) => b - a);
     setYears(uniqueYears);
   }, []);
@@ -41,8 +41,8 @@ export default function VehicleSearch() {
       // Filter makes based on the selected year
       const filteredMakes = Object.keys(vehicles).filter((make) =>
         Object.keys(vehicles[make]).some((model) =>
-          vehicles[make][model].some((vehicle) => vehicle.year === yearNum)
-        )
+          vehicles[make][model].some((vehicle) => vehicle.year === yearNum),
+        ),
       );
       setMakes(filteredMakes);
       if (filteredMakes.length === 1) {
@@ -66,7 +66,7 @@ export default function VehicleSearch() {
       const yearNum = parseInt(year);
       // Filter models based on selected year and make
       const filteredModels = Object.keys(vehicles[makeValue]).filter((model) =>
-        vehicles[makeValue][model].some((vehicle) => vehicle.year === yearNum)
+        vehicles[makeValue][model].some((vehicle) => vehicle.year === yearNum),
       );
       setModels(filteredModels);
       if (filteredModels.length === 1) {
@@ -91,7 +91,7 @@ export default function VehicleSearch() {
         .filter((vehicle) => vehicle.year === yearNum && vehicle.subModel)
         .map((vehicle) => vehicle.subModel)
         .filter(
-          (subModel, idx, arr) => subModel && arr.indexOf(subModel) === idx
+          (subModel, idx, arr) => subModel && arr.indexOf(subModel) === idx,
         );
       setSubModels(filteredSubModels);
       if (filteredSubModels.length === 1) {
@@ -115,11 +115,12 @@ export default function VehicleSearch() {
       let selectedVehicle;
       if (subModel) {
         selectedVehicle = vehicles[make][model].find(
-          (vehicle) => vehicle.year === yearNum && vehicle.subModel === subModel
+          (vehicle) =>
+            vehicle.year === yearNum && vehicle.subModel === subModel,
         );
       } else {
         selectedVehicle = vehicles[make][model].find(
-          (vehicle) => vehicle.year === yearNum
+          (vehicle) => vehicle.year === yearNum,
         );
       }
       if (selectedVehicle && selectedVehicle.platform) {
@@ -206,7 +207,7 @@ export default function VehicleSearch() {
           </select>
         </div>
 
-        <div className={styles["form-row"]}>
+        <div className={`${styles["form-row"]} ${styles["sub-model-row"]}`}>
           <select
             value={subModel}
             onChange={handleSubModelChange}
@@ -224,7 +225,9 @@ export default function VehicleSearch() {
           </select>
         </div>
 
-        <div className={`${styles["form-row"]} ${styles["button-row"]}`}>
+        <div
+          className={`${styles["form-row"]} ${styles["button-row"]} ${styles["mb-md-5"]}`}
+        >
           <button type="submit" className={styles["search-button"]}>
             Search
           </button>

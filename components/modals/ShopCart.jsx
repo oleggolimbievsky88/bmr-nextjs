@@ -1,5 +1,6 @@
 "use client";
 import { useContextElement } from "@/context/Context";
+import { showToast } from "@/utlis/showToast";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
@@ -26,7 +27,9 @@ export default function ShopCart() {
     }
   };
   const removeItem = (item) => {
+    const productName = item.ProductName || 'Item';
     setCartProducts((pre) => [...pre.filter((elm) => elm !== item)]);
+    showToast(`${productName} removed from cart`, 'info');
   };
 
   const handleCheckoutClick = () => {

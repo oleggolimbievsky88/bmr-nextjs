@@ -1,7 +1,9 @@
+'use client'
 import React from "react";
 import Link from "next/link";
 import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
+import TopbarUserMenu from "./TopbarUserMenu";
 export default function Topbar4() {
   return (
     <div className="tf-top-bar text-white bg_black">
@@ -59,11 +61,7 @@ export default function Topbar4() {
                     About Us
                   </Link>
                 </li>
-                <li>
-                  <Link href={`/login`} className="text-white nav-text">
-                    My Account
-                  </Link>
-                </li>
+                <TopbarUserMenu />
                 <li>
                   <Link
                     href={`/dealers-portal`}

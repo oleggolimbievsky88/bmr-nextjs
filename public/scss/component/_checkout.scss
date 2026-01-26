@@ -111,6 +111,16 @@
   }
 }
 
+.checkout-auth-step {
+  .auth-switch {
+    font-size: 0.95rem;
+  }
+
+  .position-relative input {
+    padding-right: 2.5rem;
+  }
+}
+
 .order-summary {
   background: #fff;
   border: 1px solid #e0e0e0;

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `new_orders` (
   `shipping_zip` varchar(20) NOT NULL,
   `shipping_country` varchar(100) NOT NULL DEFAULT 'United States',
   `shipping_method` varchar(100) DEFAULT 'Standard Shipping',
+  `subtotal` decimal(10,2) DEFAULT 0.00,
   `shipping_cost` decimal(10,2) DEFAULT 0.00,
   `tax` decimal(10,2) DEFAULT 0.00,
   `discount` decimal(10,2) DEFAULT 0.00,

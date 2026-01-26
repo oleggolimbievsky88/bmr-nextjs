@@ -27,12 +27,55 @@ export async function POST(request) {
       // Continue anyway - tables might already exist
     }
 
-    orderData = await request.json();
+    try {
+      orderData = await request.json();
+    } catch (parseError) {
+      console.error("Failed to parse request body:", parseError);
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid request data",
+          error: "Failed to parse request body",
+        },
+        { status: 400 }
+      );
+    }
 
     // Validate required fields
     if (!orderData.billing || !orderData.shipping || !orderData.items || orderData.items.length === 0) {
+      console.error("Missing required fields:", {
+        hasBilling: !!orderData.billing,
+        hasShipping: !!orderData.shipping,
+        hasItems: !!orderData.items,
+        itemsLength: orderData.items?.length || 0,
+      });
       return NextResponse.json(
-        { success: false, message: "Missing required order data" },
+        {
+          success: false,
+          message: "Missing required order data",
+          error: "Billing, shipping, and items are required",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate billing fields
+    if (
+      !orderData.billing.firstName ||
+      !orderData.billing.lastName ||
+      !orderData.billing.address1 ||
+      !orderData.billing.city ||
+      !orderData.billing.state ||
+      !orderData.billing.zip ||
+      !orderData.billing.email
+    ) {
+      console.error("Missing required billing fields");
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Missing required billing information",
+          error: "All billing fields are required",
+        },
         { status: 400 }
       );
     }
@@ -58,16 +101,32 @@ export async function POST(request) {
       subtotal,
       total,
       itemsCount: orderData.items.length,
+      hasBilling: !!orderData.billing,
+      hasShipping: !!orderData.shipping,
+      billingEmail: orderData.billing?.email,
+      customerId: orderData.customerId,
     });
 
     // Create order record
-    const orderId = await createOrder({
-      ...orderData,
-      orderNumber,
-      orderDate,
-      subtotal,
-      total,
-    });
+    let orderId;
+    try {
+      orderId = await createOrder({
+        ...orderData,
+        orderNumber,
+        orderDate,
+        subtotal,
+        total,
+      });
+    } catch (createError) {
+      console.error("Error in createOrder function:", {
+        error: createError.message,
+        code: createError.code,
+        sqlState: createError.sqlState,
+        sqlMessage: createError.sqlMessage,
+        stack: createError.stack,
+      });
+      throw createError; // Re-throw to be caught by outer catch
+    }
 
     console.log("Order created with ID:", orderId);
 
@@ -120,12 +179,16 @@ export async function POST(request) {
       message: "Order processed successfully",
     });
   } catch (error) {
-    console.error("Error processing order:", {
-      error: error.message,
-      stack: error.stack,
+    const errorDetails = {
+      error: error.message || "Unknown error occurred",
       code: error.code,
       sqlState: error.sqlState,
       sqlMessage: error.sqlMessage,
+    };
+
+    console.error("Error processing order:", {
+      ...errorDetails,
+      stack: error.stack,
       orderData: orderData
         ? {
             itemsCount: orderData.items?.length,
@@ -134,15 +197,36 @@ export async function POST(request) {
           }
         : null,
     });
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to process order",
-        error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      },
-      { status: 500 }
-    );
+
+    // Always return a valid JSON response
+    try {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Failed to process order",
+          error: error.message || "Unknown error occurred",
+          ...(process.env.NODE_ENV === "development" && {
+            details: errorDetails,
+            stack: error.stack,
+          }),
+        },
+        { status: 500 }
+      );
+    } catch (jsonError) {
+      // Fallback if JSON serialization fails
+      console.error("Failed to serialize error response:", jsonError);
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: "Failed to process order",
+          error: "Internal server error",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
   }
 }
 

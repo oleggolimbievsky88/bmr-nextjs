@@ -199,6 +199,8 @@ export default function RootLayout({ children }) {
         </SessionProvider>
         <ScrollTop />
         <Analytics />
+        {/* Toast Container for notifications */}
+        <div id="toast-container" className="toast-container position-fixed top-0 end-0 p-3" style={{ zIndex: 1090 }}></div>
       </body>
     </html>
   );

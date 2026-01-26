@@ -1,5 +1,6 @@
 "use client";
 import { useContextElement } from "@/context/Context";
+import { showToast } from "@/utlis/showToast";
 import CartSkeleton from "@/components/common/CartSkeleton";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,7 +52,10 @@ export default function Cart() {
     }
   };
   const removeItem = (id) => {
+    const item = cartProducts.find((elm) => elm.ProductID == id);
+    const productName = item?.ProductName || 'Item';
     setCartProducts((pre) => [...pre.filter((elm) => elm.ProductID != id)]);
+    showToast(`${productName} removed from cart`, 'info');
   };
 
   const handleApplyCoupon = async () => {

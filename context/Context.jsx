@@ -1,5 +1,6 @@
 "use client";
 import { openCartModal } from "@/utlis/openCartModal";
+import { showToast } from "@/utlis/showToast";
 //import { openCart } from "@/utlis/toggleCart";
 import React, { useEffect } from "react";
 import { useContext, useState } from "react";
@@ -102,10 +103,12 @@ export default function Context({ children }) {
           updatedCart[existingItemIndex].quantity += qty;
           setCartProducts(updatedCart);
           console.log("Increased quantity of existing item");
+          showToast(`${productData.product.ProductName} quantity updated in cart`, 'success');
         } else {
           // Different product or different options - add as new item
           setCartProducts((pre) => [...pre, newItem]);
           console.log("Added new item to cart");
+          showToast(`${productData.product.ProductName} added to cart`, 'success');
         }
 
         openCartModal();

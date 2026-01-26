@@ -1,13 +1,13 @@
 // VehicleSearch.module.scss
 .vehicle-search-form {
-	background-color: transparent;
-	border: none;
-	padding: 3px 16px;
-	margin: 0 auto;
+	background-color: #444444;
+	border: 1px solid #333333;
+	border-radius: 10px;
+	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5) !important;
+	padding: 10px;
+	margin: 10px;
 	max-width: 1200px;
 	width: 100%;
-	margin-top: 0;
-	margin-bottom: 0;
 
 	@media (min-width: 768px) {
 		padding-top: 3px;
@@ -71,8 +71,10 @@
 			white-space: nowrap;
 
 		@media (max-width: 767px) {
-			font-size: 22px !important;
-			color: #000000;
+			font-size: 24px !important;
+			color: #ffffff;
+			font-weight: 700;
+			padding-top: 5px;
 		}
 
 			@media (min-width: 768px) {
@@ -126,6 +128,24 @@
 				min-width: auto;
 				max-width: none;
 			}
+		}
+
+		&.sub-model-row {
+			/* Hide sub model on lg and smaller screens (max-width: 991px) */
+			@media (max-width: 991px) {
+				display: none !important;
+			}
+		}
+	}
+
+	/* Hide button row when search form is hidden */
+	&[style*="display: none"],
+	&[style*="display:none"] {
+		.button-row,
+		.form-row.button-row {
+			display: none !important;
+			visibility: hidden !important;
+			opacity: 0 !important;
 		}
 	}
 
@@ -282,12 +302,14 @@
 	border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 	background-color: #2f2f2f;
 	padding: 6px 0 8px;
+	overflow: visible !important;
 
 	.container {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		flex-wrap: wrap;
+		overflow: visible !important;
 	}
 
 	.vehicle-search-form {
@@ -303,6 +325,64 @@
 
 	.vehicle-search-form .form-row {
 		min-width: 0;
+	}
+
+	/* Ensure search button is hidden when parent is hidden */
+	&[style*="display: none"],
+	&[style*="display:none"],
+	&:not(:has(.vehicle-search-form)) {
+		.search-button,
+		.vehicle-search-form .search-button {
+			display: none !important;
+			visibility: hidden !important;
+			opacity: 0 !important;
+		}
+	}
+}
+
+/* Hide search button when header-vehicle-row is hidden via CSS */
+:global(.header-vehicle-row[style*="display: none"]),
+:global(.header-vehicle-row[style*="display:none"]),
+:global(.header-vehicle-row[style*="visibility: hidden"]),
+:global(.header-vehicle-row[style*="visibility:hidden"]),
+:global(.header-vehicle-row[style*="opacity: 0"]),
+:global(.header-vehicle-row[style*="opacity:0"]),
+:global(header[style*="display: none"]) .header-vehicle-row,
+:global(header[style*="display:none"]) .header-vehicle-row,
+:global(header[style*="visibility: hidden"]) .header-vehicle-row,
+:global(header[style*="visibility:hidden"]) .header-vehicle-row {
+	.vehicle-search-form .search-button,
+	.search-button {
+		display: none !important;
+		visibility: hidden !important;
+		opacity: 0 !important;
+		pointer-events: none !important;
+	}
+}
+
+/* Hide search button when header is scrolled/hidden (via transform or position) */
+:global(header[style*="top: -"]),
+:global(header[style*="transform: translateY(-"]),
+:global(header[style*="transform:translateY(-"]) {
+	.header-vehicle-row .vehicle-search-form .search-button,
+	.header-vehicle-row .search-button {
+		display: none !important;
+		visibility: hidden !important;
+		opacity: 0 !important;
+		pointer-events: none !important;
+	}
+}
+
+/* Ensure search button inherits parent visibility */
+.vehicle-search-form {
+	&[style*="display: none"],
+	&[style*="display:none"] {
+		.search-button {
+			display: none !important;
+			visibility: hidden !important;
+			opacity: 0 !important;
+			pointer-events: none !important;
+		}
 	}
 }
 
