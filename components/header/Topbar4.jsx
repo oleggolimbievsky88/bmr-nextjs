@@ -4,6 +4,7 @@ import Link from "next/link";
 import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
 import TopbarUserMenu from "./TopbarUserMenu";
+import ViewToggle from "../common/ViewToggle";
 export default function Topbar4() {
   return (
     <div className="tf-top-bar text-white bg_black">
@@ -70,6 +71,7 @@ export default function Topbar4() {
                     Dealers
                   </Link>
                 </li>
+                <ViewToggle />
               </ul>
             </div>
           </div>

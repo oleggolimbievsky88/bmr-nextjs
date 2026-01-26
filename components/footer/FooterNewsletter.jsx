@@ -1,51 +1,97 @@
 "use client";
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
+
+import { showToast } from "@/utlis/showToast";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function FooterNewsletter() {
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
   const [showMessage, setShowMessage] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const formRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const messageTimeoutRef = useRef(null);
+  const messageClassName = showMessage
+    ? "tfSubscribeMsg active"
+    : "tfSubscribeMsg";
+  const subscribeButtonClass = [
+    "subscribe-button",
+    "tf-btn",
+    "btn-sm",
+    "radius-3",
+    "btn-fill",
+    "btn-icon",
+    "animate-hover-btn",
+  ].join(" ");
 
-  const handleShowMessage = () => {
+  const showInlineMessage = (text, type) => {
+    setMessage(text);
+    setMessageType(type);
     setShowMessage(true);
-    setTimeout(() => {
+
+    if (messageTimeoutRef.current) {
+      clearTimeout(messageTimeoutRef.current);
+    }
+
+    messageTimeoutRef.current = setTimeout(() => {
       setShowMessage(false);
     }, 2000);
   };
 
-  const sendEmail = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    const email = e.target.email.value;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+
+    const email = (event.target.email.value || "").trim().toLowerCase();
+
+    if (!EMAIL_PATTERN.test(email)) {
+      showToast("Please enter a valid email address.", "error");
+      showInlineMessage("Please enter a valid email address.", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        "https://express-brevomail.vercel.app/api/contacts",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-          }),
-        }
-      );
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
 
-      if ([200, 201].includes(response.status)) {
-        e.target.reset(); // Reset the form
-        setSuccess(true); // Set success state
-        handleShowMessage();
+      const payload = await response.json().catch(() => ({}));
+      const status = payload?.status;
+
+      if (response.ok && status === "exists") {
+        showToast("You are already subscribed.", "info");
+        showInlineMessage("You are already subscribed.", "info");
+      } else if (response.ok) {
+        showToast("Thanks for subscribing!", "success");
+        showInlineMessage("You have successfully subscribed.", "success");
+        event.target.reset();
       } else {
-        setSuccess(false); // Handle unexpected responses
-        handleShowMessage();
+        showToast(payload?.error || "Something went wrong.", "error");
+        showInlineMessage("Something went wrong.", "error");
       }
     } catch (error) {
-      console.error("Error:", error.message || "An error occurred");
-      setSuccess(false); // Set error state
-      handleShowMessage();
-      e.target.reset(); // Reset the form
+      console.error("Newsletter signup error:", error);
+      showToast("Something went wrong. Please try again.", "error");
+      showInlineMessage("Something went wrong.", "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const messageColor =
+    messageType === "success"
+      ? "rgb(52, 168, 83)"
+      : messageType === "info"
+        ? "rgb(13, 202, 240)"
+        : "red";
 
   return (
     <div className="footer-newsletter footer-col-block">
@@ -60,18 +106,11 @@ export default function FooterNewsletter() {
           Sign up to get first dibs on new arrivals, sales, exclusive content,
           events and more!
         </div>
-        <div className={`tfSubscribeMsg ${showMessage ? "active" : ""}`}>
-          {success ? (
-            <p style={{ color: "rgb(52, 168, 83)" }}>
-              You have successfully subscribed.
-            </p>
-          ) : (
-            <p style={{ color: "red" }}>Something went wrong</p>
-          )}
+        <div className={messageClassName}>
+          {message ? <p style={{ color: messageColor }}>{message}</p> : null}
         </div>
         <form
-          ref={formRef}
-          onSubmit={sendEmail}
+          onSubmit={handleSubmit}
           className="form-newsletter subscribe-form"
           action="#"
           method="post"
@@ -84,18 +123,19 @@ export default function FooterNewsletter() {
                 required
                 type="email"
                 name="email"
-                className="subscribe-email"
+                className="subscribe-email radius-10"
                 placeholder="Enter your email...."
                 tabIndex={0}
                 aria-required="true"
-                autoComplete="abc@xyz.com"
+                autoComplete="email"
                 suppressHydrationWarning
               />
             </fieldset>
             <div className="button-submit">
               <button
-                className="subscribe-button tf-btn btn-sm radius-3 btn-fill btn-icon animate-hover-btn"
+                className={`${subscribeButtonClass} radius-10`}
                 type="submit"
+                disabled={isSubmitting}
               >
                 Subscribe
                 <i className="icon icon-arrow1-top-left" />
