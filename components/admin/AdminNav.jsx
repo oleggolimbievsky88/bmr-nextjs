@@ -15,6 +15,10 @@ export default function AdminNav({ user }) {
 		{ href: '/admin/import', label: 'Import ACES/PIES' },
 	]
 
+	const handleLogout = () => {
+		window.location.href = '/api/auth/logout?callbackUrl=/'
+	}
+
 	return (
 		<nav className="admin-nav bg_black">
 			<div className="container">
@@ -40,12 +44,13 @@ export default function AdminNav({ user }) {
 						<span className="admin-nav-name text-white">
 							{user?.name || user?.email}
 						</span>
-						<Link
-							href="/api/auth/signout"
+						<button
+							type="button"
+							onClick={handleLogout}
 							className="tf-btn btn-primary btn-admin-logout"
 						>
 							Logout
-						</Link>
+						</button>
 					</div>
 				</div>
 			</div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
@@ -26,8 +26,8 @@ export default function UserAccountMenu() {
 		}
 	}, [showDropdown])
 
-	const handleLogout = async () => {
-		await signOut({ callbackUrl: '/' })
+	const handleLogout = () => {
+		window.location.href = '/api/auth/logout?callbackUrl=/'
 	}
 
 	if (status === 'loading') {

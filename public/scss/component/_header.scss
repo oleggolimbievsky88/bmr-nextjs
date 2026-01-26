@@ -3,7 +3,7 @@
 
 // top bar
 .tf-top-bar {
-	border-bottom: 0;
+	border-bottom: 1px solid var(--primary);
 }
 .tf-top-bar_wrap {
 	padding: 5px 15px;
@@ -205,15 +205,15 @@
 	.header-bottom {
 		.navbar-nav {
 			.nav-link {
-				padding-top: 8px;
-				padding-bottom: 8px;
+				padding-top: 3px;
+				padding-bottom: 3px;
 			}
 		}
 	}
 }
 .header-style-2 {
   .wrapper-header {
-    min-height: 60px;
+    max-height: 50px;
   }
 }
 #header {

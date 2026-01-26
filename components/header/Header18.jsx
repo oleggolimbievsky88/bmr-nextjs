@@ -37,7 +37,7 @@ export default function Header18({ showVehicleSearch = true }) {
       id="header"
       className="header-default header-style-2 header-style-4"
     >
-      <div className="main-header line bg_black">
+      <div className="main-header bg_black">
         <div className="container">
           <div className="d-flex align-items-center justify-content-between flex-wrap">
             <div className="d-flex align-items-center gap-3">
