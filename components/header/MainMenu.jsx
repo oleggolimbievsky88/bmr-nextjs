@@ -282,7 +282,7 @@ export default function MainMenu({ initialMenuData }) {
               </Link>
               {renderMegaMenu(
                 menuData.gmClassicMuscleLinks || [],
-                "gmClassicMuscle"
+                "gmClassicMuscle",
               )}
             </li>
 
