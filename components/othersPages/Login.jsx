@@ -19,6 +19,7 @@ export default function Login() {
   const [showRecover, setShowRecover] = useState(false);
   const [recoverEmail, setRecoverEmail] = useState("");
   const [recoverMessage, setRecoverMessage] = useState("");
+  const [recoverIsError, setRecoverIsError] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [showPasswordResetSuggestion, setShowPasswordResetSuggestion] =
     useState(false);
@@ -126,17 +127,20 @@ export default function Login() {
       }
 
       if (!response.ok) {
+        setRecoverIsError(true);
         setRecoverMessage(data.error || "Failed to send reset email");
         return;
       }
 
+      setRecoverIsError(false);
       setRecoverMessage(
         data.message ||
           "If an account with that email exists, a password reset link has been sent. Check your inbox!",
       );
       setRecoverEmail("");
-    } catch (error) {
-      console.error("Password reset error:", error);
+    } catch (err) {
+      console.error("Password reset error:", err);
+      setRecoverIsError(true);
       setRecoverMessage("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -147,11 +151,13 @@ export default function Login() {
     setShowRecover(true);
     setRecoverEmail(formData.email || "");
     setRecoverMessage("");
+    setError("");
   }, [formData.email]);
 
   const switchToLogin = useCallback(() => {
     setShowRecover(false);
     setRecoverMessage("");
+    setError("");
   }, []);
 
   return (
@@ -171,12 +177,7 @@ export default function Login() {
                 </p>
                 {recoverMessage && (
                   <div
-                    className={`modern-alert ${
-                      recoverMessage.includes("error") ||
-                      recoverMessage.includes("Failed")
-                        ? "alert-error"
-                        : "alert-success"
-                    }`}
+                    className={`modern-alert ${recoverIsError ? "alert-error" : "alert-success"}`}
                     role="alert"
                   >
                     {recoverMessage}
@@ -317,29 +318,14 @@ export default function Login() {
                       />
                     </button>
                   </div>
-                  <div
-                    className="modern-forgot-password"
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      switchToRecover();
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      switchToRecover();
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
+                  <div className="modern-forgot-password">
+                    <button
+                      type="button"
+                      onClick={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         switchToRecover();
-                      }
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <span
+                      }}
                       className="modern-auth-link"
                       style={{
                         background: "none",
@@ -352,7 +338,7 @@ export default function Login() {
                       }}
                     >
                       Forgot your password?
-                    </span>
+                    </button>
                   </div>
                   <button
                     type="submit"

@@ -12,6 +12,8 @@ import Link from "next/link";
  */
 export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [formData, setFormData] = useState({
@@ -113,16 +115,73 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
 
   const switchMode = () => {
     setIsRegisterMode(!isRegisterMode);
+    setIsForgotPasswordMode(false);
     setError("");
     setSuccess("");
     setFormData({ firstname: "", lastname: "", email: "", password: "" });
     setAgreeToTerms(false);
   };
 
+  const switchToForgotPassword = () => {
+    setIsForgotPasswordMode(true);
+    setIsRegisterMode(false);
+    setError("");
+    setSuccess("");
+    setForgotEmail(formData.email || "");
+  };
+
+  const switchToLoginFromForgot = () => {
+    setIsForgotPasswordMode(false);
+    setError("");
+    setSuccess("");
+    setForgotEmail("");
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || "Failed to send reset email");
+        return;
+      }
+      setSuccess(
+        data.message ||
+          "If an account with that email exists, a password reset link " +
+            "has been sent. Check your inbox!",
+      );
+      setForgotEmail("");
+    } catch (err) {
+      console.error("Forgot password error:", err);
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="checkout-auth-step">
       <div className="auth-switch mb-3">
-        {isRegisterMode ? (
+        {isForgotPasswordMode ? (
+          <span>
+            Remember your password?{" "}
+            <button
+              type="button"
+              onClick={switchToLoginFromForgot}
+              className="btn btn-link p-0 text-danger"
+            >
+              Log in
+            </button>
+          </span>
+        ) : isRegisterMode ? (
           <span>
             Already have an account?{" "}
             <button
@@ -159,7 +218,45 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
       )}
 
       <div className="checkout-form">
-        {isRegisterMode ? (
+        {isForgotPasswordMode ? (
+          <form onSubmit={handleForgotPassword}>
+            <div className="form-group">
+              <label htmlFor="auth-forgot-email">Email*</label>
+              <input
+                type="email"
+                id="auth-forgot-email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="Email"
+                required
+                disabled={isLoading}
+                autoComplete="email"
+                suppressHydrationWarning
+              />
+            </div>
+            <p className="text-muted small mb-3">
+              Enter your email and we&apos;ll send you a link to reset your
+              password.
+            </p>
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                className="btn btn-outline-secondary me-2"
+                onClick={switchToLoginFromForgot}
+                disabled={isLoading}
+              >
+                Back to Login
+              </button>
+              <button
+                type="submit"
+                className="btn btn-danger btn-lg"
+                disabled={isLoading}
+              >
+                {isLoading ? "Sending..." : "Send Reset Link"}
+              </button>
+            </div>
+          </form>
+        ) : isRegisterMode ? (
           <form onSubmit={handleRegister}>
             <div className="row">
               <div className="col-md-6">
@@ -310,12 +407,13 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
               </div>
             </div>
             <div className="form-group">
-              <Link
-                href="/login?recover=1&callbackUrl=/checkout"
-                className="text-danger small"
+              <button
+                type="button"
+                onClick={switchToForgotPassword}
+                className="btn btn-link p-0 text-danger small"
               >
                 Forgot your password?
-              </Link>
+              </button>
             </div>
             <div className="text-center mt-4">
               <button
