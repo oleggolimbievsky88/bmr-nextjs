@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -9,6 +9,7 @@ const MAX_LOGIN_ATTEMPTS = 3;
 export default function Login() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || null;
+  const recoverFromUrl = searchParams.get("recover") === "1";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,6 +23,11 @@ export default function Login() {
   const [showPasswordResetSuggestion, setShowPasswordResetSuggestion] =
     useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Show recover form when landing from /login?recover=1 (e.g. from checkout)
+  useEffect(() => {
+    if (recoverFromUrl) setShowRecover(true);
+  }, [recoverFromUrl]);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -112,16 +118,21 @@ export default function Login() {
         body: JSON.stringify({ email: recoverEmail }),
       });
 
-      const data = await response.json();
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {
+        data = {};
+      }
 
       if (!response.ok) {
         setRecoverMessage(data.error || "Failed to send reset email");
-        setIsLoading(false);
         return;
       }
 
       setRecoverMessage(
-        "If an account with that email exists, a password reset link has been sent. Check your inbox!",
+        data.message ||
+          "If an account with that email exists, a password reset link has been sent. Check your inbox!",
       );
       setRecoverEmail("");
     } catch (error) {
@@ -233,7 +244,11 @@ export default function Login() {
                       If you've forgotten your password, you can{" "}
                       <button
                         type="button"
-                        onClick={switchToRecover}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          switchToRecover();
+                        }}
                         className="modern-link"
                         style={{
                           fontWeight: 600,
@@ -302,14 +317,42 @@ export default function Login() {
                       />
                     </button>
                   </div>
-                  <div className="modern-forgot-password">
-                    <button
-                      type="button"
-                      onClick={switchToRecover}
-                      className="modern-link-btn"
+                  <div
+                    className="modern-forgot-password"
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      switchToRecover();
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      switchToRecover();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        switchToRecover();
+                      }
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span
+                      className="modern-auth-link"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        color: "#be0000",
+                        fontSize: 14,
+                      }}
                     >
                       Forgot your password?
-                    </button>
+                    </span>
                   </div>
                   <button
                     type="submit"

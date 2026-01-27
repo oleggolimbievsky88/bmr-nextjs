@@ -3,18 +3,29 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { asBlank } from "@/lib/display";
 
 function buildAddressLines(profile, type) {
   if (!profile) return [];
   const isShipping = type === "shipping";
-  const firstName = isShipping ? profile.shippingfirstname : profile.firstname;
-  const lastName = isShipping ? profile.shippinglastname : profile.lastname;
-  const address1 = isShipping ? profile.shippingaddress1 : profile.address1;
-  const address2 = isShipping ? profile.shippingaddress2 : profile.address2;
-  const city = isShipping ? profile.shippingcity : profile.city;
-  const state = isShipping ? profile.shippingstate : profile.state;
-  const zip = isShipping ? profile.shippingzip : profile.zip;
-  const country = isShipping ? profile.shippingcountry : profile.country;
+  const firstName = asBlank(
+    isShipping ? profile.shippingfirstname : profile.firstname,
+  );
+  const lastName = asBlank(
+    isShipping ? profile.shippinglastname : profile.lastname,
+  );
+  const address1 = asBlank(
+    isShipping ? profile.shippingaddress1 : profile.address1,
+  );
+  const address2 = asBlank(
+    isShipping ? profile.shippingaddress2 : profile.address2,
+  );
+  const city = asBlank(isShipping ? profile.shippingcity : profile.city);
+  const state = asBlank(isShipping ? profile.shippingstate : profile.state);
+  const zip = asBlank(isShipping ? profile.shippingzip : profile.zip);
+  const country = asBlank(
+    isShipping ? profile.shippingcountry : profile.country,
+  );
 
   const lines = [];
   const nameLine = [firstName, lastName].filter(Boolean).join(" ");
@@ -68,25 +79,25 @@ export default function AccountAddress() {
         const u = data.user;
         setProfile(u);
         setBillingForm({
-          firstname: u.firstname || "",
-          lastname: u.lastname || "",
-          address1: u.address1 || "",
-          address2: u.address2 || "",
-          city: u.city || "",
-          state: u.state || "",
-          zip: u.zip || "",
-          country: u.country || "United States",
-          phonenumber: u.phonenumber || "",
+          firstname: asBlank(u.firstname),
+          lastname: asBlank(u.lastname),
+          address1: asBlank(u.address1),
+          address2: asBlank(u.address2),
+          city: asBlank(u.city),
+          state: asBlank(u.state),
+          zip: asBlank(u.zip),
+          country: asBlank(u.country) || "United States",
+          phonenumber: asBlank(u.phonenumber),
         });
         setShippingForm({
-          shippingfirstname: u.shippingfirstname || "",
-          shippinglastname: u.shippinglastname || "",
-          shippingaddress1: u.shippingaddress1 || "",
-          shippingaddress2: u.shippingaddress2 || "",
-          shippingcity: u.shippingcity || "",
-          shippingstate: u.shippingstate || "",
-          shippingzip: u.shippingzip || "",
-          shippingcountry: u.shippingcountry || "United States",
+          shippingfirstname: asBlank(u.shippingfirstname),
+          shippinglastname: asBlank(u.shippinglastname),
+          shippingaddress1: asBlank(u.shippingaddress1),
+          shippingaddress2: asBlank(u.shippingaddress2),
+          shippingcity: asBlank(u.shippingcity),
+          shippingstate: asBlank(u.shippingstate),
+          shippingzip: asBlank(u.shippingzip),
+          shippingcountry: asBlank(u.shippingcountry) || "United States",
         });
       }
     } catch (err) {
@@ -109,25 +120,25 @@ export default function AccountAddress() {
     if (!profile) return;
     const u = profile;
     setBillingForm({
-      firstname: u.firstname || "",
-      lastname: u.lastname || "",
-      address1: u.address1 || "",
-      address2: u.address2 || "",
-      city: u.city || "",
-      state: u.state || "",
-      zip: u.zip || "",
-      country: u.country || "United States",
-      phonenumber: u.phonenumber || "",
+      firstname: asBlank(u.firstname),
+      lastname: asBlank(u.lastname),
+      address1: asBlank(u.address1),
+      address2: asBlank(u.address2),
+      city: asBlank(u.city),
+      state: asBlank(u.state),
+      zip: asBlank(u.zip),
+      country: asBlank(u.country) || "United States",
+      phonenumber: asBlank(u.phonenumber),
     });
     setShippingForm({
-      shippingfirstname: u.shippingfirstname || "",
-      shippinglastname: u.shippinglastname || "",
-      shippingaddress1: u.shippingaddress1 || "",
-      shippingaddress2: u.shippingaddress2 || "",
-      shippingcity: u.shippingcity || "",
-      shippingstate: u.shippingstate || "",
-      shippingzip: u.shippingzip || "",
-      shippingcountry: u.shippingcountry || "United States",
+      shippingfirstname: asBlank(u.shippingfirstname),
+      shippinglastname: asBlank(u.shippinglastname),
+      shippingaddress1: asBlank(u.shippingaddress1),
+      shippingaddress2: asBlank(u.shippingaddress2),
+      shippingcity: asBlank(u.shippingcity),
+      shippingstate: asBlank(u.shippingstate),
+      shippingzip: asBlank(u.shippingzip),
+      shippingcountry: asBlank(u.shippingcountry) || "United States",
     });
   }, [profile]);
 
@@ -373,9 +384,9 @@ export default function AccountAddress() {
                       No billing address saved.
                     </p>
                   )}
-                  {profile?.phonenumber && (
-                    <p className="mt-2 mb-0">{profile.phonenumber}</p>
-                  )}
+                  {asBlank(profile?.phonenumber) ? (
+                    <p className="mt-2 mb-0">{asBlank(profile.phonenumber)}</p>
+                  ) : null}
                 </>
               )}
             </div>

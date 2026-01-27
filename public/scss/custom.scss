@@ -4377,6 +4377,14 @@ body:has(.canvas-search.show) .offcanvas-backdrop {
 .modern-input-group {
 	position: relative;
 	margin-bottom: 20px;
+
+	.modern-input {
+		padding: 14px 16px 14px 48px;
+	}
+
+	&.modern-input-password .modern-input {
+		padding-right: 48px;
+	}
 }
 
 .modern-input-icon {
@@ -4392,7 +4400,7 @@ body:has(.canvas-search.show) .offcanvas-backdrop {
 
 .modern-input {
 	width: 100%;
-	padding: 0px;
+	padding: 14px 16px;
 	border: 1px solid rgba(0, 0, 0, 0.1);
 	border-radius: 12px;
 	background: white;

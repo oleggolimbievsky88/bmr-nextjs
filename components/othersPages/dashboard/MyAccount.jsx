@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { asBlank } from "@/lib/display";
 import AccountProfileForm, {
   getDefaultProfileForm,
 } from "./AccountProfileForm";
@@ -21,24 +22,24 @@ const formatDate = (dateValue) => {
 
 const createFormFromProfile = (profile) => ({
   ...getDefaultProfileForm(),
-  firstname: profile?.firstname || "",
-  lastname: profile?.lastname || "",
-  email: profile?.email || "",
-  phonenumber: profile?.phonenumber || "",
-  address1: profile?.address1 || "",
-  address2: profile?.address2 || "",
-  city: profile?.city || "",
-  state: profile?.state || "",
-  zip: profile?.zip || "",
-  country: profile?.country || "United States",
-  shippingfirstname: profile?.shippingfirstname || "",
-  shippinglastname: profile?.shippinglastname || "",
-  shippingaddress1: profile?.shippingaddress1 || "",
-  shippingaddress2: profile?.shippingaddress2 || "",
-  shippingcity: profile?.shippingcity || "",
-  shippingstate: profile?.shippingstate || "",
-  shippingzip: profile?.shippingzip || "",
-  shippingcountry: profile?.shippingcountry || "United States",
+  firstname: asBlank(profile?.firstname),
+  lastname: asBlank(profile?.lastname),
+  email: asBlank(profile?.email),
+  phonenumber: asBlank(profile?.phonenumber),
+  address1: asBlank(profile?.address1),
+  address2: asBlank(profile?.address2),
+  city: asBlank(profile?.city),
+  state: asBlank(profile?.state),
+  zip: asBlank(profile?.zip),
+  country: asBlank(profile?.country) || "United States",
+  shippingfirstname: asBlank(profile?.shippingfirstname),
+  shippinglastname: asBlank(profile?.shippinglastname),
+  shippingaddress1: asBlank(profile?.shippingaddress1),
+  shippingaddress2: asBlank(profile?.shippingaddress2),
+  shippingcity: asBlank(profile?.shippingcity),
+  shippingstate: asBlank(profile?.shippingstate),
+  shippingzip: asBlank(profile?.shippingzip),
+  shippingcountry: asBlank(profile?.shippingcountry) || "United States",
 });
 
 const buildAddressLines = (profile, type) => {
@@ -46,14 +47,24 @@ const buildAddressLines = (profile, type) => {
 
   const lines = [];
   const isShipping = type === "shipping";
-  const firstName = isShipping ? profile.shippingfirstname : profile.firstname;
-  const lastName = isShipping ? profile.shippinglastname : profile.lastname;
-  const address1 = isShipping ? profile.shippingaddress1 : profile.address1;
-  const address2 = isShipping ? profile.shippingaddress2 : profile.address2;
-  const city = isShipping ? profile.shippingcity : profile.city;
-  const state = isShipping ? profile.shippingstate : profile.state;
-  const zip = isShipping ? profile.shippingzip : profile.zip;
-  const country = isShipping ? profile.shippingcountry : profile.country;
+  const firstName = asBlank(
+    isShipping ? profile.shippingfirstname : profile.firstname,
+  );
+  const lastName = asBlank(
+    isShipping ? profile.shippinglastname : profile.lastname,
+  );
+  const address1 = asBlank(
+    isShipping ? profile.shippingaddress1 : profile.address1,
+  );
+  const address2 = asBlank(
+    isShipping ? profile.shippingaddress2 : profile.address2,
+  );
+  const city = asBlank(isShipping ? profile.shippingcity : profile.city);
+  const state = asBlank(isShipping ? profile.shippingstate : profile.state);
+  const zip = asBlank(isShipping ? profile.shippingzip : profile.zip);
+  const country = asBlank(
+    isShipping ? profile.shippingcountry : profile.country,
+  );
 
   const nameLine = [firstName, lastName].filter(Boolean).join(" ");
   if (nameLine) lines.push(nameLine);
@@ -368,16 +379,18 @@ export default function MyAccount() {
               <li>
                 <span>Name</span>
                 <strong>
-                  {profile?.firstname} {profile?.lastname}
+                  {[asBlank(profile?.firstname), asBlank(profile?.lastname)]
+                    .filter(Boolean)
+                    .join(" ") || "\u2014"}
                 </strong>
               </li>
               <li>
                 <span>Email</span>
-                <strong>{profile?.email || userEmail}</strong>
+                <strong>{asBlank(profile?.email) || userEmail}</strong>
               </li>
               <li>
                 <span>Phone</span>
-                <strong>{profile?.phonenumber || "Not set"}</strong>
+                <strong>{asBlank(profile?.phonenumber) || "—"}</strong>
               </li>
             </ul>
           </div>
