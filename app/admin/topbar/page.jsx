@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from "react";
 
+const DEFAULT_DURATION_SEC = 3;
+
+function toSeconds(ms) {
+  if (ms == null || !Number.isFinite(ms)) return DEFAULT_DURATION_SEC;
+  return Math.max(1, Math.min(60, Math.round(ms / 1000)));
+}
+
 export default function AdminTopbarPage() {
-  const [messages, setMessages] = useState([{ content: "" }]);
+  const [messages, setMessages] = useState([
+    { content: "", duration: DEFAULT_DURATION_SEC, is_active: true },
+  ]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -21,28 +30,43 @@ export default function AdminTopbarPage() {
       if (!res.ok) throw new Error(data.error || "Failed to load");
       const list =
         data.messages && data.messages.length > 0
-          ? data.messages.map((m) => ({ content: m.content || "" }))
-          : [{ content: "" }];
+          ? data.messages.map((m) => ({
+              content: m.content || "",
+              duration: toSeconds(m.duration),
+              is_active: m.is_active !== false && m.is_active !== 0,
+            }))
+          : [
+              {
+                content: "",
+                duration: DEFAULT_DURATION_SEC,
+                is_active: true,
+              },
+            ];
       setMessages(list);
       setError("");
     } catch (err) {
       setError(err.message);
-      setMessages([{ content: "" }]);
+      setMessages([
+        { content: "", duration: DEFAULT_DURATION_SEC, is_active: true },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (index, value) => {
+  const handleChange = (index, field, value) => {
     setMessages((prev) => {
       const next = [...prev];
-      next[index] = { content: value };
+      next[index] = { ...next[index], [field]: value };
       return next;
     });
   };
 
   const handleAdd = () => {
-    setMessages((prev) => [...prev, { content: "" }]);
+    setMessages((prev) => [
+      ...prev,
+      { content: "", duration: DEFAULT_DURATION_SEC, is_active: true },
+    ]);
   };
 
   const handleRemove = (index) => {
@@ -60,13 +84,17 @@ export default function AdminTopbarPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: messages.map((m) => ({ content: m.content })),
+          messages: messages.map((m) => ({
+            content: m.content,
+            duration: Math.max(1, Math.min(60, Number(m.duration) || 3)),
+            is_active: m.is_active !== false,
+          })),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save");
       setSuccess(
-        "Topbar messages saved. The scrolling text will update on the site.",
+        "Topbar saved. The scrolling strip will update across the site.",
       );
     } catch (err) {
       setError(err.message);
@@ -77,67 +105,144 @@ export default function AdminTopbarPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-5">
+      <div className="topbar-admin-loading">
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
-        <p className="mt-3 mb-0">Loading topbar messages...</p>
+        <p className="mt-3 mb-0 text-muted">Loading topbar messages…</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="admin-page-header">
-        <h1 className="admin-page-title">Topbar Scrolling Text</h1>
+    <div className="topbar-admin-page">
+      <div className="topbar-admin-header">
+        <span>
+          <span className="topbar-admin-header-icon">
+            <i className="bi bi-megaphone-fill" aria-hidden />
+          </span>
+          <span className="topbar-admin-title">Topbar Announcements</span>
+        </span>
+        <div>
+          <p className="topbar-admin-desc">
+            Control the scrolling text in the strip above the main navigation.
+            You can use HTML like{" "}
+            <code>&lt;a href=&quot;/path&quot;&gt;link&lt;/a&gt;</code>,{" "}
+            <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>,{" "}
+            <code>&lt;br&gt;</code>.
+          </p>
+        </div>
       </div>
 
-      <p className="text-muted mb-3">
-        Edit the scrolling announcement text in the top bar. You can use HTML
-        such as <code>&lt;a href=&quot;/path&quot;&gt;link&lt;/a&gt;</code>,{" "}
-        <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>,{" "}
-        <code>&lt;br&gt;</code>. Each block is one slide in the carousel.
-      </p>
-
-      {error && <div className="admin-alert-error">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
+      {error && (
+        <div
+          className="alert alert-danger d-flex align-items-center"
+          role="alert"
+        >
+          <i className="bi bi-exclamation-triangle-fill me-2" />
+          {error}
+        </div>
+      )}
+      {success && (
+        <div
+          className="alert alert-success d-flex align-items-center"
+          role="alert"
+        >
+          <i className="bi bi-check-circle-fill me-2" />
+          {success}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
-        <div className="admin-card mb-4">
+        <div className="topbar-admin-list">
           {messages.map((m, i) => (
-            <div key={i} className="mb-4">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <label className="form-label mb-0 fw-6">Message {i + 1}</label>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(i)}
-                  disabled={messages.length <= 1}
-                  className="btn btn-outline-danger btn-sm"
-                >
-                  Remove
-                </button>
+            <article key={i} className="topbar-message-card">
+              <div className="topbar-message-card-head">
+                <span className="topbar-message-card-badge">
+                  Message {i + 1}
+                </span>
+                <div className="topbar-message-card-meta">
+                  <label className="topbar-duration-label">
+                    <span className="d-none d-sm-inline">Display</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={60}
+                      value={m.duration}
+                      onChange={(e) =>
+                        handleChange(i, "duration", e.target.value)
+                      }
+                      className="form-control form-control-sm topbar-duration-input"
+                    />
+                    <span>sec</span>
+                  </label>
+                  <div className="form-check form-switch topbar-active-switch">
+                    <input
+                      type="checkbox"
+                      id={`active-${i}`}
+                      checked={m.is_active !== false}
+                      onChange={(e) =>
+                        handleChange(i, "is_active", e.target.checked)
+                      }
+                      className="form-check-input"
+                    />
+                    <label className="form-check-label" htmlFor={`active-${i}`}>
+                      Active
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(i)}
+                    disabled={messages.length <= 1}
+                    className="btn btn-sm btn-outline-danger topbar-remove-btn"
+                    title="Remove message"
+                  >
+                    <i className="bi bi-trash" aria-hidden />
+                  </button>
+                </div>
               </div>
               <textarea
                 value={m.content}
-                onChange={(e) => handleChange(i, e.target.value)}
-                className="form-control font-monospace"
-                rows={3}
-                placeholder='e.g. FREE SHIPPING! Or: Sale now — &lt;a href="/products/2024-mustang/suspension"&gt;Shop here&lt;/a&gt;'
+                onChange={(e) => handleChange(i, "content", e.target.value)}
+                className="form-control topbar-content-input"
+                rows={2}
+                placeholder='e.g. FREE SHIPPING! Or: Sale — <a href="/products/2024-mustang/suspension">Shop here</a>'
               />
-            </div>
+            </article>
           ))}
+        </div>
+
+        <div className="topbar-admin-actions">
           <button
             type="button"
             onClick={handleAdd}
-            className="btn btn-outline-secondary mb-3"
+            className="btn btn-outline-primary topbar-add-btn"
           >
-            + Add another message
+            <i className="bi bi-plus-lg me-1" aria-hidden />
+            Add message
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="btn btn-primary topbar-save-btn"
+          >
+            {saving ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-1"
+                  role="status"
+                  aria-hidden
+                />
+                Saving…
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check2 me-1" aria-hidden />
+                Save topbar
+              </>
+            )}
           </button>
         </div>
-
-        <button type="submit" disabled={saving} className="admin-btn-primary">
-          {saving ? "Saving..." : "Save topbar messages"}
-        </button>
       </form>
     </div>
   );

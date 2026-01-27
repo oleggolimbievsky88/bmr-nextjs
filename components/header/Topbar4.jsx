@@ -8,22 +8,40 @@ import TopbarUserMenu from "./TopbarUserMenu";
 import ViewToggle from "../common/ViewToggle";
 
 const DEFAULT_MESSAGE = "FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!";
+const DEFAULT_DURATION = 3000;
 
 export default function Topbar4() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    fetch("/api/topbar-messages")
+    fetch("/api/topbar-messages", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        const list = data.messages || [];
-        setMessages(list.filter((m) => m.content && String(m.content).trim()));
+        const list = Array.isArray(data.messages) ? data.messages : [];
+        setMessages(
+          list.filter(
+            (m) => m && m.content != null && String(m.content).trim() !== "",
+          ),
+        );
       })
       .catch(() => setMessages([]));
   }, []);
 
   const slides =
-    messages.length > 0 ? messages : [{ content: DEFAULT_MESSAGE }];
+    messages.length > 0
+      ? messages
+      : [{ content: DEFAULT_MESSAGE, duration: DEFAULT_DURATION }];
+  const getDelay = (i) =>
+    Math.max(1000, Number(slides[i]?.duration) || DEFAULT_DURATION);
+
+  const onSlideChange = (swiper) => {
+    const d = getDelay(swiper.realIndex);
+    if (swiper.params.autoplay && swiper.autoplay) {
+      swiper.params.autoplay.delay = d;
+      swiper.autoplay.stop();
+      swiper.autoplay.start();
+    }
+  };
 
   return (
     <div className="tf-top-bar text-white bg_black">
@@ -50,11 +68,13 @@ export default function Topbar4() {
             </div>
             <div className="text-center overflow-hidden">
               <Swiper
+                key={slides.length}
                 className="swiper tf-sw-top_bar"
                 slidesPerView={1}
                 modules={[Autoplay]}
                 speed={1000}
-                autoplay={{ delay: 2000 }}
+                autoplay={{ delay: getDelay(0) }}
+                onSlideChangeTransitionEnd={onSlideChange}
                 loop
               >
                 {slides.map((m, i) => (

@@ -49,10 +49,6 @@ export default function Footer1({ bgColor = "background-black" }) {
                       </p>
                     </li>
                   </ul>
-                  <Link href={`/contact-1`} className="tf-btn btn-line">
-                    Get direction
-                    <i className="icon icon-arrow1-top-left" />
-                  </Link>
                   <ul className="tf-social-icon d-flex gap-10 style-white">
                     <li>
                       <a

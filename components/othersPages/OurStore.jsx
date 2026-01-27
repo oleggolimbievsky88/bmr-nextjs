@@ -88,15 +88,6 @@ export default function OurStore() {
                   </li>
                 </ul>
               </div>
-              <div>
-                <Link
-                  href={`/contact-2`}
-                  className="tf-btn btn-outline-dark radius-3"
-                >
-                  <span>Get Directions</span>
-                  <i className="icon icon-arrow-right" />
-                </Link>
-              </div>
             </div>
           </div>
         </div>
@@ -190,15 +181,6 @@ export default function OurStore() {
                     </a>
                   </li>
                 </ul>
-              </div>
-              <div>
-                <Link
-                  href={`/contact-1`}
-                  className="tf-btn btn-outline-dark radius-3"
-                >
-                  <span>Get Directions</span>
-                  <i className="icon icon-arrow-right" />
-                </Link>
               </div>
             </div>
             <div className="tf-ourstore-img">
@@ -313,15 +295,6 @@ export default function OurStore() {
                     </a>
                   </li>
                 </ul>
-              </div>
-              <div>
-                <Link
-                  href={`/contact-2`}
-                  className="tf-btn btn-outline-dark radius-3"
-                >
-                  <span>Get Directions</span>
-                  <i className="icon icon-arrow-right" />
-                </Link>
               </div>
             </div>
           </div>

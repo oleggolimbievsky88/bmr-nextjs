@@ -25,7 +25,7 @@ export async function GET() {
     if (!session || session.user?.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const messages = await getTopbarMessages();
+    const messages = await getTopbarMessages({ activeOnly: false });
     return NextResponse.json({ success: true, messages });
   } catch (error) {
     console.error("Error fetching topbar messages:", error);
@@ -52,9 +52,18 @@ export async function PUT(request) {
       );
     }
 
-    const messages = raw.map((m) => ({
-      content: sanitizeTopbarHtml(m.content || ""),
-    }));
+    const messages = raw.map((m) => {
+      const sec = Number(m.duration);
+      const durationMs =
+        Number.isFinite(sec) && sec >= 1 && sec <= 60
+          ? Math.round(sec * 1000)
+          : 3000;
+      return {
+        content: sanitizeTopbarHtml(m.content || ""),
+        duration: durationMs,
+        is_active: m.is_active !== false && m.is_active !== 0,
+      };
+    });
 
     await saveTopbarMessages(messages);
     return NextResponse.json({

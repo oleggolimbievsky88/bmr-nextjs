@@ -44,17 +44,36 @@ async function run() {
         id int unsigned NOT NULL AUTO_INCREMENT,
         content text NOT NULL,
         sort_order int unsigned NOT NULL DEFAULT 0,
+        duration int unsigned NOT NULL DEFAULT 3000,
+        is_active tinyint(1) NOT NULL DEFAULT 1,
         PRIMARY KEY (id),
         KEY sort_order (sort_order)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `);
     console.log("Table topbar_messages created or already exists.");
 
+    try {
+      await pool.query(
+        "ALTER TABLE topbar_messages ADD COLUMN duration int unsigned NOT NULL DEFAULT 3000",
+      );
+      console.log("Added column: duration");
+    } catch (e) {
+      if (e.code !== "ER_DUP_FIELDNAME") throw e;
+    }
+    try {
+      await pool.query(
+        "ALTER TABLE topbar_messages ADD COLUMN is_active tinyint(1) NOT NULL DEFAULT 1",
+      );
+      console.log("Added column: is_active");
+    } catch (e) {
+      if (e.code !== "ER_DUP_FIELDNAME") throw e;
+    }
+
     const [rows] = await pool.query("SELECT 1 FROM topbar_messages LIMIT 1");
     if (!rows.length) {
       await pool.query(
-        "INSERT INTO topbar_messages (content, sort_order) VALUES (?, ?)",
-        ["FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!", 0],
+        "INSERT INTO topbar_messages (content, sort_order, duration, is_active) VALUES (?, ?, ?, ?)",
+        ["FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!", 0, 3000, 1],
       );
       console.log("Seeded default topbar message.");
     } else {
