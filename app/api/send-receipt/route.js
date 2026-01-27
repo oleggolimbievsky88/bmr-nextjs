@@ -8,7 +8,7 @@ export async function POST(request) {
     if (!email || !orderId || !orderData) {
       return NextResponse.json(
         { message: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request) {
             "Email service not configured. Please set SMTP environment variables.",
           error: "SMTP configuration missing",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(request) {
             "Email service configuration error. Please check your SMTP settings.",
           error: verifyError.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -96,7 +96,7 @@ export async function POST(request) {
         message: "Failed to send receipt",
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -143,12 +143,10 @@ function generateReceiptHTML(orderData) {
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.VERCEL_URL ||
-    "https://bmrsuspension.com"
-  const siteOrigin = /^https?:/.test(baseUrl)
-    ? baseUrl
-    : `https://${baseUrl}`
-  const base = siteOrigin.replace(/\/$/, "")
-  const logoUrl = `${base}/images/logo/logo-white.png`
+    "https://bmrsuspension.com";
+  const siteOrigin = /^https?:/.test(baseUrl) ? baseUrl : `https://${baseUrl}`;
+  const base = siteOrigin.replace(/\/$/, "");
+  const logoUrl = `${base}/images/logo/logo-white.png`;
 
   return `
     <!DOCTYPE html>
@@ -442,8 +440,8 @@ function generateReceiptHTML(orderData) {
                   <h5>Billing Information</h5>
                   <address>
                     ${orderData.billing.firstName} ${
-    orderData.billing.lastName
-  }<br>
+                      orderData.billing.lastName
+                    }<br>
                     ${orderData.billing.address1}<br>
                     ${
                       orderData.billing.address2
@@ -451,8 +449,8 @@ function generateReceiptHTML(orderData) {
                         : ""
                     }
                     ${orderData.billing.city}, ${orderData.billing.state} ${
-    orderData.billing.zip
-  }<br>
+                      orderData.billing.zip
+                    }<br>
                     ${orderData.billing.country}
                   </address>
                 </div>
@@ -460,8 +458,8 @@ function generateReceiptHTML(orderData) {
                   <h5>Shipping Information</h5>
                   <address>
                     ${orderData.shipping.firstName} ${
-    orderData.shipping.lastName
-  }<br>
+                      orderData.shipping.lastName
+                    }<br>
                     ${orderData.shipping.address1}<br>
                     ${
                       orderData.shipping.address2
@@ -469,8 +467,8 @@ function generateReceiptHTML(orderData) {
                         : ""
                     }
                     ${orderData.shipping.city}, ${orderData.shipping.state} ${
-    orderData.shipping.zip
-  }<br>
+                      orderData.shipping.zip
+                    }<br>
                     ${orderData.shipping.country}
                   </address>
                 </div>
@@ -541,18 +539,18 @@ function generateReceiptHTML(orderData) {
                       }</code></td>
                       <td>
                         <span class="color-badge ${getEmailColorClass(
-                          item.color
+                          item.color,
                         )}">${item.color || "N/A"}</span>
                       </td>
                       <td>${item.quantity}</td>
                       <td class="text-end">$${parseFloat(item.price).toFixed(
-                        2
+                        2,
                       )}</td>
                       <td class="text-end" style="font-weight: bold;">$${(
                         parseFloat(item.price) * item.quantity
                       ).toFixed(2)}</td>
                     </tr>
-                  `
+                  `,
                     )
                     .join("")}
                 </tbody>
@@ -581,7 +579,7 @@ function generateReceiptHTML(orderData) {
                 <div class="total-row">
                   <span>Shipping:</span>
                   <span>$${parseFloat(orderData.shippingCost || 0).toFixed(
-                    2
+                    2,
                   )}</span>
                 </div>
                 <div class="total-row">

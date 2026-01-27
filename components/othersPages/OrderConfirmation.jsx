@@ -419,7 +419,7 @@ export default function OrderConfirmation({ orderData }) {
                         <td>
                           <span
                             className={`color-badge ${getColorClass(
-                              item.color
+                              item.color,
                             )}`}
                           >
                             {item.color}
@@ -528,7 +528,7 @@ export default function OrderConfirmation({ orderData }) {
                     className="btn btn-outline-primary btn-sm me-2"
                     onClick={() => {
                       const emailForm = document.querySelector(
-                        ".email-receipt-form"
+                        ".email-receipt-form",
                       );
                       if (emailForm) {
                         emailForm.style.display =

@@ -46,9 +46,11 @@ export default function UserAccountMenu() {
     );
   }
 
-  // User is logged in - link to dashboard, dropdown for Orders/Logout
-  const dashboardLink =
-    session.user?.role === "admin" ? "/admin" : "/my-account";
+  // User is logged in - link to dashboard, dropdown with Dashboard/Orders/Addresses|Products/Logout
+  const isAdmin = session.user?.role === "admin";
+  const dashboardLink = isAdmin ? "/admin" : "/my-account";
+
+  const closeDropdown = () => setShowDropdown(false);
 
   return (
     <li
@@ -84,7 +86,7 @@ export default function UserAccountMenu() {
       </div>
       {showDropdown && (
         <div
-          className="dropdown-menu show"
+          className="dropdown-menu user-account-dropdown show"
           style={{
             position: "absolute",
             right: 0,
@@ -98,46 +100,45 @@ export default function UserAccountMenu() {
             zIndex: 1000,
           }}
         >
-          {session.user?.role === "admin" && (
+          <Link
+            href={dashboardLink}
+            className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-decoration-none"
+            onClick={closeDropdown}
+          >
+            <i className="icon icon-home" style={{ fontSize: "16px" }} />
+            <span>Dashboard</span>
+          </Link>
+          <Link
+            href={isAdmin ? "/admin/orders" : "/my-account-orders"}
+            className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-decoration-none"
+            onClick={closeDropdown}
+          >
+            <i className="icon icon-bag" style={{ fontSize: "16px" }} />
+            <span>Orders</span>
+          </Link>
+          {isAdmin ? (
             <Link
-              href="/admin/orders"
+              href="/admin/products"
               className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-decoration-none"
-              style={{
-                color: "#333",
-                borderBottom: "1px solid #eee",
-                backgroundColor: "transparent",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#f8f9fa";
-                e.currentTarget.style.color = "#333";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "#333";
-              }}
-              onClick={() => setShowDropdown(false)}
+              onClick={closeDropdown}
             >
-              <i className="icon icon-bag" style={{ fontSize: "16px" }} />
-              <span>Orders</span>
+              <i className="icon icon-grid" style={{ fontSize: "16px" }} />
+              <span>Products</span>
+            </Link>
+          ) : (
+            <Link
+              href="/my-account-address"
+              className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-decoration-none"
+              onClick={closeDropdown}
+            >
+              <i className="icon icon-place" style={{ fontSize: "16px" }} />
+              <span>Addresses</span>
             </Link>
           )}
           <button
             type="button"
             onClick={handleLogout}
-            className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 border-0 bg-transparent w-100 text-start"
-            style={{
-              color: "#dc3545",
-              cursor: "pointer",
-              backgroundColor: "transparent",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#fff5f5";
-              e.currentTarget.style.color = "#dc3545";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#dc3545";
-            }}
+            className="dropdown-item dropdown-item-logout d-flex align-items-center gap-2 px-3 py-2 border-0 bg-transparent w-100 text-start"
           >
             <i className="icon icon-logout" style={{ fontSize: "16px" }} />
             <span>Logout</span>

@@ -1018,3 +1018,51 @@ header {
     }
   }
 }
+
+// User account dropdown: override global .dropdown-menu .dropdown-item (white on white)
+// so text is visible on light background. Applies to main nav and top bar.
+// Force fully opaque white panel so dark text stays readable over dark header.
+// Override .top-bar-language .dropdown-menu { inset: 0 } so this menu positions correctly.
+// Use explicit top/right so the menu opens below the trigger (not above/off-screen).
+// Scoped to avoid affecting mega-menu.
+#header .nav-account .user-account-dropdown.dropdown-menu,
+.tf-top-bar .user-account-dropdown.dropdown-menu {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22) !important;
+  z-index: 9999 !important;
+  top: 100% !important;
+  right: 0 !important;
+  bottom: auto !important;
+  left: auto !important;
+  margin-top: 4px !important;
+
+  .dropdown-item {
+    color: #212529 !important;
+    margin: 0;
+    font-family: inherit;
+
+    &:hover {
+      background-color: #f8f9fa !important;
+      color: #212529 !important;
+    }
+
+    &.dropdown-item-logout {
+      color: #dc3545 !important;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #fff5f5 !important;
+        color: #b02a37 !important;
+      }
+    }
+  }
+
+  a.dropdown-item {
+    border-bottom: 1px solid #eee;
+  }
+}
