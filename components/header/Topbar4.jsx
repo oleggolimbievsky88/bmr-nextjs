@@ -1,11 +1,30 @@
-'use client'
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import LanguageSelect from "../common/LanguageSelect";
-import CurrencySelect from "../common/CurrencySelect";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
 import TopbarUserMenu from "./TopbarUserMenu";
 import ViewToggle from "../common/ViewToggle";
+
+const DEFAULT_MESSAGE = "FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!";
+
 export default function Topbar4() {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/topbar-messages")
+      .then((res) => res.json())
+      .then((data) => {
+        const list = data.messages || [];
+        setMessages(list.filter((m) => m.content && String(m.content).trim()));
+      })
+      .catch(() => setMessages([]));
+  }, []);
+
+  const slides =
+    messages.length > 0 ? messages : [{ content: DEFAULT_MESSAGE }];
+
   return (
     <div className="tf-top-bar text-white bg_black">
       <div className="px_15 lg-px_40">
@@ -30,25 +49,26 @@ export default function Topbar4() {
               </div>
             </div>
             <div className="text-center overflow-hidden">
-              <div
+              <Swiper
                 className="swiper tf-sw-top_bar"
-                data-preview={1}
-                data-space={0}
-                data-loop="true"
-                data-speed={1000}
-                data-delay={2000}
+                slidesPerView={1}
+                modules={[Autoplay]}
+                speed={1000}
+                autoplay={{ delay: 2000 }}
+                loop
               >
-                <div className="swiper-wrapper">
-                  <div className="swiper-slide">
+                {slides.map((m, i) => (
+                  <SwiperSlide key={i} className="swiper-slide">
                     <p
                       className="top-bar-text fw-5"
                       style={{ letterSpacing: "0px" }}
-                    >
-                      FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!
-                    </p>
-                  </div>
-                </div>
-              </div>
+                      dangerouslySetInnerHTML={{
+                        __html: m.content || DEFAULT_MESSAGE,
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
             <div className="top-bar-language tf-cur justify-content-end">
               <ul className="d-flex gap-20">

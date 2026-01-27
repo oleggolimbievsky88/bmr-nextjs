@@ -9,6 +9,13 @@
 	padding: 5px 15px;
 }
 .top-bar-text {
+  a {
+    color: inherit;
+    text-decoration: underline;
+    &:hover {
+      opacity: 0.9;
+    }
+  }
   .tf-btn {
     padding-bottom: 0;
     color: var(--primary);
