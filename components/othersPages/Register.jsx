@@ -42,6 +42,12 @@ export default function Register() {
 			const data = await response.json()
 
 			if (!response.ok) {
+				// Check if email already exists
+				if (data.error && data.error.toLowerCase().includes("email")) {
+					setError("An account with this email already exists.")
+					setIsLoading(false)
+					return
+				}
 				setError(data.error || "Registration failed")
 				setIsLoading(false)
 				return
@@ -98,6 +104,13 @@ export default function Register() {
 							style={{ color: "#dc3545" }}
 						>
 							{error}
+							{error.toLowerCase().includes("already exists") && (
+								<p style={{ margin: "8px 0 0" }}>
+									<Link href="/login" style={{ color: "#dc3545", fontWeight: 600 }}>
+										Click here to log in instead
+									</Link>
+								</p>
+							)}
 						</div>
 					)}
 

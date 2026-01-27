@@ -7,6 +7,7 @@ import {
   createOrderItems,
   recordCouponUsage,
 } from "@/lib/queries";
+import { getTaxAmount } from "@/lib/tax";
 
 export async function POST(request) {
   let orderData = null;
@@ -16,7 +17,7 @@ export async function POST(request) {
     if (!process.env.MYSQL_HOST) {
       return NextResponse.json(
         { success: false, message: "Database configuration missing" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -37,12 +38,17 @@ export async function POST(request) {
           message: "Invalid request data",
           error: "Failed to parse request body",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate required fields
-    if (!orderData.billing || !orderData.shipping || !orderData.items || orderData.items.length === 0) {
+    if (
+      !orderData.billing ||
+      !orderData.shipping ||
+      !orderData.items ||
+      orderData.items.length === 0
+    ) {
       console.error("Missing required fields:", {
         hasBilling: !!orderData.billing,
         hasShipping: !!orderData.shipping,
@@ -55,7 +61,7 @@ export async function POST(request) {
           message: "Missing required order data",
           error: "Billing, shipping, and items are required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -76,7 +82,7 @@ export async function POST(request) {
           message: "Missing required billing information",
           error: "All billing fields are required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -85,17 +91,21 @@ export async function POST(request) {
     const orderNumber = `BMR-${orderNumberValue}`;
     // Format date for MySQL datetime column (YYYY-MM-DD HH:MM:SS)
     const now = new Date();
-    const orderDate = now.toISOString().slice(0, 19).replace('T', ' ');
+    const orderDate = now.toISOString().slice(0, 19).replace("T", " ");
 
-    // Calculate totals
+    // Calculate totals: 7% tax outside Florida, 0% in Florida (by shipping state)
     const subtotal = orderData.items.reduce((total, item) => {
       return total + parseFloat(item.price || 0) * (item.quantity || 1);
     }, 0);
 
+    const shippingState =
+      orderData.shipping?.state || orderData.billing?.state || "";
+    const tax = getTaxAmount(subtotal, orderData.discount || 0, shippingState);
+
     const total =
       subtotal +
       parseFloat(orderData.shippingCost || 0) +
-      parseFloat(orderData.tax || 0) -
+      tax -
       parseFloat(orderData.discount || 0);
 
     console.log("Creating order:", {
@@ -118,6 +128,7 @@ export async function POST(request) {
         orderDate,
         subtotal,
         total,
+        tax,
       });
     } catch (createError) {
       console.error("Error in createOrder function:", {
@@ -145,7 +156,7 @@ export async function POST(request) {
           orderData.customerId || null,
           orderId, // Using new_order_id as the order_id for coupon_usage
           orderData.discount,
-          orderData.subtotal
+          orderData.subtotal,
         );
         console.log("Coupon usage recorded successfully:", {
           couponId: orderData.couponId,
@@ -167,6 +178,7 @@ export async function POST(request) {
         orderData,
         subtotal,
         total,
+        tax,
         notes: orderData.notes || "",
       });
     } catch (emailError) {
@@ -212,7 +224,7 @@ export async function POST(request) {
             stack: error.stack,
           }),
         },
-        { status: 500 }
+        { status: 500 },
       );
     } catch (jsonError) {
       // Fallback if JSON serialization fails
@@ -226,12 +238,11 @@ export async function POST(request) {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
   }
 }
-
 
 async function sendConfirmationEmail(emailData) {
   try {
@@ -284,7 +295,7 @@ async function sendConfirmationEmail(emailData) {
               <h3>Order Details</h3>
               <p><strong>Order Number:</strong> ${emailData.orderNumber}</p>
               <p><strong>Order Date:</strong> ${new Date(
-                emailData.orderDate
+                emailData.orderDate,
               ).toLocaleDateString()}</p>
 
               <h4>Items Ordered:</h4>
@@ -295,36 +306,36 @@ async function sendConfirmationEmail(emailData) {
                   <strong>${item.name}</strong><br>
                   Part #: ${item.partNumber} | Color: ${item.color || "N/A"}<br>
                   Quantity: ${item.quantity} | Price: $${parseFloat(
-                    item.price
+                    item.price,
                   ).toFixed(2)}<br>
                   Total: $${(parseFloat(item.price) * item.quantity).toFixed(2)}
                 </div>
-              `
+              `,
                 )
                 .join("")}
 
               <div class="totals">
                 <p><strong>Subtotal:</strong> $${emailData.subtotal.toFixed(
-                  2
+                  2,
                 )}</p>
                 ${
                   emailData.orderData.shippingCost > 0
                     ? `<p><strong>Shipping:</strong> $${parseFloat(
-                        emailData.orderData.shippingCost
+                        emailData.orderData.shippingCost,
                       ).toFixed(2)}</p>`
                     : ""
                 }
                 ${
-                  emailData.orderData.tax > 0
+                  (emailData.tax ?? emailData.orderData?.tax ?? 0) > 0
                     ? `<p><strong>Tax:</strong> $${parseFloat(
-                        emailData.orderData.tax
+                        emailData.tax ?? emailData.orderData?.tax ?? 0,
                       ).toFixed(2)}</p>`
                     : ""
                 }
                 ${
                   emailData.orderData.discount > 0
                     ? `<p><strong>Discount:</strong> -$${parseFloat(
-                        emailData.orderData.discount
+                        emailData.orderData.discount,
                       ).toFixed(2)}</p>`
                     : ""
                 }

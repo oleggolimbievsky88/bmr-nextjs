@@ -314,8 +314,9 @@
   // Override for mobile - make logo much larger
   @media (max-width: 767px) {
     .logo-header img {
-      max-width: 100% !important;
-      
+      height: 30px !important;
+
+
     }
   }
   .canvas-mb {

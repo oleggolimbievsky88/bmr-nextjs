@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { updateOrderStatus, getOrderWithItemsAdmin } from '@/lib/queries'
+import { redactOrderCcToken } from '@/lib/ccEncryption'
 
 export async function GET(request, { params }) {
 	try {
@@ -27,6 +28,7 @@ export async function GET(request, { params }) {
 			)
 		}
 
+		redactOrderCcToken(order, { forAdmin: true })
 		return NextResponse.json({ success: true, order })
 	} catch (error) {
 		console.error('Error fetching order:', error)

@@ -196,11 +196,6 @@
 // Header divider lines (homepage uses `Header18` with `.line` on black backgrounds).
 // Keep these dividers subtle (dark grey) and 1px, without changing `.line` globally.
 #header {
-	.main-header.line,
-	.header-bottom.line {
-		border-bottom: 1px solid #2f2f2f;
-	}
-
 	// Reduce height of the main menu row (Header18/MainMenu uses Bootstrap `.nav-link`).
 	.header-bottom {
 		.navbar-nav {
@@ -328,9 +323,6 @@
   margin-bottom: -64px;
   background-color: transparent;
   z-index: 999;
-}
-.logo-header img {
-  width: 110px;
 }
 .box-nav-ul {
   .menu-item {

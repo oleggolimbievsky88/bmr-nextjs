@@ -69,7 +69,7 @@ export default function Header18({ showVehicleSearch = true }) {
                   height={100}
                   style={{
                     width: "auto",
-                    height: "35px",
+                    height: "55px",
                     objectFit: "contain",
                   }}
                   priority

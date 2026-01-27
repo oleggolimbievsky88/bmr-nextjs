@@ -14,6 +14,7 @@ import { useCreditCard } from "@/hooks/useCreditCard";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 import ShippingEstimate from "@/components/common/ShippingEstimate";
 import CheckoutAuthStep from "@/components/othersPages/CheckoutAuthStep";
+import { getTaxAmount } from "@/lib/tax";
 
 export default function Checkout() {
   const router = useRouter();
@@ -125,12 +126,13 @@ export default function Checkout() {
   // Calculate if we should show account step: user is not logged in AND hasn't completed account step
   // Check session more explicitly - NextAuth might return empty object
   const hasSession = session && session.user && session.user.email;
-  const showAccountStep = status !== "loading" && !hasSession && !accountStepCompleted;
+  const showAccountStep =
+    status !== "loading" && !hasSession && !accountStepCompleted;
 
   // Sync active step with auth: show account step when unauthenticated and not yet completed
   useEffect(() => {
     if (status === "loading") return;
-    
+
     const hasSession = session && session.user && session.user.email;
     if (hasSession) {
       // User is logged in - skip account step
@@ -148,7 +150,12 @@ export default function Checkout() {
 
   // Helper function to clean database values (treat "0" as empty)
   const cleanValue = useCallback((value) => {
-    if (!value || value === "0" || value === 0 || (typeof value === "string" && value.trim() === "")) {
+    if (
+      !value ||
+      value === "0" ||
+      value === 0 ||
+      (typeof value === "string" && value.trim() === "")
+    ) {
       return "";
     }
     return value;
@@ -176,7 +183,9 @@ export default function Checkout() {
       hasPrefilledRef.current = true;
       const prefillProfile = async () => {
         try {
-          const res = await fetch("/api/auth/my-profile", { cache: "no-store" });
+          const res = await fetch("/api/auth/my-profile", {
+            cache: "no-store",
+          });
           const data = await res.json();
           if (res.ok && data?.user) {
             const u = data.user;
@@ -194,14 +203,21 @@ export default function Checkout() {
             });
             if (sameAsBilling) {
               setShippingData({
-                firstName: cleanValue(u.shippingfirstname) || cleanValue(u.firstname),
-                lastName: cleanValue(u.shippinglastname) || cleanValue(u.lastname),
-                address1: cleanValue(u.shippingaddress1) || cleanValue(u.address1),
-                address2: cleanValue(u.shippingaddress2) || cleanValue(u.address2),
+                firstName:
+                  cleanValue(u.shippingfirstname) || cleanValue(u.firstname),
+                lastName:
+                  cleanValue(u.shippinglastname) || cleanValue(u.lastname),
+                address1:
+                  cleanValue(u.shippingaddress1) || cleanValue(u.address1),
+                address2:
+                  cleanValue(u.shippingaddress2) || cleanValue(u.address2),
                 city: cleanValue(u.shippingcity) || cleanValue(u.city),
                 state: cleanValue(u.shippingstate) || cleanValue(u.state),
                 zip: cleanValue(u.shippingzip) || cleanValue(u.zip),
-                country: cleanValue(u.shippingcountry) || cleanValue(u.country) || "United States",
+                country:
+                  cleanValue(u.shippingcountry) ||
+                  cleanValue(u.country) ||
+                  "United States",
                 phone: cleanValue(u.phonenumber),
                 email: cleanValue(u.email),
               });
@@ -213,7 +229,16 @@ export default function Checkout() {
       };
       prefillProfile();
     }
-  }, [status, session, billingData.firstName, billingData.lastName, billingData.email, billingData.address1, sameAsBilling, cleanValue]);
+  }, [
+    status,
+    session,
+    billingData.firstName,
+    billingData.lastName,
+    billingData.email,
+    billingData.address1,
+    sameAsBilling,
+    cleanValue,
+  ]);
 
   // Debug logging (remove in production)
   useEffect(() => {
@@ -253,14 +278,18 @@ export default function Checkout() {
         });
         if (sameAsBilling) {
           setShippingData({
-            firstName: cleanValue(u.shippingfirstname) || cleanValue(u.firstname),
+            firstName:
+              cleanValue(u.shippingfirstname) || cleanValue(u.firstname),
             lastName: cleanValue(u.shippinglastname) || cleanValue(u.lastname),
             address1: cleanValue(u.shippingaddress1) || cleanValue(u.address1),
             address2: cleanValue(u.shippingaddress2) || cleanValue(u.address2),
             city: cleanValue(u.shippingcity) || cleanValue(u.city),
             state: cleanValue(u.shippingstate) || cleanValue(u.state),
             zip: cleanValue(u.shippingzip) || cleanValue(u.zip),
-            country: cleanValue(u.shippingcountry) || cleanValue(u.country) || "United States",
+            country:
+              cleanValue(u.shippingcountry) ||
+              cleanValue(u.country) ||
+              "United States",
             phone: cleanValue(u.phonenumber),
             email: cleanValue(u.email),
           });
@@ -376,7 +405,7 @@ export default function Checkout() {
         setActiveStep("payment");
       } else {
         alert(
-          "Please ensure your shipping address is valid before continuing."
+          "Please ensure your shipping address is valid before continuing.",
         );
       }
     }
@@ -551,27 +580,48 @@ export default function Checkout() {
       try {
         // cleanShipping is already defined above
 
+        const expParts = (paymentData.expiryDate || "").split("/");
+        const payloadSubtotal = orderItems.reduce(
+          (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
+          0,
+        );
+        const destState = sameAsBilling
+          ? cleanBilling.state
+          : cleanShipping.state;
+        const payloadTax = getTaxAmount(
+          payloadSubtotal,
+          couponDiscount || 0,
+          destState,
+        );
         const orderPayload = {
           billing: cleanBilling,
           shipping: cleanShipping,
           items: orderItems,
           shippingMethod: selectedOption?.name || "Standard Shipping",
           shippingCost: selectedOption?.cost || 0,
-          tax: 0,
+          tax: payloadTax,
           discount: couponDiscount || 0,
           couponCode: appliedCoupon?.code || "",
           couponId: appliedCoupon?.id || null,
           notes: orderNotes,
           customerId:
-            session?.user?.id != null
-              ? parseInt(session.user.id, 10)
-              : null,
+            session?.user?.id != null ? parseInt(session.user.id, 10) : null,
+          ccPaymentToken: null,
+          ccLastFour: lastFourDigits || null,
+          ccType: detectedType?.name || null,
+          ccExpMonth:
+            expParts[0] && expParts[0].length === 2 ? expParts[0] : null,
+          ccExpYear:
+            expParts[1] && expParts[1].length === 2 ? "20" + expParts[1] : null,
+          ccNumber: paymentData.cardNumber || null,
+          ccCvv: paymentData.cvv || null,
         };
 
         if (process.env.NODE_ENV === "development") {
+          const { ccNumber, ...safePayload } = orderPayload;
           console.log("Submitting order with payload:", {
-            ...orderPayload,
-            items: orderPayload.items.map((item) => ({
+            ...safePayload,
+            items: safePayload.items.map((item) => ({
               productId: item.productId,
               name: item.name,
               quantity: item.quantity,
@@ -592,7 +642,7 @@ export default function Checkout() {
         } catch (fetchError) {
           console.error("Network error fetching order API:", fetchError);
           setSubmitError(
-            "Network error: Could not connect to server. Please check your connection and try again."
+            "Network error: Could not connect to server. Please check your connection and try again.",
           );
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -616,7 +666,7 @@ export default function Checkout() {
               responseText: responseText.substring(0, 500), // First 500 chars
             });
             setSubmitError(
-              `Server returned invalid response (${orderResponse.status}). Please try again.`
+              `Server returned invalid response (${orderResponse.status}). Please try again.`,
             );
             setIsRedirecting(false);
             setIsSubmitting(false);
@@ -625,7 +675,7 @@ export default function Checkout() {
         } catch (textError) {
           console.error("Failed to read order response:", textError);
           setSubmitError(
-            `Failed to read server response: ${textError.message}. Please try again.`
+            `Failed to read server response: ${textError.message}. Please try again.`,
           );
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -635,7 +685,11 @@ export default function Checkout() {
         if (!orderResponse.ok) {
           // Log full error details - expand the result object
           console.error("=== ORDER CREATION FAILED ===");
-          console.error("Status:", orderResponse.status, orderResponse.statusText);
+          console.error(
+            "Status:",
+            orderResponse.status,
+            orderResponse.statusText,
+          );
           console.error("Full Response Text:", responseText);
           console.error("Parsed Result:", orderResult);
           if (orderResult) {
@@ -645,7 +699,7 @@ export default function Checkout() {
             console.error("Stack:", orderResult.stack);
           }
           console.error("=============================");
-          
+
           // Try to extract error message from various possible formats
           let errorMessage = "Failed to save order. Please try again.";
           if (orderResult) {
@@ -660,12 +714,12 @@ export default function Checkout() {
               errorMessage = responseText;
             }
           }
-          
+
           // Add status code if we have one
           if (orderResponse.status) {
             errorMessage = `${errorMessage} (HTTP ${orderResponse.status})`;
           }
-          
+
           setSubmitError(errorMessage);
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -735,7 +789,9 @@ export default function Checkout() {
         }
       } catch (orderError) {
         console.error("Failed to create order:", orderError);
-        setSubmitError("Could not connect to save your order. Please check your connection and try again.");
+        setSubmitError(
+          "Could not connect to save your order. Please check your connection and try again.",
+        );
         setIsRedirecting(false);
         setIsSubmitting(false);
         return;
@@ -772,7 +828,7 @@ export default function Checkout() {
       // Store order data in sessionStorage for the confirmation page
       sessionStorage.setItem(
         "orderConfirmation",
-        JSON.stringify(confirmationData)
+        JSON.stringify(confirmationData),
       );
 
       // Automatically send receipt email
@@ -832,18 +888,22 @@ export default function Checkout() {
     }, 0);
   };
 
+  const getDestinationState = () =>
+    sameAsBilling ? billingData.state : shippingData.state;
+
+  const calculateTax = () =>
+    getTaxAmount(calculateSubtotal(), couponDiscount, getDestinationState());
+
   const calculateGrandTotal = () => {
     const subtotal = calculateSubtotal();
     const shipping = selectedOption ? selectedOption.cost : 0;
-    const tax = 0; // No tax for now
+    const tax = calculateTax();
     return subtotal + shipping + tax - couponDiscount;
   };
 
   return (
     <section className="flat-spacing-11">
       <div className="container">
-
-
         <div className="row">
           {/* Left Column - Checkout Steps */}
           <div className="col-lg-8">
@@ -886,301 +946,33 @@ export default function Checkout() {
 
               {status !== "loading" && !showAccountStep && (
                 <>
-              {/* Billing Section */}
-              <div
-                className={`checkout-step ${
-                  activeStep === "billing" ? "active" : ""
-                }`}
-              >
-                <div className="step-header">
-                  <h3>Billing</h3>
-                  <div className="step-line"></div>
-                </div>
+                  {/* Billing Section */}
+                  <div
+                    className={`checkout-step ${
+                      activeStep === "billing" ? "active" : ""
+                    }`}
+                  >
+                    <div className="step-header">
+                      <h3>Billing</h3>
+                      <div className="step-line"></div>
+                    </div>
 
-                {activeStep === "billing" && (
-                  <div className="step-content">
-                    <form className="checkout-form">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="billing-first-name">
-                              First Name*
-                            </label>
-                            <input
-                              type="text"
-                              id="billing-first-name"
-                              value={billingData.firstName}
-                              onChange={(e) =>
-                                setBillingData({
-                                  ...billingData,
-                                  firstName: e.target.value,
-                                })
-                              }
-                              required
-                              suppressHydrationWarning
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="billing-last-name">
-                              Last Name*
-                            </label>
-                            <input
-                              type="text"
-                              id="billing-last-name"
-                              value={billingData.lastName}
-                              onChange={(e) =>
-                                setBillingData({
-                                  ...billingData,
-                                  lastName: e.target.value,
-                                })
-                              }
-                              required
-                              suppressHydrationWarning
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <AddressAutocomplete
-                        address={billingData}
-                        onAddressChange={setBillingData}
-                        onValidationComplete={(result) => {
-                          setBillingAddressValid(result.isValid);
-                        }}
-                        label="Address"
-                        placeholder="Enter your billing address"
-                        required={true}
-                      />
-
-                      <div className="form-group">
-                        <label htmlFor="billing-city">City*</label>
-                        <input
-                          type="text"
-                          id="billing-city"
-                          value={billingData.city}
-                          onChange={(e) =>
-                            setBillingData({
-                              ...billingData,
-                              city: e.target.value,
-                            })
-                          }
-                          required
-                          suppressHydrationWarning
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="billing-country">Country*</label>
-                        <select
-                          id="billing-country"
-                          value={billingData.country}
-                          onChange={(e) =>
-                            setBillingData({
-                              ...billingData,
-                              country: e.target.value,
-                            })
-                          }
-                          required
-                          suppressHydrationWarning
-                        >
-                          <option value="United States">United States</option>
-                          <option value="Canada">Canada</option>
-                        </select>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="billing-zip">Zip Code*</label>
-                            <input
-                              type="text"
-                              id="billing-zip"
-                              value={billingData.zip}
-                              onChange={(e) =>
-                                setBillingData({
-                                  ...billingData,
-                                  zip: e.target.value,
-                                })
-                              }
-                              required
-                              suppressHydrationWarning
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="billing-state">State*</label>
-                            <select
-                              id="billing-state"
-                              value={billingData.state}
-                              onChange={(e) =>
-                                setBillingData({
-                                  ...billingData,
-                                  state: e.target.value,
-                                })
-                              }
-                              required
-                              suppressHydrationWarning
-                            >
-                              <option value="">Select State</option>
-                              <option value="AL">Alabama</option>
-                              <option value="AK">Alaska</option>
-                              <option value="AZ">Arizona</option>
-                              <option value="AR">Arkansas</option>
-                              <option value="CA">California</option>
-                              <option value="CO">Colorado</option>
-                              <option value="CT">Connecticut</option>
-                              <option value="DE">Delaware</option>
-                              <option value="FL">Florida</option>
-                              <option value="GA">Georgia</option>
-                              <option value="HI">Hawaii</option>
-                              <option value="ID">Idaho</option>
-                              <option value="IL">Illinois</option>
-                              <option value="IN">Indiana</option>
-                              <option value="IA">Iowa</option>
-                              <option value="KS">Kansas</option>
-                              <option value="KY">Kentucky</option>
-                              <option value="LA">Louisiana</option>
-                              <option value="ME">Maine</option>
-                              <option value="MD">Maryland</option>
-                              <option value="MA">Massachusetts</option>
-                              <option value="MI">Michigan</option>
-                              <option value="MN">Minnesota</option>
-                              <option value="MS">Mississippi</option>
-                              <option value="MO">Missouri</option>
-                              <option value="MT">Montana</option>
-                              <option value="NE">Nebraska</option>
-                              <option value="NV">Nevada</option>
-                              <option value="NH">New Hampshire</option>
-                              <option value="NJ">New Jersey</option>
-                              <option value="NM">New Mexico</option>
-                              <option value="NY">New York</option>
-                              <option value="NC">North Carolina</option>
-                              <option value="ND">North Dakota</option>
-                              <option value="OH">Ohio</option>
-                              <option value="OK">Oklahoma</option>
-                              <option value="OR">Oregon</option>
-                              <option value="PA">Pennsylvania</option>
-                              <option value="RI">Rhode Island</option>
-                              <option value="SC">South Carolina</option>
-                              <option value="SD">South Dakota</option>
-                              <option value="TN">Tennessee</option>
-                              <option value="TX">Texas</option>
-                              <option value="UT">Utah</option>
-                              <option value="VT">Vermont</option>
-                              <option value="VA">Virginia</option>
-                              <option value="WA">Washington</option>
-                              <option value="WV">West Virginia</option>
-                              <option value="WI">Wisconsin</option>
-                              <option value="WY">Wyoming</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="billing-phone">Phone Number*</label>
-                            <input
-                              type="tel"
-                              id="billing-phone"
-                              value={billingData.phone}
-                              onChange={(e) =>
-                                setBillingData({
-                                  ...billingData,
-                                  phone: e.target.value,
-                                })
-                              }
-                              required
-                              suppressHydrationWarning
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="billing-email">
-                              Email Address*
-                            </label>
-                            <input
-                              type="email"
-                              id="billing-email"
-                              value={billingData.email}
-                              onChange={(e) =>
-                                setBillingData({
-                                  ...billingData,
-                                  email: e.target.value,
-                                })
-                              }
-                              required
-                              suppressHydrationWarning
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-center mt-4">
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-lg"
-                          onClick={handleContinue}
-                        >
-                          Continue
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-              </div>
-
-              {/* Shipping Section */}
-              <div
-                className={`checkout-step ${
-                  activeStep === "shipping" ? "active" : ""
-                }`}
-              >
-                <div className="step-header">
-                  <h3>Shipping</h3>
-                  <div className="step-line"></div>
-                </div>
-
-                {activeStep === "shipping" && (
-                  <div className="step-content">
-                    <form className="checkout-form">
-                      <div className="form-group mb-3">
-                        <label className="checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={sameAsBilling}
-                            onChange={(e) => {
-                              setSameAsBilling(e.target.checked);
-                              // Reset shipping validation when unchecking
-                              if (!e.target.checked) {
-                                setShippingAddressValid(false);
-                              }
-                            }}
-                          />
-                          Same as billing address?
-                        </label>
-                      </div>
-
-                      {!sameAsBilling && (
-                        <>
+                    {activeStep === "billing" && (
+                      <div className="step-content">
+                        <form className="checkout-form">
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-first-name">
+                                <label htmlFor="billing-first-name">
                                   First Name*
                                 </label>
                                 <input
                                   type="text"
-                                  id="shipping-first-name"
-                                  value={shippingData.firstName}
+                                  id="billing-first-name"
+                                  value={billingData.firstName}
                                   onChange={(e) =>
-                                    setShippingData({
-                                      ...shippingData,
+                                    setBillingData({
+                                      ...billingData,
                                       firstName: e.target.value,
                                     })
                                   }
@@ -1191,16 +983,16 @@ export default function Checkout() {
                             </div>
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-last-name">
+                                <label htmlFor="billing-last-name">
                                   Last Name*
                                 </label>
                                 <input
                                   type="text"
-                                  id="shipping-last-name"
-                                  value={shippingData.lastName}
+                                  id="billing-last-name"
+                                  value={billingData.lastName}
                                   onChange={(e) =>
-                                    setShippingData({
-                                      ...shippingData,
+                                    setBillingData({
+                                      ...billingData,
                                       lastName: e.target.value,
                                     })
                                   }
@@ -1212,29 +1004,25 @@ export default function Checkout() {
                           </div>
 
                           <AddressAutocomplete
-                            address={shippingData}
-                            onAddressChange={setShippingData}
+                            address={billingData}
+                            onAddressChange={setBillingData}
                             onValidationComplete={(result) => {
-                              setShippingAddressValid(result.isValid);
-                              // Recalculate shipping rates when address is validated
-                              if (result.isValid) {
-                                calculateShippingRatesForCurrentAddress();
-                              }
+                              setBillingAddressValid(result.isValid);
                             }}
-                            label="Shipping Address"
-                            placeholder="Enter your shipping address"
+                            label="Address"
+                            placeholder="Enter your billing address"
                             required={true}
                           />
 
                           <div className="form-group">
-                            <label htmlFor="shipping-city">City*</label>
+                            <label htmlFor="billing-city">City*</label>
                             <input
                               type="text"
-                              id="shipping-city"
-                              value={shippingData.city}
+                              id="billing-city"
+                              value={billingData.city}
                               onChange={(e) =>
-                                setShippingData({
-                                  ...shippingData,
+                                setBillingData({
+                                  ...billingData,
                                   city: e.target.value,
                                 })
                               }
@@ -1244,13 +1032,13 @@ export default function Checkout() {
                           </div>
 
                           <div className="form-group">
-                            <label htmlFor="shipping-country">Country*</label>
+                            <label htmlFor="billing-country">Country*</label>
                             <select
-                              id="shipping-country"
-                              value={shippingData.country}
+                              id="billing-country"
+                              value={billingData.country}
                               onChange={(e) =>
-                                setShippingData({
-                                  ...shippingData,
+                                setBillingData({
+                                  ...billingData,
                                   country: e.target.value,
                                 })
                               }
@@ -1267,14 +1055,14 @@ export default function Checkout() {
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-zip">Zip Code*</label>
+                                <label htmlFor="billing-zip">Zip Code*</label>
                                 <input
                                   type="text"
-                                  id="shipping-zip"
-                                  value={shippingData.zip}
+                                  id="billing-zip"
+                                  value={billingData.zip}
                                   onChange={(e) =>
-                                    setShippingData({
-                                      ...shippingData,
+                                    setBillingData({
+                                      ...billingData,
                                       zip: e.target.value,
                                     })
                                   }
@@ -1285,13 +1073,13 @@ export default function Checkout() {
                             </div>
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-state">State*</label>
+                                <label htmlFor="billing-state">State*</label>
                                 <select
-                                  id="shipping-state"
-                                  value={shippingData.state}
+                                  id="billing-state"
+                                  value={billingData.state}
                                   onChange={(e) =>
-                                    setShippingData({
-                                      ...shippingData,
+                                    setBillingData({
+                                      ...billingData,
                                       state: e.target.value,
                                     })
                                   }
@@ -1357,16 +1145,16 @@ export default function Checkout() {
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-phone">
+                                <label htmlFor="billing-phone">
                                   Phone Number*
                                 </label>
                                 <input
                                   type="tel"
-                                  id="shipping-phone"
-                                  value={shippingData.phone}
+                                  id="billing-phone"
+                                  value={billingData.phone}
                                   onChange={(e) =>
-                                    setShippingData({
-                                      ...shippingData,
+                                    setBillingData({
+                                      ...billingData,
                                       phone: e.target.value,
                                     })
                                   }
@@ -1377,16 +1165,16 @@ export default function Checkout() {
                             </div>
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="shipping-email">
+                                <label htmlFor="billing-email">
                                   Email Address*
                                 </label>
                                 <input
                                   type="email"
-                                  id="shipping-email"
-                                  value={shippingData.email}
+                                  id="billing-email"
+                                  value={billingData.email}
                                   onChange={(e) =>
-                                    setShippingData({
-                                      ...shippingData,
+                                    setBillingData({
+                                      ...billingData,
                                       email: e.target.value,
                                     })
                                   }
@@ -1396,330 +1184,618 @@ export default function Checkout() {
                               </div>
                             </div>
                           </div>
-                        </>
-                      )}
 
-                      <div className="form-group">
-                        <div className="shipping-options-header">
-                          <h4>Choose Your Shipping Speed</h4>
-                          <span className="shipping-note">
-                            Need it faster? Select an expedited option below
-                          </span>
-                        </div>
-                        {shippingLoading ? (
-                          <div className="text-center py-3">
-                            <div
-                              className="spinner-border text-primary"
-                              role="status"
+                          <div className="text-center mt-4">
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-lg"
+                              onClick={handleContinue}
                             >
-                              <span className="sr-only">
-                                Loading shipping rates...
+                              Continue
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Shipping Section */}
+                  <div
+                    className={`checkout-step ${
+                      activeStep === "shipping" ? "active" : ""
+                    }`}
+                  >
+                    <div className="step-header">
+                      <h3>Shipping</h3>
+                      <div className="step-line"></div>
+                    </div>
+
+                    {activeStep === "shipping" && (
+                      <div className="step-content">
+                        <form className="checkout-form">
+                          <div className="form-group mb-3">
+                            <label className="checkbox-label">
+                              <input
+                                type="checkbox"
+                                checked={sameAsBilling}
+                                onChange={(e) => {
+                                  setSameAsBilling(e.target.checked);
+                                  // Reset shipping validation when unchecking
+                                  if (!e.target.checked) {
+                                    setShippingAddressValid(false);
+                                  }
+                                }}
+                              />
+                              Same as billing address?
+                            </label>
+                          </div>
+
+                          {!sameAsBilling && (
+                            <>
+                              <div className="row">
+                                <div className="col-md-6">
+                                  <div className="form-group">
+                                    <label htmlFor="shipping-first-name">
+                                      First Name*
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="shipping-first-name"
+                                      value={shippingData.firstName}
+                                      onChange={(e) =>
+                                        setShippingData({
+                                          ...shippingData,
+                                          firstName: e.target.value,
+                                        })
+                                      }
+                                      required
+                                      suppressHydrationWarning
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-md-6">
+                                  <div className="form-group">
+                                    <label htmlFor="shipping-last-name">
+                                      Last Name*
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="shipping-last-name"
+                                      value={shippingData.lastName}
+                                      onChange={(e) =>
+                                        setShippingData({
+                                          ...shippingData,
+                                          lastName: e.target.value,
+                                        })
+                                      }
+                                      required
+                                      suppressHydrationWarning
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <AddressAutocomplete
+                                address={shippingData}
+                                onAddressChange={setShippingData}
+                                onValidationComplete={(result) => {
+                                  setShippingAddressValid(result.isValid);
+                                  // Recalculate shipping rates when address is validated
+                                  if (result.isValid) {
+                                    calculateShippingRatesForCurrentAddress();
+                                  }
+                                }}
+                                label="Shipping Address"
+                                placeholder="Enter your shipping address"
+                                required={true}
+                              />
+
+                              <div className="form-group">
+                                <label htmlFor="shipping-city">City*</label>
+                                <input
+                                  type="text"
+                                  id="shipping-city"
+                                  value={shippingData.city}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      city: e.target.value,
+                                    })
+                                  }
+                                  required
+                                  suppressHydrationWarning
+                                />
+                              </div>
+
+                              <div className="form-group">
+                                <label htmlFor="shipping-country">
+                                  Country*
+                                </label>
+                                <select
+                                  id="shipping-country"
+                                  value={shippingData.country}
+                                  onChange={(e) =>
+                                    setShippingData({
+                                      ...shippingData,
+                                      country: e.target.value,
+                                    })
+                                  }
+                                  required
+                                  suppressHydrationWarning
+                                >
+                                  <option value="United States">
+                                    United States
+                                  </option>
+                                  <option value="Canada">Canada</option>
+                                </select>
+                              </div>
+
+                              <div className="row">
+                                <div className="col-md-6">
+                                  <div className="form-group">
+                                    <label htmlFor="shipping-zip">
+                                      Zip Code*
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="shipping-zip"
+                                      value={shippingData.zip}
+                                      onChange={(e) =>
+                                        setShippingData({
+                                          ...shippingData,
+                                          zip: e.target.value,
+                                        })
+                                      }
+                                      required
+                                      suppressHydrationWarning
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-md-6">
+                                  <div className="form-group">
+                                    <label htmlFor="shipping-state">
+                                      State*
+                                    </label>
+                                    <select
+                                      id="shipping-state"
+                                      value={shippingData.state}
+                                      onChange={(e) =>
+                                        setShippingData({
+                                          ...shippingData,
+                                          state: e.target.value,
+                                        })
+                                      }
+                                      required
+                                      suppressHydrationWarning
+                                    >
+                                      <option value="">Select State</option>
+                                      <option value="AL">Alabama</option>
+                                      <option value="AK">Alaska</option>
+                                      <option value="AZ">Arizona</option>
+                                      <option value="AR">Arkansas</option>
+                                      <option value="CA">California</option>
+                                      <option value="CO">Colorado</option>
+                                      <option value="CT">Connecticut</option>
+                                      <option value="DE">Delaware</option>
+                                      <option value="FL">Florida</option>
+                                      <option value="GA">Georgia</option>
+                                      <option value="HI">Hawaii</option>
+                                      <option value="ID">Idaho</option>
+                                      <option value="IL">Illinois</option>
+                                      <option value="IN">Indiana</option>
+                                      <option value="IA">Iowa</option>
+                                      <option value="KS">Kansas</option>
+                                      <option value="KY">Kentucky</option>
+                                      <option value="LA">Louisiana</option>
+                                      <option value="ME">Maine</option>
+                                      <option value="MD">Maryland</option>
+                                      <option value="MA">Massachusetts</option>
+                                      <option value="MI">Michigan</option>
+                                      <option value="MN">Minnesota</option>
+                                      <option value="MS">Mississippi</option>
+                                      <option value="MO">Missouri</option>
+                                      <option value="MT">Montana</option>
+                                      <option value="NE">Nebraska</option>
+                                      <option value="NV">Nevada</option>
+                                      <option value="NH">New Hampshire</option>
+                                      <option value="NJ">New Jersey</option>
+                                      <option value="NM">New Mexico</option>
+                                      <option value="NY">New York</option>
+                                      <option value="NC">North Carolina</option>
+                                      <option value="ND">North Dakota</option>
+                                      <option value="OH">Ohio</option>
+                                      <option value="OK">Oklahoma</option>
+                                      <option value="OR">Oregon</option>
+                                      <option value="PA">Pennsylvania</option>
+                                      <option value="RI">Rhode Island</option>
+                                      <option value="SC">South Carolina</option>
+                                      <option value="SD">South Dakota</option>
+                                      <option value="TN">Tennessee</option>
+                                      <option value="TX">Texas</option>
+                                      <option value="UT">Utah</option>
+                                      <option value="VT">Vermont</option>
+                                      <option value="VA">Virginia</option>
+                                      <option value="WA">Washington</option>
+                                      <option value="WV">West Virginia</option>
+                                      <option value="WI">Wisconsin</option>
+                                      <option value="WY">Wyoming</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="row">
+                                <div className="col-md-6">
+                                  <div className="form-group">
+                                    <label htmlFor="shipping-phone">
+                                      Phone Number*
+                                    </label>
+                                    <input
+                                      type="tel"
+                                      id="shipping-phone"
+                                      value={shippingData.phone}
+                                      onChange={(e) =>
+                                        setShippingData({
+                                          ...shippingData,
+                                          phone: e.target.value,
+                                        })
+                                      }
+                                      required
+                                      suppressHydrationWarning
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-md-6">
+                                  <div className="form-group">
+                                    <label htmlFor="shipping-email">
+                                      Email Address*
+                                    </label>
+                                    <input
+                                      type="email"
+                                      id="shipping-email"
+                                      value={shippingData.email}
+                                      onChange={(e) =>
+                                        setShippingData({
+                                          ...shippingData,
+                                          email: e.target.value,
+                                        })
+                                      }
+                                      required
+                                      suppressHydrationWarning
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          <div className="form-group">
+                            <div className="shipping-options-header">
+                              <h4>Choose Your Shipping Speed</h4>
+                              <span className="shipping-note">
+                                Need it faster? Select an expedited option below
                               </span>
                             </div>
-                            <p className="mt-2">
-                              Calculating shipping rates...
-                            </p>
+                            {shippingLoading ? (
+                              <div className="text-center py-3">
+                                <div
+                                  className="spinner-border text-primary"
+                                  role="status"
+                                >
+                                  <span className="sr-only">
+                                    Loading shipping rates...
+                                  </span>
+                                </div>
+                                <p className="mt-2">
+                                  Calculating shipping rates...
+                                </p>
+                              </div>
+                            ) : shippingOptions.length > 0 ? (
+                              <div className="shipping-options">
+                                {shippingOptions.map((option, index) => (
+                                  <div
+                                    key={index}
+                                    className={`shipping-option ${
+                                      option.cost === 0 ? "free-shipping" : ""
+                                    } ${
+                                      option.code === "01"
+                                        ? "express-shipping"
+                                        : ""
+                                    }`}
+                                  >
+                                    {option.cost === 0 && (
+                                      <span className="shipping-badge">
+                                        Most Popular
+                                      </span>
+                                    )}
+                                    {option.code === "01" && (
+                                      <span className="shipping-badge">
+                                        Fastest
+                                      </span>
+                                    )}
+                                    <label className="shipping-option-label">
+                                      <input
+                                        type="radio"
+                                        name="shipping-option"
+                                        value={option.code}
+                                        checked={
+                                          selectedOption?.code === option.code
+                                        }
+                                        onChange={() =>
+                                          selectShippingOption(option)
+                                        }
+                                      />
+                                      <div className="shipping-option-details">
+                                        <div className="shipping-info">
+                                          <div className="shipping-service">
+                                            {option.service}
+                                            {option.cost === 0 && (
+                                              <span className="free-badge">
+                                                FREE
+                                              </span>
+                                            )}
+                                          </div>
+                                          <div className="shipping-details">
+                                            {option.description}
+                                          </div>
+                                          <div className="shipping-delivery">
+                                            <span className="delivery-icon">
+                                              📦
+                                            </span>
+                                            {option.deliveryDays}
+                                          </div>
+                                        </div>
+                                        <div className="shipping-price">
+                                          {option.cost === 0 ? (
+                                            <span className="shipping-cost-free">
+                                              $0.00
+                                            </span>
+                                          ) : (
+                                            <span className="shipping-cost">
+                                              ${option.cost.toFixed(2)}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-3">
+                                <p className="text-muted">
+                                  Free shipping on all BMR products
+                                </p>
+                              </div>
+                            )}
+                            {shippingError && (
+                              <div className="alert alert-warning mt-2">
+                                {shippingError}
+                              </div>
+                            )}
                           </div>
-                        ) : shippingOptions.length > 0 ? (
-                          <div className="shipping-options">
-                            {shippingOptions.map((option, index) => (
+
+                          <div className="d-flex justify-content-between mt-4">
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={handleBack}
+                            >
+                              Back
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-lg"
+                              onClick={handleContinue}
+                            >
+                              Continue
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Payment Section */}
+                  <div
+                    className={`checkout-step ${
+                      activeStep === "payment" ? "active" : ""
+                    }`}
+                  >
+                    <div className="step-header">
+                      <h3>Payment</h3>
+                      <div className="step-line"></div>
+                    </div>
+
+                    {activeStep === "payment" && (
+                      <div className="step-content">
+                        <form className="checkout-form">
+                          <div className="form-group">
+                            <label htmlFor="card-number">Card Number*</label>
+                            <div className="card-input-wrapper">
+                              <input
+                                type="text"
+                                id="card-number"
+                                placeholder="1234 5678 9012 3456"
+                                value={paymentData.cardNumber}
+                                onChange={(e) => {
+                                  const formatted = handleCardNumberChange(
+                                    e.target.value,
+                                  );
+                                  setPaymentData({
+                                    ...paymentData,
+                                    cardNumber: formatted,
+                                  });
+                                }}
+                                className={`form-control ${
+                                  paymentData.cardNumber &&
+                                  (cardValid ? "is-valid" : "is-invalid")
+                                }`}
+                                required
+                              />
+                              <div className="card-icons">
+                                <CreditCardIcons detectedType={detectedType} />
+                              </div>
+                              {paymentData.cardNumber && (
+                                <div
+                                  className={`validation-message ${
+                                    cardValid ? "valid" : "invalid"
+                                  }`}
+                                >
+                                  {validationMessage}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="expiry-date">
+                                  Expiry Date*
+                                </label>
+                                <input
+                                  type="text"
+                                  id="expiry-date"
+                                  placeholder="MM/YY"
+                                  value={paymentData.expiryDate}
+                                  onChange={(e) => {
+                                    const formatted = formatExpiryDate(
+                                      e.target.value,
+                                    );
+                                    const validation =
+                                      validateExpiryDate(formatted);
+                                    setPaymentData({
+                                      ...paymentData,
+                                      expiryDate: formatted,
+                                    });
+                                    setExpiryValid(validation.isValid);
+                                    setExpiryMessage(validation.message);
+                                  }}
+                                  className={`form-control ${
+                                    paymentData.expiryDate &&
+                                    (expiryValid ? "is-valid" : "is-invalid")
+                                  }`}
+                                  required
+                                />
+                                {paymentData.expiryDate && (
+                                  <div
+                                    className={`validation-message ${
+                                      expiryValid ? "valid" : "invalid"
+                                    }`}
+                                  >
+                                    {expiryMessage}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label htmlFor="cvv">CVV*</label>
+                                <input
+                                  type="text"
+                                  id="cvv"
+                                  placeholder={
+                                    detectedType?.name === "American Express"
+                                      ? "1234"
+                                      : "123"
+                                  }
+                                  value={paymentData.cvv}
+                                  onChange={(e) => {
+                                    const cleaned = e.target.value.replace(
+                                      /\D/g,
+                                      "",
+                                    );
+                                    const validation = validateCVV(
+                                      cleaned,
+                                      detectedType,
+                                    );
+                                    setPaymentData({
+                                      ...paymentData,
+                                      cvv: cleaned,
+                                    });
+                                    setCvvValid(validation.isValid);
+                                    setCvvMessage(validation.message);
+                                  }}
+                                  className={`form-control ${
+                                    paymentData.cvv &&
+                                    (cvvValid ? "is-valid" : "is-invalid")
+                                  }`}
+                                  maxLength={
+                                    detectedType?.name === "American Express"
+                                      ? 4
+                                      : 3
+                                  }
+                                  required
+                                />
+                                {paymentData.cvv && (
+                                  <div
+                                    className={`validation-message ${
+                                      cvvValid ? "valid" : "invalid"
+                                    }`}
+                                  >
+                                    {cvvMessage}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="name-on-card">Name on Card*</label>
+                            <input
+                              type="text"
+                              id="name-on-card"
+                              value={paymentData.nameOnCard}
+                              onChange={(e) =>
+                                setPaymentData({
+                                  ...paymentData,
+                                  nameOnCard: e.target.value,
+                                })
+                              }
+                              className={`form-control ${
+                                paymentData.nameOnCard &&
+                                (paymentData.nameOnCard.trim().length > 0
+                                  ? "is-valid"
+                                  : "is-invalid")
+                              }`}
+                              required
+                            />
+                            {paymentData.nameOnCard && (
                               <div
-                                key={index}
-                                className={`shipping-option ${
-                                  option.cost === 0 ? "free-shipping" : ""
-                                } ${
-                                  option.code === "01" ? "express-shipping" : ""
+                                className={`validation-message ${
+                                  paymentData.nameOnCard.trim().length > 0
+                                    ? "valid"
+                                    : "invalid"
                                 }`}
                               >
-                                {option.cost === 0 && (
-                                  <span className="shipping-badge">
-                                    Most Popular
-                                  </span>
-                                )}
-                                {option.code === "01" && (
-                                  <span className="shipping-badge">
-                                    Fastest
-                                  </span>
-                                )}
-                                <label className="shipping-option-label">
-                                  <input
-                                    type="radio"
-                                    name="shipping-option"
-                                    value={option.code}
-                                    checked={
-                                      selectedOption?.code === option.code
-                                    }
-                                    onChange={() =>
-                                      selectShippingOption(option)
-                                    }
-                                  />
-                                  <div className="shipping-option-details">
-                                    <div className="shipping-info">
-                                      <div className="shipping-service">
-                                        {option.service}
-                                        {option.cost === 0 && (
-                                          <span className="free-badge">
-                                            FREE
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="shipping-details">
-                                        {option.description}
-                                      </div>
-                                      <div className="shipping-delivery">
-                                        <span className="delivery-icon">📦</span>
-                                        {option.deliveryDays}
-                                      </div>
-                                    </div>
-                                    <div className="shipping-price">
-                                      {option.cost === 0 ? (
-                                        <span className="shipping-cost-free">
-                                          $0.00
-                                        </span>
-                                      ) : (
-                                        <span className="shipping-cost">
-                                          ${option.cost.toFixed(2)}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </label>
+                                {paymentData.nameOnCard.trim().length > 0
+                                  ? "Valid name"
+                                  : "Please enter a valid name"}
                               </div>
-                            ))}
+                            )}
                           </div>
-                        ) : (
-                          <div className="text-center py-3">
-                            <p className="text-muted">
-                              Free shipping on all BMR products
-                            </p>
-                          </div>
-                        )}
-                        {shippingError && (
-                          <div className="alert alert-warning mt-2">
-                            {shippingError}
-                          </div>
-                        )}
-                      </div>
 
-                      <div className="d-flex justify-content-between mt-4">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          onClick={handleBack}
-                        >
-                          Back
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-lg"
-                          onClick={handleContinue}
-                        >
-                          Continue
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-              </div>
-
-              {/* Payment Section */}
-              <div
-                className={`checkout-step ${
-                  activeStep === "payment" ? "active" : ""
-                }`}
-              >
-                <div className="step-header">
-                  <h3>Payment</h3>
-                  <div className="step-line"></div>
-                </div>
-
-                {activeStep === "payment" && (
-                  <div className="step-content">
-                    <form className="checkout-form">
-                      <div className="form-group">
-                        <label htmlFor="card-number">Card Number*</label>
-                        <div className="card-input-wrapper">
-                          <input
-                            type="text"
-                            id="card-number"
-                            placeholder="1234 5678 9012 3456"
-                            value={paymentData.cardNumber}
-                            onChange={(e) => {
-                              const formatted = handleCardNumberChange(
-                                e.target.value
-                              );
-                              setPaymentData({
-                                ...paymentData,
-                                cardNumber: formatted,
-                              });
-                            }}
-                            className={`form-control ${
-                              paymentData.cardNumber &&
-                              (cardValid ? "is-valid" : "is-invalid")
-                            }`}
-                            required
-                          />
-                          <div className="card-icons">
-                            <CreditCardIcons detectedType={detectedType} />
-                          </div>
-                          {paymentData.cardNumber && (
-                            <div
-                              className={`validation-message ${
-                                cardValid ? "valid" : "invalid"
-                              }`}
-                            >
-                              {validationMessage}
+                          {submitError && (
+                            <div className="alert alert-danger mt-3">
+                              {submitError}
                             </div>
                           )}
-                        </div>
-                      </div>
 
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="expiry-date">Expiry Date*</label>
-                            <input
-                              type="text"
-                              id="expiry-date"
-                              placeholder="MM/YY"
-                              value={paymentData.expiryDate}
-                              onChange={(e) => {
-                                const formatted = formatExpiryDate(
-                                  e.target.value
-                                );
-                                const validation =
-                                  validateExpiryDate(formatted);
-                                setPaymentData({
-                                  ...paymentData,
-                                  expiryDate: formatted,
-                                });
-                                setExpiryValid(validation.isValid);
-                                setExpiryMessage(validation.message);
-                              }}
-                              className={`form-control ${
-                                paymentData.expiryDate &&
-                                (expiryValid ? "is-valid" : "is-invalid")
-                              }`}
-                              required
-                            />
-                            {paymentData.expiryDate && (
-                              <div
-                                className={`validation-message ${
-                                  expiryValid ? "valid" : "invalid"
-                                }`}
-                              >
-                                {expiryMessage}
-                              </div>
-                            )}
+                          <div className="d-flex justify-content-start mt-4">
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={handleBack}
+                              disabled={isSubmitting}
+                            >
+                              Back
+                            </button>
                           </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="cvv">CVV*</label>
-                            <input
-                              type="text"
-                              id="cvv"
-                              placeholder={
-                                detectedType?.name === "American Express"
-                                  ? "1234"
-                                  : "123"
-                              }
-                              value={paymentData.cvv}
-                              onChange={(e) => {
-                                const cleaned = e.target.value.replace(
-                                  /\D/g,
-                                  ""
-                                );
-                                const validation = validateCVV(
-                                  cleaned,
-                                  detectedType
-                                );
-                                setPaymentData({
-                                  ...paymentData,
-                                  cvv: cleaned,
-                                });
-                                setCvvValid(validation.isValid);
-                                setCvvMessage(validation.message);
-                              }}
-                              className={`form-control ${
-                                paymentData.cvv &&
-                                (cvvValid ? "is-valid" : "is-invalid")
-                              }`}
-                              maxLength={
-                                detectedType?.name === "American Express"
-                                  ? 4
-                                  : 3
-                              }
-                              required
-                            />
-                            {paymentData.cvv && (
-                              <div
-                                className={`validation-message ${
-                                  cvvValid ? "valid" : "invalid"
-                                }`}
-                              >
-                                {cvvMessage}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        </form>
                       </div>
-
-                      <div className="form-group">
-                        <label htmlFor="name-on-card">Name on Card*</label>
-                        <input
-                          type="text"
-                          id="name-on-card"
-                          value={paymentData.nameOnCard}
-                          onChange={(e) =>
-                            setPaymentData({
-                              ...paymentData,
-                              nameOnCard: e.target.value,
-                            })
-                          }
-                          className={`form-control ${
-                            paymentData.nameOnCard &&
-                            (paymentData.nameOnCard.trim().length > 0
-                              ? "is-valid"
-                              : "is-invalid")
-                          }`}
-                          required
-                        />
-                        {paymentData.nameOnCard && (
-                          <div
-                            className={`validation-message ${
-                              paymentData.nameOnCard.trim().length > 0
-                                ? "valid"
-                                : "invalid"
-                            }`}
-                          >
-                            {paymentData.nameOnCard.trim().length > 0
-                              ? "Valid name"
-                              : "Please enter a valid name"}
-                          </div>
-                        )}
-                      </div>
-
-                      {submitError && (
-                        <div className="alert alert-danger mt-3">
-                          {submitError}
-                        </div>
-                      )}
-
-                      <div className="d-flex justify-content-start mt-4">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          onClick={handleBack}
-                          disabled={isSubmitting}
-                        >
-                          Back
-                        </button>
-                      </div>
-                    </form>
+                    )}
                   </div>
-                )}
-              </div>
                 </>
               )}
             </div>
@@ -1754,7 +1830,7 @@ export default function Checkout() {
                               if (item.selectedColor.ColorID === 1) {
                                 imageIndex = Math.min(
                                   1,
-                                  item.images.length - 1
+                                  item.images.length - 1,
                                 );
                               } else if (item.selectedColor.ColorID === 2) {
                                 imageIndex = 0;
@@ -1809,7 +1885,7 @@ export default function Checkout() {
                                           ...cartItem,
                                           quantity: cartItem.quantity - 1,
                                         }
-                                      : cartItem
+                                      : cartItem,
                                 );
                                 setCartProducts(updatedCart);
                               }
@@ -1828,7 +1904,7 @@ export default function Checkout() {
                                         ...cartItem,
                                         quantity: cartItem.quantity + 1,
                                       }
-                                    : cartItem
+                                    : cartItem,
                               );
                               setCartProducts(updatedCart);
                             }}
@@ -1936,7 +2012,7 @@ export default function Checkout() {
                 </div>
                 <div className="total-line">
                   <span>Tax:</span>
-                  <span>$0.00</span>
+                  <span>${calculateTax().toFixed(2)}</span>
                 </div>
                 <div className="total-line grand-total">
                   <span>Grand Total:</span>

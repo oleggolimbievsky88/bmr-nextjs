@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getAllOrdersAdmin, getOrderWithItemsAdmin } from '@/lib/queries'
+import { redactOrderCcToken } from '@/lib/ccEncryption'
 
 export async function GET(request) {
 	try {
@@ -32,11 +33,13 @@ export async function GET(request) {
 					{ status: 404 }
 				)
 			}
+			redactOrderCcToken(order, { forAdmin: true })
 			return NextResponse.json({ success: true, order })
 		}
 
 		// Get all orders
 		const orders = await getAllOrdersAdmin(limit, offset, status)
+		orders.forEach((o) => redactOrderCcToken(o, { forAdmin: true }))
 
 		return NextResponse.json({
 			success: true,

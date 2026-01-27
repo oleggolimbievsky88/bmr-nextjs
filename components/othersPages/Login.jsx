@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
+const MAX_LOGIN_ATTEMPTS = 3;
 
 export default function Login() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || null;
   const [formData, setFormData] = useState({
@@ -17,14 +18,19 @@ export default function Login() {
   const [showRecover, setShowRecover] = useState(false);
   const [recoverEmail, setRecoverEmail] = useState("");
   const [recoverMessage, setRecoverMessage] = useState("");
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [showPasswordResetSuggestion, setShowPasswordResetSuggestion] =
+    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
     setError("");
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,16 +45,36 @@ export default function Login() {
       });
 
       if (result?.error) {
-        const msg = result.error === 'CredentialsSignin'
-          ? 'Invalid email or password'
-          : result.error
-        setError(typeof msg === 'string' ? msg : 'Invalid email or password')
-        setIsLoading(false)
-        return
+        const newAttempts = loginAttempts + 1;
+        setLoginAttempts(newAttempts);
+
+        // Check for specific error messages
+        if (result.error.includes("verify your email")) {
+          setError(
+            "Please verify your email before logging in. Check your inbox for the verification link.",
+          );
+        } else if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+          setShowPasswordResetSuggestion(true);
+          setError(
+            `Invalid email or password. You've tried ${newAttempts} times.`,
+          );
+        } else {
+          const msg =
+            result.error === "CredentialsSignin"
+              ? "Invalid email or password"
+              : result.error;
+          setError(typeof msg === "string" ? msg : "Invalid email or password");
+        }
+
+        setIsLoading(false);
+        return;
       }
 
-      // Success - wait a moment for session to be established, then check user role and redirect
-      // Use a small delay to ensure the session is properly set
+      // Success - reset attempts
+      setLoginAttempts(0);
+      setShowPasswordResetSuggestion(false);
+
+      // Wait a moment for session to be established
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Fetch session to get user role
@@ -57,7 +83,7 @@ export default function Login() {
       });
       const session = await sessionResponse.json();
 
-      // Use window.location for a full page navigation to avoid router state issues
+      // Use window.location for a full page navigation
       if (session?.user?.role === "admin") {
         window.location.href = "/admin";
       } else if (callbackUrl && callbackUrl.startsWith("/")) {
@@ -71,16 +97,6 @@ export default function Login() {
       setIsLoading(false);
     }
   };
-
-  // OAuth sign-in disabled for now
-  // const handleOAuthSignIn = async (provider) => {
-  // 	try {
-  // 		await signIn(provider, { callbackUrl: "/my-account" })
-  // 	} catch (error) {
-  // 		console.error(`OAuth ${provider} error:`, error)
-  // 		setError(`Failed to sign in with ${provider}`)
-  // 	}
-  // }
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
@@ -105,7 +121,7 @@ export default function Login() {
       }
 
       setRecoverMessage(
-        "If an account with that email exists, a password reset link has been sent.",
+        "If an account with that email exists, a password reset link has been sent. Check your inbox!",
       );
       setRecoverEmail("");
     } catch (error) {
@@ -116,19 +132,31 @@ export default function Login() {
     }
   };
 
+  const switchToRecover = useCallback(() => {
+    setShowRecover(true);
+    setRecoverEmail(formData.email || "");
+    setRecoverMessage("");
+  }, [formData.email]);
+
+  const switchToLogin = useCallback(() => {
+    setShowRecover(false);
+    setRecoverMessage("");
+  }, []);
+
   return (
-    <section className="flat-spacing-10">
+    <section>
       <div className="container">
         <div className="modern-login-wrapper">
           <div className="modern-login-card">
             {showRecover ? (
               <div id="recover" className="modern-login-form">
                 <div className="modern-login-header">
-                  <i className="bi bi-person-circle" />
+                  <i className="bi bi-key" />
                   <h2>Reset Password</h2>
                 </div>
                 <p className="modern-login-subtitle">
-                  We will send you an email to reset your password
+                  Enter your email and we'll send you a link to reset your
+                  password.
                 </p>
                 {recoverMessage && (
                   <div
@@ -163,39 +191,72 @@ export default function Login() {
                   <div className="modern-form-actions">
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowRecover(false);
-                        setRecoverMessage("");
-                      }}
+                      onClick={switchToLogin}
                       className="modern-btn modern-btn-secondary"
                     >
-                      Cancel
+                      Back to Login
                     </button>
                     <button
                       type="submit"
                       className="modern-btn modern-btn-primary"
                       disabled={isLoading}
                     >
-                      {isLoading ? "Sending..." : "Reset password"}
+                      {isLoading ? "Sending..." : "Send Reset Link"}
                     </button>
                   </div>
                 </form>
               </div>
             ) : (
               <div id="login" className="modern-login-form">
-                <div
-                  style={{
-                    borderBottom: "1px solid #cccccc",
-                    paddingBottom: "10px",
-                  }}
-                >
-                  {" "}
-                  Login or Create an Account
+                <div className="modern-login-header">
+                  <i className="bi bi-person-circle" />
+                  <h2>Welcome Back</h2>
                 </div>
+
+                <p className="modern-login-subtitle">
+                  Sign in to your account or{" "}
+                  <Link href="/register" className="modern-link">
+                    create a new account
+                  </Link>
+                </p>
 
                 {error && (
                   <div className="modern-alert alert-error" role="alert">
                     {error}
+                  </div>
+                )}
+
+                {showPasswordResetSuggestion && (
+                  <div className="modern-alert alert-warning" role="alert">
+                    <strong>Having trouble logging in?</strong>
+                    <p style={{ margin: "8px 0 0" }}>
+                      If you've forgotten your password, you can{" "}
+                      <button
+                        type="button"
+                        onClick={switchToRecover}
+                        className="modern-link"
+                        style={{
+                          fontWeight: 600,
+                          background: "none",
+                          border: "none",
+                          padding: 0,
+                          cursor: "pointer",
+                        }}
+                      >
+                        reset it here
+                      </button>
+                      .
+                    </p>
+                    <p style={{ margin: "8px 0 0" }}>
+                      Don't have an account?{" "}
+                      <Link
+                        href="/register"
+                        className="modern-link"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Create one now
+                      </Link>
+                    </p>
                   </div>
                 )}
 
@@ -216,13 +277,13 @@ export default function Login() {
                       suppressHydrationWarning
                     />
                   </div>
-                  <div className="modern-input-group">
+                  <div className="modern-input-group modern-input-password">
                     <i className="bi bi-lock modern-input-icon" />
                     <input
                       required
                       className="modern-input"
                       placeholder="Password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       id="login-password"
                       name="password"
                       value={formData.password}
@@ -231,11 +292,20 @@ export default function Login() {
                       disabled={isLoading}
                       suppressHydrationWarning
                     />
+                    <button
+                      type="button"
+                      className="modern-password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      <i
+                        className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                      />
+                    </button>
                   </div>
                   <div className="modern-forgot-password">
                     <button
                       type="button"
-                      onClick={() => setShowRecover(true)}
+                      onClick={switchToRecover}
                       className="modern-link-btn"
                     >
                       Forgot your password?
@@ -250,22 +320,20 @@ export default function Login() {
                     {isLoading ? "Logging in..." : "Login"}
                   </button>
 
-                  {/* Social Login Section - Ready for Google/Facebook */}
+                  {/* Social Login Section */}
                   <div className="modern-social-divider">
                     <span>Or login with:</span>
                   </div>
                   <div className="modern-social-buttons">
-                    {/* Placeholder for Google button - will be added later */}
                     <button
                       type="button"
                       className="modern-btn modern-btn-google"
                       disabled
-                      style={{ opacity: 0.8, cursor: "not-allowed" }}
+                      style={{ opacity: 0.5, cursor: "not-allowed" }}
                     >
                       <span className="modern-social-icon">G</span>
                       <span>Google</span>
                     </button>
-                    {/* Placeholder for Facebook button - will be added later */}
                     <button
                       type="button"
                       className="modern-btn modern-btn-facebook"
@@ -277,6 +345,15 @@ export default function Login() {
                     </button>
                   </div>
                 </form>
+
+                <div className="modern-login-footer">
+                  <p>
+                    Don't have an account?{" "}
+                    <Link href="/register" className="modern-link">
+                      Create one now
+                    </Link>
+                  </p>
+                </div>
               </div>
             )}
           </div>

@@ -1,11 +1,16 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
-import LanguageSelect from "../common/LanguageSelect";
-import CurrencySelect from "../common/CurrencySelect";
+import { useSession } from "next-auth/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+
 export default function Topbar2({ bgColor = "bg_dark" }) {
+  const { data: session } = useSession();
+  const accountHref =
+    session?.user?.role === "admin" ? "/admin" : "/my-account";
+  const accountLabel = session?.user?.role === "admin" ? "Admin" : "My Account";
   return (
     <div className={`tf-top-bar bg_dark line-red`}>
       <div>
@@ -89,8 +94,11 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
                 </Link>
               </li>
               <li>
-                <Link href={`/login`} className="text-white nav-text">
-                  My Account
+                <Link
+                  href={session ? accountHref : "/login"}
+                  className="text-white nav-text"
+                >
+                  {session ? accountLabel : "My Account"}
                 </Link>
               </li>
               <li>
