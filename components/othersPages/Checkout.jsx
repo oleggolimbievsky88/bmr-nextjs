@@ -806,6 +806,7 @@ export default function Checkout() {
         orderId: orderId,
         cardLastFour: lastFourDigits,
         total: calculateGrandTotal(),
+        tax: calculateTax(),
         notes: orderNotes,
         items: orderItems.map((item) => ({
           name: item.name,

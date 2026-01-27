@@ -325,13 +325,9 @@ async function sendConfirmationEmail(emailData) {
                       ).toFixed(2)}</p>`
                     : ""
                 }
-                ${
-                  (emailData.tax ?? emailData.orderData?.tax ?? 0) > 0
-                    ? `<p><strong>Tax:</strong> $${parseFloat(
-                        emailData.tax ?? emailData.orderData?.tax ?? 0,
-                      ).toFixed(2)}</p>`
-                    : ""
-                }
+                <p><strong>Tax:</strong> $${parseFloat(
+                  emailData.tax ?? emailData.orderData?.tax ?? 0,
+                ).toFixed(2)}</p>
                 ${
                   emailData.orderData.discount > 0
                     ? `<p><strong>Discount:</strong> -$${parseFloat(

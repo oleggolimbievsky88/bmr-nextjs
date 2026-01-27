@@ -282,7 +282,9 @@ export default function AdminOrdersPage() {
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Tax:</span>
-                      <span>{formatCurrency(selectedOrder.tax)}</span>
+                      <span>
+                        {formatCurrency(parseFloat(selectedOrder.tax) || 0)}
+                      </span>
                     </div>
                     <div className="d-flex justify-content-between fw-7 border-top pt-2">
                       <span>Total:</span>

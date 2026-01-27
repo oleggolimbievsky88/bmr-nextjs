@@ -246,7 +246,7 @@ export default function OrderConfirmation({ orderData }) {
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const shipping = parseFloat(order.shippingCost || 0);
-    const tax = 0; // No tax for now
+    const tax = parseFloat(order.tax || 0);
     const discount = parseFloat(order.discount || 0);
     return subtotal + shipping + tax - discount;
   };
