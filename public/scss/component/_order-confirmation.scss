@@ -2,7 +2,7 @@
 @use "../abstracts/variable" as *;
 
 .order-confirmation-page {
-  background: #f8f9fa;
+  background: #edf2f7;
   min-height: 100vh;
   padding: 2rem 0;
 
@@ -10,27 +10,68 @@
     max-width: 1200px;
   }
 
-  // Success header
+  // Receipt header with BMR logo
+  .receipt-header {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+
+  .receipt-header-inner {
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .receipt-logo {
+    max-width: 220px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 1.5rem;
+    display: block;
+  }
+
+  .receipt-success {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.5rem;
+  }
+
   .success-icon {
     i {
-      color: #dc3545 !important;
+      color: #198754 !important;
+      font-size: 3rem;
     }
+  }
+
+  .receipt-title {
+    color: #1a1a1a !important;
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0.5rem 0 0.25rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.6rem;
+    }
+  }
+
+  .receipt-lead {
+    color: #64748b !important;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
   }
 
   h1 {
-    color: #000 !important;
+    color: #1a1a1a !important;
     font-weight: 700;
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-
-    @media (max-width: 768px) {
-      font-size: 2.5rem;
-    }
   }
 
   .lead {
-    color: #333 !important;
-    font-size: 1.25rem;
+    color: #64748b !important;
+    font-size: 1.1rem;
     font-weight: 400;
   }
 

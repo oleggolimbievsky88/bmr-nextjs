@@ -268,19 +268,28 @@ export default function OrderConfirmation({ orderData }) {
     <div className="container py-5 order-confirmation-page">
       <div className="row justify-content-center">
         <div className="col-lg-10">
-          {/* Success Header */}
-          <div className="text-center mb-5">
-            <div className="success-icon mb-3">
-              <i
-                className="fas fa-check-circle"
-                style={{ fontSize: "4rem" }}
-              ></i>
+          {/* Receipt Header with BMR Logo */}
+          <div className="receipt-header">
+            <div className="receipt-header-inner">
+              <Image
+                src="/images/logo/bmr-logo.webp"
+                alt="BMR Suspension"
+                width={240}
+                height={80}
+                className="receipt-logo"
+                priority
+              />
+              <div className="receipt-success">
+                <div className="success-icon">
+                  <i className="fas fa-check-circle" />
+                </div>
+                <h1 className="receipt-title">Order Confirmed!</h1>
+                <p className="receipt-lead">
+                  Thank you for your purchase. Your order has been successfully
+                  placed.
+                </p>
+              </div>
             </div>
-            <h1 className="display-4 mb-3">Order Confirmed!</h1>
-            <p className="lead">
-              Thank you for your purchase! Your order has been successfully
-              placed.
-            </p>
           </div>
 
           {/* Order Summary Card */}

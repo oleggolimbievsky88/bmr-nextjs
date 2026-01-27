@@ -139,11 +139,16 @@ function generateReceiptHTML(orderData) {
     return subtotal + shipping + tax - discount;
   };
 
-  // Get base URL for images
+  // Get base URL for images and links (ensure https for email clients)
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.VERCEL_URL ||
-    "https://bmrsuspension.com";
+    "https://bmrsuspension.com"
+  const siteOrigin = /^https?:/.test(baseUrl)
+    ? baseUrl
+    : `https://${baseUrl}`
+  const base = siteOrigin.replace(/\/$/, "")
+  const logoUrl = `${base}/images/logo/logo-white.png`
 
   return `
     <!DOCTYPE html>
@@ -151,333 +156,285 @@ function generateReceiptHTML(orderData) {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Order Confirmation Receipt</title>
+      <title>Order Confirmation Receipt - BMR Suspension</title>
       <style>
-        * {
-          box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: #2d3748;
           margin: 0;
           padding: 0;
-          background-color: #f8f9fa;
+          background-color: #edf2f7;
         }
         .email-wrapper {
-          max-width: 900px;
+          max-width: 620px;
           margin: 0 auto;
-          padding: 20px;
-          background-color: #f8f9fa;
+          padding: 24px 16px;
+          background-color: #edf2f7;
         }
         .email-container {
-          background: white;
-          border-radius: 8px;
+          background: #ffffff;
+          border-radius: 12px;
           overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          box-shadow: 0 4px 24px rgba(0,0,0,0.08);
         }
-        .success-header {
+        .brand-header {
+          background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+          padding: 32px 24px;
           text-align: center;
-          padding: 40px 20px 30px;
-          background: white;
+          border-bottom: 4px solid #dc3545;
+        }
+        .brand-header img {
+          max-width: 220px;
+          height: auto;
+          display: block;
+          margin: 0 auto;
+        }
+        .brand-tagline {
+          color: rgba(255,255,255,0.85);
+          font-size: 13px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          margin-top: 12px;
+          font-weight: 600;
+        }
+        .success-strip {
+          text-align: center;
+          padding: 28px 24px;
+          background: #ffffff;
+          border-bottom: 1px solid #e2e8f0;
         }
         .success-icon {
-          font-size: 64px;
-          color: #28a745;
-          margin-bottom: 20px;
+          width: 56px;
+          height: 56px;
+          background: #198754;
+          border-radius: 50%;
+          color: #fff;
+          font-size: 28px;
+          line-height: 56px;
+          margin: 0 auto 16px;
+          font-weight: bold;
         }
         .success-title {
-          font-size: 36px;
-          font-weight: 300;
-          margin: 0 0 15px 0;
-          color: #000;
+          font-size: 24px;
+          font-weight: 700;
+          margin: 0 0 8px 0;
+          color: #1a1a1a;
         }
         .success-message {
-          font-size: 18px;
-          color: #666;
+          font-size: 15px;
+          color: #64748b;
           margin: 0;
         }
         .card {
-          background: white;
-          border: 1px solid #dee2e6;
-          border-radius: 8px;
-          margin-bottom: 20px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          margin: 20px 24px;
           overflow: hidden;
         }
         .card-header {
-          background: #f8f9fa;
-          padding: 20px;
-          border-bottom: 1px solid #dee2e6;
+          background: #f8fafc;
+          padding: 18px 20px;
+          border-bottom: 1px solid #e2e8f0;
         }
         .card-header h3 {
-          margin: 0 0 5px 0;
-          font-size: 20px;
-          font-weight: 600;
-          color: #000;
+          margin: 0 0 4px 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #1a1a1a;
         }
         .card-header small {
-          color: #666;
-          font-size: 14px;
+          color: #64748b;
+          font-size: 13px;
         }
-        .card-body {
-          padding: 20px;
-        }
+        .card-body { padding: 20px; }
         .info-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 20px;
-          margin-bottom: 0;
         }
         .info-item h5 {
           margin: 0 0 10px 0;
-          font-size: 16px;
-          font-weight: 600;
-          color: #000;
+          font-size: 12px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
-        .info-item address {
+        .info-item address, .payment-info {
           margin: 0;
           font-style: normal;
           font-size: 14px;
-          color: #333;
-          line-height: 1.8;
+          color: #334155;
+          line-height: 1.7;
         }
-        .payment-info {
-          font-size: 14px;
-          color: #333;
-        }
-        .payment-info div {
-          margin-bottom: 8px;
-          display: flex;
-          align-items: center;
-        }
-        .payment-info i {
-          margin-right: 8px;
-          color: #666;
-          width: 20px;
-        }
+        .payment-info div { margin-bottom: 6px; }
         .items-table {
           width: 100%;
           border-collapse: collapse;
           margin: 0;
         }
-        .items-table thead {
-          background: #f8f9fa;
-        }
+        .items-table thead { background: #f8fafc; }
         .items-table th {
-          color: #000;
-          padding: 12px;
+          color: #475569;
+          padding: 12px 16px;
           text-align: left;
-          font-size: 14px;
-          font-weight: 600;
-          border-bottom: 1px solid #dee2e6;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border-bottom: 2px solid #e2e8f0;
         }
-        .items-table th.text-end {
-          text-align: right;
-        }
+        .items-table th.text-end { text-align: right; }
         .items-table td {
-          padding: 15px 12px;
-          border-bottom: 1px solid #dee2e6;
+          padding: 14px 16px;
+          border-bottom: 1px solid #f1f5f9;
           font-size: 14px;
           vertical-align: middle;
         }
-        .items-table td.text-end {
-          text-align: right;
-        }
-        .product-info {
-          display: flex;
-          align-items: center;
-        }
+        .items-table td.text-end { text-align: right; }
+        .product-info { display: flex; align-items: center; }
         .product-image {
-          width: 50px;
-          height: 50px;
+          width: 48px;
+          height: 48px;
           object-fit: cover;
-          border-radius: 4px;
+          border-radius: 8px;
           margin-right: 12px;
         }
         .product-details h6 {
-          margin: 0 0 4px 0;
+          margin: 0 0 2px 0;
           font-size: 14px;
           font-weight: 600;
-          color: #000;
+          color: #1a1a1a;
         }
-        .product-details small {
-          color: #666;
-          font-size: 12px;
-        }
+        .product-details small { color: #64748b; font-size: 12px; }
         .part-number {
-          background: none;
-          color: #000;
-          padding: 0;
-          font-size: 13px;
+          background: #f1f5f9;
+          color: #1a1a1a;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 12px;
           font-weight: 600;
-          font-family: monospace;
+          font-family: ui-monospace, monospace;
         }
         .color-badge {
           padding: 4px 10px;
-          border-radius: 4px;
-          font-weight: 500;
-          font-size: 12px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 11px;
           display: inline-block;
         }
-        .color-badge.color-black {
-          background: #000 !important;
-          color: white !important;
-        }
-        .color-badge.color-red {
-          background: #dc3545 !important;
-          color: white !important;
-        }
-        .color-badge.color-default {
-          background: #6c757d !important;
-          color: white !important;
-        }
-        .order-totals {
-          text-align: right;
-        }
+        .color-badge.color-black { background: #1a1a1a !important; color: #fff !important; }
+        .color-badge.color-red { background: #dc3545 !important; color: #fff !important; }
+        .color-badge.color-default { background: #64748b !important; color: #fff !important; }
+        .order-totals { text-align: right; max-width: 280px; margin-left: auto; }
         .total-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 10px;
+          margin-bottom: 8px;
           font-size: 14px;
+          color: #475569;
         }
         .total-row.final {
-          font-weight: bold;
+          font-weight: 700;
           font-size: 18px;
-          color: #000;
-          border-top: 2px solid #dee2e6;
-          padding-top: 15px;
-          margin-top: 15px;
+          color: #1a1a1a;
+          border-top: 2px solid #e2e8f0;
+          padding-top: 14px;
+          margin-top: 12px;
         }
-        .total-row.text-success {
-          color: #28a745;
-        }
+        .total-row.text-success { color: #198754; }
         .order-notes {
-          background: #f8f9fa;
-          padding: 15px;
-          border-radius: 4px;
+          background: #fffbeb;
+          padding: 16px;
+          border-radius: 8px;
           border-left: 4px solid #dc3545;
           white-space: pre-wrap;
           margin: 0;
-          color: #333;
+          color: #334155;
           font-size: 14px;
         }
         .alert {
-          padding: 15px 20px;
-          border-radius: 4px;
-          margin-bottom: 20px;
-        }
-        .alert-success {
-          background: #d4edda;
-          border: 1px solid #c3e6cb;
-          color: #155724;
+          padding: 16px 20px;
+          border-radius: 8px;
+          margin: 0;
         }
         .alert-info {
-          background: #d1ecf1;
-          border: 1px solid #bee5eb;
-          color: #0c5460;
+          background: #f0f9ff;
+          border: 1px solid #bae6fd;
+          color: #0c4a6e;
         }
-        .alert p {
-          margin: 0 0 10px 0;
-          font-size: 14px;
-        }
-        .alert p:last-child {
-          margin-bottom: 0;
-        }
-        .alert strong {
-          font-weight: 600;
-        }
-        .alert a {
-          color: #cc0000;
-          text-decoration: none;
-        }
-        .alert a:hover {
-          text-decoration: underline;
-        }
+        .alert p { margin: 0 0 10px 0; font-size: 14px; line-height: 1.6; }
+        .alert p:last-child { margin-bottom: 0; }
+        .alert a { color: #dc3545; font-weight: 600; text-decoration: none; }
         .action-buttons {
           text-align: center;
-          padding: 30px 20px;
+          padding: 28px 24px;
+          background: #f8fafc;
+          border-top: 1px solid #e2e8f0;
         }
         .btn {
           display: inline-block;
-          padding: 12px 30px;
-          font-size: 16px;
-          font-weight: 500;
+          padding: 12px 28px;
+          font-size: 15px;
+          font-weight: 600;
           text-decoration: none;
-          border-radius: 4px;
-          margin: 0 10px 10px;
-          transition: all 0.3s;
+          border-radius: 8px;
+          margin: 4px 8px;
         }
         .btn-primary {
-          background: #cc0000;
-          color: white;
-          border: 1px solid #cc0000;
+          background: #dc3545;
+          color: #ffffff !important;
+          border: 2px solid #dc3545;
         }
-        .btn-primary:hover {
-          background: #990000;
-          border-color: #990000;
-        }
-        .btn-outline-primary {
-          background: transparent;
-          color: #cc0000;
-          border: 1px solid #cc0000;
-        }
-        .btn-outline-primary:hover {
-          background: #cc0000;
-          color: white;
+        .btn-outline {
+          background: #ffffff;
+          color: #1a1a1a !important;
+          border: 2px solid #cbd5e1;
         }
         .footer {
           text-align: center;
-          padding: 30px 20px;
-          background: #f8f9fa;
-          border-top: 1px solid #dee2e6;
-          color: #666;
+          padding: 20px 24px;
+          background: #1a1a1a;
+          color: rgba(255,255,255,0.8);
           font-size: 12px;
         }
-        @media (max-width: 768px) {
-          .email-wrapper {
-            padding: 10px;
-          }
-          .info-grid {
-            grid-template-columns: 1fr;
-            gap: 15px;
-          }
-          .items-table {
-            font-size: 12px;
-          }
-          .items-table th,
-          .items-table td {
-            padding: 8px 4px;
-          }
-          .success-title {
-            font-size: 28px;
-          }
-          .btn {
-            display: block;
-            width: 100%;
-            margin: 5px 0;
-          }
+        .footer p { margin: 0 0 4px 0; }
+        @media (max-width: 600px) {
+          .email-wrapper { padding: 16px 12px; }
+          .card { margin: 16px 16px; }
+          .info-grid { grid-template-columns: 1fr; }
+          .items-table th, .items-table td { padding: 10px 8px; font-size: 12px; }
+          .success-title { font-size: 20px; }
+          .btn { display: block; width: 100%; margin: 8px 0; }
         }
       </style>
     </head>
     <body>
       <div class="email-wrapper">
         <div class="email-container">
-          <!-- Success Header -->
-          <div class="success-header">
+          <!-- Brand Header with BMR Logo -->
+          <div class="brand-header">
+            <img src="${logoUrl}" alt="BMR Suspension" width="220" />
+            <div class="brand-tagline">Order Confirmation</div>
+          </div>
+
+          <!-- Success Strip -->
+          <div class="success-strip">
             <div class="success-icon">✓</div>
             <h1 class="success-title">Order Confirmed!</h1>
             <p class="success-message">
-              Thank you for your purchase! Your order has been successfully placed.
+              Thank you for your purchase. Your order has been successfully placed.
             </p>
           </div>
 
           <!-- Order Summary Card -->
           <div class="card">
             <div class="card-header">
-              <h3>📄 Order #${orderData.orderId}</h3>
-              <small>
-                Placed on ${formatDate(new Date())}
-              </small>
+              <h3>Order #${orderData.orderId}</h3>
+              <small>Placed on ${formatDate(new Date())}</small>
             </div>
             <div class="card-body">
               <div class="info-grid">
@@ -659,24 +616,10 @@ function generateReceiptHTML(orderData) {
               : ""
           }
 
-          <!-- Email Receipt Section -->
-          <div class="card">
-            <div class="card-body">
-              <h3 style="margin: 0 0 15px 0; font-size: 18px;">✉️ Email Receipt</h3>
-              <div class="alert alert-success">
-                <p>
-                  <strong>Receipt sent automatically!</strong> We've automatically sent a detailed receipt to <strong>${
-                    orderData.billing.email
-                  }</strong>. If you didn't receive it, check your spam folder.
-                </p>
-              </div>
-            </div>
-          </div>
-
           <!-- Customer Message -->
           <div class="card">
             <div class="card-body">
-              <h3 style="margin: 0 0 15px 0; font-size: 18px;">ℹ️ What's Next?</h3>
+              <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: #1a1a1a;">What's Next?</h3>
               <div class="alert alert-info">
                 <p>
                   Thank you for your purchase! We have received your order and will work on shipping it out as soon as possible. Once your order is processed through our system, you will receive tracking information. Please note, we will not charge your card until your part(s) are ready to ship out.
@@ -693,14 +636,14 @@ function generateReceiptHTML(orderData) {
 
           <!-- Action Buttons -->
           <div class="action-buttons">
-            <a href="${baseUrl}" class="btn btn-primary">🏠 Continue Shopping</a>
-            <a href="${baseUrl}/contact" class="btn btn-outline-primary">✉️ Contact Us</a>
+            <a href="${base}" class="btn btn-primary">Continue Shopping</a>
+            <a href="${base}/contact" class="btn btn-outline">Contact Us</a>
           </div>
 
           <!-- Footer -->
           <div class="footer">
-            <p style="margin: 0 0 5px 0;">© ${new Date().getFullYear()} BMR Suspension. All Rights Reserved.</p>
-            <p style="margin: 0;">1033 Pine Chase Ave, Lakeland, FL 33815</p>
+            <p>© ${new Date().getFullYear()} BMR Suspension. All Rights Reserved.</p>
+            <p>1033 Pine Chase Ave, Lakeland, FL 33815</p>
           </div>
         </div>
       </div>
