@@ -10,7 +10,7 @@ export async function POST(request) {
     fromAddress = body.fromAddress;
     toAddress = body.toAddress;
     packages = body.packages;
-    productIds = body.productIds || [];
+    productIds = Array.isArray(body.productIds) ? body.productIds : [];
   } catch (parseErr) {
     return NextResponse.json(
       { error: "Invalid request body" },
@@ -386,9 +386,17 @@ export async function POST(request) {
     shippingOptions.sort((a, b) => a.cost - b.cost);
 
     // Free shipping only for BMR products to lower 48 US states
+    const stateForShipping = (
+      toAddress?.state ??
+      toAddress?.stateProvince ??
+      toAddress?.region ??
+      ""
+    )
+      .toString()
+      .trim();
     const allowFreeShipping =
       toCountryCode === "US" &&
-      isLower48UsState(toAddress?.state) &&
+      isLower48UsState(stateForShipping) &&
       (await areAllProductsBmr(productIds));
     if (allowFreeShipping) {
       shippingOptions.unshift({
@@ -422,11 +430,19 @@ export async function POST(request) {
     // Free shipping only when BMR products + lower 48 US
     let allowFreeShipping = false;
     const toCountryCode = getCountryCode(toAddress?.country) || "US";
+    const stateForFallback = (
+      toAddress?.state ??
+      toAddress?.stateProvince ??
+      toAddress?.region ??
+      ""
+    )
+      .toString()
+      .trim();
     try {
       allowFreeShipping =
         toCountryCode === "US" &&
-        isLower48UsState(toAddress?.state) &&
-        (await areAllProductsBmr(productIds || []));
+        isLower48UsState(stateForFallback) &&
+        (await areAllProductsBmr(Array.isArray(productIds) ? productIds : []));
     } catch (e) {
       allowFreeShipping = false;
     }

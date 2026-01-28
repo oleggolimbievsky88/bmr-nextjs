@@ -25,6 +25,9 @@ export default function Login() {
   const [showPasswordResetSuggestion, setShowPasswordResetSuggestion] =
     useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [resendVerifyMessage, setResendVerifyMessage] = useState("");
+  const [resendVerifyError, setResendVerifyError] = useState("");
+  const [resendVerifyLoading, setResendVerifyLoading] = useState(false);
 
   // Show recover form when landing from /login?recover=1 (e.g. from checkout)
   useEffect(() => {
@@ -38,6 +41,8 @@ export default function Login() {
       [name]: value,
     }));
     setError("");
+    setResendVerifyMessage("");
+    setResendVerifyError("");
   }, []);
 
   const handleSubmit = async (e) => {
@@ -148,6 +153,39 @@ export default function Login() {
     }
   };
 
+  const handleResendVerification = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!formData.email) {
+      setResendVerifyError("Please enter your email above.");
+      return;
+    }
+    setResendVerifyError("");
+    setResendVerifyMessage("");
+    setResendVerifyLoading(true);
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setResendVerifyError(data.error || "Failed to send. Please try again.");
+        return;
+      }
+      setResendVerifyMessage(
+        data.message ||
+          "A new verification link has been sent. Check your inbox.",
+      );
+    } catch (err) {
+      console.error("Resend verification error:", err);
+      setResendVerifyError("An error occurred. Please try again.");
+    } finally {
+      setResendVerifyLoading(false);
+    }
+  };
+
   const switchToRecover = useCallback(() => {
     setShowRecover(true);
     setRecoverEmail(formData.email || "");
@@ -244,6 +282,44 @@ export default function Login() {
                 {error && (
                   <div className="modern-alert alert-error" role="alert">
                     {error}
+                    {error.includes("verify your email") && (
+                      <>
+                        <p style={{ marginTop: 8, marginBottom: 0 }}>
+                          Didn&apos;t receive it?{" "}
+                          <button
+                            type="button"
+                            onClick={handleResendVerification}
+                            disabled={isLoading || resendVerifyLoading}
+                            className="modern-link"
+                            style={{
+                              fontWeight: 600,
+                              background: "none",
+                              border: "none",
+                              padding: 0,
+                              cursor:
+                                isLoading || resendVerifyLoading
+                                  ? "not-allowed"
+                                  : "pointer",
+                            }}
+                          >
+                            {resendVerifyLoading
+                              ? "Sending..."
+                              : "Resend verification link"}
+                          </button>
+                        </p>
+                        {resendVerifyError && (
+                          <p style={{ marginTop: 6, marginBottom: 0 }}>
+                            {resendVerifyError}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {resendVerifyMessage && (
+                  <div className="modern-alert alert-success" role="alert">
+                    {resendVerifyMessage}
                   </div>
                 )}
 

@@ -306,6 +306,10 @@
 		background: var(--bg-2);
 	}
 
+	th.sortable:hover {
+		background: rgba(0, 0, 0, 0.06);
+	}
+
 	tbody tr:hover {
 		background: rgba(0, 0, 0, 0.02);
 	}
@@ -483,6 +487,13 @@
 /* Admin Products & Categories Pages */
 .admin-products-page,
 .admin-categories-page {
+	.admin-form-title {
+		font-size: 1.15rem;
+		font-weight: 600;
+		color: var(--main);
+		letter-spacing: -0.01em;
+	}
+
 	.admin-form-section {
 		background: var(--bg-2);
 		border-radius: 8px;
@@ -520,6 +531,24 @@
 			font-weight: 500;
 			color: var(--text);
 		}
+	}
+
+	.admin-products-count {
+		font-weight: 600;
+		color: var(--main);
+	}
+
+	.admin-products-pagination .page-link {
+		cursor: pointer;
+		color: var(--main);
+		&:hover {
+			color: var(--primary);
+		}
+	}
+	.admin-products-pagination .page-item.active .page-link {
+		background-color: var(--primary);
+		border-color: var(--primary);
+		color: #fff;
 	}
 }
 

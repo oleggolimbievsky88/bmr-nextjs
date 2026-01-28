@@ -1,124 +1,242 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
-	getAllProductsAdmin,
-	createProductAdmin,
-} from '@/lib/queries'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
+  getAllProductsAdmin,
+  getProductsCountAdmin,
+  createProductAdmin,
+} from "@/lib/queries";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 export async function GET(request) {
-	try {
-		const session = await getServerSession(authOptions)
-		if (!session || session.user?.role !== 'admin') {
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-		}
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-		const { searchParams } = new URL(request.url)
-		const limit = parseInt(searchParams.get('limit') || '100')
-		const offset = parseInt(searchParams.get('offset') || '0')
-		const search = searchParams.get('search') || null
+    const { searchParams } = new URL(request.url);
+    const limit = parseInt(searchParams.get("limit") || "25");
+    const offset = parseInt(searchParams.get("offset") || "0");
+    const search = searchParams.get("search") || null;
+    const sortColumn = searchParams.get("sortColumn") || "PartNumber";
+    const sortDirection = searchParams.get("sortDirection") || "asc";
+    const display = searchParams.get("display") || null;
+    const displayFilter = display === "1" || display === "0" ? display : null;
 
-		const products = await getAllProductsAdmin(limit, offset, search)
-		return NextResponse.json({ products })
-	} catch (error) {
-		console.error('Error fetching products:', error)
-		return NextResponse.json(
-			{ error: 'Failed to fetch products' },
-			{ status: 500 }
-		)
-	}
+    const [products, total] = await Promise.all([
+      getAllProductsAdmin(
+        limit,
+        offset,
+        search,
+        sortColumn,
+        sortDirection,
+        displayFilter,
+      ),
+      getProductsCountAdmin(search, displayFilter),
+    ]);
+
+    return NextResponse.json({ products, total });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request) {
-	try {
-		const session = await getServerSession(authOptions)
-		if (!session || session.user?.role !== 'admin') {
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-		}
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-		const formData = await request.formData()
-		const productData = {}
+    const formData = await request.formData();
+    const productData = {};
 
-		// Extract all product fields
-		const fields = [
-			'PartNumber', 'ProductName', 'Description', 'Retail', 'Price',
-			'ImageSmall', 'Qty', 'BodyID', 'CatID', 'ImageLarge', 'Features',
-			'Instructions', 'Blength', 'Bheight', 'Bwidth', 'Bweight', 'Color',
-			'Hardware', 'Grease', 'Images', 'NewPart', 'NewPartDate',
-			'PackagePartnumbers', 'FreeShipping', 'Display', 'PackagePartnumbersQty',
-			'Package', 'StartAppYear', 'EndAppYear', 'UsaMade', 'fproduct', 'CrossRef',
-			'ManID', 'LowMargin', 'mbox', 'flatrate', 'AngleFinder', 'endproduct',
-			'domhandling', 'hardwarepack', 'hardwarepacks', 'video', 'taxexempt',
-			'couponexempt', 'BlemProduct'
-		]
+    // Extract all product fields
+    const fields = [
+      "PartNumber",
+      "ProductName",
+      "Description",
+      "Retail",
+      "Price",
+      "ImageSmall",
+      "Qty",
+      "BodyID",
+      "CatID",
+      "ImageLarge",
+      "Features",
+      "Instructions",
+      "Blength",
+      "Bheight",
+      "Bwidth",
+      "Bweight",
+      "Color",
+      "Hardware",
+      "Grease",
+      "Images",
+      "NewPart",
+      "NewPartDate",
+      "PackagePartnumbers",
+      "FreeShipping",
+      "Display",
+      "PackagePartnumbersQty",
+      "Package",
+      "StartAppYear",
+      "EndAppYear",
+      "UsaMade",
+      "fproduct",
+      "CrossRef",
+      "ManID",
+      "LowMargin",
+      "mbox",
+      "flatrate",
+      "AngleFinder",
+      "endproduct",
+      "domhandling",
+      "hardwarepack",
+      "hardwarepacks",
+      "video",
+      "taxexempt",
+      "couponexempt",
+      "BlemProduct",
+    ];
 
-		fields.forEach(field => {
-			const value = formData.get(field)
-			if (value !== null) {
-				if (['Qty', 'BodyID', 'NewPart', 'Display', 'Package', 'UsaMade',
-					'fproduct', 'ManID', 'LowMargin', 'hardwarepack', 'taxexempt',
-					'couponexempt', 'BlemProduct', 'Blength', 'Bheight', 'Bwidth', 'Bweight'].includes(field)) {
-					productData[field] = value ? parseInt(value) : 0
-				} else {
-					productData[field] = value
-				}
-			}
-		})
+    fields.forEach((field) => {
+      const value = formData.get(field);
+      if (value !== null) {
+        if (
+          [
+            "Qty",
+            "BodyID",
+            "NewPart",
+            "Display",
+            "Package",
+            "UsaMade",
+            "fproduct",
+            "ManID",
+            "LowMargin",
+            "hardwarepack",
+            "taxexempt",
+            "couponexempt",
+            "BlemProduct",
+            "Blength",
+            "Bheight",
+            "Bwidth",
+            "Bweight",
+          ].includes(field)
+        ) {
+          productData[field] = value ? parseInt(value) : 0;
+        } else {
+          productData[field] = value;
+        }
+      }
+    });
 
-		// Handle image uploads
-		const mainImageFile = formData.get('mainImage')
-		if (mainImageFile && mainImageFile instanceof File) {
-			const bytes = await mainImageFile.arrayBuffer()
-			const buffer = Buffer.from(bytes)
-			const filename = `product_${Date.now()}_${mainImageFile.name}`
-			const uploadDir = join(process.cwd(), 'public', 'images', 'products')
-			
-			try {
-				await mkdir(uploadDir, { recursive: true })
-				const filepath = join(uploadDir, filename)
-				await writeFile(filepath, buffer)
-				productData.ImageLarge = `images/products/${filename}`
-				productData.ImageSmall = `images/products/${filename}`
-			} catch (error) {
-				console.error('Error saving image:', error)
-			}
-		}
+    // New product (NewPart): only when checkbox checked; 90-day rules apply.
+    // Scratch & Dent (BlemProduct): needs NewPartDate != "0" to show in that section; set to today when empty.
+    const today = new Date().toISOString().slice(0, 10);
+    const validDate = (d) => d && d !== "0";
+    if (productData.NewPart && productData.NewPart === 1) {
+      productData.NewPart = 1;
+      productData.NewPartDate = validDate(productData.NewPartDate)
+        ? productData.NewPartDate
+        : today;
+    } else if (productData.BlemProduct && productData.BlemProduct === 1) {
+      productData.NewPart = productData.NewPart || 0;
+      productData.NewPartDate = validDate(productData.NewPartDate)
+        ? productData.NewPartDate
+        : today;
+    } else {
+      productData.NewPart = 0;
+      productData.NewPartDate = "0";
+    }
 
-		// Handle additional images
-		const additionalImages = formData.getAll('additionalImages')
-		if (additionalImages && additionalImages.length > 0) {
-			const imagePaths = []
-			for (const imgFile of additionalImages) {
-				if (imgFile instanceof File) {
-					const bytes = await imgFile.arrayBuffer()
-					const buffer = Buffer.from(bytes)
-					const filename = `product_${Date.now()}_${Math.random().toString(36).substring(7)}_${imgFile.name}`
-					const uploadDir = join(process.cwd(), 'public', 'images', 'products')
-					
-					try {
-						await mkdir(uploadDir, { recursive: true })
-						const filepath = join(uploadDir, filename)
-						await writeFile(filepath, buffer)
-						imagePaths.push(`images/products/${filename}`)
-					} catch (error) {
-						console.error('Error saving additional image:', error)
-					}
-				}
-			}
-			if (imagePaths.length > 0) {
-				productData.Images = imagePaths.join(',')
-			}
-		}
+    // Handle image uploads
+    const mainImageFile = formData.get("mainImage");
+    if (mainImageFile && mainImageFile instanceof File) {
+      const bytes = await mainImageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const filename = `product_${Date.now()}_${mainImageFile.name}`;
+      const uploadDir = join(process.cwd(), "public", "images", "products");
 
-		const productId = await createProductAdmin(productData)
-		return NextResponse.json({ success: true, productId })
-	} catch (error) {
-		console.error('Error creating product:', error)
-		return NextResponse.json(
-			{ error: 'Failed to create product', details: error.message },
-			{ status: 500 }
-		)
-	}
+      try {
+        await mkdir(uploadDir, { recursive: true });
+        const filepath = join(uploadDir, filename);
+        await writeFile(filepath, buffer);
+        productData.ImageLarge = `images/products/${filename}`;
+        productData.ImageSmall = `images/products/${filename}`;
+      } catch (error) {
+        console.error("Error saving image:", error);
+      }
+    }
+
+    // Handle additional images
+    const additionalImages = formData.getAll("additionalImages");
+    if (additionalImages && additionalImages.length > 0) {
+      const imagePaths = [];
+      for (const imgFile of additionalImages) {
+        if (imgFile instanceof File) {
+          const bytes = await imgFile.arrayBuffer();
+          const buffer = Buffer.from(bytes);
+          const filename = `product_${Date.now()}_${Math.random().toString(36).substring(7)}_${imgFile.name}`;
+          const uploadDir = join(process.cwd(), "public", "images", "products");
+
+          try {
+            await mkdir(uploadDir, { recursive: true });
+            const filepath = join(uploadDir, filename);
+            await writeFile(filepath, buffer);
+            imagePaths.push(`images/products/${filename}`);
+          } catch (error) {
+            console.error("Error saving additional image:", error);
+          }
+        }
+      }
+      if (imagePaths.length > 0) {
+        productData.Images = imagePaths.join(",");
+      }
+    }
+
+    // Instructions PDF: upload to public/instructions/
+    const instructionsPdf = formData.get("instructionsPdf");
+    if (
+      instructionsPdf &&
+      instructionsPdf instanceof File &&
+      instructionsPdf.size > 0
+    ) {
+      const bytes = await instructionsPdf.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const safe = instructionsPdf.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filename = `inst_${Date.now()}_${safe}`;
+      const uploadDir = join(process.cwd(), "public", "instructions");
+      try {
+        await mkdir(uploadDir, { recursive: true });
+        await writeFile(join(uploadDir, filename), buffer);
+        productData.Instructions = filename;
+      } catch (err) {
+        console.error("Error saving instructions PDF:", err);
+      }
+    }
+
+    // FreeShipping: default to "1" when not provided (e.g. new product)
+    if (
+      productData.FreeShipping === undefined ||
+      productData.FreeShipping === null
+    ) {
+      productData.FreeShipping = "1";
+    }
+
+    const productId = await createProductAdmin(productData);
+    return NextResponse.json({ success: true, productId });
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return NextResponse.json(
+      { error: "Failed to create product", details: error.message },
+      { status: 500 },
+    );
+  }
 }

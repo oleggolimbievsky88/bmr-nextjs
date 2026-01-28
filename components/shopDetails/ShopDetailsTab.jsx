@@ -155,7 +155,11 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                       product?.Instructions !== "0" &&
                       product?.Instructions !== 0 && (
                         <Link
-                          href={`https://www.bmrsuspension.com/siteart/install/${product?.Instructions}`}
+                          href={
+                            product.Instructions.startsWith("inst_")
+                              ? `/instructions/${product.Instructions}`
+                              : `https://www.bmrsuspension.com/siteart/install/${product.Instructions}`
+                          }
                           className="btn btn-danger install-btn"
                           style={{
                             backgroundColor: "var(--primary) !important",
