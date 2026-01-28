@@ -15,6 +15,7 @@ import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 import ShippingEstimate from "@/components/common/ShippingEstimate";
 import CheckoutAuthStep from "@/components/othersPages/CheckoutAuthStep";
 import { getTaxAmount } from "@/lib/tax";
+import { countries, canadianProvinces } from "@/lib/countryCodes";
 
 export default function Checkout() {
   const router = useRouter();
@@ -339,8 +340,16 @@ export default function Checkout() {
         width: 10,
         height: 10,
       }));
+      const productIds = cartProducts
+        .map((item) => item.ProductID)
+        .filter(Boolean);
 
-      await calculateShippingRates(fromAddress, toAddress, packages);
+      await calculateShippingRates(
+        fromAddress,
+        toAddress,
+        packages,
+        productIds,
+      );
     } finally {
       isCalculatingShippingRef.current = false;
     }
@@ -1046,17 +1055,22 @@ export default function Checkout() {
                               required
                               suppressHydrationWarning
                             >
-                              <option value="United States">
-                                United States
-                              </option>
-                              <option value="Canada">Canada</option>
+                              {countries.map((c) => (
+                                <option key={c} value={c}>
+                                  {c}
+                                </option>
+                              ))}
                             </select>
                           </div>
 
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="billing-zip">Zip Code*</label>
+                                <label htmlFor="billing-zip">
+                                  {billingData.country === "Canada"
+                                    ? "Postal Code*"
+                                    : "Zip / Postal Code*"}
+                                </label>
                                 <input
                                   type="text"
                                   id="billing-zip"
@@ -1074,71 +1088,114 @@ export default function Checkout() {
                             </div>
                             <div className="col-md-6">
                               <div className="form-group">
-                                <label htmlFor="billing-state">State*</label>
-                                <select
-                                  id="billing-state"
-                                  value={billingData.state}
-                                  onChange={(e) =>
-                                    setBillingData({
-                                      ...billingData,
-                                      state: e.target.value,
-                                    })
-                                  }
-                                  required
-                                  suppressHydrationWarning
-                                >
-                                  <option value="">Select State</option>
-                                  <option value="AL">Alabama</option>
-                                  <option value="AK">Alaska</option>
-                                  <option value="AZ">Arizona</option>
-                                  <option value="AR">Arkansas</option>
-                                  <option value="CA">California</option>
-                                  <option value="CO">Colorado</option>
-                                  <option value="CT">Connecticut</option>
-                                  <option value="DE">Delaware</option>
-                                  <option value="FL">Florida</option>
-                                  <option value="GA">Georgia</option>
-                                  <option value="HI">Hawaii</option>
-                                  <option value="ID">Idaho</option>
-                                  <option value="IL">Illinois</option>
-                                  <option value="IN">Indiana</option>
-                                  <option value="IA">Iowa</option>
-                                  <option value="KS">Kansas</option>
-                                  <option value="KY">Kentucky</option>
-                                  <option value="LA">Louisiana</option>
-                                  <option value="ME">Maine</option>
-                                  <option value="MD">Maryland</option>
-                                  <option value="MA">Massachusetts</option>
-                                  <option value="MI">Michigan</option>
-                                  <option value="MN">Minnesota</option>
-                                  <option value="MS">Mississippi</option>
-                                  <option value="MO">Missouri</option>
-                                  <option value="MT">Montana</option>
-                                  <option value="NE">Nebraska</option>
-                                  <option value="NV">Nevada</option>
-                                  <option value="NH">New Hampshire</option>
-                                  <option value="NJ">New Jersey</option>
-                                  <option value="NM">New Mexico</option>
-                                  <option value="NY">New York</option>
-                                  <option value="NC">North Carolina</option>
-                                  <option value="ND">North Dakota</option>
-                                  <option value="OH">Ohio</option>
-                                  <option value="OK">Oklahoma</option>
-                                  <option value="OR">Oregon</option>
-                                  <option value="PA">Pennsylvania</option>
-                                  <option value="RI">Rhode Island</option>
-                                  <option value="SC">South Carolina</option>
-                                  <option value="SD">South Dakota</option>
-                                  <option value="TN">Tennessee</option>
-                                  <option value="TX">Texas</option>
-                                  <option value="UT">Utah</option>
-                                  <option value="VT">Vermont</option>
-                                  <option value="VA">Virginia</option>
-                                  <option value="WA">Washington</option>
-                                  <option value="WV">West Virginia</option>
-                                  <option value="WI">Wisconsin</option>
-                                  <option value="WY">Wyoming</option>
-                                </select>
+                                <label htmlFor="billing-state">
+                                  {billingData.country === "United States"
+                                    ? "State*"
+                                    : billingData.country === "Canada"
+                                      ? "Province*"
+                                      : "State / Province / Region"}
+                                </label>
+                                {billingData.country === "United States" ? (
+                                  <select
+                                    id="billing-state"
+                                    value={billingData.state}
+                                    onChange={(e) =>
+                                      setBillingData({
+                                        ...billingData,
+                                        state: e.target.value,
+                                      })
+                                    }
+                                    required
+                                    suppressHydrationWarning
+                                  >
+                                    <option value="">Select State</option>
+                                    <option value="AL">Alabama</option>
+                                    <option value="AK">Alaska</option>
+                                    <option value="AZ">Arizona</option>
+                                    <option value="AR">Arkansas</option>
+                                    <option value="CA">California</option>
+                                    <option value="CO">Colorado</option>
+                                    <option value="CT">Connecticut</option>
+                                    <option value="DE">Delaware</option>
+                                    <option value="FL">Florida</option>
+                                    <option value="GA">Georgia</option>
+                                    <option value="HI">Hawaii</option>
+                                    <option value="ID">Idaho</option>
+                                    <option value="IL">Illinois</option>
+                                    <option value="IN">Indiana</option>
+                                    <option value="IA">Iowa</option>
+                                    <option value="KS">Kansas</option>
+                                    <option value="KY">Kentucky</option>
+                                    <option value="LA">Louisiana</option>
+                                    <option value="ME">Maine</option>
+                                    <option value="MD">Maryland</option>
+                                    <option value="MA">Massachusetts</option>
+                                    <option value="MI">Michigan</option>
+                                    <option value="MN">Minnesota</option>
+                                    <option value="MS">Mississippi</option>
+                                    <option value="MO">Missouri</option>
+                                    <option value="MT">Montana</option>
+                                    <option value="NE">Nebraska</option>
+                                    <option value="NV">Nevada</option>
+                                    <option value="NH">New Hampshire</option>
+                                    <option value="NJ">New Jersey</option>
+                                    <option value="NM">New Mexico</option>
+                                    <option value="NY">New York</option>
+                                    <option value="NC">North Carolina</option>
+                                    <option value="ND">North Dakota</option>
+                                    <option value="OH">Ohio</option>
+                                    <option value="OK">Oklahoma</option>
+                                    <option value="OR">Oregon</option>
+                                    <option value="PA">Pennsylvania</option>
+                                    <option value="RI">Rhode Island</option>
+                                    <option value="SC">South Carolina</option>
+                                    <option value="SD">South Dakota</option>
+                                    <option value="TN">Tennessee</option>
+                                    <option value="TX">Texas</option>
+                                    <option value="UT">Utah</option>
+                                    <option value="VT">Vermont</option>
+                                    <option value="VA">Virginia</option>
+                                    <option value="WA">Washington</option>
+                                    <option value="WV">West Virginia</option>
+                                    <option value="WI">Wisconsin</option>
+                                    <option value="WY">Wyoming</option>
+                                  </select>
+                                ) : billingData.country === "Canada" ? (
+                                  <select
+                                    id="billing-state"
+                                    value={billingData.state}
+                                    onChange={(e) =>
+                                      setBillingData({
+                                        ...billingData,
+                                        state: e.target.value,
+                                      })
+                                    }
+                                    required
+                                    suppressHydrationWarning
+                                  >
+                                    <option value="">Select Province</option>
+                                    {canadianProvinces.map((p) => (
+                                      <option key={p.code} value={p.code}>
+                                        {p.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    id="billing-state"
+                                    className="form-control"
+                                    value={billingData.state}
+                                    onChange={(e) =>
+                                      setBillingData({
+                                        ...billingData,
+                                        state: e.target.value,
+                                      })
+                                    }
+                                    placeholder="Optional for some countries"
+                                    suppressHydrationWarning
+                                  />
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1324,10 +1381,11 @@ export default function Checkout() {
                                   required
                                   suppressHydrationWarning
                                 >
-                                  <option value="United States">
-                                    United States
-                                  </option>
-                                  <option value="Canada">Canada</option>
+                                  {countries.map((c) => (
+                                    <option key={c} value={c}>
+                                      {c}
+                                    </option>
+                                  ))}
                                 </select>
                               </div>
 
@@ -1335,7 +1393,9 @@ export default function Checkout() {
                                 <div className="col-md-6">
                                   <div className="form-group">
                                     <label htmlFor="shipping-zip">
-                                      Zip Code*
+                                      {shippingData.country === "Canada"
+                                        ? "Postal Code*"
+                                        : "Zip / Postal Code*"}
                                     </label>
                                     <input
                                       type="text"
@@ -1355,72 +1415,126 @@ export default function Checkout() {
                                 <div className="col-md-6">
                                   <div className="form-group">
                                     <label htmlFor="shipping-state">
-                                      State*
+                                      {shippingData.country === "United States"
+                                        ? "State*"
+                                        : shippingData.country === "Canada"
+                                          ? "Province*"
+                                          : "State / Province / Region"}
                                     </label>
-                                    <select
-                                      id="shipping-state"
-                                      value={shippingData.state}
-                                      onChange={(e) =>
-                                        setShippingData({
-                                          ...shippingData,
-                                          state: e.target.value,
-                                        })
-                                      }
-                                      required
-                                      suppressHydrationWarning
-                                    >
-                                      <option value="">Select State</option>
-                                      <option value="AL">Alabama</option>
-                                      <option value="AK">Alaska</option>
-                                      <option value="AZ">Arizona</option>
-                                      <option value="AR">Arkansas</option>
-                                      <option value="CA">California</option>
-                                      <option value="CO">Colorado</option>
-                                      <option value="CT">Connecticut</option>
-                                      <option value="DE">Delaware</option>
-                                      <option value="FL">Florida</option>
-                                      <option value="GA">Georgia</option>
-                                      <option value="HI">Hawaii</option>
-                                      <option value="ID">Idaho</option>
-                                      <option value="IL">Illinois</option>
-                                      <option value="IN">Indiana</option>
-                                      <option value="IA">Iowa</option>
-                                      <option value="KS">Kansas</option>
-                                      <option value="KY">Kentucky</option>
-                                      <option value="LA">Louisiana</option>
-                                      <option value="ME">Maine</option>
-                                      <option value="MD">Maryland</option>
-                                      <option value="MA">Massachusetts</option>
-                                      <option value="MI">Michigan</option>
-                                      <option value="MN">Minnesota</option>
-                                      <option value="MS">Mississippi</option>
-                                      <option value="MO">Missouri</option>
-                                      <option value="MT">Montana</option>
-                                      <option value="NE">Nebraska</option>
-                                      <option value="NV">Nevada</option>
-                                      <option value="NH">New Hampshire</option>
-                                      <option value="NJ">New Jersey</option>
-                                      <option value="NM">New Mexico</option>
-                                      <option value="NY">New York</option>
-                                      <option value="NC">North Carolina</option>
-                                      <option value="ND">North Dakota</option>
-                                      <option value="OH">Ohio</option>
-                                      <option value="OK">Oklahoma</option>
-                                      <option value="OR">Oregon</option>
-                                      <option value="PA">Pennsylvania</option>
-                                      <option value="RI">Rhode Island</option>
-                                      <option value="SC">South Carolina</option>
-                                      <option value="SD">South Dakota</option>
-                                      <option value="TN">Tennessee</option>
-                                      <option value="TX">Texas</option>
-                                      <option value="UT">Utah</option>
-                                      <option value="VT">Vermont</option>
-                                      <option value="VA">Virginia</option>
-                                      <option value="WA">Washington</option>
-                                      <option value="WV">West Virginia</option>
-                                      <option value="WI">Wisconsin</option>
-                                      <option value="WY">Wyoming</option>
-                                    </select>
+                                    {shippingData.country ===
+                                    "United States" ? (
+                                      <select
+                                        id="shipping-state"
+                                        value={shippingData.state}
+                                        onChange={(e) =>
+                                          setShippingData({
+                                            ...shippingData,
+                                            state: e.target.value,
+                                          })
+                                        }
+                                        required
+                                        suppressHydrationWarning
+                                      >
+                                        <option value="">Select State</option>
+                                        <option value="AL">Alabama</option>
+                                        <option value="AK">Alaska</option>
+                                        <option value="AZ">Arizona</option>
+                                        <option value="AR">Arkansas</option>
+                                        <option value="CA">California</option>
+                                        <option value="CO">Colorado</option>
+                                        <option value="CT">Connecticut</option>
+                                        <option value="DE">Delaware</option>
+                                        <option value="FL">Florida</option>
+                                        <option value="GA">Georgia</option>
+                                        <option value="HI">Hawaii</option>
+                                        <option value="ID">Idaho</option>
+                                        <option value="IL">Illinois</option>
+                                        <option value="IN">Indiana</option>
+                                        <option value="IA">Iowa</option>
+                                        <option value="KS">Kansas</option>
+                                        <option value="KY">Kentucky</option>
+                                        <option value="LA">Louisiana</option>
+                                        <option value="ME">Maine</option>
+                                        <option value="MD">Maryland</option>
+                                        <option value="MA">
+                                          Massachusetts
+                                        </option>
+                                        <option value="MI">Michigan</option>
+                                        <option value="MN">Minnesota</option>
+                                        <option value="MS">Mississippi</option>
+                                        <option value="MO">Missouri</option>
+                                        <option value="MT">Montana</option>
+                                        <option value="NE">Nebraska</option>
+                                        <option value="NV">Nevada</option>
+                                        <option value="NH">
+                                          New Hampshire
+                                        </option>
+                                        <option value="NJ">New Jersey</option>
+                                        <option value="NM">New Mexico</option>
+                                        <option value="NY">New York</option>
+                                        <option value="NC">
+                                          North Carolina
+                                        </option>
+                                        <option value="ND">North Dakota</option>
+                                        <option value="OH">Ohio</option>
+                                        <option value="OK">Oklahoma</option>
+                                        <option value="OR">Oregon</option>
+                                        <option value="PA">Pennsylvania</option>
+                                        <option value="RI">Rhode Island</option>
+                                        <option value="SC">
+                                          South Carolina
+                                        </option>
+                                        <option value="SD">South Dakota</option>
+                                        <option value="TN">Tennessee</option>
+                                        <option value="TX">Texas</option>
+                                        <option value="UT">Utah</option>
+                                        <option value="VT">Vermont</option>
+                                        <option value="VA">Virginia</option>
+                                        <option value="WA">Washington</option>
+                                        <option value="WV">
+                                          West Virginia
+                                        </option>
+                                        <option value="WI">Wisconsin</option>
+                                        <option value="WY">Wyoming</option>
+                                      </select>
+                                    ) : shippingData.country === "Canada" ? (
+                                      <select
+                                        id="shipping-state"
+                                        value={shippingData.state}
+                                        onChange={(e) =>
+                                          setShippingData({
+                                            ...shippingData,
+                                            state: e.target.value,
+                                          })
+                                        }
+                                        required
+                                        suppressHydrationWarning
+                                      >
+                                        <option value="">
+                                          Select Province
+                                        </option>
+                                        {canadianProvinces.map((p) => (
+                                          <option key={p.code} value={p.code}>
+                                            {p.name}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        id="shipping-state"
+                                        className="form-control"
+                                        value={shippingData.state}
+                                        onChange={(e) =>
+                                          setShippingData({
+                                            ...shippingData,
+                                            state: e.target.value,
+                                          })
+                                        }
+                                        placeholder="Optional for some countries"
+                                        suppressHydrationWarning
+                                      />
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1565,7 +1679,9 @@ export default function Checkout() {
                             ) : (
                               <div className="text-center py-3">
                                 <p className="text-muted">
-                                  Free shipping on all BMR products
+                                  Free shipping on BMR products (lower 48 US
+                                  only) when eligible. Enter your address to see
+                                  rates.
                                 </p>
                               </div>
                             )}

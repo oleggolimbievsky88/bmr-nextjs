@@ -2,11 +2,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const MAX_LOGIN_ATTEMPTS = 3;
 
 export default function Login() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || null;
   const recoverFromUrl = searchParams.get("recover") === "1";
@@ -152,13 +153,21 @@ export default function Login() {
     setRecoverEmail(formData.email || "");
     setRecoverMessage("");
     setError("");
-  }, [formData.email]);
+    const params = new URLSearchParams();
+    params.set("recover", "1");
+    if (callbackUrl) params.set("callbackUrl", callbackUrl);
+    router.replace(`/login?${params.toString()}`, { scroll: false });
+  }, [formData.email, callbackUrl, router]);
 
   const switchToLogin = useCallback(() => {
     setShowRecover(false);
     setRecoverMessage("");
     setError("");
-  }, []);
+    const url = callbackUrl
+      ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+      : "/login";
+    router.replace(url, { scroll: false });
+  }, [callbackUrl, router]);
 
   return (
     <section>
@@ -166,7 +175,7 @@ export default function Login() {
         <div className="modern-login-wrapper">
           <div className="modern-login-card">
             {showRecover ? (
-              <div id="recover" className="modern-login-form">
+              <div id="login-recover" className="modern-login-form">
                 <div className="modern-login-header">
                   <i className="bi bi-key" />
                   <h2>Reset Password</h2>
@@ -219,7 +228,7 @@ export default function Login() {
                 </form>
               </div>
             ) : (
-              <div id="login" className="modern-login-form">
+              <div id="login-page-form" className="modern-login-form">
                 <div className="modern-login-header">
                   <i className="bi bi-person-circle" />
                   <h2>Welcome Back</h2>

@@ -38,7 +38,7 @@ export default function ShippingEstimate({
       !estimateAddress.zip
     ) {
       alert(
-        "Please enter at least address, city, and postal code before calculating shipping estimate."
+        "Please enter at least address, city, and postal code before calculating shipping estimate.",
       );
       return;
     }
@@ -90,11 +90,15 @@ export default function ShippingEstimate({
               height: 10,
             },
           ];
+    const productIds = cartProducts
+      .map((item) => item.ProductID)
+      .filter(Boolean);
 
     const result = await calculateShippingRates(
       fromAddress,
       toAddress,
-      packages
+      packages,
+      productIds,
     );
 
     if (onEstimateComplete && result?.shippingOptions) {

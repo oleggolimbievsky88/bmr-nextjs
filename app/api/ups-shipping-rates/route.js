@@ -1,10 +1,23 @@
 import { NextResponse } from "next/server";
 import { getCountryCode } from "@/lib/countryCodes";
+import { isLower48UsState } from "@/lib/shipping";
+import { areAllProductsBmr } from "@/lib/queries";
 
 export async function POST(request) {
+  let fromAddress, toAddress, packages, productIds;
   try {
-    const { fromAddress, toAddress, packages } = await request.json();
-
+    const body = await request.json();
+    fromAddress = body.fromAddress;
+    toAddress = body.toAddress;
+    packages = body.packages;
+    productIds = body.productIds || [];
+  } catch (parseErr) {
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 },
+    );
+  }
+  try {
     // UPS API credentials - Client Credentials flow only needs Client ID and Client Secret
     const upsClientId = process.env.UPS_CLIENT_ID || process.env.UPS_ACCESS_KEY;
     const upsClientSecret =
@@ -18,7 +31,7 @@ export async function POST(request) {
       });
       return NextResponse.json(
         { error: "UPS API credentials not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -32,19 +45,19 @@ export async function POST(request) {
     // Calculate total weight and dimensions
     const totalWeight = packages.reduce(
       (sum, pkg) => sum + (pkg.weight || 1),
-      0
+      0,
     );
     const maxLength = Math.max(...packages.map((pkg) => pkg.length || 10));
     const maxWidth = Math.max(...packages.map((pkg) => pkg.width || 10));
     const maxHeight = packages.reduce(
       (sum, pkg) => sum + (pkg.height || 10),
-      0
+      0,
     );
 
     // Get country codes - convert country names to ISO codes
     const toCountryCode = getCountryCode(toAddress.country) || "US";
     const fromCountryCode = getCountryCode(fromAddress.country) || "US";
-    
+
     console.log("Country code conversion:", {
       originalTo: toAddress.country,
       convertedTo: toCountryCode,
@@ -118,9 +131,8 @@ export async function POST(request) {
       },
       ShipTo: {
         Name:
-          `${toAddress.firstName || ""} ${
-            toAddress.lastName || ""
-          }`.trim() || "Customer",
+          `${toAddress.firstName || ""} ${toAddress.lastName || ""}`.trim() ||
+          "Customer",
         Address: shipToAddress,
       },
       ShipFrom: {
@@ -160,12 +172,12 @@ export async function POST(request) {
       : "https://onlinetools.ups.com";
 
     console.log(
-      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`
+      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`,
     );
 
     // Get OAuth token using Client Credentials flow
     const basicAuth = Buffer.from(`${upsClientId}:${upsClientSecret}`).toString(
-      "base64"
+      "base64",
     );
 
     console.log("Basic Auth header:", {
@@ -189,7 +201,7 @@ export async function POST(request) {
       const errorText = await tokenResponse.text();
       console.error("UPS OAuth error details:", errorText);
       throw new Error(
-        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`
+        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`,
       );
     }
 
@@ -236,12 +248,15 @@ export async function POST(request) {
           const errorText = await rateResponse.text();
           console.log(
             `UPS Rate API error for service ${serviceInfo.code}:`,
-            errorText
+            errorText,
           );
           return null;
         }
       } catch (error) {
-        console.log(`Error fetching rate for service ${serviceInfo.code}:`, error);
+        console.log(
+          `Error fetching rate for service ${serviceInfo.code}:`,
+          error,
+        );
         return null;
       }
     });
@@ -270,32 +285,34 @@ export async function POST(request) {
       "01": "UPS Next Day Air",
       "02": "UPS 2nd Day Air",
       "03": "UPS Ground",
-      "12": "UPS 3 Day Select",
-      "13": "UPS Next Day Air Saver",
-      "14": "UPS Next Day Air Early AM",
-      "15": "UPS Next Day Air Early AM (Commercial)",
-      "16": "UPS Next Day Air Early AM (Residential)",
-      "17": "UPS Worldwide Express",
-      "18": "UPS Worldwide Express Plus",
-      "20": "UPS Worldwide Express (Commercial)",
-      "21": "UPS Worldwide Express Plus (Commercial)",
-      "32": "UPS Next Day Air (Commercial)",
-      "33": "UPS 2nd Day Air (Commercial)",
-      "59": "UPS 2nd Day Air AM",
-      "65": "UPS Saver",
-      "66": "UPS Worldwide Express (Residential)",
-      "68": "UPS Worldwide Express Plus (Residential)",
-      "70": "UPS Access Point Economy",
-      "71": "UPS Worldwide Expedited",
-      "72": "UPS Worldwide Saver",
-      "74": "UPS Express 12:00",
-      "82": "UPS Today Standard",
-      "83": "UPS Today Dedicated Courier",
-      "84": "UPS Today Intercity",
-      "85": "UPS Today Express",
-      "86": "UPS Today Express Saver",
-      "96": "UPS Worldwide Express Freight",
+      "07": "UPS Worldwide Express",
       "08": "UPS Worldwide Expedited",
+      11: "UPS Standard",
+      12: "UPS 3 Day Select",
+      13: "UPS Next Day Air Saver",
+      14: "UPS Next Day Air Early AM",
+      15: "UPS Next Day Air Early AM (Commercial)",
+      16: "UPS Next Day Air Early AM (Residential)",
+      17: "UPS Worldwide Express",
+      18: "UPS Worldwide Express Plus",
+      20: "UPS Worldwide Express (Commercial)",
+      21: "UPS Worldwide Express Plus (Commercial)",
+      32: "UPS Next Day Air (Commercial)",
+      33: "UPS 2nd Day Air (Commercial)",
+      59: "UPS 2nd Day Air AM",
+      65: "UPS Saver",
+      66: "UPS Worldwide Express (Residential)",
+      68: "UPS Worldwide Express Plus (Residential)",
+      70: "UPS Access Point Economy",
+      71: "UPS Worldwide Expedited",
+      72: "UPS Worldwide Saver",
+      74: "UPS Express 12:00",
+      82: "UPS Today Standard",
+      83: "UPS Today Dedicated Courier",
+      84: "UPS Today Intercity",
+      85: "UPS Today Express",
+      86: "UPS Today Express Saver",
+      96: "UPS Worldwide Express Freight",
     };
 
     // Process all shipments from multiple service requests
@@ -318,7 +335,11 @@ export async function POST(request) {
         deliveryDays = shipment.ScheduledDeliveryTime;
       } else {
         // Estimate based on service code
-        if (serviceCode === "01" || serviceCode === "13" || serviceCode === "14") {
+        if (
+          serviceCode === "01" ||
+          serviceCode === "13" ||
+          serviceCode === "14"
+        ) {
           deliveryDays = "1 business day";
         } else if (serviceCode === "02" || serviceCode === "59") {
           deliveryDays = "2 business days";
@@ -333,9 +354,15 @@ export async function POST(request) {
 
       // Determine description
       let description = "";
-      if (toCountryCode !== "US") {
+      if (toCountryCode === "CA") {
+        description = "Shipping to Canada";
+      } else if (toCountryCode !== "US") {
         description = "International shipping";
-      } else if (serviceCode === "01" || serviceCode === "13" || serviceCode === "14") {
+      } else if (
+        serviceCode === "01" ||
+        serviceCode === "13" ||
+        serviceCode === "14"
+      ) {
         description = "Next business day delivery";
       } else if (serviceCode === "02" || serviceCode === "59") {
         description = "Second business day delivery";
@@ -358,15 +385,19 @@ export async function POST(request) {
     // Sort by cost (cheapest first)
     shippingOptions.sort((a, b) => a.cost - b.cost);
 
-    // Add free shipping option for BMR products (only for domestic US)
-    if (toCountryCode === "US") {
+    // Free shipping only for BMR products to lower 48 US states
+    const allowFreeShipping =
+      toCountryCode === "US" &&
+      isLower48UsState(toAddress?.state) &&
+      (await areAllProductsBmr(productIds));
+    if (allowFreeShipping) {
       shippingOptions.unshift({
         service: "FREE SHIPPING",
         code: "FREE",
         cost: 0,
         currency: "USD",
         deliveryDays: "1-5 business days",
-        description: "Free shipping on all BMR products",
+        description: "Free shipping on BMR products (lower 48 US only)",
       });
     }
 
@@ -388,22 +419,24 @@ export async function POST(request) {
     console.error("UPS shipping rates error:", error);
 
     // Fallback shipping options when UPS API fails
-    // Always provide multiple options so customers can choose faster delivery
-    return NextResponse.json({
-      success: true,
-      shippingOptions: [
-        {
-          service: "FREE Standard Shipping",
-          code: "FREE",
-          cost: 0,
-          currency: "USD",
-          deliveryDays: "5-7 business days",
-          description: "Free ground shipping on all BMR products",
-        },
+    // Free shipping only when BMR products + lower 48 US
+    let allowFreeShipping = false;
+    const toCountryCode = getCountryCode(toAddress?.country) || "US";
+    try {
+      allowFreeShipping =
+        toCountryCode === "US" &&
+        isLower48UsState(toAddress?.state) &&
+        (await areAllProductsBmr(productIds || []));
+    } catch (e) {
+      allowFreeShipping = false;
+    }
+    let fallbackOptions;
+    if (toCountryCode === "US") {
+      fallbackOptions = [
         {
           service: "UPS 3 Day Select",
           code: "12",
-          cost: 24.99,
+          cost: 64.99,
           currency: "USD",
           deliveryDays: "3 business days",
           description: "Guaranteed 3-day delivery",
@@ -411,7 +444,7 @@ export async function POST(request) {
         {
           service: "UPS 2nd Day Air",
           code: "02",
-          cost: 34.99,
+          cost: 99.99,
           currency: "USD",
           deliveryDays: "2 business days",
           description: "Second business day delivery",
@@ -419,12 +452,80 @@ export async function POST(request) {
         {
           service: "UPS Next Day Air",
           code: "01",
-          cost: 49.99,
+          cost: 149.99,
           currency: "USD",
           deliveryDays: "1 business day",
           description: "Next business day delivery",
         },
-      ],
+      ];
+      if (allowFreeShipping) {
+        fallbackOptions.unshift({
+          service: "FREE Standard Shipping",
+          code: "FREE",
+          cost: 0,
+          currency: "USD",
+          deliveryDays: "5-7 business days",
+          description: "Free shipping on BMR products (lower 48 US only)",
+        });
+      }
+    } else if (toCountryCode === "CA") {
+      fallbackOptions = [
+        {
+          service: "UPS Standard to Canada",
+          code: "11",
+          cost: 99.99,
+          currency: "USD",
+          deliveryDays: "3-7 business days",
+          description: "Economy shipping to Canada",
+        },
+        {
+          service: "UPS Worldwide Expedited",
+          code: "08",
+          cost: 149.99,
+          currency: "USD",
+          deliveryDays: "2-5 business days",
+          description: "Expedited shipping to Canada",
+        },
+        {
+          service: "UPS Worldwide Express",
+          code: "07",
+          cost: 199.99,
+          currency: "USD",
+          deliveryDays: "1-3 business days",
+          description: "Express shipping to Canada",
+        },
+      ];
+    } else {
+      fallbackOptions = [
+        {
+          service: "UPS Worldwide Expedited",
+          code: "08",
+          cost: 199.99,
+          currency: "USD",
+          deliveryDays: "3-7 business days",
+          description: "International expedited shipping",
+        },
+        {
+          service: "UPS Worldwide Express",
+          code: "07",
+          cost: 299.99,
+          currency: "USD",
+          deliveryDays: "2-5 business days",
+          description: "International express shipping",
+        },
+        {
+          service: "UPS Worldwide Saver",
+          code: "65",
+          cost: 280.99,
+          currency: "USD",
+          deliveryDays: "2-5 business days",
+          description: "International saver shipping",
+        },
+      ];
+    }
+    return NextResponse.json({
+      success: true,
+      shippingOptions: fallbackOptions,
       error: "Using fallback shipping rates",
     });
   }

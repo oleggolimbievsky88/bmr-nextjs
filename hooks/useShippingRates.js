@@ -7,7 +7,7 @@ export const useShippingRates = () => {
   const [error, setError] = useState(null);
 
   const calculateShippingRates = useCallback(
-    async (fromAddress, toAddress, packages) => {
+    async (fromAddress, toAddress, packages, productIds = []) => {
       setIsLoading(true);
       setError(null);
 
@@ -21,6 +21,7 @@ export const useShippingRates = () => {
             fromAddress,
             toAddress,
             packages,
+            productIds: productIds || [],
           }),
         });
 
@@ -34,7 +35,7 @@ export const useShippingRates = () => {
 
         // Auto-select free shipping if available
         const freeOption = result.shippingOptions.find(
-          (option) => option.code === "FREE"
+          (option) => option.code === "FREE",
         );
         if (freeOption) {
           setSelectedOption(freeOption);
@@ -47,21 +48,13 @@ export const useShippingRates = () => {
         console.error("Shipping rates error:", error);
         setError(null); // Don't show error to user, just use fallback options
 
-        // Fallback shipping options when UPS API is unavailable
-        // Always show multiple options so customers can choose faster shipping
+        // Fallback when UPS API is unavailable: paid options only
+        // (free shipping eligibility cannot be determined client-side)
         const fallbackOptions = [
-          {
-            service: "FREE Standard Shipping",
-            code: "FREE",
-            cost: 0,
-            currency: "USD",
-            deliveryDays: "5-7 business days",
-            description: "Free ground shipping on all BMR products",
-          },
           {
             service: "UPS 3 Day Select",
             code: "12",
-            cost: 24.99,
+            cost: 44.99,
             currency: "USD",
             deliveryDays: "3 business days",
             description: "Guaranteed 3-day delivery",
@@ -69,7 +62,7 @@ export const useShippingRates = () => {
           {
             service: "UPS 2nd Day Air",
             code: "02",
-            cost: 34.99,
+            cost: 64.99,
             currency: "USD",
             deliveryDays: "2 business days",
             description: "Second business day delivery",
@@ -77,7 +70,7 @@ export const useShippingRates = () => {
           {
             service: "UPS Next Day Air",
             code: "01",
-            cost: 49.99,
+            cost: 99.99,
             currency: "USD",
             deliveryDays: "1 business day",
             description: "Next business day delivery",
@@ -96,7 +89,7 @@ export const useShippingRates = () => {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   const selectShippingOption = useCallback((option) => {
