@@ -1,31 +1,31 @@
-import { NextResponse } from 'next/server'
-import pool from '@/lib/db'
+import { NextResponse } from "next/server";
+import pool from "@/lib/db";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export async function GET(request) {
-	try {
-		const { searchParams } = new URL(request.url)
-		const platform = searchParams.get('platform')
-		const category = searchParams.get('category')
+  try {
+    const { searchParams } = new URL(request.url);
+    const platform = searchParams.get("platform");
+    const category = searchParams.get("category");
 
-		if (!platform) {
-			return NextResponse.json(
-				{ error: 'Platform is required' },
-				{ status: 400 }
-			)
-		}
+    if (!platform) {
+      return NextResponse.json(
+        { error: "Platform is required" },
+        { status: 400 },
+      );
+    }
 
-		// Get platform info
-		const platformQuery = `
+    // Get platform info
+    const platformQuery = `
 			SELECT BodyID, Name, StartYear, EndYear
 			FROM bodies
 			WHERE BodyID = ?
-		`
-		const [platformRows] = await pool.query(platformQuery, [platform])
-		const platformInfo = platformRows[0] || null
+		`;
+    const [platformRows] = await pool.query(platformQuery, [platform]);
+    const platformInfo = platformRows[0] || null;
 
-		let query = `
+    let query = `
 			SELECT DISTINCT
 				p.ProductID,
 				p.PartNumber,
@@ -43,33 +43,35 @@ export async function GET(request) {
 				AND p.Instructions IS NOT NULL
 				AND p.Instructions != ''
 				AND p.Instructions != '0'
-		`
+		`;
 
-		const params = [platform]
+    const params = [platform];
 
-		if (category) {
-			query += ` AND FIND_IN_SET(?, p.CatID) > 0`
-			params.push(category)
-		}
+    if (category) {
+      query += ` AND FIND_IN_SET(?, p.CatID) > 0`;
+      params.push(category);
+    }
 
-		query += ` GROUP BY p.ProductID ORDER BY p.PartNumber`
+    query += ` GROUP BY p.ProductID, p.PartNumber, p.ProductName, p.Instructions, p.ImageSmall, p.CatID ORDER BY p.PartNumber`;
 
-		const [rows] = await pool.query(query, params)
+    const [rows] = await pool.query(query, params);
 
-		// Attach platform info to each product
-		const products = rows.map(product => ({
-			...product,
-			PlatformName: platformInfo ? `${platformInfo.StartYear !== '0' && platformInfo.EndYear !== '0' ? `${platformInfo.StartYear}-${platformInfo.EndYear} ` : ''}${platformInfo.Name}` : null,
-			PlatformStartYear: platformInfo?.StartYear || null,
-			PlatformEndYear: platformInfo?.EndYear || null,
-		}))
+    // Attach platform info to each product
+    const products = rows.map((product) => ({
+      ...product,
+      PlatformName: platformInfo
+        ? `${platformInfo.StartYear !== "0" && platformInfo.EndYear !== "0" ? `${platformInfo.StartYear}-${platformInfo.EndYear} ` : ""}${platformInfo.Name}`
+        : null,
+      PlatformStartYear: platformInfo?.StartYear || null,
+      PlatformEndYear: platformInfo?.EndYear || null,
+    }));
 
-		return NextResponse.json({ products, platformInfo })
-	} catch (error) {
-		console.error('Error fetching products:', error)
-		return NextResponse.json(
-			{ error: 'Failed to fetch products' },
-			{ status: 500 }
-		)
-	}
+    return NextResponse.json({ products, platformInfo });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 },
+    );
+  }
 }

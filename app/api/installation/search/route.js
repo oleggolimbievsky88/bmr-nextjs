@@ -1,21 +1,21 @@
-import { NextResponse } from 'next/server'
-import pool from '@/lib/db'
+import { NextResponse } from "next/server";
+import pool from "@/lib/db";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export async function GET(request) {
-	try {
-		const { searchParams } = new URL(request.url)
-		const partNumber = searchParams.get('partNumber')
+  try {
+    const { searchParams } = new URL(request.url);
+    const partNumber = searchParams.get("partNumber");
 
-		if (!partNumber) {
-			return NextResponse.json(
-				{ error: 'Part number is required' },
-				{ status: 400 }
-			)
-		}
+    if (!partNumber) {
+      return NextResponse.json(
+        { error: "Part number is required" },
+        { status: 400 },
+      );
+    }
 
-		const query = `
+    const query = `
 			SELECT DISTINCT
 				p.ProductID,
 				p.PartNumber,
@@ -38,28 +38,37 @@ export async function GET(request) {
 				AND p.Instructions IS NOT NULL
 				AND p.Instructions != ''
 				AND p.Instructions != '0'
-			GROUP BY p.ProductID
+			GROUP BY p.ProductID, p.PartNumber, p.ProductName, p.Instructions, p.ImageSmall, p.BodyID, p.CatID, b.Name, b.StartYear, b.EndYear
 			ORDER BY p.PartNumber
-		`
+		`;
 
-		const [rows] = await pool.query(query, [`%${partNumber}%`])
+    const [rows] = await pool.query(query, [`%${partNumber}%`]);
 
-		// Format platform name with years
-		const products = rows.map(product => ({
-			...product,
-			PlatformName: product.PlatformName
-				? `${product.PlatformStartYear && product.PlatformStartYear !== '0' && product.PlatformEndYear && product.PlatformEndYear !== '0'
-					? `${product.PlatformStartYear}-${product.PlatformEndYear} `
-					: ''}${product.PlatformName}`
-				: null,
-		}))
+    // Format platform name with years
+    const products = rows.map((product) => ({
+      ...product,
+      PlatformName: product.PlatformName
+        ? `${
+            product.PlatformStartYear &&
+            product.PlatformStartYear !== "0" &&
+            product.PlatformEndYear &&
+            product.PlatformEndYear !== "0"
+              ? `${product.PlatformStartYear}-${product.PlatformEndYear} `
+              : ""
+          }${product.PlatformName}`
+        : null,
+    }));
 
-		return NextResponse.json({ products, searchType: 'partNumber', searchTerm: partNumber })
-	} catch (error) {
-		console.error('Error searching for product:', error)
-		return NextResponse.json(
-			{ error: 'Failed to search for product' },
-			{ status: 500 }
-		)
-	}
+    return NextResponse.json({
+      products,
+      searchType: "partNumber",
+      searchTerm: partNumber,
+    });
+  } catch (error) {
+    console.error("Error searching for product:", error);
+    return NextResponse.json(
+      { error: "Failed to search for product" },
+      { status: 500 },
+    );
+  }
 }
