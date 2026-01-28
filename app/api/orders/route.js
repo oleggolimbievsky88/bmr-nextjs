@@ -6,6 +6,7 @@ import {
   createOrder,
   createOrderItems,
   recordCouponUsage,
+  insertOrderStatusHistory,
 } from "@/lib/queries";
 import { getTaxAmount } from "@/lib/tax";
 
@@ -142,6 +143,25 @@ export async function POST(request) {
     }
 
     console.log("Order created with ID:", orderId);
+
+    // Seed audit history so every order has a timeline entry
+    try {
+      await insertOrderStatusHistory(
+        orderId,
+        orderData.customerId || null,
+        orderData.billing.email,
+        `${orderData.billing.firstName} ${orderData.billing.lastName}`,
+        null,
+        "pending",
+        null,
+      );
+    } catch (e) {
+      // Do not block checkout if audit logging fails
+      console.error(
+        "Failed to insert initial order status history:",
+        e.message,
+      );
+    }
 
     // Create order items
     await createOrderItems(orderId, orderData.items);

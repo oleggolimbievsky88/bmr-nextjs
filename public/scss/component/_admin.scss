@@ -484,6 +484,207 @@
 	}
 }
 
+// Status select background colors (match badge colors)
+.admin-status-select {
+	font-weight: 600;
+	border-color: var(--line);
+}
+
+.admin-status-select.pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.admin-status-select.processed {
+	background: #dbeafe;
+	color: #1e40af;
+}
+
+.admin-status-select.shipped,
+.admin-status-select.delivered {
+	background: #d1fae5;
+	color: #065f46;
+}
+
+.admin-status-select.cancelled {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+// Colored status dropdown (replaces native select for admin orders)
+.admin-status-dropdown-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	min-width: 160px;
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	font-weight: 700;
+	text-transform: capitalize;
+}
+
+.btn-sm.admin-status-dropdown-btn {
+	min-width: 120px;
+	padding: 0.25rem 0.5rem;
+	font-size: 13px;
+	border-radius: 10px;
+}
+
+.admin-status-dropdown-btn.pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.admin-status-dropdown-btn.processed {
+	background: #dbeafe;
+	color: #1e40af;
+}
+
+.admin-status-dropdown-btn.shipped,
+.admin-status-dropdown-btn.delivered {
+	background: #d1fae5;
+	color: #065f46;
+}
+
+.admin-status-dropdown-btn.cancelled {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+.admin-status-dropdown-menu {
+	min-width: 220px;
+	border-radius: 12px;
+	border-color: var(--line);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+	padding: 0.4rem;
+}
+
+.admin-status-dropdown-item {
+	border-radius: 10px;
+	font-weight: 700;
+	padding: 0.45rem 0.6rem;
+	margin-bottom: 0.25rem;
+}
+.admin-status-dropdown-item:last-child {
+	margin-bottom: 0;
+}
+
+.admin-status-dropdown-item.pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+.admin-status-dropdown-item.processed {
+	background: #dbeafe;
+	color: #1e40af;
+}
+.admin-status-dropdown-item.shipped,
+.admin-status-dropdown-item.delivered {
+	background: #d1fae5;
+	color: #065f46;
+}
+.admin-status-dropdown-item.cancelled {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+.admin-status-dropdown-item:hover,
+.admin-status-dropdown-item:focus {
+	filter: brightness(0.97);
+}
+
+// Order History (admin orders modal)
+.admin-order-history {
+	background: var(--white);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+	border-left: 4px solid var(--primary);
+}
+
+.admin-order-history-toggle {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	background: var(--bg-2);
+	border: none;
+	color: var(--main);
+	font-weight: 700;
+	cursor: pointer;
+	@include transition3;
+
+	&:hover {
+		// No pink/red hover tint — use neutral gray
+		background: #e1e1e1;
+	}
+}
+
+.admin-order-history-caret {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 6px;
+	background: var(--primary);
+	flex: 0 0 20px;
+	position: relative;
+}
+
+.admin-order-history-caret::before {
+	content: "";
+	display: block;
+	width: 0;
+	height: 0;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 7px solid var(--white);
+	margin-left: 1px; // visually center the triangle
+}
+
+.admin-order-history-badges {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-left: auto;
+}
+
+.admin-badge-primary {
+	background: var(--primary);
+	color: var(--white);
+	border: 1px solid var(--primary);
+	font-weight: 600;
+	border-radius: 999px;
+}
+
+.admin-badge-outline {
+	background: transparent;
+	color: var(--primary);
+	border: 1px solid rgba(219, 18, 21, 0.35);
+	font-weight: 600;
+	border-radius: 999px;
+}
+
+.admin-order-history-body {
+	padding: 0.9rem 1rem 1rem;
+}
+
+.admin-order-history-section-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--primary);
+	margin: 0.25rem 0 0.6rem;
+}
+
 /* Admin Products & Categories Pages */
 .admin-products-page,
 .admin-categories-page {

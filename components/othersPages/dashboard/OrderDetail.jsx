@@ -146,7 +146,7 @@ export default function OrderDetail({ orderNumber }) {
 
         {/* Billing & Shipping Info */}
         <div className="row mb_30">
-          <div className="col-md-6 mb_20">
+          <div className="col-md-4 mb_20">
             <h6 className="fw-5 mb_15">Billing Address</h6>
             <div className="address-box">
               <p className="mb-1">
@@ -166,7 +166,7 @@ export default function OrderDetail({ orderNumber }) {
               <p className="mb-0">{order.billing_email}</p>
             </div>
           </div>
-          <div className="col-md-6 mb_20">
+          <div className="col-md-4 mb_20">
             <h6 className="fw-5 mb_15">Shipping Address</h6>
             <div className="address-box">
               <p className="mb-1">
@@ -185,6 +185,45 @@ export default function OrderDetail({ orderNumber }) {
                 <strong>Method:</strong> {order.shipping_method}
               </p>
             </div>
+          </div>
+          <div className="col-md-4 mb_20">
+            {(order.payment_method ||
+              order.cc_last_four ||
+              order.cc_type ||
+              order.cc_payment_token) && (
+              <>
+                <h6 className="fw-5 mb_15">Payment Information</h6>
+                <div className="address-box">
+                  {order.payment_method && (
+                    <p className="mb-1">
+                      <strong>Payment Method:</strong> {order.payment_method}
+                    </p>
+                  )}
+                  {(order.cc_type || order.cc_last_four) && (
+                    <p className="mb-1">
+                      <strong>Card:</strong>{" "}
+                      {order.cc_type && <span>{order.cc_type} </span>}
+                      {order.cc_last_four ? (
+                        <span>****{order.cc_last_four}</span>
+                      ) : (
+                        <span>••••</span>
+                      )}
+                      {order.cc_exp_month && order.cc_exp_year && (
+                        <span className="ms-2">
+                          (Exp: {order.cc_exp_month}/
+                          {String(order.cc_exp_year).slice(-2)})
+                        </span>
+                      )}
+                    </p>
+                  )}
+                  {order.cc_payment_token && !order.cc_last_four && (
+                    <p className="mb-0">
+                      <strong>Payment:</strong> Card on file
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -257,6 +296,34 @@ export default function OrderDetail({ orderNumber }) {
             </div>
           </div>
         </div>
+
+        {order.status_history?.length > 0 && (
+          <div className="mb_30">
+            <h6 className="fw-5 mb_15">Order timeline</h6>
+            <div className="address-box">
+              <ul className="list-unstyled mb-0">
+                {order.status_history
+                  .slice()
+                  .reverse()
+                  .map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="mb-2 pb-2 border-bottom border-light"
+                    >
+                      <strong>
+                        {formatDate(entry.created_at)} — {entry.new_status}
+                      </strong>
+                      {entry.tracking_number && (
+                        <span className="ms-2 text-info">
+                          Tracking: {entry.tracking_number}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          </div>
+        )}
 
         {/* Print Styles */}
         <style jsx>{`

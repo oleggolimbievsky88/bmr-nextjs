@@ -13,6 +13,7 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const isLoginPage = pathname === "/admin/login";
+  const isPrintPage = pathname?.includes("/print");
 
   useEffect(() => {
     if (isLoginPage) return;
@@ -57,6 +58,11 @@ export default function AdminLayout({ children }) {
 
   if (!session || session.user?.role !== "admin") {
     return null;
+  }
+
+  // Print pages should not have header/footer
+  if (isPrintPage) {
+    return <>{children}</>;
   }
 
   return (

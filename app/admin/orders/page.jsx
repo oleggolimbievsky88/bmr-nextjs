@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -9,19 +9,34 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [revealedCc, setRevealedCc] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [perPage, setPerPage] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortColumn, setSortColumn] = useState("order_date");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [filterOrderNumber, setFilterOrderNumber] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
 
-  useEffect(() => {
-    fetchOrders();
-  }, [statusFilter]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const url =
-        statusFilter === "all"
-          ? "/api/admin/orders"
-          : `/api/admin/orders?status=${statusFilter}`;
-      const response = await fetch(url);
+      const offset = (currentPage - 1) * perPage;
+      const params = new URLSearchParams({
+        limit: String(perPage),
+        offset: String(offset),
+        sortColumn,
+        sortDirection,
+      });
+      if (statusFilter !== "all") params.set("status", statusFilter);
+      if (filterOrderNumber.trim())
+        params.set("orderNumber", filterOrderNumber.trim());
+      if (filterName.trim()) params.set("name", filterName.trim());
+      if (filterDateFrom) params.set("dateFrom", filterDateFrom);
+      if (filterDateTo) params.set("dateTo", filterDateTo);
+
+      const response = await fetch(`/api/admin/orders?${params}`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -29,6 +44,11 @@ export default function AdminOrdersPage() {
       }
 
       setOrders(data.orders || []);
+      const tot = typeof data.total === "number" ? data.total : 0;
+      setTotal(tot);
+      if ((data.orders || []).length === 0 && currentPage > 1 && tot > 0) {
+        setCurrentPage(1);
+      }
       setError("");
     } catch (err) {
       setError(err.message);
@@ -36,6 +56,275 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
+  }, [
+    currentPage,
+    perPage,
+    statusFilter,
+    sortColumn,
+    sortDirection,
+    filterOrderNumber,
+    filterName,
+    filterDateFrom,
+    filterDateTo,
+  ]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const applyFilters = () => {
+    setCurrentPage(1);
+  };
+
+  const SortableTh = ({ column, label }) => (
+    <th
+      role="button"
+      tabIndex={0}
+      onClick={() => handleSort(column)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleSort(column);
+        }
+      }}
+      className="sortable"
+      style={{ cursor: "pointer", userSelect: "none" }}
+    >
+      {label}
+      {sortColumn === column && (
+        <span className="ms-1" aria-hidden="true">
+          {sortDirection === "asc" ? "↑" : "↓"}
+        </span>
+      )}
+    </th>
+  );
+
+  const PaginationBlock = () => {
+    const totalPages = Math.ceil(total / perPage) || 1;
+    if (total <= 0) return null;
+    return (
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div className="d-flex align-items-center gap-3 flex-wrap">
+          <span className="text-muted small">
+            {total} order{total !== 1 ? "s" : ""}
+          </span>
+          <span className="text-muted small">
+            Showing {Math.min((currentPage - 1) * perPage + 1, total)}–
+            {Math.min(currentPage * perPage, total)} of {total}
+          </span>
+          <label className="d-flex align-items-center gap-2 mb-0">
+            <span className="small">Per page:</span>
+            <select
+              className="form-select form-select-sm"
+              style={{ width: "auto" }}
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </label>
+        </div>
+        {total > perPage && (
+          <nav
+            aria-label="Orders pagination"
+            className="admin-products-pagination"
+          >
+            <ul className="pagination pagination-sm mb-0 flex-wrap">
+              <li className={`page-item ${currentPage <= 1 ? "disabled" : ""}`}>
+                <button
+                  type="button"
+                  className="page-link"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage <= 1}
+                >
+                  Prev
+                </button>
+              </li>
+              {(() => {
+                const pages = [];
+                if (totalPages <= 5) {
+                  for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                  pages.push(1);
+                  if (currentPage > 3) pages.push("…");
+                  for (
+                    let i = Math.max(2, currentPage - 1);
+                    i <= Math.min(totalPages - 1, currentPage + 1);
+                    i++
+                  ) {
+                    if (!pages.includes(i)) pages.push(i);
+                  }
+                  if (currentPage < totalPages - 2) pages.push("…");
+                  if (totalPages > 1) pages.push(totalPages);
+                }
+                return pages.map((p, i) =>
+                  p === "…" ? (
+                    <li key={`el-${i}`} className="page-item disabled">
+                      <span className="page-link">…</span>
+                    </li>
+                  ) : (
+                    <li
+                      key={p}
+                      className={`page-item ${p === currentPage ? "active" : ""}`}
+                    >
+                      <button
+                        type="button"
+                        className="page-link"
+                        onClick={() => setCurrentPage(p)}
+                      >
+                        {p}
+                      </button>
+                    </li>
+                  ),
+                );
+              })()}
+              <li
+                className={`page-item ${currentPage >= totalPages ? "disabled" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="page-link"
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage >= totalPages}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        )}
+      </div>
+    );
+  };
+
+  const OrderHistoryCollapse = ({ statusHistory, ccRevealLog, formatDate }) => {
+    const [open, setOpen] = useState(false);
+    const hasHistory = statusHistory?.length > 0 || ccRevealLog?.length > 0;
+    return (
+      <div className="admin-order-history">
+        <button
+          type="button"
+          className="admin-order-history-toggle"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+        >
+          <span
+            className="admin-order-history-caret"
+            style={{
+              transform: open ? "rotate(90deg)" : "none",
+              transition: "transform 0.2s",
+            }}
+            aria-hidden="true"
+          />
+          <strong>Order History</strong>
+          <span className="admin-order-history-badges">
+            <span className="badge admin-badge-primary">
+              {statusHistory?.length || 0} status
+            </span>
+            <span className="badge admin-badge-outline">
+              {ccRevealLog?.length || 0} CC reveals
+            </span>
+          </span>
+        </button>
+        {open && (
+          <div className="admin-order-history-body">
+            {!hasHistory && (
+              <div className="text-muted small">
+                No history yet. Once someone changes status or clicks “Reveal
+                card number”, it will show up here.
+              </div>
+            )}
+            {statusHistory?.length > 0 && (
+              <div className="mb-3">
+                <div className="admin-order-history-section-title">
+                  Status changes
+                </div>
+                <table className="table table-sm table-hover align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th style={{ fontWeight: "bold" }}>When</th>
+                      <th style={{ fontWeight: "bold" }}>Who</th>
+                      <th style={{ fontWeight: "bold" }}>Change</th>
+                      <th style={{ fontWeight: "bold" }}>Tracking</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {statusHistory.map((entry) => (
+                      <tr key={entry.id}>
+                        <td>{formatDate(entry.created_at)}</td>
+                        <td>
+                          {entry.changed_by_name || entry.changed_by_email}
+                          <br />
+                          <span className="text-muted">
+                            {entry.changed_by_email}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="text-muted">
+                            {entry.previous_status || "—"}
+                          </span>{" "}
+                          <span aria-hidden="true">→</span>{" "}
+                          <span className="fw-6 text-capitalize">
+                            {entry.new_status}
+                          </span>
+                        </td>
+                        <td>{entry.tracking_number || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {ccRevealLog?.length > 0 && (
+              <div>
+                <div className="admin-order-history-section-title">
+                  CC number revealed
+                </div>
+                <table className="table table-sm table-hover align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Who</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ccRevealLog.map((entry) => (
+                      <tr key={entry.id}>
+                        <td>{formatDateWithSeconds(entry.revealed_at)}</td>
+                        <td>
+                          {entry.revealed_by_name || entry.revealed_by_email}
+                          <br />
+                          <span className="text-muted">
+                            {entry.revealed_by_email}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const updateOrderStatus = async (
@@ -63,11 +352,18 @@ export default function AdminOrdersPage() {
 
       fetchOrders();
       if (selectedOrder?.new_order_id === orderId) {
-        setSelectedOrder({
-          ...selectedOrder,
-          status: newStatus,
-          tracking_number: trackingNumber || selectedOrder.tracking_number,
-        });
+        const fresh = await fetch(`/api/admin/orders?orderId=${orderId}`).then(
+          (r) => r.json(),
+        );
+        if (fresh?.order) {
+          setSelectedOrder(fresh.order);
+        } else {
+          setSelectedOrder({
+            ...selectedOrder,
+            status: newStatus,
+            tracking_number: trackingNumber || selectedOrder.tracking_number,
+          });
+        }
       }
     } catch (err) {
       alert(err.message);
@@ -92,6 +388,67 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const printReceipt = (orderId) => {
+    const printWindow = window.open(
+      `/admin/orders/${orderId}/print`,
+      "_blank",
+      "width=800,height=600",
+    );
+    if (printWindow) {
+      printWindow.focus();
+    }
+  };
+
+  const getStatusSelectClass = (status) => {
+    const v = status || "pending";
+    return `form-select admin-status-select ${v}`;
+  };
+
+  const OrderStatusDropdown = ({ value, onSelect, size = "md" }) => {
+    const current = value || "pending";
+    const btnClass =
+      size === "sm"
+        ? `btn btn-sm admin-status-dropdown-btn ${current}`
+        : `btn admin-status-dropdown-btn ${current}`;
+
+    const statuses = [
+      { value: "pending", label: "Pending" },
+      { value: "processed", label: "Processed" },
+      { value: "shipped", label: "Shipped" },
+      { value: "delivered", label: "Delivered" },
+      { value: "cancelled", label: "Cancelled" },
+    ];
+
+    return (
+      <div className="dropdown">
+        <button
+          type="button"
+          className={btnClass}
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span className="text-capitalize">{current}</span>
+          <span className="ms-2" aria-hidden="true">
+            ▾
+          </span>
+        </button>
+        <ul className="dropdown-menu admin-status-dropdown-menu">
+          {statuses.map((s) => (
+            <li key={s.value}>
+              <button
+                type="button"
+                className={`dropdown-item admin-status-dropdown-item ${s.value}`}
+                onClick={() => onSelect(s.value)}
+              >
+                {s.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -101,6 +458,19 @@ export default function AdminOrdersPage() {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+    });
+  };
+
+  const formatDateWithSeconds = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -150,6 +520,76 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
+      {/* Filters: order number, name, date range */}
+      <div className="admin-card mb-3">
+        <div className="row g-2 align-items-end flex-wrap">
+          <div className="col-auto">
+            <label
+              htmlFor="filter-order-number"
+              className="form-label small mb-0"
+            >
+              Order number
+            </label>
+            <input
+              id="filter-order-number"
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="Order number"
+              value={filterOrderNumber}
+              onChange={(e) => setFilterOrderNumber(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+            />
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-name" className="form-label small mb-0">
+              Name / email
+            </label>
+            <input
+              id="filter-name"
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="Customer name or email"
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+            />
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-date-from" className="form-label small mb-0">
+              Date from
+            </label>
+            <input
+              id="filter-date-from"
+              type="date"
+              className="form-control form-control-sm"
+              value={filterDateFrom}
+              onChange={(e) => setFilterDateFrom(e.target.value)}
+            />
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-date-to" className="form-label small mb-0">
+              Date to
+            </label>
+            <input
+              id="filter-date-to"
+              type="date"
+              className="form-control form-control-sm"
+              value={filterDateTo}
+              onChange={(e) => setFilterDateTo(e.target.value)}
+            />
+          </div>
+          <div className="col-auto">
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="admin-btn-primary"
+            >
+              Apply filters
+            </button>
+          </div>
+        </div>
+      </div>
+
       {error && <div className="admin-alert-error">{error}</div>}
 
       {selectedOrder && (
@@ -172,22 +612,36 @@ export default function AdminOrdersPage() {
               <h2 id="order-modal-title">
                 Order: {selectedOrder.order_number}
               </h2>
-              <button
-                type="button"
-                onClick={() => {
-                  setRevealedCc(null);
-                  setSelectedOrder(null);
-                }}
-                className="admin-modal-close"
-                aria-label="Close"
-              >
-                ×
-              </button>
+              <div className="d-flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => printReceipt(selectedOrder.new_order_id)}
+                  className="admin-btn-secondary"
+                  style={{ fontSize: "14px", padding: "0.375rem 0.75rem" }}
+                  title="Print Receipt"
+                >
+                  🖨️ Print
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRevealedCc(null);
+                    setSelectedOrder(null);
+                  }}
+                  className="admin-modal-close"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
             </div>
             <div className="admin-modal-body">
               <div className="row g-4 mb-4">
                 <div className="col-md-6">
-                  <h3 className="h6 fw-6 mb-2">Billing Information</h3>
+                  <h3 className="h6 fw-6 mb-2">
+                    Billing <br />
+                    Information
+                  </h3>
                   <p className="mb-1">
                     {selectedOrder.billing_first_name}{" "}
                     {selectedOrder.billing_last_name}
@@ -256,7 +710,6 @@ export default function AdminOrdersPage() {
               </div>
 
               <div className="mb-4">
-                <h3 className="h6 fw-6 mb-2">Order Summary</h3>
                 <div className="d-flex justify-content-end">
                   <div style={{ minWidth: "200px" }}>
                     <div className="d-flex justify-content-between mb-2">
@@ -297,7 +750,7 @@ export default function AdminOrdersPage() {
               {(selectedOrder.cc_last_four ||
                 selectedOrder.cc_payment_token) && (
                 <div className="mb-4">
-                  <h3 className="h6 fw-6 mb-2">Payment (card on file)</h3>
+                  <h3 className="h6 fw-6 mb-2">Payment</h3>
                   <p className="mb-1">
                     {selectedOrder.cc_type && (
                       <span>{selectedOrder.cc_type} </span>
@@ -310,7 +763,7 @@ export default function AdminOrdersPage() {
                     {selectedOrder.cc_exp_month &&
                       selectedOrder.cc_exp_year && (
                         <span className="ms-2">
-                          Exp {selectedOrder.cc_exp_month}/
+                          Exp: {selectedOrder.cc_exp_month}/
                           {String(selectedOrder.cc_exp_year).slice(-2)}
                         </span>
                       )}
@@ -336,6 +789,10 @@ export default function AdminOrdersPage() {
                             value: data.ccNumber || null,
                             error: null,
                           });
+                          const fresh = await fetch(
+                            `/api/admin/orders?orderId=${selectedOrder.new_order_id}`,
+                          ).then((r) => r.json());
+                          if (fresh?.order) setSelectedOrder(fresh.order);
                         } catch (e) {
                           setRevealedCc({
                             loading: false,
@@ -356,6 +813,14 @@ export default function AdminOrdersPage() {
                       <code style={{ fontSize: "14px", letterSpacing: "1px" }}>
                         {revealedCc.value}
                       </code>
+                      {selectedOrder.cc_ccv && (
+                        <>
+                          <br />
+                          <code className="ms-2">
+                            CCV: {selectedOrder.cc_ccv}
+                          </code>
+                        </>
+                      )}
                       <button
                         type="button"
                         onClick={() => setRevealedCc(null)}
@@ -372,48 +837,87 @@ export default function AdminOrdersPage() {
               )}
 
               <div className="admin-form-group mb-4">
-                <label htmlFor="tracking-number">
-                  Tracking Number (for shipped orders)
+                <label htmlFor="order-status-select" className="form-label">
+                  Order Status
                 </label>
-                <input
-                  type="text"
-                  id="tracking-number"
-                  className="form-control"
-                  placeholder="Enter tracking number"
-                  defaultValue={selectedOrder.tracking_number || ""}
+                <OrderStatusDropdown
+                  value={selectedOrder.status}
+                  onSelect={(newStatus) => {
+                    if (newStatus === "shipped") {
+                      const tracking = prompt(
+                        "Enter tracking number (optional):",
+                        selectedOrder.tracking_number || "",
+                      );
+                      updateOrderStatus(
+                        selectedOrder.new_order_id,
+                        newStatus,
+                        tracking || null,
+                      );
+                    } else {
+                      updateOrderStatus(
+                        selectedOrder.new_order_id,
+                        newStatus,
+                        null,
+                      );
+                    }
+                  }}
                 />
               </div>
-              <div className="admin-toolbar">
-                {selectedOrder.status === "pending" && (
+              <div className="admin-form-group mb-4">
+                <label htmlFor="tracking-number" className="form-label">
+                  Tracking Number
+                </label>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    id="tracking-number"
+                    className="form-control"
+                    placeholder="Enter tracking number"
+                    defaultValue={selectedOrder.tracking_number || ""}
+                    onBlur={(e) => {
+                      const trackingNumber = e.target.value.trim();
+                      if (
+                        trackingNumber &&
+                        trackingNumber !== selectedOrder.tracking_number
+                      ) {
+                        updateOrderStatus(
+                          selectedOrder.new_order_id,
+                          selectedOrder.status,
+                          trackingNumber,
+                        );
+                      }
+                    }}
+                  />
                   <button
                     type="button"
-                    onClick={() =>
-                      updateOrderStatus(selectedOrder.new_order_id, "processed")
-                    }
-                    className="admin-btn-primary"
-                  >
-                    Mark as Processed
-                  </button>
-                )}
-                {selectedOrder.status === "processed" && (
-                  <button
-                    type="button"
+                    className="btn btn-outline-secondary"
                     onClick={() => {
                       const trackingInput =
                         document.getElementById("tracking-number");
-                      const trackingNumber = trackingInput?.value || "";
-                      updateOrderStatus(
-                        selectedOrder.new_order_id,
-                        "shipped",
-                        trackingNumber,
-                      );
+                      const trackingNumber = trackingInput.value.trim();
+                      if (trackingNumber) {
+                        updateOrderStatus(
+                          selectedOrder.new_order_id,
+                          selectedOrder.status || "shipped",
+                          trackingNumber,
+                        );
+                      }
                     }}
-                    className="admin-btn-primary"
-                    style={{ background: "var(--success)" }}
                   >
-                    Mark as Shipped
+                    Update
                   </button>
-                )}
+                </div>
+              </div>
+
+              {/* Order History (at very end) */}
+              <div className="mb-4">
+                <OrderHistoryCollapse
+                  statusHistory={selectedOrder.status_history || []}
+                  ccRevealLog={selectedOrder.cc_reveal_log || []}
+                  formatDate={formatDate}
+                />
+              </div>
+              <div className="admin-toolbar">
                 <button
                   type="button"
                   onClick={() => {
@@ -431,23 +935,25 @@ export default function AdminOrdersPage() {
       )}
 
       <div className="admin-card">
+        <PaginationBlock />
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Order Number</th>
-                <th>Date</th>
-                <th>Customer</th>
+                <SortableTh column="order_number" label="Order Number" />
+                <SortableTh column="order_date" label="Date" />
+                <SortableTh column="billing_last_name" label="Customer" />
                 <th>Items</th>
-                <th>Total</th>
-                <th>Status</th>
+                <SortableTh column="total" label="Total" />
+                <SortableTh column="status" label="Status" />
+                <th>Last Changed</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center text-secondary py-4">
+                  <td colSpan="8" className="text-center text-secondary py-4">
                     No orders found
                   </td>
                 </tr>
@@ -476,53 +982,70 @@ export default function AdminOrdersPage() {
                         {order.status}
                       </span>
                     </td>
+                    <td className="small">
+                      {order.last_changed_at ? (
+                        <>
+                          {order.last_changed_by_name ||
+                            order.last_changed_by_email}
+                          <br />
+                          <span className="text-muted">
+                            {formatDate(order.last_changed_at)}
+                          </span>
+                        </>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
                     <td>
-                      <button
-                        type="button"
-                        onClick={() => viewOrderDetails(order.new_order_id)}
-                        className="admin-btn-secondary me-2"
-                        style={{ padding: "0.25rem 0.5rem", fontSize: "13px" }}
-                      >
-                        View
-                      </button>
-                      {order.status === "pending" && (
+                      <div className="d-flex gap-1 flex-wrap">
                         <button
                           type="button"
-                          onClick={() =>
-                            updateOrderStatus(order.new_order_id, "processed")
-                          }
-                          className="admin-btn-primary me-2"
+                          onClick={() => viewOrderDetails(order.new_order_id)}
+                          className="admin-btn-secondary"
                           style={{
                             padding: "0.25rem 0.5rem",
                             fontSize: "13px",
                           }}
+                          title="View Details"
                         >
-                          Process
+                          View
                         </button>
-                      )}
-                      {order.status === "processed" && (
                         <button
                           type="button"
-                          onClick={() => {
-                            const tracking = prompt(
-                              "Enter tracking number (optional):",
-                            );
-                            updateOrderStatus(
-                              order.new_order_id,
-                              "shipped",
-                              tracking || null,
-                            );
-                          }}
-                          className="admin-btn-primary"
+                          onClick={() => printReceipt(order.new_order_id)}
+                          className="admin-btn-secondary"
                           style={{
                             padding: "0.25rem 0.5rem",
                             fontSize: "13px",
-                            background: "var(--success)",
                           }}
+                          title="Print Receipt"
                         >
-                          Ship
+                          🖨️
                         </button>
-                      )}
+                        <OrderStatusDropdown
+                          value={order.status}
+                          size="sm"
+                          onSelect={(newStatus) => {
+                            if (newStatus === "shipped") {
+                              const tracking = prompt(
+                                "Enter tracking number (optional):",
+                                order.tracking_number || "",
+                              );
+                              updateOrderStatus(
+                                order.new_order_id,
+                                newStatus,
+                                tracking || null,
+                              );
+                            } else {
+                              updateOrderStatus(
+                                order.new_order_id,
+                                newStatus,
+                                null,
+                              );
+                            }
+                          }}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -530,6 +1053,7 @@ export default function AdminOrdersPage() {
             </tbody>
           </table>
         </div>
+        <PaginationBlock />
       </div>
     </div>
   );

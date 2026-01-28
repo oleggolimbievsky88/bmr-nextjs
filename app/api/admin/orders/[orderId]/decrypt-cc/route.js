@@ -5,7 +5,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getOrderById } from "@/lib/queries";
+import { getOrderById, insertOrderCcRevealLog } from "@/lib/queries";
 import { decrypt } from "@/lib/ccEncryption";
 
 export async function GET(request, { params }) {
@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = params.orderId;
+    const { orderId } = await params;
     const order = await getOrderById(orderId);
 
     if (!order) {
@@ -27,6 +27,13 @@ export async function GET(request, { params }) {
     if (!encrypted || encrypted === "[stored]") {
       return NextResponse.json({ ccNumber: null });
     }
+
+    await insertOrderCcRevealLog(
+      order.new_order_id,
+      session.user?.id ?? null,
+      session.user?.email ?? "unknown",
+      session.user?.name ?? null,
+    );
 
     const ccNumber = decrypt(encrypted);
     return NextResponse.json({ ccNumber: ccNumber || null });

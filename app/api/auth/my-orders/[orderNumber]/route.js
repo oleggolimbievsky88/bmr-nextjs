@@ -4,7 +4,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getOrderById, getOrderItems } from "@/lib/queries";
+import {
+  getOrderById,
+  getOrderItems,
+  getOrderStatusHistory,
+} from "@/lib/queries";
 import { redactOrderCcToken } from "@/lib/ccEncryption";
 
 export async function GET(request, { params }) {
@@ -32,14 +36,17 @@ export async function GET(request, { params }) {
 
     redactOrderCcToken(order, { forAdmin: false });
 
-    // Get order items
-    const items = await getOrderItems(order.new_order_id);
+    const [items, status_history] = await Promise.all([
+      getOrderItems(order.new_order_id),
+      getOrderStatusHistory(order.new_order_id),
+    ]);
 
     return NextResponse.json({
       success: true,
       order: {
         ...order,
         items,
+        status_history,
       },
     });
   } catch (error) {
