@@ -82,6 +82,7 @@ export async function GET(request) {
     const code = error?.code;
     const msg = error?.message || String(error);
     const sqlMessage = error?.sqlMessage;
+    const detail = sqlMessage || msg;
 
     console.error("Error fetching orders:", {
       message: msg,
@@ -90,11 +91,15 @@ export async function GET(request) {
       stack: error?.stack,
     });
 
-    // Tables not created on this environment (run create_order_tables.sql + order_audit_tables.sql)
+    // Missing table: "Table 'db.name' doesn't exist" or ER_NO_SUCH_TABLE (do not match "Unknown column")
     const isMissingTable =
       code === "ER_NO_SUCH_TABLE" ||
-      (msg && msg.includes("doesn't exist")) ||
-      (sqlMessage && sqlMessage.includes("doesn't exist"));
+      (detail && /Table\s+['`]?[\w.]*['`]?\s+doesn't exist/i.test(detail));
+
+    // Missing column: ER_BAD_FIELD_ERROR or "Unknown column"
+    const isMissingColumn =
+      code === "ER_BAD_FIELD_ERROR" ||
+      (detail && /Unknown column\s+['`]?\w+['`]?/i.test(detail));
 
     if (isMissingTable) {
       return NextResponse.json(
@@ -102,13 +107,26 @@ export async function GET(request) {
           error: "Orders database not configured",
           code: "MIGRATION_REQUIRED",
           hint: "Run create_order_tables.sql and order_audit_tables.sql on this database.",
+          detail,
+        },
+        { status: 503 },
+      );
+    }
+
+    if (isMissingColumn) {
+      return NextResponse.json(
+        {
+          error: "Orders schema outdated (missing column)",
+          code: "SCHEMA_OUTDATED",
+          hint: "Run database/add_missing_new_orders_columns.sql on this database.",
+          detail,
         },
         { status: 503 },
       );
     }
 
     return NextResponse.json(
-      { error: "Failed to fetch orders" },
+      { error: "Failed to fetch orders", detail },
       { status: 500 },
     );
   }

@@ -40,10 +40,9 @@ export default function AdminOrdersPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        const msg =
-          data.code === "MIGRATION_REQUIRED" && data.hint
-            ? `${data.error}. ${data.hint}`
-            : data.error || "Failed to fetch orders";
+        let msg = data.error || "Failed to fetch orders";
+        if (data.hint) msg += ". " + data.hint;
+        if (data.detail) msg += " (" + data.detail + ")";
         throw new Error(msg);
       }
 
