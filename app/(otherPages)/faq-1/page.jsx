@@ -9,7 +9,8 @@ import React from "react";
 import Link from "next/link";
 export const metadata = {
   title: "FAQ | BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  description:
+    "Frequently asked questions about BMR Suspension products, shipping, returns, and installation. Get answers on suspension parts, fitment, and support.",
 };
 export default function page() {
   return (

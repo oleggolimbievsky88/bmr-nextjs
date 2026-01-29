@@ -3,12 +3,25 @@ import Header18 from "@/components/header/Header18";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
 import Login from "@/components/othersPages/Login";
+import { pageMeta } from "@/lib/metadata";
 import React, { Suspense } from "react";
 
+const title =
+  "Login | BMR Suspension - Performance Racing Suspension & Chassis Parts";
+const description =
+  "Log in to your BMR Suspension account. Manage orders, addresses, and wishlist. Performance suspension and chassis parts for Mustang, Camaro, GM, Mopar.";
+
+const { openGraph, twitter } = pageMeta({
+  path: "/login",
+  title,
+  description,
+});
+
 export const metadata = {
-  title:
-    "Login | BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title,
+  description,
+  openGraph,
+  twitter,
 };
 
 function LoginFallback() {
