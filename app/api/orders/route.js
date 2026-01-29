@@ -94,7 +94,7 @@ export async function POST(request) {
     const now = new Date();
     const orderDate = now.toISOString().slice(0, 19).replace("T", " ");
 
-    // Calculate totals: 7% tax outside Florida, 0% in Florida (by shipping state)
+    // Calculate totals: 7% tax for Florida only, 0% for other states (by shipping state)
     const subtotal = orderData.items.reduce((total, item) => {
       return total + parseFloat(item.price || 0) * (item.quantity || 1);
     }, 0);

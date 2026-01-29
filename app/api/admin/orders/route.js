@@ -79,7 +79,34 @@ export async function GET(request) {
       total,
     });
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    const code = error?.code;
+    const msg = error?.message || String(error);
+    const sqlMessage = error?.sqlMessage;
+
+    console.error("Error fetching orders:", {
+      message: msg,
+      code,
+      sqlMessage,
+      stack: error?.stack,
+    });
+
+    // Tables not created on this environment (run create_order_tables.sql + order_audit_tables.sql)
+    const isMissingTable =
+      code === "ER_NO_SUCH_TABLE" ||
+      (msg && msg.includes("doesn't exist")) ||
+      (sqlMessage && sqlMessage.includes("doesn't exist"));
+
+    if (isMissingTable) {
+      return NextResponse.json(
+        {
+          error: "Orders database not configured",
+          code: "MIGRATION_REQUIRED",
+          hint: "Run create_order_tables.sql and order_audit_tables.sql on this database.",
+        },
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to fetch orders" },
       { status: 500 },
