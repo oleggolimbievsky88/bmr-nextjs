@@ -484,6 +484,17 @@
 	}
 }
 
+.admin-color-badge {
+	display: inline-block;
+	padding: 0.2rem 0.5rem;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	background: var(--bg-2);
+	color: var(--main);
+	border: 1px solid var(--line);
+}
+
 // Status select background colors (match badge colors)
 .admin-status-select {
 	font-weight: 600;

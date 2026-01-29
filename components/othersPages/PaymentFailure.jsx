@@ -32,7 +32,7 @@ export default function PaymentFailure() {
               </Link>
               <p>
                 Have a question?
-                <Link href={`/contact-1`} className="text_primary">
+                <Link href={`/contact`} className="text_primary">
                   Contact Support
                 </Link>
               </p>

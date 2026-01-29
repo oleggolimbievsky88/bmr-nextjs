@@ -473,7 +473,7 @@ export const navItems = [
       { href: "/about-us", label: "About us" },
       { href: "/brands", label: "Brands", demoLabel: true },
       { href: "/brands-v2", label: "Brands V2" },
-      { href: "/contact-1", label: "Contact" },
+      { href: "/contact", label: "Contact" },
       { href: "/faq-1", label: "FAQ 01" },
       { href: "/our-store", label: "Our store" },
       { href: "/store-locations", label: "Store locator" },

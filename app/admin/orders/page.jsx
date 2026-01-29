@@ -699,7 +699,14 @@ export default function AdminOrdersPage() {
                     <tbody>
                       {selectedOrder.items?.map((item) => (
                         <tr key={item.new_order_item_id}>
-                          <td>{item.product_name}</td>
+                          <td>
+                            <div>{item.product_name}</div>
+                            {item.color && item.color.trim() && (
+                              <span className="admin-color-badge mt-1">
+                                {item.color}
+                              </span>
+                            )}
+                          </td>
                           <td>{item.part_number}</td>
                           <td className="text-center">{item.quantity}</td>
                           <td className="text-end">

@@ -7,7 +7,7 @@ export const footerLinks = [
 ];
 export const aboutLinks = [
   { href: "/about-us", text: "Our Story" },
-  { href: "/contact-1", text: "Contact Us" },
+  { href: "/contact", text: "Contact Us" },
   { href: "/about-us", text: "About Us" },
   { href: "/login", text: "Account" },
 ];

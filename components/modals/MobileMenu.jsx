@@ -127,7 +127,7 @@ export default function MobileMenu() {
     {
       id: "contact",
       label: "Contact Us",
-      href: "/contact-1",
+      href: "/contact",
       type: "link",
     },
     {
@@ -282,7 +282,7 @@ export default function MobileMenu() {
               </Link>
             </div> */}
             <div className="mb-notice">
-              <Link href={`/contact-1`} className="text-need">
+              <Link href={`/contact`} className="text-need">
                 Need help ?
               </Link>
             </div>

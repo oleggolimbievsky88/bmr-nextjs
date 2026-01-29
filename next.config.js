@@ -30,6 +30,11 @@ const nextConfig = {
     ],
   },
 
+  // Redirect old contact-1 URL to contact
+  async redirects() {
+    return [{ source: "/contact-1", destination: "/contact", permanent: true }];
+  },
+
   // Disable static optimization for API routes that use database
   async rewrites() {
     return [];

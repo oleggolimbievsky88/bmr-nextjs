@@ -8,8 +8,7 @@ import Faq3 from "@/components/othersPages/faq/Faq3";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title:
-    "FAQ | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title: "FAQ | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
@@ -41,7 +40,7 @@ export default function page() {
                 </p>
                 <div className="d-flex gap-20 align-items-center">
                   <Link
-                    href={`/contact-1`}
+                    href={`/contact`}
                     className="tf-btn radius-3 btn-fill animate-hover-btn justify-content-center"
                   >
                     Contact us

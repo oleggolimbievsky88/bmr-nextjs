@@ -56,7 +56,7 @@ export default function ContactForm() {
       <div className="container">
         <div className="tf-grid-layout gap30 lg-col-2 contact-page-grid">
           <div className="tf-content-left contact-info-card">
-            <h5 className="mb_20">Visit Us</h5>
+            <h5 className="mb_20">BMR Suspension</h5>
             <div className="contact-info-item mb_20">
               <p className="mb_15">
                 <strong>Address</strong>

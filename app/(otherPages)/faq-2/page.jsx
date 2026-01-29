@@ -7,7 +7,8 @@ import Faq3 from "@/components/othersPages/faq/Faq3";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title: "Faq 2 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Faq 2 | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
@@ -72,7 +73,7 @@ export default function page() {
                   <div className="tf-link-item">
                     <Link
                       className="d-flex justify-content-between align-items-center"
-                      href={`/contact-1`}
+                      href={`/contact`}
                     >
                       <h6 className="fw-5">Contact us</h6>
                       <div className="icon">
