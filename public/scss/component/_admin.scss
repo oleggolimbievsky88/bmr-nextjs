@@ -541,10 +541,14 @@
 	color: #1e40af;
 }
 
-.admin-status-dropdown-btn.shipped,
-.admin-status-dropdown-btn.delivered {
+.admin-status-dropdown-btn.shipped {
 	background: #d1fae5;
 	color: #065f46;
+}
+
+.admin-status-dropdown-btn.delivered {
+	background: #cffafe;
+	color: #164e63;
 }
 
 .admin-status-dropdown-btn.cancelled {
@@ -557,14 +561,20 @@
 	border-radius: 12px;
 	border-color: var(--line);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-	padding: 0.4rem;
+	padding: 0.25rem 0.4rem 0.25rem 0 !important;
+
+	> li {
+		padding-left: 0;
+		margin-left: 0;
+		margin-right: 0;
+	}
 }
 
 .admin-status-dropdown-item {
 	border-radius: 10px;
 	font-weight: 700;
 	padding: 0.45rem 0.6rem;
-	margin-bottom: 0.25rem;
+	margin: 0 0 0.25rem 0 !important;
 }
 .admin-status-dropdown-item:last-child {
 	margin-bottom: 0;
@@ -572,25 +582,79 @@
 
 .admin-status-dropdown-item.pending {
 	background: #fef3c7;
-	color: #92400e;
+	color: #92400e !important;
+	opacity: 1;
 }
 .admin-status-dropdown-item.processed {
 	background: #dbeafe;
-	color: #1e40af;
+	color: #1e40af !important;
+	opacity: 1;
 }
-.admin-status-dropdown-item.shipped,
-.admin-status-dropdown-item.delivered {
+.admin-status-dropdown-item.shipped {
 	background: #d1fae5;
-	color: #065f46;
+	color: #065f46 !important;
+	opacity: 1;
+}
+
+.admin-status-dropdown-item.delivered {
+	background: #cffafe;
+	color: #164e63 !important;
+	opacity: 1;
 }
 .admin-status-dropdown-item.cancelled {
 	background: #fee2e2;
-	color: #991b1b;
+	color: #991b1b !important;
+	opacity: 1;
 }
 
+/* Hover: slightly darker background for feedback, text color unchanged */
 .admin-status-dropdown-item:hover,
 .admin-status-dropdown-item:focus {
-	filter: brightness(0.97);
+	opacity: 1;
+}
+
+.admin-status-dropdown-item.pending:hover,
+.admin-status-dropdown-item.pending:focus {
+	background: #fde68a !important;
+	color: #92400e !important;
+}
+
+.admin-status-dropdown-item.processed:hover,
+.admin-status-dropdown-item.processed:focus {
+	background: #93c5fd !important;
+	color: #1e40af !important;
+}
+
+.admin-status-dropdown-item.shipped:hover,
+.admin-status-dropdown-item.shipped:focus {
+	background: #6ee7b7 !important;
+	color: #065f46 !important;
+}
+
+.admin-status-dropdown-item.delivered:hover,
+.admin-status-dropdown-item.delivered:focus {
+	background: #67e8f9 !important;
+	color: #164e63 !important;
+}
+
+.admin-status-dropdown-item.cancelled:hover,
+.admin-status-dropdown-item.cancelled:focus {
+	background: #fecaca !important;
+	color: #991b1b !important;
+}
+
+/* Pagination link color (applies to orders, products, customers, categories) */
+.admin-products-pagination .page-link {
+	cursor: pointer;
+	color: #c00;
+	&:hover {
+		color: #a00;
+	}
+}
+.admin-products-pagination .page-item.active .page-link {
+	background-color: #c00;
+	border-color: #c00;
+	color: #fff;
 }
 
 // Order History (admin orders modal)
@@ -741,14 +805,14 @@
 
 	.admin-products-pagination .page-link {
 		cursor: pointer;
-		color: var(--main);
+		color: #c00;
 		&:hover {
-			color: var(--primary);
+			color: #a00;
 		}
 	}
 	.admin-products-pagination .page-item.active .page-link {
-		background-color: var(--primary);
-		border-color: var(--primary);
+		background-color: #c00;
+		border-color: #c00;
 		color: #fff;
 	}
 }

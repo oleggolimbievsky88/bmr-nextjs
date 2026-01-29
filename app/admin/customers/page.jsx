@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [total, setTotal] = useState(0);
+  const [perPage, setPerPage] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortColumn, setSortColumn] = useState("datecreated");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [formData, setFormData] = useState({
     role: "customer",
@@ -14,17 +20,18 @@ export default function AdminCustomersPage() {
     dealerDiscount: 0,
   });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [searchTerm]);
-
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
-      const url = searchTerm
-        ? `/api/admin/customers?search=${encodeURIComponent(searchTerm)}`
-        : "/api/admin/customers";
-      const response = await fetch(url);
+      const offset = (currentPage - 1) * perPage;
+      const params = new URLSearchParams({
+        limit: String(perPage),
+        offset: String(offset),
+        sortColumn,
+        sortDirection,
+      });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      const response = await fetch(`/api/admin/customers?${params}`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -32,6 +39,11 @@ export default function AdminCustomersPage() {
       }
 
       setCustomers(data.customers || []);
+      const tot = typeof data.total === "number" ? data.total : 0;
+      setTotal(tot);
+      if ((data.customers || []).length === 0 && currentPage > 1 && tot > 0) {
+        setCurrentPage(1);
+      }
       setError("");
     } catch (err) {
       setError(err.message);
@@ -39,7 +51,19 @@ export default function AdminCustomersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, perPage, debouncedSearch, sortColumn, sortDirection]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   const handleEdit = (customer) => {
     setEditingCustomer(customer);
@@ -90,6 +114,107 @@ export default function AdminCustomersPage() {
       day: "numeric",
     });
   };
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const SortableTh = ({ column, label, className }) => (
+    <th
+      role="button"
+      tabIndex={0}
+      onClick={() => handleSort(column)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleSort(column);
+        }
+      }}
+      className={`sortable ${className || ""}`}
+      style={{ cursor: "pointer", userSelect: "none" }}
+    >
+      {label}
+      {sortColumn === column && (
+        <span className="ms-1" aria-hidden="true">
+          {sortDirection === "asc" ? "↑" : "↓"}
+        </span>
+      )}
+    </th>
+  );
+
+  const totalPages = Math.ceil(total / perPage) || 1;
+  const paginationBlock = (
+    <nav aria-label="Customer pagination" className="admin-products-pagination">
+      <ul className="pagination pagination-sm mb-0 flex-wrap">
+        <li className={`page-item ${currentPage <= 1 ? "disabled" : ""}`}>
+          <button
+            type="button"
+            className="page-link"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage <= 1}
+          >
+            Prev
+          </button>
+        </li>
+        {(() => {
+          const pages = [];
+          if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push("…");
+            for (
+              let i = Math.max(2, currentPage - 1);
+              i <= Math.min(totalPages - 1, currentPage + 1);
+              i++
+            ) {
+              if (!pages.includes(i)) pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push("…");
+            if (totalPages > 1) pages.push(totalPages);
+          }
+          return pages.map((p, i) =>
+            p === "…" ? (
+              <li key={`el-${i}`} className="page-item disabled">
+                <span className="page-link">…</span>
+              </li>
+            ) : (
+              <li
+                key={p}
+                className={`page-item ${p === currentPage ? "active" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="page-link"
+                  onClick={() => setCurrentPage(p)}
+                >
+                  {p}
+                </button>
+              </li>
+            ),
+          );
+        })()}
+        <li
+          className={`page-item ${currentPage >= totalPages ? "disabled" : ""}`}
+        >
+          <button
+            type="button"
+            className="page-link"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
+          >
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
 
   if (loading && customers.length === 0) {
     return (
@@ -213,16 +338,54 @@ export default function AdminCustomersPage() {
       )}
 
       <div className="admin-card">
+        <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            <span className="admin-products-count">
+              {total} customer{total !== 1 ? "s" : ""}
+            </span>
+            {total > 0 && (
+              <span className="text-muted small">
+                Showing {Math.min((currentPage - 1) * perPage + 1, total)}–
+                {Math.min(currentPage * perPage, total)} of {total}
+              </span>
+            )}
+            <label className="d-flex align-items-center gap-2 mb-0">
+              <span className="small">Per page:</span>
+              <select
+                className="form-select form-select-sm"
+                style={{ width: "auto" }}
+                value={perPage}
+                onChange={(e) => {
+                  setPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </label>
+          </div>
+          {total > perPage && paginationBlock}
+        </div>
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Customer</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th className="text-center">Tier</th>
-                <th className="text-center">Discount</th>
-                <th>Joined</th>
+                <SortableTh column="firstname" label="Customer" />
+                <SortableTh column="email" label="Email" />
+                <SortableTh column="role" label="Role" />
+                <SortableTh
+                  column="dealerTier"
+                  label="Tier"
+                  className="text-center"
+                />
+                <SortableTh
+                  column="dealerDiscount"
+                  label="Discount"
+                  className="text-center"
+                />
+                <SortableTh column="datecreated" label="Joined" />
                 <th>Actions</th>
               </tr>
             </thead>
@@ -274,6 +437,11 @@ export default function AdminCustomersPage() {
             </tbody>
           </table>
         </div>
+        {total > perPage && (
+          <div className="d-flex justify-content-end mt-3">
+            {paginationBlock}
+          </div>
+        )}
       </div>
     </div>
   );
