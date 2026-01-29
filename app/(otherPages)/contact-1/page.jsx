@@ -8,7 +8,8 @@ import React from "react";
 
 export const metadata = {
   title: "Contact Us | BMR Suspension | Performance Suspension & Chassis Parts",
-  description: "BMR Suspension - High Performance Suspension & Chassis raceing parts for Mustang, Camaro, F Body, A Body, B Body, G Body, GM W Body, X Body, Firebird, Nova, Trailblazer SS, SSR, Monte Carlo, Intrigue, Grand Prix, Regal, Cutlass, Grand Sport, El Camino, LeMans, Chevelle, Malibu, GTO, G8, Grand National, CTS-V, Caprice, Skylark, buick 442, Shelby GT500, Mustrang GT and more.",
+  description:
+    "Contact BMR Suspension – High Performance Suspension & Chassis parts. Visit us in Lakeland, FL or email sales@bmrsuspension.com.",
 };
 export default function ContactPage() {
   return (
@@ -16,8 +17,10 @@ export default function ContactPage() {
       <Topbar4 />
       <Header18 showVehicleSearch={false} />
       <PageHeader title="CONTACT US" />
-      <Map />
-      <ContactForm />
+      <main className="contact-1-page">
+        <Map />
+        <ContactForm />
+      </main>
       <Footer1 />
     </>
   );
