@@ -486,10 +486,12 @@
 
 .admin-color-badge {
 	display: inline-block;
-	padding: 0.2rem 0.5rem;
-	border-radius: 4px;
-	font-size: 11px;
+	padding: 0.1rem 0.35rem;
+	margin-top: 0.15rem;
+	border-radius: 6px;
+	font-size: 10px;
 	font-weight: 600;
+	letter-spacing: 0.02em;
 	background: var(--bg-2);
 	color: var(--main);
 	border: 1px solid var(--line);

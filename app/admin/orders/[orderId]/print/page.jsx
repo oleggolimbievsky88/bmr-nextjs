@@ -142,6 +142,18 @@ export default function PrintOrderReceipt() {
             background: #f0f0f0 !important;
             font-weight: bold;
           }
+          .print-receipt .admin-color-badge {
+            display: inline-block;
+            padding: 0.1rem 0.35rem;
+            margin-top: 0.15rem;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #000 !important;
+            background: #f0f0f0 !important;
+            border: 1px solid #ccc !important;
+          }
           .receipt-address-row {
             display: flex !important;
             flex-wrap: nowrap !important;
@@ -299,7 +311,7 @@ export default function PrintOrderReceipt() {
                   <td>
                     <div>{item.product_name}</div>
                     {item.color && item.color.trim() && (
-                      <span className="admin-color-badge mt-1">
+                      <span className="admin-color-badge">
                         {item.color}
                       </span>
                     )}

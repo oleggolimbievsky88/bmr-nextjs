@@ -12,6 +12,7 @@ export default function AdminNav({ user }) {
     { href: "/admin/categories", label: "Categories" },
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/coupons", label: "Coupons" },
+    { href: "/admin/dealer-tiers", label: "Dealer Tiers" },
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/import", label: "Import ACES/PIES" },
   ];

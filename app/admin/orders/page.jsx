@@ -702,7 +702,7 @@ export default function AdminOrdersPage() {
                           <td>
                             <div>{item.product_name}</div>
                             {item.color && item.color.trim() && (
-                              <span className="admin-color-badge mt-1">
+                              <span className="admin-color-badge">
                                 {item.color}
                               </span>
                             )}
