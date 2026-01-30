@@ -72,17 +72,23 @@ export async function POST(request) {
       clientSecretPreview: upsClientSecret?.substring(0, 10) + "...",
     });
 
-    // Calculate total weight and dimensions
-    const totalWeight = packages.reduce(
-      (sum, pkg) => sum + (pkg.weight || 1),
-      0,
-    );
-    const maxLength = Math.max(...packages.map((pkg) => pkg.length || 10));
-    const maxWidth = Math.max(...packages.map((pkg) => pkg.width || 10));
-    const maxHeight = packages.reduce(
-      (sum, pkg) => sum + (pkg.height || 10),
-      0,
-    );
+    // Each product is preboxed; we ship N boxes and charge N × (rate for one box).
+    const packageCount = Math.max(1, packages.length);
+    const singlePkg =
+      packages.length > 0
+        ? packages.reduce((a, b) => {
+            const aw = a.weight || 1;
+            const bw = b.weight || 1;
+            return aw * (a.length || 10) * (a.height || 10) >=
+              bw * (b.length || 10) * (b.height || 10)
+              ? a
+              : b;
+          })
+        : { weight: 1, length: 10, width: 10, height: 10 };
+    const singleWeight = singlePkg.weight || 1;
+    const singleLength = singlePkg.length || 10;
+    const singleWidth = singlePkg.width || 10;
+    const singleHeight = singlePkg.height || 10;
 
     // Get country codes - convert country names to ISO codes
     const toCountryCode = getCountryCode(toAddress.country) || "US";
@@ -179,16 +185,16 @@ export async function POST(request) {
             Code: "IN",
             Description: "Inches",
           },
-          Length: maxLength.toString(),
-          Width: maxWidth.toString(),
-          Height: maxHeight.toString(),
+          Length: singleLength.toString(),
+          Width: singleWidth.toString(),
+          Height: singleHeight.toString(),
         },
         PackageWeight: {
           UnitOfMeasurement: {
             Code: "LBS",
             Description: "Pounds",
           },
-          Weight: totalWeight.toString(),
+          Weight: singleWeight.toString(),
         },
       },
     };
@@ -405,7 +411,7 @@ export async function POST(request) {
       shippingOptions.push({
         service: serviceName,
         code: serviceCode,
-        cost: cost,
+        cost: Math.round(cost * packageCount * 100) / 100,
         currency: shipment.TotalCharges?.CurrencyCode || "USD",
         deliveryDays: deliveryDays,
         description: description,
@@ -446,11 +452,12 @@ export async function POST(request) {
       fromAddress,
       toAddress,
       packageInfo: {
-        weight: totalWeight,
+        packageCount,
+        weightPerPackage: singleWeight,
         dimensions: {
-          length: maxLength,
-          width: maxWidth,
-          height: maxHeight,
+          length: singleLength,
+          width: singleWidth,
+          height: singleHeight,
         },
       },
     });

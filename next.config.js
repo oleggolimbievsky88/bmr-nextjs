@@ -49,8 +49,12 @@ const nextConfig = {
     return config;
   },
 
-  // Turbopack configuration (empty to silence error - webpack is still used)
-  turbopack: {},
+  // Turbopack: Next.js 16 aliases "next-auth" to "next/auth"; resolve to actual package
+  turbopack: {
+    resolveAlias: {
+      "next/auth": "next-auth",
+    },
+  },
 
   // Disable static generation for specific pages that use database
   async headers() {

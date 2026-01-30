@@ -3,7 +3,7 @@ import Header18 from "@/components/header/Header18";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
 import Checkout from "@/components/othersPages/Checkout";
-import React from "react";
+import React, { Suspense } from "react";
 
 // Force dynamic rendering to prevent build-time issues
 export const dynamic = "force-dynamic";
@@ -19,7 +19,9 @@ export default function page() {
       <Topbar4 />
       <Header18 showVehicleSearch={false} />
       <PageHeader title="CHECKOUT" />
-      <Checkout />
+      <Suspense fallback={<div className="text-center py-5">Loading checkout...</div>}>
+        <Checkout />
+      </Suspense>
       <Footer1 />
     </>
   );

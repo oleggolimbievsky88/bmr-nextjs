@@ -2,26 +2,45 @@
 
 import { useState } from "react";
 
-export default function Quantity() {
-  const [count, setCount] = useState(1);
+/**
+ * Quantity selector. Use controlled mode by passing value + onChange to sync
+ * with parent (e.g. for add-to-cart quantity). Omit both for uncontrolled.
+ * @param {number} [value] - Controlled value (min 1)
+ * @param {function(number): void} [onChange] - Called when quantity changes
+ */
+export default function Quantity({ value, onChange }) {
+  const isControlled = value !== undefined && typeof onChange === "function";
+  const [internalCount, setInternalCount] = useState(1);
+
+  const count = isControlled ? Math.max(1, Number(value) || 1) : internalCount;
+
+  const updateCount = (next) => {
+    const num = Math.max(1, Math.floor(Number(next)) || 1);
+    if (isControlled) {
+      onChange(num);
+    } else {
+      setInternalCount(num);
+    }
+  };
+
   return (
     <div className="wg-quantity">
       <span
         className="btn-quantity minus-btn"
-        onClick={() => setCount((pre) => (pre == 1 ? 1 : pre - 1))}
+        onClick={() => updateCount(count === 1 ? 1 : count - 1)}
       >
         -
       </span>
       <input
         min={1}
-        type="text"
-        onChange={(e) => setCount(e.target.value / 1)}
+        type="number"
+        onChange={(e) => updateCount(e.target.value)}
         name="number"
         value={count}
       />
       <span
         className="btn-quantity plus-btn"
-        onClick={() => setCount((pre) => pre + 1)}
+        onClick={() => updateCount(count + 1)}
       >
         +
       </span>

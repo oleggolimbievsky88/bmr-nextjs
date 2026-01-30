@@ -72,24 +72,29 @@ export default function ShippingEstimate({
       country: getCountryCode(estimateAddress.country),
     };
 
-    // Create packages based on cart items
-    // If cart is empty, use a default package for estimate purposes
-    const packages =
-      cartProducts.length > 0
-        ? cartProducts.map((item) => ({
-            weight: 1, // Default weight, could be calculated from product data
-            length: 10,
-            width: 10,
-            height: 10,
-          }))
-        : [
-            {
-              weight: 1, // Default 1 lb package for estimate
-              length: 10,
-              width: 10,
-              height: 10,
-            },
-          ];
+    // One package per physical box: each cart line ships quantity boxes (preboxed)
+    let packages = [];
+    if (cartProducts.length > 0) {
+      cartProducts.forEach((item) => {
+        const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
+        const weight = Math.max(1, parseInt(item.Bweight, 10) || 1);
+        const length = Math.max(1, parseInt(item.Blength, 10) || 10);
+        const width = Math.max(1, parseInt(item.Bwidth, 10) || 10);
+        const height = Math.max(1, parseInt(item.Bheight, 10) || 10);
+        for (let i = 0; i < qty; i++) {
+          packages.push({ weight, length, width, height });
+        }
+      });
+    } else {
+      packages = [
+        {
+          weight: 1,
+          length: 10,
+          width: 10,
+          height: 10,
+        },
+      ];
+    }
     const productIds = cartProducts
       .map((item) => item.ProductID)
       .filter(Boolean);

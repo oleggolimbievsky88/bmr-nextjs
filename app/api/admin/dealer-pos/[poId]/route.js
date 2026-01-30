@@ -13,7 +13,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const poId = parseInt(params.poId, 10);
+    const { poId: poIdParam } = await params;
+    const poId = parseInt(poIdParam, 10);
     if (Number.isNaN(poId)) {
       return NextResponse.json({ error: "Invalid PO id" }, { status: 400 });
     }
@@ -41,9 +42,6 @@ export async function GET(request, { params }) {
     });
   } catch (error) {
     console.error("Error fetching dealer PO:", error);
-    return NextResponse.json(
-      { error: "Failed to load PO" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to load PO" }, { status: 500 });
   }
 }

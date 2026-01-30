@@ -94,14 +94,17 @@ export async function POST(request) {
     const now = new Date();
     const orderDate = now.toISOString().slice(0, 19).replace("T", " ");
 
-    // Calculate totals: 7% tax for Florida only, 0% for other states (by shipping state)
+    // Calculate totals: 7% tax for Florida only; FL shipping tax when order has non-BMR / Package / Low Margin
     const subtotal = orderData.items.reduce((total, item) => {
       return total + parseFloat(item.price || 0) * (item.quantity || 1);
     }, 0);
 
     const shippingState =
       orderData.shipping?.state || orderData.billing?.state || "";
-    const tax = getTaxAmount(subtotal, orderData.discount || 0, shippingState);
+    const tax = getTaxAmount(subtotal, orderData.discount || 0, shippingState, {
+      shippingCost: parseFloat(orderData.shippingCost || 0),
+      items: orderData.items,
+    });
 
     const total =
       subtotal +

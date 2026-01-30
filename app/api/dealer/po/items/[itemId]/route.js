@@ -35,7 +35,8 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: "Invalid session" }, { status: 400 });
     }
 
-    const itemId = parseInt(params.itemId, 10);
+    const { itemId: itemIdParam } = await params;
+    const itemId = parseInt(itemIdParam, 10);
     if (Number.isNaN(itemId)) {
       return NextResponse.json({ error: "Invalid item id" }, { status: 400 });
     }
@@ -77,7 +78,8 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: "Invalid session" }, { status: 400 });
     }
 
-    const itemId = parseInt(params.itemId, 10);
+    const { itemId: itemIdParam } = await params;
+    const itemId = parseInt(itemIdParam, 10);
     if (Number.isNaN(itemId)) {
       return NextResponse.json({ error: "Invalid item id" }, { status: 400 });
     }

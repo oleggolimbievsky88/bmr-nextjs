@@ -24,9 +24,7 @@ function getProductImageUrl(p) {
 
 function getPlatformLabel(platforms, bodyId) {
   if (!bodyId || !platforms || !platforms.length) return "—";
-  const b = platforms.find(
-    (x) => String(x.id) === String(bodyId),
-  );
+  const b = platforms.find((x) => String(x.id) === String(bodyId));
   if (!b) return "—";
   const start = b.StartYear ?? b.startYear ?? "";
   const end = b.EndYear ?? b.endYear ?? "";
@@ -124,7 +122,11 @@ export default function DealersPortalProductsPage() {
         if (!cancelled && greaseData.success && greaseData.grease) {
           setGreaseList(greaseData.grease);
         }
-        if (!cancelled && anglefinderData.success && anglefinderData.anglefinder) {
+        if (
+          !cancelled &&
+          anglefinderData.success &&
+          anglefinderData.anglefinder
+        ) {
           setAnglefinderList(anglefinderData.anglefinder);
         }
         if (!cancelled && hardwareData.success && hardwareData.hardware) {
@@ -135,7 +137,9 @@ export default function DealersPortalProductsPage() {
       .finally(() => {
         if (!cancelled) setOptionsLoading(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const fetchProducts = useCallback(async () => {
@@ -204,7 +208,9 @@ export default function DealersPortalProductsPage() {
     if (!addToPOModal || !draftPOId) return;
     setAddToPOSending(true);
     setAddToPOError(null);
-    const color = addToPOColors.find((c) => String(c.ColorID) === String(addToPOColorId));
+    const color = addToPOColors.find(
+      (c) => String(c.ColorID) === String(addToPOColorId)
+    );
     try {
       const res = await fetch("/api/dealer/po/items", {
         method: "POST",
@@ -228,10 +234,18 @@ export default function DealersPortalProductsPage() {
     } finally {
       setAddToPOSending(false);
     }
-  }, [addToPOModal, draftPOId, addToPOQty, addToPOColorId, addToPOColors, closeAddToPOModal]);
+  }, [
+    addToPOModal,
+    draftPOId,
+    addToPOQty,
+    addToPOColorId,
+    addToPOColors,
+    closeAddToPOModal,
+  ]);
 
   const setRowQty = useCallback((productId, colorId, value) => {
-    const raw = value === "" || value == null ? "" : String(value).replace(/\D/g, "");
+    const raw =
+      value === "" || value == null ? "" : String(value).replace(/\D/g, "");
     setRowQtys((prev) => ({
       ...prev,
       [productId]: { ...(prev[productId] || {}), [colorId]: raw },
@@ -257,13 +271,13 @@ export default function DealersPortalProductsPage() {
         .map((c) => ({ color: c, qty: getQty(c.ColorID) }));
       if (toAdd.length === 0) return;
       const grease = greaseList.find(
-        (g) => String(g.GreaseID) === String(addons.greaseId),
+        (g) => String(g.GreaseID) === String(addons.greaseId)
       );
       const anglefinder = anglefinderList.find(
-        (a) => String(a.AngleID) === String(addons.anglefinderId),
+        (a) => String(a.AngleID) === String(addons.anglefinderId)
       );
       const hardware = hardwareList.find(
-        (h) => String(h.HardwareID) === String(addons.hardwareId),
+        (h) => String(h.HardwareID) === String(addons.hardwareId)
       );
       setAddRowSending(product.ProductID);
       setAddToPOError(null);
@@ -327,26 +341,24 @@ export default function DealersPortalProductsPage() {
       anglefinderList,
       hardwareList,
       draftPOId,
-    ],
+    ]
   );
 
   const mainCategoriesForPlatform =
     platformId && platformId !== ALL
       ? (filterOptions.mainCategories || []).filter(
-          (m) =>
-            String(m.bodyId ?? m.BodyID ?? "") === String(platformId),
+          (m) => String(m.bodyId ?? m.BodyID ?? "") === String(platformId)
         )
       : filterOptions.mainCategories || [];
 
   const categoriesFiltered =
     mainCatId && mainCatId !== ALL
       ? (filterOptions.categories || []).filter(
-          (c) =>
-            String(c.MainCatID ?? c.mainCatId ?? "") === String(mainCatId),
+          (c) => String(c.MainCatID ?? c.mainCatId ?? "") === String(mainCatId)
         )
       : filterOptions.categories || [];
   const categoriesInMain = categoriesFiltered.filter(
-    (c, i, arr) => arr.findIndex((x) => String(x.id) === String(c.id)) === i,
+    (c, i, arr) => arr.findIndex((x) => String(x.id) === String(c.id)) === i
   );
 
   const handleClearFilters = () => {
@@ -405,7 +417,8 @@ export default function DealersPortalProductsPage() {
                     : "";
                 return (
                   <option key={b.id} value={b.id}>
-                    {years}{b.name}
+                    {years}
+                    {b.name}
                   </option>
                 );
               })}
@@ -504,16 +517,18 @@ export default function DealersPortalProductsPage() {
                     const usedColorIds = new Set();
                     products.forEach((p) =>
                       parseProductColorIds(p.Color).forEach((id) =>
-                        usedColorIds.add(String(id)),
-                      ),
+                        usedColorIds.add(String(id))
+                      )
                     );
                     const visibleColors = colorList.filter((c) =>
-                      usedColorIds.has(String(c.ColorID)),
+                      usedColorIds.has(String(c.ColorID))
                     );
                     return visibleColors.map((c) => (
                       <th
                         key={c.ColorID}
-                        className={`dealer-col-qty ${getColorColumnClass(c.ColorName)}`}
+                        className={`dealer-col-qty ${getColorColumnClass(
+                          c.ColorName
+                        )}`}
                       >
                         {c.ColorName}
                       </th>
@@ -530,215 +545,219 @@ export default function DealersPortalProductsPage() {
                   const usedColorIds = new Set();
                   products.forEach((p) =>
                     parseProductColorIds(p.Color).forEach((id) =>
-                      usedColorIds.add(String(id)),
-                    ),
+                      usedColorIds.add(String(id))
+                    )
                   );
                   const visibleColors = colorList.filter((c) =>
-                    usedColorIds.has(String(c.ColorID)),
+                    usedColorIds.has(String(c.ColorID))
                   );
                   return products.map((p) => {
                     const imgSrc = getProductImageUrl(p);
                     const productColorIds = parseProductColorIds(p.Color);
                     const qtys = rowQtys[p.ProductID] || {};
-                    const qtyNum = (cid) => Math.max(0, parseInt(qtys[cid], 10) || 0);
+                    const qtyNum = (cid) =>
+                      Math.max(0, parseInt(qtys[cid], 10) || 0);
                     const hasAnyQty = visibleColors.some(
                       (c) =>
                         productColorIds.includes(String(c.ColorID)) &&
-                        qtyNum(c.ColorID) > 0,
+                        qtyNum(c.ColorID) > 0
                     );
                     const isSending = addRowSending === p.ProductID;
                     return (
-                    <tr key={p.ProductID}>
-                      <td className="dealer-col-product align-middle">
-                        <Link
-                          href={`/product/${p.ProductID}`}
-                          className="d-flex align-items-center gap-2 text-decoration-none text-dark"
-                        >
-                          <span
-                            className="dealer-list-img flex-shrink-0"
-                            style={{
-                              width: 48,
-                              height: 48,
-                              backgroundColor: "var(--bg-11, #f0f0f0)",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              overflow: "hidden",
-                            }}
+                      <tr key={p.ProductID}>
+                        <td className="dealer-col-product align-middle">
+                          <Link
+                            href={`/product/${p.ProductID}`}
+                            className="d-flex align-items-center gap-2 text-decoration-none text-dark"
                           >
-                            {imgSrc ? (
-                              <Image
-                                src={imgSrc}
-                                alt=""
-                                width={48}
-                                height={48}
-                                style={{ objectFit: "contain" }}
-                                unoptimized
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
+                            <span
+                              className="dealer-list-img flex-shrink-0"
+                              style={{
+                                width: 48,
+                                height: 48,
+                                backgroundColor: "var(--bg-11, #f0f0f0)",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                overflow: "hidden",
+                              }}
+                            >
+                              {imgSrc ? (
+                                <Image
+                                  src={imgSrc}
+                                  alt=""
+                                  width={48}
+                                  height={48}
+                                  style={{ objectFit: "contain" }}
+                                  unoptimized
+                                  onError={(e) => {
+                                    e.target.style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <span className="small text-muted">—</span>
+                              )}
+                            </span>
+                            <span className="small fw-semibold text-truncate">
+                              {formatPrice(p.dealerPrice)}
+                            </span>
+                          </Link>
+                        </td>
+                        <td className="dealer-col-part align-middle small">
+                          {p.PartNumber}
+                        </td>
+                        <td className="dealer-col-name align-middle">
+                          <Link
+                            href={`/product/${p.ProductID}`}
+                            className="text-decoration-none text-dark"
+                          >
+                            {p.ProductName}
+                          </Link>
+                        </td>
+                        <td className="dealer-col-platform align-middle small">
+                          {getPlatformLabel(filterOptions.platforms, p.BodyID)}
+                        </td>
+                        {visibleColors.map((c) => {
+                          const val = qtys[c.ColorID];
+                          const displayVal =
+                            val === undefined || val === null || val === ""
+                              ? ""
+                              : String(val);
+                          return (
+                            <td
+                              key={c.ColorID}
+                              className={`align-middle ${getColorColumnClass(
+                                c.ColorName
+                              )}`}
+                            >
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                className="form-control form-control-sm dealer-qty-input"
+                                value={displayVal}
+                                placeholder="Qty"
+                                onChange={(e) =>
+                                  setRowQty(
+                                    p.ProductID,
+                                    c.ColorID,
+                                    e.target.value
+                                  )
+                                }
                               />
-                            ) : (
-                              <span className="small text-muted">—</span>
-                            )}
-                          </span>
-                          <span className="small fw-semibold text-truncate">
-                            {formatPrice(p.dealerPrice)}
-                          </span>
-                        </Link>
-                      </td>
-                      <td className="dealer-col-part align-middle small">
-                        {p.PartNumber}
-                      </td>
-                      <td className="dealer-col-name align-middle">
-                        <Link
-                          href={`/product/${p.ProductID}`}
-                          className="text-decoration-none text-dark"
-                        >
-                          {p.ProductName}
-                        </Link>
-                      </td>
-                      <td className="dealer-col-platform align-middle small">
-                        {getPlatformLabel(filterOptions.platforms, p.BodyID)}
-                      </td>
-                      {visibleColors.map((c) => {
-                        const val = qtys[c.ColorID];
-                        const displayVal = val === undefined || val === null || val === "" ? "" : String(val);
-                        return (
-                          <td
-                            key={c.ColorID}
-                            className={`align-middle ${getColorColumnClass(c.ColorName)}`}
+                            </td>
+                          );
+                        })}
+                        <td className="dealer-col-addon align-middle">
+                          <select
+                            className="form-select form-select-sm dealer-addon-select"
+                            value={
+                              (rowAddOns[p.ProductID] || {}).greaseId ?? ""
+                            }
+                            onChange={(e) =>
+                              setRowAddOn(
+                                p.ProductID,
+                                "greaseId",
+                                e.target.value
+                              )
+                            }
+                            disabled={!parseProductAddonIds(p.Grease).length}
                           >
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              className="form-control form-control-sm dealer-qty-input"
-                              value={displayVal}
-                              placeholder="Qty"
-                              onChange={(e) =>
-                                setRowQty(
-                                  p.ProductID,
-                                  c.ColorID,
-                                  e.target.value,
+                            <option value="">—</option>
+                            {greaseList
+                              .filter((g) =>
+                                parseProductAddonIds(p.Grease).includes(
+                                  String(g.GreaseID)
                                 )
-                              }
-                            />
-                          </td>
-                        );
-                      })}
-                      <td className="dealer-col-addon align-middle">
-                        <select
-                          className="form-select form-select-sm dealer-addon-select"
-                          value={
-                            (rowAddOns[p.ProductID] || {}).greaseId ?? ""
-                          }
-                          onChange={(e) =>
-                            setRowAddOn(p.ProductID, "greaseId", e.target.value)
-                          }
-                          disabled={
-                            !parseProductAddonIds(p.Grease).length
-                          }
-                        >
-                          <option value="">—</option>
-                          {greaseList
-                            .filter((g) =>
-                              parseProductAddonIds(p.Grease).includes(
-                                String(g.GreaseID),
-                              ),
-                            )
-                            .map((g) => (
-                              <option key={g.GreaseID} value={g.GreaseID}>
-                                {g.GreaseName}
-                                {g.GreasePrice &&
-                                g.GreasePrice !== "0"
-                                  ? ` (+$${g.GreasePrice})`
-                                  : ""}
-                              </option>
-                            ))}
-                        </select>
-                      </td>
-                      <td className="dealer-col-addon align-middle">
-                        <select
-                          className="form-select form-select-sm dealer-addon-select"
-                          value={
-                            (rowAddOns[p.ProductID] || {}).anglefinderId ?? ""
-                          }
-                          onChange={(e) =>
-                            setRowAddOn(
-                              p.ProductID,
-                              "anglefinderId",
-                              e.target.value,
-                            )
-                          }
-                          disabled={
-                            !parseProductAddonIds(p.AngleFinder).length
-                          }
-                        >
-                          <option value="">—</option>
-                          {anglefinderList
-                            .filter((a) =>
-                              parseProductAddonIds(p.AngleFinder).includes(
-                                String(a.AngleID),
-                              ),
-                            )
-                            .map((a) => (
-                              <option key={a.AngleID} value={a.AngleID}>
-                                {a.AngleName}
-                                {a.AnglePrice && a.AnglePrice !== "0"
-                                  ? ` (+$${a.AnglePrice})`
-                                  : ""}
-                              </option>
-                            ))}
-                        </select>
-                      </td>
-                      <td className="dealer-col-addon align-middle">
-                        <select
-                          className="form-select form-select-sm dealer-addon-select"
-                          value={
-                            (rowAddOns[p.ProductID] || {}).hardwareId ?? ""
-                          }
-                          onChange={(e) =>
-                            setRowAddOn(
-                              p.ProductID,
-                              "hardwareId",
-                              e.target.value,
-                            )
-                          }
-                          disabled={
-                            !parseProductAddonIds(p.Hardware).length
-                          }
-                        >
-                          <option value="">—</option>
-                          {hardwareList
-                            .filter((h) =>
-                              parseProductAddonIds(p.Hardware).includes(
-                                String(h.HardwareID),
-                              ),
-                            )
-                            .map((h) => (
-                              <option key={h.HardwareID} value={h.HardwareID}>
-                                {h.HardwareName}
-                                {h.HardwarePrice &&
-                                h.HardwarePrice !== "0"
-                                  ? ` (+$${h.HardwarePrice})`
-                                  : ""}
-                              </option>
-                            ))}
-                        </select>
-                      </td>
-                      <td className="dealer-col-action align-middle text-end">
-                        <button
-                          type="button"
-                          className="btn btn-outline-primary btn-sm"
-                          disabled={!hasAnyQty || isSending}
-                          onClick={() => addRowToPO(p)}
-                        >
-                          {isSending ? "Adding…" : "Add to PO"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
+                              )
+                              .map((g) => (
+                                <option key={g.GreaseID} value={g.GreaseID}>
+                                  {g.GreaseName}
+                                  {g.GreasePrice && g.GreasePrice !== "0"
+                                    ? ` (+$${g.GreasePrice})`
+                                    : ""}
+                                </option>
+                              ))}
+                          </select>
+                        </td>
+                        <td className="dealer-col-addon align-middle">
+                          <select
+                            className="form-select form-select-sm dealer-addon-select"
+                            value={
+                              (rowAddOns[p.ProductID] || {}).anglefinderId ?? ""
+                            }
+                            onChange={(e) =>
+                              setRowAddOn(
+                                p.ProductID,
+                                "anglefinderId",
+                                e.target.value
+                              )
+                            }
+                            disabled={
+                              !parseProductAddonIds(p.AngleFinder).length
+                            }
+                          >
+                            <option value="">—</option>
+                            {anglefinderList
+                              .filter((a) =>
+                                parseProductAddonIds(p.AngleFinder).includes(
+                                  String(a.AngleID)
+                                )
+                              )
+                              .map((a) => (
+                                <option key={a.AngleID} value={a.AngleID}>
+                                  {a.AngleName}
+                                  {a.AnglePrice && a.AnglePrice !== "0"
+                                    ? ` (+$${a.AnglePrice})`
+                                    : ""}
+                                </option>
+                              ))}
+                          </select>
+                        </td>
+                        <td className="dealer-col-addon align-middle">
+                          <select
+                            className="form-select form-select-sm dealer-addon-select"
+                            value={
+                              (rowAddOns[p.ProductID] || {}).hardwareId ?? ""
+                            }
+                            onChange={(e) =>
+                              setRowAddOn(
+                                p.ProductID,
+                                "hardwareId",
+                                e.target.value
+                              )
+                            }
+                            disabled={!parseProductAddonIds(p.Hardware).length}
+                          >
+                            <option value="">—</option>
+                            {hardwareList
+                              .filter((h) =>
+                                parseProductAddonIds(p.Hardware).includes(
+                                  String(h.HardwareID)
+                                )
+                              )
+                              .map((h) => (
+                                <option key={h.HardwareID} value={h.HardwareID}>
+                                  {h.HardwareName}
+                                  {h.HardwarePrice && h.HardwarePrice !== "0"
+                                    ? ` (+$${h.HardwarePrice})`
+                                    : ""}
+                                </option>
+                              ))}
+                          </select>
+                        </td>
+                        <td className="dealer-col-action align-middle text-end">
+                          <button
+                            type="button"
+                            className="btn btn-outline-primary btn-sm"
+                            disabled={!hasAnyQty || isSending}
+                            onClick={() => addRowToPO(p)}
+                          >
+                            {isSending ? "Adding…" : "Add to PO"}
+                          </button>
+                        </td>
+                      </tr>
+                    );
                   });
                 })()}
               </tbody>
@@ -808,7 +827,9 @@ export default function DealersPortalProductsPage() {
                     min={1}
                     value={addToPOQty}
                     onChange={(e) =>
-                      setAddToPOQty(Math.max(1, parseInt(e.target.value, 10) || 1))
+                      setAddToPOQty(
+                        Math.max(1, parseInt(e.target.value, 10) || 1)
+                      )
                     }
                   />
                 </div>

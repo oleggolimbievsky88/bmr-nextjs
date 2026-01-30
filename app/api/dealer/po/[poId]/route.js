@@ -24,7 +24,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Invalid session" }, { status: 400 });
     }
 
-    const poId = parseInt(params.poId, 10);
+    const { poId: poIdParam } = await params;
+    const poId = parseInt(poIdParam, 10);
     if (Number.isNaN(poId)) {
       return NextResponse.json({ error: "Invalid PO id" }, { status: 400 });
     }

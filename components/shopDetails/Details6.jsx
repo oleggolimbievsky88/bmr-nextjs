@@ -31,6 +31,7 @@ export default function ou({ product, initialColor, searchParams }) {
   const [currentGrease, setCurrentGrease] = useState(undefined);
   const [currentAnglefinder, setCurrentAnglefinder] = useState(undefined);
   const [currentHardware, setCurrentHardware] = useState(undefined);
+  const [quantity, setQuantity] = useState(1);
   const [colorOptions, setColorOptions] = useState([]);
   const [greaseOptions, setGreaseOptions] = useState([]);
   const [anglefinderOptions, setAnglefinderOptions] = useState([]);
@@ -413,8 +414,8 @@ export default function ou({ product, initialColor, searchParams }) {
       selectedHardware: currentHardware,
     };
 
-    // Call the context function to add product to cart with selected options
-    addProductToCart(product.ProductID, 1, {
+    // Call the context function to add product to cart with selected quantity
+    addProductToCart(product.ProductID, quantity, {
       selectedColor: currentColor,
       selectedGrease: currentGrease,
       selectedAnglefinder: currentAnglefinder,
@@ -889,7 +890,7 @@ export default function ou({ product, initialColor, searchParams }) {
 
                   <div className="tf-product-info-quantity">
                     <div className="quantity-title fw-6">Quantity</div>
-                    <Quantity />
+                    <Quantity value={quantity} onChange={setQuantity} />
                   </div>
 
                   <div className="tf-product-info-buy-button">

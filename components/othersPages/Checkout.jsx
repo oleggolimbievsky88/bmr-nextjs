@@ -3,7 +3,7 @@ import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
 import CartSkeleton from "@/components/common/CartSkeleton";
@@ -16,6 +16,7 @@ import ShippingEstimate from "@/components/common/ShippingEstimate";
 import CheckoutAuthStep from "@/components/othersPages/CheckoutAuthStep";
 import { getTaxAmount } from "@/lib/tax";
 import { countries, canadianProvinces } from "@/lib/countryCodes";
+import { mustUsePayPal, canUseCreditCard } from "@/lib/paymentRules";
 
 export default function Checkout() {
   const router = useRouter();
@@ -91,6 +92,9 @@ export default function Checkout() {
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [emailConsent, setEmailConsent] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("credit_card");
+
+  const searchParams = useSearchParams();
 
   // Ref to prevent infinite loops when calculating shipping rates
   const isCalculatingShippingRef = useRef(false);
@@ -116,6 +120,21 @@ export default function Checkout() {
     validateExpiryDate,
     validateCVV,
   } = useCreditCard();
+
+  // Destination country for payment rules (shipping address)
+  const destinationCountry =
+    sameAsBilling ? billingData.country : shippingData.country;
+  const payPalOnly = mustUsePayPal(destinationCountry);
+  const showPaymentMethodChoice = canUseCreditCard(destinationCountry);
+
+  // When entering payment step or URL has pay=paypal: enforce PayPal if required
+  useEffect(() => {
+    if (searchParams.get("pay") === "paypal") {
+      setPaymentMethod("paypal");
+    } else if (activeStep === "payment" && payPalOnly) {
+      setPaymentMethod("paypal");
+    }
+  }, [activeStep, searchParams, payPalOnly]);
 
   // Redirect to products page if cart is empty (but not when redirecting to confirmation)
   useEffect(() => {
@@ -333,13 +352,18 @@ export default function Checkout() {
     lastShippingAddressRef.current = addressKey;
 
     try {
-      // Create packages based on cart items
-      const packages = cartProducts.map((item) => ({
-        weight: 1, // Default weight, could be calculated from product data
-        length: 10,
-        width: 10,
-        height: 10,
-      }));
+      // One package per physical box: each cart line ships quantity boxes (preboxed, not combined)
+      const packages = [];
+      cartProducts.forEach((item) => {
+        const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
+        const weight = Math.max(1, parseInt(item.Bweight, 10) || 1);
+        const length = Math.max(1, parseInt(item.Blength, 10) || 10);
+        const width = Math.max(1, parseInt(item.Bwidth, 10) || 10);
+        const height = Math.max(1, parseInt(item.Bheight, 10) || 10);
+        for (let i = 0; i < qty; i++) {
+          packages.push({ weight, length, width, height });
+        }
+      });
       const productIds = cartProducts
         .map((item) => item.ProductID)
         .filter(Boolean);
@@ -432,6 +456,100 @@ export default function Checkout() {
     }
   };
 
+  const handlePayPalCheckout = useCallback(
+    async (cleanBilling, cleanShipping) => {
+      setIsSubmitting(true);
+      setSubmitError("");
+      try {
+        const orderItems = cartProducts.map((product) => ({
+          productId: product.ProductID,
+          name: product.ProductName,
+          partNumber: product.PartNumber,
+          quantity: product.quantity,
+          price: product.Price,
+          color:
+            product.selectedColor?.ColorName ||
+            product.defaultColorName ||
+            "Default",
+          platform: product.PlatformName,
+          yearRange: product.YearRange,
+          image:
+            product.images?.[0]?.imgSrc ||
+            product.ImageLarge ||
+            "",
+          Package: product.Package ?? 0,
+          LowMargin: product.LowMargin ?? 0,
+          ManufacturerName: product.ManufacturerName ?? "",
+        }));
+        const subtotal = orderItems.reduce(
+          (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
+          0,
+        );
+        const destState = sameAsBilling
+          ? cleanBilling.state
+          : cleanShipping.state;
+        const payloadTax = getTaxAmount(
+          subtotal,
+          couponDiscount || 0,
+          destState,
+          {
+            shippingCost: selectedOption?.cost || 0,
+            items: orderItems,
+          },
+        );
+        const total =
+          subtotal +
+          (selectedOption?.cost || 0) +
+          payloadTax -
+          (couponDiscount || 0);
+        const res = await fetch("/api/paypal/create-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            billing: cleanBilling,
+            shipping: cleanShipping,
+            items: orderItems,
+            shippingMethod: selectedOption?.name || "Standard Shipping",
+            shippingCost: selectedOption?.cost || 0,
+            tax: payloadTax,
+            discount: couponDiscount || 0,
+            total,
+            couponCode: appliedCoupon?.code || "",
+            couponId: appliedCoupon?.id || null,
+            customerId:
+              session?.user?.id != null ? parseInt(session.user.id, 10) : null,
+          }),
+        });
+        const data = res.ok ? await res.json().catch(() => ({})) : {};
+        if (res.ok && data.approvalUrl) {
+          window.location.href = data.approvalUrl;
+          return;
+        }
+        const msg =
+          data.message ||
+          (res.status === 501
+            ? "PayPal is not configured yet. See PAYPAL_SETUP.md for setup."
+            : "PayPal checkout is temporarily unavailable. Please try again or use another payment method.");
+        setSubmitError(msg);
+      } catch (err) {
+        console.error("PayPal checkout error:", err);
+        setSubmitError(
+          "Could not start PayPal checkout. Please check your connection and try again.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      cartProducts,
+      sameAsBilling,
+      couponDiscount,
+      selectedOption,
+      session?.user?.id,
+      appliedCoupon,
+    ],
+  );
+
   const handleOrderSubmission = async () => {
     // Clean and validate all required fields (treat "0" as empty)
     const cleanBilling = {
@@ -489,6 +607,16 @@ export default function Checkout() {
       return;
     }
 
+    if (!termsAgreed) {
+      setSubmitError("Please agree to the Terms & Conditions");
+      return;
+    }
+
+    if (paymentMethod === "paypal") {
+      handlePayPalCheckout(cleanBilling, cleanShipping);
+      return;
+    }
+
     if (
       !paymentData.cardNumber ||
       !paymentData.expiryDate ||
@@ -501,11 +629,6 @@ export default function Checkout() {
 
     if (!cardValid || !expiryValid || !cvvValid) {
       setSubmitError("Please fix payment validation errors");
-      return;
-    }
-
-    if (!termsAgreed) {
-      setSubmitError("Please agree to the Terms & Conditions");
       return;
     }
 
@@ -586,6 +709,9 @@ export default function Checkout() {
           platform: product.PlatformName,
           yearRange: product.YearRange,
           image: productImage,
+          Package: product.Package ?? 0,
+          LowMargin: product.LowMargin ?? 0,
+          ManufacturerName: product.ManufacturerName ?? "",
         };
       });
 
@@ -606,6 +732,10 @@ export default function Checkout() {
           payloadSubtotal,
           couponDiscount || 0,
           destState,
+          {
+            shippingCost: selectedOption?.cost || 0,
+            items: orderItems,
+          },
         );
         const orderPayload = {
           billing: cleanBilling,
@@ -620,6 +750,7 @@ export default function Checkout() {
           notes: orderNotes,
           customerId:
             session?.user?.id != null ? parseInt(session.user.id, 10) : null,
+          paymentMethod: "Credit Card",
           ccPaymentToken: null,
           ccLastFour: lastFourDigits || null,
           ccType: detectedType?.name || null,
@@ -907,7 +1038,10 @@ export default function Checkout() {
     sameAsBilling ? billingData.state : shippingData.state;
 
   const calculateTax = () =>
-    getTaxAmount(calculateSubtotal(), couponDiscount, getDestinationState());
+    getTaxAmount(calculateSubtotal(), couponDiscount, getDestinationState(), {
+      shippingCost: selectedOption ? selectedOption.cost : 0,
+      items: cartProducts,
+    });
 
   const calculateGrandTotal = () => {
     const subtotal = calculateSubtotal();
@@ -1731,6 +1865,48 @@ export default function Checkout() {
 
                     {activeStep === "payment" && (
                       <div className="step-content">
+                        {payPalOnly && (
+                          <div className="alert alert-info mb-4" role="alert">
+                            Orders shipping outside the US and Canada must be
+                            paid with PayPal.
+                          </div>
+                        )}
+                        {showPaymentMethodChoice && !payPalOnly && (
+                          <div className="form-group mb-4">
+                            <label className="d-block mb-2">
+                              Payment method
+                            </label>
+                            <div className="d-flex gap-3">
+                              <label className="d-flex align-items-center gap-2">
+                                <input
+                                  type="radio"
+                                  name="paymentMethod"
+                                  checked={paymentMethod === "credit_card"}
+                                  onChange={() =>
+                                    setPaymentMethod("credit_card")
+                                  }
+                                />
+                                Credit card
+                              </label>
+                              <label className="d-flex align-items-center gap-2">
+                                <input
+                                  type="radio"
+                                  name="paymentMethod"
+                                  checked={paymentMethod === "paypal"}
+                                  onChange={() => setPaymentMethod("paypal")}
+                                />
+                                PayPal
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                        {paymentMethod === "paypal" && (
+                          <p className="text-muted mb-4">
+                            You will be redirected to PayPal to complete
+                            payment securely.
+                          </p>
+                        )}
+                        {paymentMethod === "credit_card" && (
                         <form className="checkout-form">
                           <div className="form-group">
                             <label htmlFor="card-number">Card Number*</label>
@@ -1897,24 +2073,25 @@ export default function Checkout() {
                               </div>
                             )}
                           </div>
-
-                          {submitError && (
-                            <div className="alert alert-danger mt-3">
-                              {submitError}
-                            </div>
-                          )}
-
-                          <div className="d-flex justify-content-start mt-4">
-                            <button
-                              type="button"
-                              className="btn btn-outline-secondary"
-                              onClick={handleBack}
-                              disabled={isSubmitting}
-                            >
-                              Back
-                            </button>
-                          </div>
                         </form>
+                        )}
+
+                        {submitError && (
+                          <div className="alert alert-danger mt-3">
+                            {submitError}
+                          </div>
+                        )}
+
+                        <div className="d-flex justify-content-start mt-4">
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={handleBack}
+                            disabled={isSubmitting}
+                          >
+                            Back
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -2182,8 +2359,12 @@ export default function Checkout() {
                       role="status"
                       aria-hidden="true"
                     ></span>
-                    Processing Order...
+                    {paymentMethod === "paypal"
+                      ? "Redirecting to PayPal..."
+                      : "Processing Order..."}
                   </>
+                ) : paymentMethod === "paypal" ? (
+                  "Pay with PayPal"
                 ) : (
                   "PLACE ORDER"
                 )}
