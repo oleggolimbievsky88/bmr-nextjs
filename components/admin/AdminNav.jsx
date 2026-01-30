@@ -11,6 +11,7 @@ export default function AdminNav({ user }) {
     { href: "/admin/products", label: "Products" },
     { href: "/admin/categories", label: "Categories" },
     { href: "/admin/orders", label: "Orders" },
+    { href: "/admin/dealer-pos", label: "Dealer POs" },
     { href: "/admin/coupons", label: "Coupons" },
     { href: "/admin/dealer-tiers", label: "Dealer Tiers" },
     { href: "/admin/customers", label: "Customers" },
@@ -23,7 +24,7 @@ export default function AdminNav({ user }) {
 
   return (
     <nav className="admin-nav bg_black">
-      <div className="container">
+      <div className="container-wide">
         <div className="d-flex align-items-center justify-content-between flex-wrap admin-nav-inner">
           <ul className="admin-nav-links d-flex align-items-center gap-4 flex-wrap">
             {navLinks.map(({ href, label }) => {

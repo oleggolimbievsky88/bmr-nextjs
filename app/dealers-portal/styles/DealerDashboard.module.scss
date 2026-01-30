@@ -1,0 +1,106 @@
+// styles/DealerDashboard.module.scss
+
+$primary-color: #d50000;
+$bg: #f4f4f4;
+$dark: #1a1a1a;
+$border: #e0e0e0;
+
+.dashboardWrapper {
+  display: flex;
+  min-height: 100vh;
+  background: $bg;
+}
+
+.sidebar {
+  width: 220px;
+  background: $dark;
+  color: white;
+  padding: 1rem;
+
+  .logo {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+  }
+
+  .navLink {
+    display: block;
+    background: none;
+    color: white;
+    border: none;
+    padding: 0.75rem 0;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+
+    &.active {
+      color: $primary-color;
+    }
+  }
+}
+
+.mainContent {
+  flex: 1;
+  padding: 2rem;
+}
+
+.dashboardHome {
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+
+.statCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+  h4 {
+    font-size: 0.95rem;
+    color: #666;
+  }
+
+  p {
+    font-size: 1.4rem;
+    margin-top: 0.3rem;
+    color: $dark;
+  }
+}
+
+.tableWrapper {
+  margin-top: 2rem;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid $border;
+
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid $border;
+  }
+
+  th {
+    background: #fafafa;
+    font-weight: 600;
+  }
+
+  button {
+    background: $primary-color;
+    color: white;
+    padding: 0.4rem 0.7rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}

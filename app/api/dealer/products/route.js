@@ -4,7 +4,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getProductsForDealer, getProductsForDealerCount } from "@/lib/queries";
+import {
+  getProductsForDealer,
+  getProductsForDealerCount,
+  getEffectiveDealerDiscount,
+} from "@/lib/queries";
 
 function parsePrice(val) {
   if (val === null || val === undefined) return 0;
@@ -30,22 +34,39 @@ export async function GET(request) {
     if (role !== "dealer" && role !== "admin") {
       return NextResponse.json(
         { error: "Dealer access required" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
-    const discountPercent = session.user.dealerDiscount ?? 0;
+    const dealerTier = session.user.dealerTier ?? 0;
+    const customerDiscount = session.user.dealerDiscount ?? 0;
+    const discountPercent = await getEffectiveDealerDiscount(
+      dealerTier,
+      customerDiscount
+    );
     const { searchParams } = new URL(request.url);
     const limit = Math.min(
       100,
-      Math.max(1, parseInt(searchParams.get("limit") || "24", 10)),
+      Math.max(1, parseInt(searchParams.get("limit") || "24", 10))
     );
     const offset = Math.max(0, parseInt(searchParams.get("offset") || "0", 10));
     const search = searchParams.get("search") || null;
+    const bodyId = searchParams.get("bodyId") || null;
+    const mainCatId = searchParams.get("mainCatId") || null;
+    const catId = searchParams.get("catId") || null;
+    const vendorId = searchParams.get("vendorId") || null;
+
+    const filters = {
+      search,
+      bodyId: bodyId || null,
+      mainCatId: mainCatId || null,
+      catId: catId || null,
+      manId: vendorId || null,
+    };
 
     const [rows, total] = await Promise.all([
-      getProductsForDealer(limit, offset, search),
-      getProductsForDealerCount(search),
+      getProductsForDealer(limit, offset, filters),
+      getProductsForDealerCount(filters),
     ]);
 
     const products = (rows || []).map((p) => {
@@ -60,6 +81,12 @@ export async function GET(request) {
         ImageSmall: p.ImageSmall,
         ImageLarge: p.ImageLarge,
         BodyID: p.BodyID,
+        ManID: p.ManID,
+        ManName: p.ManName || null,
+        Color: p.Color ?? null,
+        Grease: p.Grease ?? null,
+        AngleFinder: p.AngleFinder ?? null,
+        Hardware: p.Hardware ?? null,
       };
     });
 
@@ -74,7 +101,7 @@ export async function GET(request) {
     console.error("Error fetching dealer products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

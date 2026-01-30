@@ -113,16 +113,17 @@ function generateReceiptHTML(orderData) {
   };
 
   const getEmailColorClass = (colorName) => {
-    if (!colorName) return "color-default";
-
+    if (!colorName || typeof colorName !== "string") return "color-default";
     const color = colorName.toLowerCase();
-    if (color.includes("black") || color.includes("dark")) {
+    if (
+      color.includes("black") ||
+      color.includes("hammertone") ||
+      color.includes("dark")
+    ) {
       return "color-black";
-    } else if (color.includes("red")) {
-      return "color-red";
-    } else {
-      return "color-default";
     }
+    if (color.includes("red")) return "color-red";
+    return "color-default";
   };
 
   const calculateSubtotal = () => {
@@ -318,15 +319,16 @@ function generateReceiptHTML(orderData) {
           font-family: ui-monospace, monospace;
         }
         .color-badge {
-          padding: 4px 10px;
-          border-radius: 6px;
+          padding: 2px 6px;
+          margin-top: 2px;
+          border-radius: 4px;
           font-weight: 600;
-          font-size: 11px;
+          font-size: 10px;
           display: inline-block;
         }
         .color-badge.color-black { background: #1a1a1a !important; color: #fff !important; }
         .color-badge.color-red { background: #dc3545 !important; color: #fff !important; }
-        .color-badge.color-default { background: #64748b !important; color: #fff !important; }
+        .color-badge.color-default { background: #6c757d !important; color: #fff !important; }
         .order-totals { text-align: right; max-width: 280px; margin-left: auto; }
         .total-row {
           display: flex;
@@ -440,8 +442,8 @@ function generateReceiptHTML(orderData) {
                   <h5>Billing Information</h5>
                   <address>
                     ${orderData.billing.firstName} ${
-                      orderData.billing.lastName
-                    }<br>
+    orderData.billing.lastName
+  }<br>
                     ${orderData.billing.address1}<br>
                     ${
                       orderData.billing.address2
@@ -449,8 +451,8 @@ function generateReceiptHTML(orderData) {
                         : ""
                     }
                     ${orderData.billing.city}, ${orderData.billing.state} ${
-                      orderData.billing.zip
-                    }<br>
+    orderData.billing.zip
+  }<br>
                     ${orderData.billing.country}
                   </address>
                 </div>
@@ -458,8 +460,8 @@ function generateReceiptHTML(orderData) {
                   <h5>Shipping Information</h5>
                   <address>
                     ${orderData.shipping.firstName} ${
-                      orderData.shipping.lastName
-                    }<br>
+    orderData.shipping.lastName
+  }<br>
                     ${orderData.shipping.address1}<br>
                     ${
                       orderData.shipping.address2
@@ -467,8 +469,8 @@ function generateReceiptHTML(orderData) {
                         : ""
                     }
                     ${orderData.shipping.city}, ${orderData.shipping.state} ${
-                      orderData.shipping.zip
-                    }<br>
+    orderData.shipping.zip
+  }<br>
                     ${orderData.shipping.country}
                   </address>
                 </div>
@@ -540,7 +542,11 @@ function generateReceiptHTML(orderData) {
                       <td>
                         <span class="color-badge ${getEmailColorClass(
                           item.color,
-                        )}">${item.color || "N/A"}</span>
+                        )}">${
+                        item.color != null && String(item.color).trim() !== ""
+                          ? item.color
+                          : "—"
+                      }</span>
                       </td>
                       <td>${item.quantity}</td>
                       <td class="text-end">$${parseFloat(item.price).toFixed(

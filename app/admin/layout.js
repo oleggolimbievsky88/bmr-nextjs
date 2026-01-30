@@ -36,7 +36,7 @@ export default function AdminLayout({ children }) {
         <Topbar4 />
         <Header18 showVehicleSearch={false} />
         <main className="admin-page">
-          <div className="container">{children}</div>
+          <div className="container-wide">{children}</div>
         </main>
         <Footer1 />
       </>
@@ -71,7 +71,7 @@ export default function AdminLayout({ children }) {
       <Header18 showVehicleSearch={false} />
       <AdminNav user={session.user} />
       <main className="admin-page">
-        <div className="container">{children}</div>
+        <div className="container-wide">{children}</div>
       </main>
       <Footer1 />
     </>

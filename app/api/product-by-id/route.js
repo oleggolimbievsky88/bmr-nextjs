@@ -13,7 +13,7 @@ export async function GET(request) {
     if (!id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function GET(request) {
       LEFT JOIN mans m ON p.ManID = m.ManID
       WHERE p.ProductID = ? AND p.EndProduct != 1
       LIMIT 1`,
-        [id]
+        [id],
       );
 
       const product = rows[0];
@@ -43,8 +43,24 @@ export async function GET(request) {
       if (!product) {
         return NextResponse.json(
           { error: "Product not found" },
-          { status: 404 }
+          { status: 404 },
         );
+      }
+
+      // When product has exactly one color, set defaultColorName for cart/checkout
+      const colorIds = (product.Color || "")
+        .toString()
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s !== "" && s !== "0");
+      if (colorIds.length === 1) {
+        const [colorRows] = await pool.query(
+          "SELECT ColorName FROM colors WHERE ColorID = ? LIMIT 1",
+          [colorIds[0]],
+        );
+        if (colorRows[0]) {
+          product.defaultColorName = colorRows[0].ColorName;
+        }
       }
 
       // Helper function to parse the Images field and create small/large image pairs
@@ -111,7 +127,7 @@ export async function GET(request) {
     console.error("API route error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
+import { getColorBadgeClass } from "@/lib/colorBadge";
 
 export default function PrintOrderReceipt() {
   const params = useParams();
@@ -144,15 +145,30 @@ export default function PrintOrderReceipt() {
           }
           .print-receipt .admin-color-badge {
             display: inline-block;
-            padding: 0.1rem 0.35rem;
-            margin-top: 0.15rem;
-            border-radius: 6px;
+            padding: 2px 6px;
+            margin-top: 2px;
+            border-radius: 4px;
             font-size: 10px;
             font-weight: 600;
             letter-spacing: 0.02em;
             color: #000 !important;
-            background: #f0f0f0 !important;
+            background: #e9ecef !important;
             border: 1px solid #ccc !important;
+          }
+          .print-receipt .admin-color-badge.admin-color-badge--black {
+            background: #1a1a1a !important;
+            color: #fff !important;
+            border-color: #1a1a1a !important;
+          }
+          .print-receipt .admin-color-badge.admin-color-badge--red {
+            background: #dc3545 !important;
+            color: #fff !important;
+            border-color: #dc3545 !important;
+          }
+          .print-receipt .admin-color-badge.admin-color-badge--default {
+            background: #6c757d !important;
+            color: #fff !important;
+            border-color: #6c757d !important;
           }
           .receipt-address-row {
             display: flex !important;
@@ -310,8 +326,12 @@ export default function PrintOrderReceipt() {
                 <tr key={item.new_order_item_id}>
                   <td>
                     <div>{item.product_name}</div>
-                    {item.color && item.color.trim() && (
-                      <span className="admin-color-badge">
+                    {item.color != null && String(item.color).trim() !== "" && (
+                      <span
+                        className={`admin-color-badge admin-color-badge--${getColorBadgeClass(
+                          item.color,
+                        ).replace("color-", "")}`}
+                      >
                         {item.color}
                       </span>
                     )}

@@ -54,7 +54,7 @@ export default function Context({ children }) {
       const totalItemPrice = (basePrice + addOnPrice) * quantity;
 
       console.log(
-        `Product ${product.ProductID}: basePrice=${basePrice}, addOnPrice=${addOnPrice}, quantity=${quantity}, totalItemPrice=${totalItemPrice}`
+        `Product ${product.ProductID}: basePrice=${basePrice}, addOnPrice=${addOnPrice}, quantity=${quantity}, totalItemPrice=${totalItemPrice}`,
       );
 
       return accumulator + totalItemPrice;
@@ -73,10 +73,17 @@ export default function Context({ children }) {
         const productData = await response.json();
         console.log("Product data from API:", productData);
 
+        // Single-color product: use defaultColorName when no color was selected (e.g. add from card)
+        const selectedColor =
+          options.selectedColor ||
+          (productData.product.defaultColorName
+            ? { ColorName: productData.product.defaultColorName }
+            : null);
+
         const newItem = {
           ...productData.product,
           quantity: qty,
-          selectedColor: options.selectedColor || null,
+          selectedColor,
           selectedGrease: options.selectedGrease || null,
           selectedAnglefinder: options.selectedAnglefinder || null,
           selectedHardware: options.selectedHardware || null,
@@ -103,12 +110,18 @@ export default function Context({ children }) {
           updatedCart[existingItemIndex].quantity += qty;
           setCartProducts(updatedCart);
           console.log("Increased quantity of existing item");
-          showToast(`${productData.product.ProductName} quantity updated in cart`, 'success');
+          showToast(
+            `${productData.product.ProductName} quantity updated in cart`,
+            "success",
+          );
         } else {
           // Different product or different options - add as new item
           setCartProducts((pre) => [...pre, newItem]);
           console.log("Added new item to cart");
-          showToast(`${productData.product.ProductName} added to cart`, 'success');
+          showToast(
+            `${productData.product.ProductName} added to cart`,
+            "success",
+          );
         }
 
         openCartModal();
@@ -147,7 +160,7 @@ export default function Context({ children }) {
     localStorage.removeItem("freeShipping");
   };
 
-  const applyCoupon = async (couponCode) => {
+  const applyCoupon = async (couponCode, shippingAddress = null) => {
     try {
       const response = await fetch("/api/validate-coupon", {
         method: "POST",
@@ -157,6 +170,7 @@ export default function Context({ children }) {
         body: JSON.stringify({
           couponCode,
           cartItems: cartProducts,
+          shippingAddress: shippingAddress || undefined,
         }),
       });
 
@@ -180,7 +194,10 @@ export default function Context({ children }) {
         try {
           localStorage.setItem("appliedCoupon", JSON.stringify(result.coupon));
           localStorage.setItem("couponDiscount", discountAmount.toString());
-          localStorage.setItem("freeShipping", result.coupon.freeShipping.toString());
+          localStorage.setItem(
+            "freeShipping",
+            result.coupon.freeShipping.toString(),
+          );
           console.log("Coupon saved to localStorage");
         } catch (error) {
           console.error("Error saving coupon to localStorage:", error);
@@ -247,7 +264,7 @@ export default function Context({ children }) {
     if (items?.length) {
       // Filter out any invalid items and ensure proper structure
       const validItems = items.filter(
-        (item) => item && item.ProductID && item.ProductName && item.Price
+        (item) => item && item.ProductID && item.ProductName && item.Price,
       );
       console.log("Valid items from localStorage:", validItems);
       setCartProducts(validItems);
@@ -290,7 +307,7 @@ export default function Context({ children }) {
     try {
       const cartData = JSON.stringify(cartProducts);
       document.cookie = `cartList=${encodeURIComponent(
-        cartData
+        cartData,
       )}; path=/; max-age=86400`; // 24 hours
     } catch (error) {
       console.error("Error saving cart to cookies:", error);
@@ -314,7 +331,10 @@ export default function Context({ children }) {
     }
 
     const revalidateCoupon = async () => {
-      console.log("Re-validating coupon after cart change:", appliedCoupon.code);
+      console.log(
+        "Re-validating coupon after cart change:",
+        appliedCoupon.code,
+      );
       console.log("Current cart products:", cartProducts);
       try {
         const result = await applyCoupon(appliedCoupon.code);
@@ -323,7 +343,10 @@ export default function Context({ children }) {
           console.log("Coupon no longer valid, removing:", result.message);
           removeCoupon();
         } else {
-          console.log("Coupon re-validated, new discount amount:", result.coupon.discountAmount);
+          console.log(
+            "Coupon re-validated, new discount amount:",
+            result.coupon.discountAmount,
+          );
         }
       } catch (error) {
         console.error("Error re-validating coupon:", error);

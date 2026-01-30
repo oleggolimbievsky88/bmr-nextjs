@@ -59,21 +59,21 @@ export default function DealersPortalLayout({ children }) {
   }
 
   return (
-    <>
+    <div className="dealers-portal-page">
       <Topbar4 />
       <Header18 showVehicleSearch={false} />
       <PageHeader title="Dealer Portal" />
+      <nav className="dealer-nav-top">
+        <div className="container-wide">
+          <DealerNav />
+        </div>
+      </nav>
       <section className="flat-spacing-11 account-dashboard">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3">
-              <DealerNav />
-            </div>
-            <div className="col-lg-9">{children}</div>
-          </div>
+        <div className="container-wide">
+          {children}
         </div>
       </section>
       <Footer1 />
-    </>
+    </div>
   );
 }

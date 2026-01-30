@@ -390,7 +390,11 @@ export default function Checkout() {
       return;
     }
 
-    const result = await applyCoupon(couponCode);
+    // Pass billing/shipping address when available so lower-48 is enforced
+    const address = sameAsBilling
+      ? { state: billingData.state, country: billingData.country }
+      : { state: shippingData.state, country: shippingData.country };
+    const result = await applyCoupon(couponCode, address);
     if (result.success) {
       setCouponError("");
       setCouponCode("");
@@ -575,9 +579,10 @@ export default function Checkout() {
           partNumber: product.PartNumber,
           quantity: product.quantity,
           price: product.Price,
-          color: product.selectedColor
-            ? product.selectedColor.ColorName
-            : "Default",
+          color:
+            product.selectedColor?.ColorName ||
+            product.defaultColorName ||
+            "Default",
           platform: product.PlatformName,
           yearRange: product.YearRange,
           image: productImage,
@@ -1092,8 +1097,8 @@ export default function Checkout() {
                                   {billingData.country === "United States"
                                     ? "State*"
                                     : billingData.country === "Canada"
-                                      ? "Province*"
-                                      : "State / Province / Region"}
+                                    ? "Province*"
+                                    : "State / Province / Region"}
                                 </label>
                                 {billingData.country === "United States" ? (
                                   <select
@@ -1418,8 +1423,8 @@ export default function Checkout() {
                                       {shippingData.country === "United States"
                                         ? "State*"
                                         : shippingData.country === "Canada"
-                                          ? "Province*"
-                                          : "State / Province / Region"}
+                                        ? "Province*"
+                                        : "State / Province / Region"}
                                     </label>
                                     {shippingData.country ===
                                     "United States" ? (

@@ -486,15 +486,33 @@
 
 .admin-color-badge {
 	display: inline-block;
-	padding: 0.1rem 0.35rem;
-	margin-top: 0.15rem;
-	border-radius: 6px;
+	padding: 0px 10px;
+	margin-top: 1x;
+	border-radius: 4px;
 	font-size: 10px;
 	font-weight: 600;
 	letter-spacing: 0.02em;
 	background: var(--bg-2);
 	color: var(--main);
 	border: 1px solid var(--line);
+
+	&.admin-color-badge--black {
+		background: #1a1a1a;
+		color: #fff;
+		border-color: #1a1a1a;
+	}
+
+	&.admin-color-badge--red {
+		background: #dc3545;
+		color: #fff;
+		border-color: #dc3545;
+	}
+
+	&.admin-color-badge--default {
+		background: #6c757d;
+		color: #fff;
+		border-color: #6c757d;
+	}
 }
 
 // Status select background colors (match badge colors)

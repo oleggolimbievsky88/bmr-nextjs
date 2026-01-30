@@ -768,6 +768,16 @@ section.tf-slideshow,
   // z-index: 999999 !important;
 }
 
+/* Wider container for Dealer Portal and Admin (less squished on large screens) */
+.container-wide {
+  width: 100%;
+  padding-right: var(--bs-gutter-x, 0.75rem);
+  padding-left: var(--bs-gutter-x, 0.75rem);
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1800px;
+}
+
 .navbar {
   position: relative;
   overflow: visible !important;

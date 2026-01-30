@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getCountryCode } from "@/lib/countryCodes";
 import { isLower48UsState } from "@/lib/shipping";
-import { areAllProductsBmr } from "@/lib/queries";
+import { areAllProductsCouponEligible } from "@/lib/queries";
+
+const DEALER_FLAT_RATE_LOWER48 = 14.95;
 
 export async function POST(request) {
   let fromAddress, toAddress, packages, productIds;
@@ -18,6 +22,32 @@ export async function POST(request) {
     );
   }
   try {
+    const session = await getServerSession(authOptions);
+    const role = session?.user?.role;
+    const dealerTier = parseInt(session?.user?.dealerTier ?? 0, 10);
+    const isDealer = role === "dealer" || role === "admin";
+    const lower48 =
+      (toAddress?.country === "US" || toAddress?.country === "United States") &&
+      isLower48UsState(toAddress?.state);
+
+    if (isDealer && dealerTier >= 1 && dealerTier <= 2 && lower48) {
+      return NextResponse.json({
+        success: true,
+        shippingOptions: [
+          {
+            service: "Dealer Flat Rate (Lower 48)",
+            code: "DEALER_FLAT",
+            cost: DEALER_FLAT_RATE_LOWER48,
+            currency: "USD",
+            deliveryDays: "3–5 business days",
+            description: "Flat rate for Tier 1 & 2 dealers in lower 48",
+          },
+        ],
+      });
+    }
+    if (isDealer && dealerTier >= 3) {
+      // Tier 3+ always pay full shipping; fall through to UPS rates below
+    }
     // UPS API credentials - Client Credentials flow only needs Client ID and Client Secret
     const upsClientId = process.env.UPS_CLIENT_ID || process.env.UPS_ACCESS_KEY;
     const upsClientSecret =
@@ -385,7 +415,7 @@ export async function POST(request) {
     // Sort by cost (cheapest first)
     shippingOptions.sort((a, b) => a.cost - b.cost);
 
-    // Free shipping only for BMR products to lower 48 US states
+    // Free shipping only for BMR products (not Low Margin, not Package) to lower 48 US
     const stateForShipping = (
       toAddress?.state ??
       toAddress?.stateProvince ??
@@ -397,7 +427,7 @@ export async function POST(request) {
     const allowFreeShipping =
       toCountryCode === "US" &&
       isLower48UsState(stateForShipping) &&
-      (await areAllProductsBmr(productIds));
+      (await areAllProductsCouponEligible(productIds));
     if (allowFreeShipping) {
       shippingOptions.unshift({
         service: "FREE SHIPPING",
@@ -405,7 +435,8 @@ export async function POST(request) {
         cost: 0,
         currency: "USD",
         deliveryDays: "1-5 business days",
-        description: "Free shipping on BMR products (lower 48 US only)",
+        description:
+          "Free shipping on BMR products (excl. low margin & package) in lower 48 US",
       });
     }
 
@@ -427,7 +458,7 @@ export async function POST(request) {
     console.error("UPS shipping rates error:", error);
 
     // Fallback shipping options when UPS API fails
-    // Free shipping only when BMR products + lower 48 US
+    // Free shipping only when BMR (not low margin/package) + lower 48 US
     let allowFreeShipping = false;
     const toCountryCode = getCountryCode(toAddress?.country) || "US";
     const stateForFallback = (
@@ -442,7 +473,9 @@ export async function POST(request) {
       allowFreeShipping =
         toCountryCode === "US" &&
         isLower48UsState(stateForFallback) &&
-        (await areAllProductsBmr(Array.isArray(productIds) ? productIds : []));
+        (await areAllProductsCouponEligible(
+          Array.isArray(productIds) ? productIds : [],
+        ));
     } catch (e) {
       allowFreeShipping = false;
     }
@@ -481,7 +514,8 @@ export async function POST(request) {
           cost: 0,
           currency: "USD",
           deliveryDays: "5-7 business days",
-          description: "Free shipping on BMR products (lower 48 US only)",
+          description:
+            "Free shipping on BMR products (excl. low margin & package) in lower 48 US",
         });
       }
     } else if (toCountryCode === "CA") {

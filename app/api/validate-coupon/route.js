@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
-    const { couponCode, cartItems, customerId } = await request.json();
+    const { couponCode, cartItems, customerId, shippingAddress } =
+      await request.json();
 
     if (!couponCode) {
       return NextResponse.json({
@@ -24,7 +25,8 @@ export async function POST(request) {
     const validation = await validateCouponForCart(
       couponCode,
       cartItems,
-      customerId
+      customerId,
+      shippingAddress || null,
     );
 
     console.log("API: Validation result:", validation);

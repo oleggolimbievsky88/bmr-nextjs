@@ -4,6 +4,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getEffectiveDealerDiscount } from "@/lib/queries";
 
 export async function GET() {
   try {
@@ -22,7 +23,8 @@ export async function GET() {
     }
 
     const tier = session.user.dealerTier ?? 0;
-    const discount = session.user.dealerDiscount ?? 0;
+    const customerDiscount = session.user.dealerDiscount ?? 0;
+    const discount = await getEffectiveDealerDiscount(tier, customerDiscount);
 
     return NextResponse.json({
       success: true,

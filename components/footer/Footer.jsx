@@ -38,8 +38,8 @@ export default function Footer1({ bgColor = "background-black" }) {
                     <li>
                       <p>
                         Email:{" "}
-                        <a href="mailto:info@bmrsuspension.com">
-                          info@bmrsuspension.com
+                        <a href="mailto:sales@bmrsuspension.com">
+                          Sales@bmrsuspension.com
                         </a>
                       </p>
                     </li>

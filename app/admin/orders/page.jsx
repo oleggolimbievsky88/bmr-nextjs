@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { getColorBadgeClass } from "@/lib/colorBadge";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -183,7 +184,9 @@ export default function AdminOrdersPage() {
                   ) : (
                     <li
                       key={p}
-                      className={`page-item ${p === currentPage ? "active" : ""}`}
+                      className={`page-item ${
+                        p === currentPage ? "active" : ""
+                      }`}
                     >
                       <button
                         type="button"
@@ -197,7 +200,9 @@ export default function AdminOrdersPage() {
                 );
               })()}
               <li
-                className={`page-item ${currentPage >= totalPages ? "disabled" : ""}`}
+                className={`page-item ${
+                  currentPage >= totalPages ? "disabled" : ""
+                }`}
               >
                 <button
                   type="button"
@@ -701,11 +706,16 @@ export default function AdminOrdersPage() {
                         <tr key={item.new_order_item_id}>
                           <td>
                             <div>{item.product_name}</div>
-                            {item.color && item.color.trim() && (
-                              <span className="admin-color-badge">
-                                {item.color}
-                              </span>
-                            )}
+                            {item.color != null &&
+                              String(item.color).trim() !== "" && (
+                                <span
+                                  className={`admin-color-badge admin-color-badge--${getColorBadgeClass(
+                                    item.color,
+                                  ).replace("color-", "")}`}
+                                >
+                                  {item.color}
+                                </span>
+                              )}
                           </td>
                           <td>{item.part_number}</td>
                           <td className="text-center">{item.quantity}</td>
@@ -987,7 +997,9 @@ export default function AdminOrdersPage() {
                     <td>{formatCurrency(order.total)}</td>
                     <td>
                       <span
-                        className={`admin-status-badge ${order.status || "pending"}`}
+                        className={`admin-status-badge ${
+                          order.status || "pending"
+                        }`}
                       >
                         {order.status}
                       </span>

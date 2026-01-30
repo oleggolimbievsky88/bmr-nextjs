@@ -304,3 +304,148 @@
 		}
 	}
 }
+
+/* Dealer Portal: top nav bar (horizontal links) */
+.dealer-nav-top {
+	background-color: var(--bg-2, #f8f9fa);
+	border-bottom: 1px solid var(--line, #dee2e6);
+	padding: 12px 0;
+	margin-bottom: 0;
+
+	.dealer-nav-top-inner {
+		min-height: 44px;
+	}
+
+	.dealer-nav-links {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		gap: 0.25rem 1rem;
+	}
+
+	.dealer-nav-link {
+		color: var(--text);
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 500;
+		padding: 8px 14px;
+		border-radius: 6px;
+		@include transition3;
+
+		&:hover {
+			color: var(--primary);
+			background: rgba(0, 0, 0, 0.05);
+		}
+
+		&.active {
+			color: var(--white);
+			background: var(--primary);
+		}
+	}
+}
+
+/* Dealer Portal: hero fully visible, content does not overlap */
+.dealers-portal-page {
+	.installation-hero {
+		margin-bottom: 0;
+	}
+
+	.installation-hero-bg {
+		min-height: 260px;
+	}
+
+	.flat-spacing-11.account-dashboard {
+		padding-top: 2.5rem;
+		padding-bottom: 3rem;
+	}
+
+	.dashboard-card .position-relative img {
+		object-fit: contain;
+	}
+
+	.dealer-products-filters {
+		.dealer-filter-input {
+			min-height: 44px;
+			height: 44px;
+			border-radius: 8px;
+			width: 100%;
+		}
+		.dealer-filter-clear {
+			border-radius: 8px;
+			padding: 0.35rem 0.75rem;
+			min-height: 36px;
+			height: 36px;
+			background-color: #dc3545;
+			border-color: #dc3545;
+			color: #fff;
+			font-size: 0.875rem;
+			font-weight: 500;
+			transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
+			&:hover:not(:disabled) {
+				background-color: #bb2d3b;
+				border-color: #b02a37;
+				color: #fff;
+			}
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	/* Dealer products list table: subtle color column hints (Red / Black / Black Hammertone etc.) */
+	.dealer-products-table-wrap {
+		.dealer-products-table {
+			th.dealer-col-qty,
+			td.dealer-col-qty {
+				min-width: 4rem;
+				text-align: center;
+			}
+			.dealer-qty-input {
+				width: 100%;
+				max-width: 4.5rem;
+				text-align: center;
+			}
+			/* Light tint only – easy to scan without popping */
+			.dealer-col-red {
+				background-color: rgba(220, 53, 69, 0.06);
+			}
+			.dealer-col-red .dealer-qty-input {
+				background-color: #fff;
+			}
+			th.dealer-col-red {
+				color: #922;
+				font-weight: 600;
+			}
+			.dealer-col-black {
+				background-color: rgba(0, 0, 0, 0.04);
+			}
+			.dealer-col-black .dealer-qty-input {
+				background-color: #fff;
+			}
+			th.dealer-col-black {
+				color: #333;
+				font-weight: 600;
+			}
+			.dealer-col-product {
+				min-width: 120px;
+			}
+			.dealer-col-part {
+				white-space: nowrap;
+			}
+			.dealer-col-name {
+				max-width: 220px;
+			}
+			.dealer-col-platform {
+				white-space: nowrap;
+			}
+			.dealer-col-addon {
+				min-width: 6rem;
+				max-width: 10rem;
+			}
+			.dealer-addon-select {
+				width: 100%;
+			}
+		}
+	}
+}

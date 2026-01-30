@@ -3,6 +3,7 @@ import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { getColorBadgeClass } from "@/lib/colorBadge";
 
 // Email Receipt Form Component
 function EmailReceiptForm({ order }) {
@@ -251,19 +252,6 @@ export default function OrderConfirmation({ orderData }) {
     return subtotal + shipping + tax - discount;
   };
 
-  const getColorClass = (colorName) => {
-    if (!colorName) return "color-default";
-
-    const color = colorName.toLowerCase();
-    if (color.includes("black") || color.includes("dark")) {
-      return "color-black";
-    } else if (color.includes("red")) {
-      return "color-red";
-    } else {
-      return "color-default";
-    }
-  };
-
   return (
     <div className="container py-5 order-confirmation-page">
       <div className="row justify-content-center">
@@ -418,11 +406,14 @@ export default function OrderConfirmation({ orderData }) {
                         </td>
                         <td>
                           <span
-                            className={`color-badge ${getColorClass(
+                            className={`color-badge ${getColorBadgeClass(
                               item.color,
                             )}`}
                           >
-                            {item.color}
+                            {item.color != null &&
+                            String(item.color).trim() !== ""
+                              ? item.color
+                              : "—"}
                           </span>
                         </td>
                         <td>{item.quantity}</td>
