@@ -7,6 +7,9 @@ const nextConfig = {
   reactStrictMode: false, // Disable strict mode if needed
   swcMinify: true,
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined, // Ensure compatibility with Vercel
+  sassOptions: {
+    silenceDeprecations: ["import"],
+  },
 };
 
 export default nextConfig;

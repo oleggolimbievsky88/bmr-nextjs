@@ -42,6 +42,7 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const handleScroll = () => {
       const header = document.querySelector("header");
+      if (!header) return;
       if (window.scrollY > 100) {
         header.classList.add("header-bg");
       } else {
@@ -113,6 +114,7 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     const header = document.querySelector("header");
+    if (!header) return;
     if (scrollDirection == "up") {
       header.style.top = "0px";
     } else {

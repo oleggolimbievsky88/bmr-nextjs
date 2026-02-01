@@ -17,11 +17,13 @@ export default function AdminLayout({ children }) {
   return (
     <div>
       <nav className="bg-gray-800 text-white p-4">
-        <ul>
+        <ul className="d-flex gap-3 list-unstyled mb-0">
           <li>
-            <a href="/admin/import">Import ACES/PIES</a>
+            <a href="/admin/import" className="text-white text-decoration-none">Import ACES/PIES</a>
           </li>
-          {/* Other admin navigation items */}
+          <li>
+            <a href="/admin/dealers" className="text-white text-decoration-none">Dealers</a>
+          </li>
         </ul>
       </nav>
       <main>{children}</main>
