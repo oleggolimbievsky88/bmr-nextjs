@@ -122,8 +122,9 @@ export default function Checkout() {
   } = useCreditCard();
 
   // Destination country for payment rules (shipping address)
-  const destinationCountry =
-    sameAsBilling ? billingData.country : shippingData.country;
+  const destinationCountry = sameAsBilling
+    ? billingData.country
+    : shippingData.country;
   const payPalOnly = mustUsePayPal(destinationCountry);
   const showPaymentMethodChoice = canUseCreditCard(destinationCountry);
 
@@ -372,7 +373,7 @@ export default function Checkout() {
         fromAddress,
         toAddress,
         packages,
-        productIds,
+        productIds
       );
     } finally {
       isCalculatingShippingRef.current = false;
@@ -442,7 +443,7 @@ export default function Checkout() {
         setActiveStep("payment");
       } else {
         alert(
-          "Please ensure your shipping address is valid before continuing.",
+          "Please ensure your shipping address is valid before continuing."
         );
       }
     }
@@ -473,17 +474,14 @@ export default function Checkout() {
             "Default",
           platform: product.PlatformName,
           yearRange: product.YearRange,
-          image:
-            product.images?.[0]?.imgSrc ||
-            product.ImageLarge ||
-            "",
+          image: product.images?.[0]?.imgSrc || product.ImageLarge || "",
           Package: product.Package ?? 0,
           LowMargin: product.LowMargin ?? 0,
           ManufacturerName: product.ManufacturerName ?? "",
         }));
         const subtotal = orderItems.reduce(
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
-          0,
+          0
         );
         const destState = sameAsBilling
           ? cleanBilling.state
@@ -495,7 +493,7 @@ export default function Checkout() {
           {
             shippingCost: selectedOption?.cost || 0,
             items: orderItems,
-          },
+          }
         );
         const total =
           subtotal +
@@ -534,7 +532,7 @@ export default function Checkout() {
       } catch (err) {
         console.error("PayPal checkout error:", err);
         setSubmitError(
-          "Could not start PayPal checkout. Please check your connection and try again.",
+          "Could not start PayPal checkout. Please check your connection and try again."
         );
       } finally {
         setIsSubmitting(false);
@@ -547,7 +545,7 @@ export default function Checkout() {
       selectedOption,
       session?.user?.id,
       appliedCoupon,
-    ],
+    ]
   );
 
   const handleOrderSubmission = async () => {
@@ -723,7 +721,7 @@ export default function Checkout() {
         const expParts = (paymentData.expiryDate || "").split("/");
         const payloadSubtotal = orderItems.reduce(
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
-          0,
+          0
         );
         const destState = sameAsBilling
           ? cleanBilling.state
@@ -735,7 +733,7 @@ export default function Checkout() {
           {
             shippingCost: selectedOption?.cost || 0,
             items: orderItems,
-          },
+          }
         );
         const orderPayload = {
           billing: cleanBilling,
@@ -787,7 +785,7 @@ export default function Checkout() {
         } catch (fetchError) {
           console.error("Network error fetching order API:", fetchError);
           setSubmitError(
-            "Network error: Could not connect to server. Please check your connection and try again.",
+            "Network error: Could not connect to server. Please check your connection and try again."
           );
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -811,7 +809,7 @@ export default function Checkout() {
               responseText: responseText.substring(0, 500), // First 500 chars
             });
             setSubmitError(
-              `Server returned invalid response (${orderResponse.status}). Please try again.`,
+              `Server returned invalid response (${orderResponse.status}). Please try again.`
             );
             setIsRedirecting(false);
             setIsSubmitting(false);
@@ -820,7 +818,7 @@ export default function Checkout() {
         } catch (textError) {
           console.error("Failed to read order response:", textError);
           setSubmitError(
-            `Failed to read server response: ${textError.message}. Please try again.`,
+            `Failed to read server response: ${textError.message}. Please try again.`
           );
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -833,7 +831,7 @@ export default function Checkout() {
           console.error(
             "Status:",
             orderResponse.status,
-            orderResponse.statusText,
+            orderResponse.statusText
           );
           console.error("Full Response Text:", responseText);
           console.error("Parsed Result:", orderResult);
@@ -935,7 +933,7 @@ export default function Checkout() {
       } catch (orderError) {
         console.error("Failed to create order:", orderError);
         setSubmitError(
-          "Could not connect to save your order. Please check your connection and try again.",
+          "Could not connect to save your order. Please check your connection and try again."
         );
         setIsRedirecting(false);
         setIsSubmitting(false);
@@ -974,7 +972,7 @@ export default function Checkout() {
       // Store order data in sessionStorage for the confirmation page
       sessionStorage.setItem(
         "orderConfirmation",
-        JSON.stringify(confirmationData),
+        JSON.stringify(confirmationData)
       );
 
       // Automatically send receipt email
@@ -1902,178 +1900,182 @@ export default function Checkout() {
                         )}
                         {paymentMethod === "paypal" && (
                           <p className="text-muted mb-4">
-                            You will be redirected to PayPal to complete
-                            payment securely.
+                            Please contact our helpfullstaff during bussiness
+                            hours and they will be happy to help.
                           </p>
                         )}
                         {paymentMethod === "credit_card" && (
-                        <form className="checkout-form">
-                          <div className="form-group">
-                            <label htmlFor="card-number">Card Number*</label>
-                            <div className="card-input-wrapper">
+                          <form className="checkout-form">
+                            <div className="form-group">
+                              <label htmlFor="card-number">Card Number*</label>
+                              <div className="card-input-wrapper">
+                                <input
+                                  type="text"
+                                  id="card-number"
+                                  placeholder="1234 5678 9012 3456"
+                                  value={paymentData.cardNumber}
+                                  onChange={(e) => {
+                                    const formatted = handleCardNumberChange(
+                                      e.target.value
+                                    );
+                                    setPaymentData({
+                                      ...paymentData,
+                                      cardNumber: formatted,
+                                    });
+                                  }}
+                                  className={`form-control ${
+                                    paymentData.cardNumber &&
+                                    (cardValid ? "is-valid" : "is-invalid")
+                                  }`}
+                                  required
+                                />
+                                <div className="card-icons">
+                                  <CreditCardIcons
+                                    detectedType={detectedType}
+                                  />
+                                </div>
+                                {paymentData.cardNumber && (
+                                  <div
+                                    className={`validation-message ${
+                                      cardValid ? "valid" : "invalid"
+                                    }`}
+                                  >
+                                    {validationMessage}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="row">
+                              <div className="col-md-6">
+                                <div className="form-group">
+                                  <label htmlFor="expiry-date">
+                                    Expiry Date*
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="expiry-date"
+                                    placeholder="MM/YY"
+                                    value={paymentData.expiryDate}
+                                    onChange={(e) => {
+                                      const formatted = formatExpiryDate(
+                                        e.target.value
+                                      );
+                                      const validation =
+                                        validateExpiryDate(formatted);
+                                      setPaymentData({
+                                        ...paymentData,
+                                        expiryDate: formatted,
+                                      });
+                                      setExpiryValid(validation.isValid);
+                                      setExpiryMessage(validation.message);
+                                    }}
+                                    className={`form-control ${
+                                      paymentData.expiryDate &&
+                                      (expiryValid ? "is-valid" : "is-invalid")
+                                    }`}
+                                    required
+                                  />
+                                  {paymentData.expiryDate && (
+                                    <div
+                                      className={`validation-message ${
+                                        expiryValid ? "valid" : "invalid"
+                                      }`}
+                                    >
+                                      {expiryMessage}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="form-group">
+                                  <label htmlFor="cvv">CVV*</label>
+                                  <input
+                                    type="text"
+                                    id="cvv"
+                                    placeholder={
+                                      detectedType?.name === "American Express"
+                                        ? "1234"
+                                        : "123"
+                                    }
+                                    value={paymentData.cvv}
+                                    onChange={(e) => {
+                                      const cleaned = e.target.value.replace(
+                                        /\D/g,
+                                        ""
+                                      );
+                                      const validation = validateCVV(
+                                        cleaned,
+                                        detectedType
+                                      );
+                                      setPaymentData({
+                                        ...paymentData,
+                                        cvv: cleaned,
+                                      });
+                                      setCvvValid(validation.isValid);
+                                      setCvvMessage(validation.message);
+                                    }}
+                                    className={`form-control ${
+                                      paymentData.cvv &&
+                                      (cvvValid ? "is-valid" : "is-invalid")
+                                    }`}
+                                    maxLength={
+                                      detectedType?.name === "American Express"
+                                        ? 4
+                                        : 3
+                                    }
+                                    required
+                                  />
+                                  {paymentData.cvv && (
+                                    <div
+                                      className={`validation-message ${
+                                        cvvValid ? "valid" : "invalid"
+                                      }`}
+                                    >
+                                      {cvvMessage}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="form-group">
+                              <label htmlFor="name-on-card">
+                                Name on Card*
+                              </label>
                               <input
                                 type="text"
-                                id="card-number"
-                                placeholder="1234 5678 9012 3456"
-                                value={paymentData.cardNumber}
-                                onChange={(e) => {
-                                  const formatted = handleCardNumberChange(
-                                    e.target.value,
-                                  );
+                                id="name-on-card"
+                                value={paymentData.nameOnCard}
+                                onChange={(e) =>
                                   setPaymentData({
                                     ...paymentData,
-                                    cardNumber: formatted,
-                                  });
-                                }}
+                                    nameOnCard: e.target.value,
+                                  })
+                                }
                                 className={`form-control ${
-                                  paymentData.cardNumber &&
-                                  (cardValid ? "is-valid" : "is-invalid")
+                                  paymentData.nameOnCard &&
+                                  (paymentData.nameOnCard.trim().length > 0
+                                    ? "is-valid"
+                                    : "is-invalid")
                                 }`}
                                 required
                               />
-                              <div className="card-icons">
-                                <CreditCardIcons detectedType={detectedType} />
-                              </div>
-                              {paymentData.cardNumber && (
+                              {paymentData.nameOnCard && (
                                 <div
                                   className={`validation-message ${
-                                    cardValid ? "valid" : "invalid"
+                                    paymentData.nameOnCard.trim().length > 0
+                                      ? "valid"
+                                      : "invalid"
                                   }`}
                                 >
-                                  {validationMessage}
+                                  {paymentData.nameOnCard.trim().length > 0
+                                    ? "Valid name"
+                                    : "Please enter a valid name"}
                                 </div>
                               )}
                             </div>
-                          </div>
-
-                          <div className="row">
-                            <div className="col-md-6">
-                              <div className="form-group">
-                                <label htmlFor="expiry-date">
-                                  Expiry Date*
-                                </label>
-                                <input
-                                  type="text"
-                                  id="expiry-date"
-                                  placeholder="MM/YY"
-                                  value={paymentData.expiryDate}
-                                  onChange={(e) => {
-                                    const formatted = formatExpiryDate(
-                                      e.target.value,
-                                    );
-                                    const validation =
-                                      validateExpiryDate(formatted);
-                                    setPaymentData({
-                                      ...paymentData,
-                                      expiryDate: formatted,
-                                    });
-                                    setExpiryValid(validation.isValid);
-                                    setExpiryMessage(validation.message);
-                                  }}
-                                  className={`form-control ${
-                                    paymentData.expiryDate &&
-                                    (expiryValid ? "is-valid" : "is-invalid")
-                                  }`}
-                                  required
-                                />
-                                {paymentData.expiryDate && (
-                                  <div
-                                    className={`validation-message ${
-                                      expiryValid ? "valid" : "invalid"
-                                    }`}
-                                  >
-                                    {expiryMessage}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="form-group">
-                                <label htmlFor="cvv">CVV*</label>
-                                <input
-                                  type="text"
-                                  id="cvv"
-                                  placeholder={
-                                    detectedType?.name === "American Express"
-                                      ? "1234"
-                                      : "123"
-                                  }
-                                  value={paymentData.cvv}
-                                  onChange={(e) => {
-                                    const cleaned = e.target.value.replace(
-                                      /\D/g,
-                                      "",
-                                    );
-                                    const validation = validateCVV(
-                                      cleaned,
-                                      detectedType,
-                                    );
-                                    setPaymentData({
-                                      ...paymentData,
-                                      cvv: cleaned,
-                                    });
-                                    setCvvValid(validation.isValid);
-                                    setCvvMessage(validation.message);
-                                  }}
-                                  className={`form-control ${
-                                    paymentData.cvv &&
-                                    (cvvValid ? "is-valid" : "is-invalid")
-                                  }`}
-                                  maxLength={
-                                    detectedType?.name === "American Express"
-                                      ? 4
-                                      : 3
-                                  }
-                                  required
-                                />
-                                {paymentData.cvv && (
-                                  <div
-                                    className={`validation-message ${
-                                      cvvValid ? "valid" : "invalid"
-                                    }`}
-                                  >
-                                    {cvvMessage}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="form-group">
-                            <label htmlFor="name-on-card">Name on Card*</label>
-                            <input
-                              type="text"
-                              id="name-on-card"
-                              value={paymentData.nameOnCard}
-                              onChange={(e) =>
-                                setPaymentData({
-                                  ...paymentData,
-                                  nameOnCard: e.target.value,
-                                })
-                              }
-                              className={`form-control ${
-                                paymentData.nameOnCard &&
-                                (paymentData.nameOnCard.trim().length > 0
-                                  ? "is-valid"
-                                  : "is-invalid")
-                              }`}
-                              required
-                            />
-                            {paymentData.nameOnCard && (
-                              <div
-                                className={`validation-message ${
-                                  paymentData.nameOnCard.trim().length > 0
-                                    ? "valid"
-                                    : "invalid"
-                                }`}
-                              >
-                                {paymentData.nameOnCard.trim().length > 0
-                                  ? "Valid name"
-                                  : "Please enter a valid name"}
-                              </div>
-                            )}
-                          </div>
-                        </form>
+                          </form>
                         )}
 
                         {submitError && (
@@ -2129,7 +2131,7 @@ export default function Checkout() {
                               if (item.selectedColor.ColorID === 1) {
                                 imageIndex = Math.min(
                                   1,
-                                  item.images.length - 1,
+                                  item.images.length - 1
                                 );
                               } else if (item.selectedColor.ColorID === 2) {
                                 imageIndex = 0;
@@ -2184,7 +2186,7 @@ export default function Checkout() {
                                           ...cartItem,
                                           quantity: cartItem.quantity - 1,
                                         }
-                                      : cartItem,
+                                      : cartItem
                                 );
                                 setCartProducts(updatedCart);
                               }
@@ -2203,7 +2205,7 @@ export default function Checkout() {
                                         ...cartItem,
                                         quantity: cartItem.quantity + 1,
                                       }
-                                    : cartItem,
+                                    : cartItem
                               );
                               setCartProducts(updatedCart);
                             }}
