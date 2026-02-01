@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+[custom.scss](mdc:public/scss/custom.scss)
+
+Always use the scss folder and if a component has a matching scss file under public/scss/component already, use that. 

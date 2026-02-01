@@ -1,0 +1,9 @@
+---
+description: Use Server Components
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+Always assume this project uses version 14.2.15 of Next.js with the App Router. Use app/ directory structure, and prefer Server Components unless interactivity is needed. Avoid outdated patterns like getServerSideProps.

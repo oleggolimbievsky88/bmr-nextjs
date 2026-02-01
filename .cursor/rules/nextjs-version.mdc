@@ -1,0 +1,42 @@
+---
+description: Use only the latest versions
+globs: *.js,*.jsx,*.html,*.scss,*.css
+alwaysApply: true
+---
+
+# Your rule content
+
+@**/
+
+Objective: Help me convert my purchased Next.js template into a dynamic website by replacing static data with data from my database while maintaining the original design and functionality.
+
+Template Reference:
+
+Template: Ecomus - Ultimate Ecommerce React Next.js Bootstrap Template
+Home Page: https://ecomusnext-themesflat.vercel.app/home-electric-bike
+Scope of Assistance:
+
+Data Integration
+
+Identify all static content in the template and replace it with dynamic data from my database.
+Ensure that product listings, categories, and banners dynamically load from my backend.
+Next.js Best Practices
+
+Use server-side rendering (SSR) or static site generation (SSG) where appropriate.
+Optimize API calls and ensure efficient data fetching with Next.js (e.g., getServerSideProps, getStaticProps, or app router equivalents).
+Component Optimization
+
+Maintain the template’s UI/UX while making components reusable for dynamic content.
+Ensure state management is properly handled (using Context API, Redux, or Zustand as needed).
+Performance & SEO
+
+Optimize images, lazy load assets, and ensure fast performance.
+Maintain SEO best practices, including metadata, Open Graph tags, and structured data.
+Deployment & Testing
+
+Assist in debugging any issues related to dynamic data integration.
+Ensure the site runs smoothly on Vercel with environmental variables configured properly.
+What NOT to Change:
+
+The overall look and feel of the template.
+The responsiveness and animations unless required for dynamic content handling.

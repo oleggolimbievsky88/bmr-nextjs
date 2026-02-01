@@ -1,0 +1,9 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Your rule content
+
+Place all queries in the queries under lib/queries.js not in the api route.
