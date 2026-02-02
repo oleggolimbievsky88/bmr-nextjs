@@ -9,7 +9,9 @@ const nextConfig = {
   },
 
   // Image configuration for external domains
+  // In development, use unoptimized images to avoid EACCES on .next/cache/images
   images: {
+    unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
       {
         protocol: "https",

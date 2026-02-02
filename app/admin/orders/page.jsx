@@ -684,8 +684,30 @@ export default function AdminOrdersPage() {
                   </p>
                   <p className="mb-1">{selectedOrder.shipping_country}</p>
                   <p className="mb-1">
-                    <strong>Method:</strong> {selectedOrder.shipping_method}
+                    <strong>Shipping method:</strong>{" "}
+                    {selectedOrder.free_shipping && selectedOrder.coupon_code
+                      ? `Free Shipping (Coupon: ${selectedOrder.coupon_code})`
+                      : selectedOrder.free_shipping
+                        ? "Free Shipping"
+                        : (selectedOrder.shipping_method || "—")}
                   </p>
+                  {selectedOrder.free_shipping ? (
+                    <p className="mb-1">
+                      <span className="badge bg-success">
+                        {selectedOrder.coupon_code ? "Free (Coupon)" : "Free Shipping"}
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="mb-1">
+                      <strong>Shipping cost:</strong>{" "}
+                      {formatCurrency(selectedOrder.shipping_cost)}
+                    </p>
+                  )}
+                  {selectedOrder.coupon_code && (
+                    <p className="mb-0">
+                      <strong>Coupon:</strong> {selectedOrder.coupon_code}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -964,6 +986,7 @@ export default function AdminOrdersPage() {
                 <SortableTh column="order_date" label="Date" />
                 <SortableTh column="billing_last_name" label="Customer" />
                 <th>Items</th>
+                <th>Shipping</th>
                 <SortableTh column="total" label="Total" />
                 <SortableTh column="status" label="Status" />
                 <th>Last Changed</th>
@@ -973,7 +996,7 @@ export default function AdminOrdersPage() {
             <tbody>
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="text-center text-secondary py-4">
+                  <td colSpan="9" className="text-center text-secondary py-4">
                     No orders found
                   </td>
                 </tr>
@@ -993,6 +1016,25 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="text-center">
                       {order.item_count || 0} items
+                    </td>
+                    <td className="small">
+                      <span title={order.shipping_method || "—"}>
+                        {order.free_shipping && order.coupon_code
+                          ? `Free Shipping (Coupon: ${order.coupon_code})`
+                          : order.free_shipping
+                            ? "Free Shipping"
+                            : (order.shipping_method || "—")}
+                      </span>
+                      {order.coupon_code && !order.free_shipping && (
+                        <span className="text-muted d-block small">Coupon: {order.coupon_code}</span>
+                      )}
+                      {order.free_shipping ? (
+                        <span className="badge bg-success ms-1" title="Free shipping">Free</span>
+                      ) : order.shipping_cost != null && parseFloat(order.shipping_cost) > 0 ? (
+                        <span className="text-muted d-block small">
+                          {formatCurrency(order.shipping_cost)}
+                        </span>
+                      ) : null}
                     </td>
                     <td>{formatCurrency(order.total)}</td>
                     <td>

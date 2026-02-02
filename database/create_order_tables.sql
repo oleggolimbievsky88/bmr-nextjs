@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `new_orders` (
   `shipping_method` varchar(100) DEFAULT 'Standard Shipping',
   `subtotal` decimal(10,2) DEFAULT 0.00,
   `shipping_cost` decimal(10,2) DEFAULT 0.00,
+  `free_shipping` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 = free shipping (coupon or free option)',
   `tax` decimal(10,2) DEFAULT 0.00,
   `discount` decimal(10,2) DEFAULT 0.00,
   `total` decimal(10,2) NOT NULL,

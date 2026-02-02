@@ -47,17 +47,22 @@ export async function POST(request) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage =
         errorData.error?.message || `Google API error: ${response.status}`;
-      console.error("Google Address Validation API error:", {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorData.error,
-      });
-      
-      // Check if it's a permission/suspension error - return graceful response
-      if (response.status === 403 || 
-          errorMessage.includes('suspended') || 
-          errorMessage.includes('Permission denied') ||
-          errorMessage.includes('disabled')) {
+      const isSuspendedOrDisabled =
+        response.status === 403 ||
+        errorMessage.includes("suspended") ||
+        errorMessage.includes("Permission denied") ||
+        errorMessage.includes("disabled");
+
+      // Only log unexpected errors; skip console spam for known suspended/disabled key
+      if (!isSuspendedOrDisabled) {
+        console.error("Google Address Validation API error:", {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData.error,
+        });
+      }
+
+      if (isSuspendedOrDisabled) {
         return NextResponse.json({
           isValid: true,
           apiUnavailable: true,
@@ -65,7 +70,7 @@ export async function POST(request) {
           message: "Address validation service temporarily unavailable",
         });
       }
-      
+
       throw new Error(errorMessage);
     }
 

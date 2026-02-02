@@ -507,8 +507,11 @@ export default function Checkout() {
             billing: cleanBilling,
             shipping: cleanShipping,
             items: orderItems,
-            shippingMethod: selectedOption?.name || "Standard Shipping",
+            shippingMethod: selectedOption?.name || selectedOption?.service || "Standard Shipping",
             shippingCost: selectedOption?.cost || 0,
+            freeShipping:
+              (selectedOption?.cost === 0) ||
+              /free/i.test(selectedOption?.service || selectedOption?.name || ""),
             tax: payloadTax,
             discount: couponDiscount || 0,
             total,
@@ -735,12 +738,18 @@ export default function Checkout() {
             items: orderItems,
           }
         );
+        const shippingMethodLabel =
+          selectedOption?.name || selectedOption?.service || "Standard Shipping";
+        const freeShipping =
+          (selectedOption?.cost === 0) ||
+          /free/i.test(selectedOption?.service || selectedOption?.name || "");
         const orderPayload = {
           billing: cleanBilling,
           shipping: cleanShipping,
           items: orderItems,
-          shippingMethod: selectedOption?.name || "Standard Shipping",
+          shippingMethod: shippingMethodLabel,
           shippingCost: selectedOption?.cost || 0,
+          freeShipping,
           tax: payloadTax,
           discount: couponDiscount || 0,
           couponCode: appliedCoupon?.code || "",
@@ -963,8 +972,11 @@ export default function Checkout() {
         })),
         billing: billingData,
         shipping: sameAsBilling ? billingData : shippingData,
-        shippingMethod: selectedOption?.name || "Standard Shipping",
+        shippingMethod: selectedOption?.name || selectedOption?.service || "Standard Shipping",
         shippingCost: selectedOption?.cost || 0,
+        freeShipping:
+          (selectedOption?.cost === 0) ||
+          /free/i.test(selectedOption?.service || selectedOption?.name || ""),
         couponCode: appliedCoupon?.code || "",
         discount: couponDiscount || 0,
       };

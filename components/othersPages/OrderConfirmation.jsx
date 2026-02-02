@@ -347,7 +347,16 @@ export default function OrderConfirmation({ orderData }) {
                     </div>
                     <div className="d-flex align-items-center mb-2">
                       <i className="fas fa-truck me-2 text-muted"></i>
-                      <span>{order.shippingMethod}</span>
+                      <span>
+                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0) && order.couponCode
+                          ? `Free Shipping (Coupon: ${order.couponCode})`
+                          : (order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                            ? "Free Shipping"
+                            : order.shippingMethod}
+                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                          ? ""
+                          : ` — $${parseFloat(order.shippingCost || 0).toFixed(2)}`}
+                      </span>
                     </div>
                     {order.couponCode && (
                       <div className="d-flex align-items-center">
@@ -448,9 +457,18 @@ export default function OrderConfirmation({ orderData }) {
                       </div>
                     )}
                     <div className="d-flex justify-content-between mb-2">
-                      <span>Shipping:</span>
+                      <span>Shipping ({(order.freeShipping || parseFloat(order.shippingCost || 0) === 0) && order.couponCode
+                        ? `Free Shipping (Coupon: ${order.couponCode})`
+                        : (order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                          ? "Free Shipping"
+                          : (order.shippingMethod || "—")}
+                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                          ? ", Free"
+                          : ""}):</span>
                       <span>
-                        ${parseFloat(order.shippingCost || 0).toFixed(2)}
+                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                          ? "$0.00"
+                          : `$${parseFloat(order.shippingCost || 0).toFixed(2)}`}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">

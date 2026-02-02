@@ -483,7 +483,7 @@ function generateReceiptHTML(orderData) {
                     </div>
                     <div>
                       <span>🚚</span>
-                      <span>${orderData.shippingMethod}</span>
+                      <span>${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) && orderData.couponCode ? `Free Shipping (Coupon: ${orderData.couponCode})` : (orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? "Free Shipping" : (orderData.shippingMethod || "—")}${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? "" : ` — $${parseFloat(orderData.shippingCost || 0).toFixed(2)}`}</span>
                     </div>
                     ${
                       orderData.couponCode
@@ -583,10 +583,8 @@ function generateReceiptHTML(orderData) {
                     : ""
                 }
                 <div class="total-row">
-                  <span>Shipping:</span>
-                  <span>$${parseFloat(orderData.shippingCost || 0).toFixed(
-                    2,
-                  )}</span>
+                  <span>Shipping${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? (orderData.couponCode ? ` (Free, Coupon: ${orderData.couponCode})` : " (Free)") : ""}:</span>
+                  <span>$${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? "0.00" : parseFloat(orderData.shippingCost || 0).toFixed(2)}</span>
                 </div>
                 <div class="total-row">
                   <span>Tax:</span>

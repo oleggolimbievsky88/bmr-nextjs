@@ -268,9 +268,29 @@ export default function PrintOrderReceipt() {
               {order.shipping_city}, {order.shipping_state} {order.shipping_zip}
             </p>
             <p className="mb-1">{order.shipping_country}</p>
-            <p className="mb-0">
-              <strong>Method:</strong> {order.shipping_method}
+            <p className="mb-1">
+              <strong>Shipping method:</strong>{" "}
+              {order.free_shipping && order.coupon_code
+                ? `Free Shipping (Coupon: ${order.coupon_code})`
+                : order.free_shipping
+                  ? "Free Shipping"
+                  : (order.shipping_method || "—")}
             </p>
+            {order.free_shipping ? (
+              <p className="mb-0">
+                <strong>{order.coupon_code ? "Free (Coupon)" : "Free Shipping"}</strong>
+              </p>
+            ) : (
+              <p className="mb-0">
+                <strong>Shipping cost:</strong>{" "}
+                {formatCurrency(parseFloat(order.shipping_cost) || 0)}
+              </p>
+            )}
+            {order.coupon_code && (
+              <p className="mb-0">
+                <strong>Coupon:</strong> {order.coupon_code}
+              </p>
+            )}
           </div>
           <div className="col-md-4 receipt-col-payment">
             {(order.payment_method ||
@@ -372,8 +392,17 @@ export default function PrintOrderReceipt() {
                   </div>
                 )}
                 <div className="d-flex justify-content-between mb-2">
-                  <span>Shipping:</span>
-                  <span>{formatCurrency(order.shipping_cost)}</span>
+                  <span>Shipping ({order.free_shipping && order.coupon_code
+                    ? `Free Shipping (Coupon: ${order.coupon_code})`
+                    : order.free_shipping
+                      ? "Free Shipping"
+                      : (order.shipping_method || "—")}
+                    {order.free_shipping ? ", Free" : ""}):</span>
+                  <span>
+                    {order.free_shipping
+                      ? "$0.00"
+                      : formatCurrency(parseFloat(order.shipping_cost) || 0)}
+                  </span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
                   <span>Tax:</span>

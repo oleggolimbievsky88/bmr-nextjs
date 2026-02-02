@@ -57,6 +57,14 @@ BEGIN
     ALTER TABLE `new_orders` ADD COLUMN `tracking_number` VARCHAR(100) DEFAULT NULL AFTER `status`;
   END IF;
 
+  -- free_shipping (expedited vs free for admin/print/receipt)
+  SELECT COUNT(*) INTO col_count FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'new_orders' AND COLUMN_NAME = 'free_shipping';
+  IF col_count = 0 THEN
+    ALTER TABLE `new_orders` ADD COLUMN `free_shipping` TINYINT(1) NOT NULL DEFAULT 0
+      COMMENT '1 = free shipping (coupon or free option)' AFTER `shipping_cost`;
+  END IF;
+
 END//
 
 DELIMITER ;
