@@ -46,7 +46,7 @@ export default function page() {
         <VehicleSearch />
       </div>
       {/* <ShopCategories /> <br /> <br /> */}
-      {/* <ThreeColumnLayout /> */}
+      <ThreeColumnLayout />
       {/* <Categories /> */}
       {/* <Products /> */}
       <LazyNewProducts scratchDent="0" />

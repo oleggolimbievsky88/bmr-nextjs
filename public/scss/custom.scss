@@ -669,14 +669,15 @@ section.tf-slideshow,
 .dropdown-menu.mega-menu.show,
 .nav-item.dropdown .dropdown-menu.mega-menu,
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
-  width: 100% !important;
-  left: 0 !important;
-  right: 0 !important;
-  transform: none !important;
+  width: min(1480px, calc(100vw - 48px)) !important;
+  min-width: min(1480px, calc(100vw - 48px)) !important;
+  max-width: 1350px !important;
+  left: 50% !important;
+  right: auto !important;
   padding: 37px 0 42px 0 !important;
   margin-top: 0 !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   background-color: #fff !important;
   box-shadow: 0 4px 8px rgb(235 235 235) !important;
   z-index: 99999999 !important;
@@ -729,9 +730,9 @@ section.tf-slideshow,
   }
 
   @media (max-width: 991px) {
-    left: 0 !important;
-    right: 0 !important;
-    transform: none !important;
+    width: min(100%, calc(100vw - 24px)) !important;
+    left: 50% !important;
+    right: auto !important;
   }
 }
 
@@ -795,7 +796,7 @@ section.tf-slideshow,
   visibility: hidden;
   display: block !important; // Keep in DOM for transitions
   pointer-events: none;
-  transform: translateY(-10px);
+  transform: translate(-50%, -10px);
   transition: opacity 0.25s ease-out,
               visibility 0.25s ease-out,
               transform 0.25s ease-out;
@@ -808,15 +809,17 @@ section.tf-slideshow,
   visibility: visible !important;
   display: block !important;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
 /* Mega Menu Column Layout */
 .mega-menu {
 	.container {
-		max-width: 1200px;
+		max-width: 100%;
+		width: 100%;
 		margin: 0 auto;
-		padding: 0 20px;
+		padding: 0 24px;
+		box-sizing: border-box;
 	}
 
 	.mega-menu-item {
@@ -1916,15 +1919,17 @@ section.tf-slideshow,
     position: static;
     z-index: 999999;
 
-    // Ensure mega menu is always above banner - break out of stacking context
-    .dropdown-menu.mega-menu,
-    .dropdown-menu.mega-menu.show {
+    // Ensure mega menu is always above banner - break out of stacking context, centered
+    .dropdown-menu.mega-menu {
       z-index: 99999999 !important; // Highest z-index to ensure it's above everything
       position: fixed !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
+      left: 50% !important;
+      right: auto !important;
+      width: min(1350px, calc(100vw - 48px)) !important;
+      max-width: 1350px !important;
+    }
+    .dropdown-menu.mega-menu.show {
+      transform: translate(-50%, 0) !important;
     }
   }
 }
@@ -2008,6 +2013,19 @@ section.tf-slideshow,
       }
     }
   }
+
+  // Only dropdown items (with mega menu): white tab background on hover so tab + mega menu read as one
+  &.dropdown:hover .nav-link,
+  &.dropdown.show .nav-link {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  &.dropdown:hover .nav-link::before,
+  &.dropdown.show .nav-link::before {
+    background: #fff !important;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }
 
 .nav-link:hover,
@@ -2071,20 +2089,20 @@ section.tf-slideshow,
 .dropdown-menu.mega-menu {
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
+  transform: translate(-50%, -10px);
   transition: opacity 0.25s ease-out,
               visibility 0.25s ease-out,
               transform 0.25s ease-out;
   background-color: #ffffff !important;
   background: #ffffff !important;
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
+  width: min(1350px, calc(100vw - 48px)) !important;
+  min-width: min(1350px, calc(100vw - 48px)) !important;
+  max-width: 1350px !important;
   padding: 0;
   z-index: 99999999 !important;
   position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
+  left: 50% !important;
+  right: auto !important;
   isolation: isolate !important;
   overflow: hidden;
   pointer-events: none;
@@ -2116,16 +2134,16 @@ section.tf-slideshow,
 .dropdown-menu.mega-menu.active {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
   pointer-events: auto;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   overflow-y: auto !important;
   overflow-x: hidden !important;
   z-index: 99999999 !important;
   position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
+  left: 50% !important;
+  right: auto !important;
+  width: min(1350px, calc(100vw - 48px)) !important;
   background-color: #ffffff !important;
   background: #ffffff !important;
   isolation: isolate !important;
@@ -2146,7 +2164,7 @@ section.tf-slideshow,
 .nav-item.dropdown:hover .dropdown-menu.mega-menu {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
   pointer-events: auto;
 
   .mega-menu-inner {
@@ -2609,7 +2627,8 @@ header[style*="transform:translateY(-"] {
 	left: 50%;
 	top: calc(100% + 6px);
 	transform: translate(-50%, 10px);
-	width: min(1180px, calc(100vw - 40px));
+	width: min(1350px, calc(100vw - 48px)) !important;
+	min-width: min(1350px, calc(100vw - 48px)) !important;
 	margin: 0 auto;
 	padding: 0;
 	background-color: #ffffff;
@@ -2691,7 +2710,8 @@ header[style*="transform:translateY(-"] {
 	left: 50%;
 	top: calc(100% + 6px);
 	transform: translate(-50%, 10px);
-	width: min(1180px, calc(100vw - 40px));
+	width: min(1350px, calc(100vw - 48px)) !important;
+	min-width: min(1350px, calc(100vw - 48px)) !important;
 	margin: 0 auto;
 	padding: 0;
 	background-color: #ffffff;
@@ -2974,7 +2994,7 @@ header[style*="transform:translateY(-"] {
   font-weight: 600;
   text-transform: uppercase;
   color: black;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin-bottom: 0px;
   position: relative;
   padding: 0 15px;
@@ -3585,6 +3605,7 @@ header[style*="transform:translateY(-"] {
 	margin-right: -50vw;
 	width: 100vw;
 
+	background-color: #000;
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;

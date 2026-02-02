@@ -122,7 +122,17 @@ export default function MainMenu({ initialMenuData }) {
             </div>
           </div>
         </div>
-      ) : null
+      ) : (
+        <div className="mega-menu-inner">
+          <div className="container">
+            <div className="row g-2 p-4">
+              <div className="col-12 text-center py-4 text-muted">
+                No platforms in this category yet.
+              </div>
+            </div>
+          </div>
+        </div>
+      )
     ) : (
       <div className="mega-menu-inner">
         <div className="mega-menu-container">
@@ -176,9 +186,6 @@ export default function MainMenu({ initialMenuData }) {
         style={{
           position: "fixed",
           top: megaMenuTop !== null ? `${megaMenuTop}px` : '100%',
-          left: 0,
-          right: 0,
-          width: "100%",
           zIndex: 99999,
           isolation: "isolate",
           backgroundColor: "#ffffff",

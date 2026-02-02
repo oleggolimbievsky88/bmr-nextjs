@@ -1,13 +1,12 @@
 // VehicleSearch.module.scss
 .vehicle-search-form {
-	background-color: #444444;
-	border: 1px solid #333333;
-	border-bottom: 2px solid var(--bmr-red);
+	background-color: #000000;
+	border: 1px solid rgb(66, 66, 66) !important;
 	border-radius: 10px;
 	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5) !important;
-	padding: 10px;
+	padding: 10px 15px !important;
 	margin: 10px;
-	max-width: 1200px;
+	max-width: 1400px;
 	width: 100%;
 
 	@media (min-width: 768px) {
@@ -17,7 +16,7 @@
 		padding-right: 16px;
 		margin-top: 0;
 		margin-bottom: 0;
-		max-width: 1200px;
+		max-width: 1400px;
 		width: 100%;
 		border-left: none;
 		border-right: none;
@@ -299,16 +298,15 @@
 // Header18 wrapper/layout styles for VehicleSearch
 // Keep these here (co-located) but scoped via :global() since the wrapper lives outside this module.
 :global(.header-vehicle-row) {
-	border-top: 1px solid rgba(255, 255, 255, 0.4);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-	background-color: #111111;
+	background-image: linear-gradient(to top, rgb(63, 63, 63), rgb(0, 0, 0));
 	padding: 6px 0 8px;
 	overflow: visible !important;
+	// border-top:1px solid rgb(39, 39, 39);
 
 	.container {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 3px;
 		flex-wrap: wrap;
 		overflow: visible !important;
 	}

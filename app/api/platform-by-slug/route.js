@@ -49,15 +49,23 @@ export async function GET(request) {
     }
 
     if (!platformInfo) {
-      // Try to find similar platforms
-      const [similarPlatforms] = await pool.query(
-        "SELECT BodyID, Name, slug FROM bodies WHERE slug IS NOT NULL LIMIT 5"
-      );
+      let similarPlatforms = [];
+      try {
+        const [rows] = await pool.query(
+          "SELECT PlatformID AS BodyID, Name, StartYear, EndYear FROM platforms LIMIT 5"
+        );
+        similarPlatforms = rows;
+      } catch {
+        const [rows] = await pool.query(
+          "SELECT BodyID, Name, StartYear, EndYear FROM bodies LIMIT 5"
+        );
+        similarPlatforms = rows;
+      }
 
       return NextResponse.json(
         {
           error: "Platform not found",
-          message: `Platform with slug '${platform}' not found. Available platforms:`,
+          message: `Platform with slug '${platform}' not found.`,
           availablePlatforms: similarPlatforms,
         },
         { status: 404 }

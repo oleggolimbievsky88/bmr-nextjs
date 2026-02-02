@@ -16,13 +16,10 @@ export default function PlatformHeader({
       : `${platformData.StartYear}-${platformData.EndYear}`;
 
   // Use local platform header images with the naming convention: platform-slug_Banner.jpg
-  const imageUrl = `/images/platformHeaders/${platformData.slug}_Banner.jpg`;
-
-  // URL encode the image URL to handle spaces and special characters
-  const encodedImageUrl = imageUrl ? encodeURI(imageUrl) : imageUrl;
-
-  console.log("Platform Header Image URL:", imageUrl);
-  console.log("Encoded Platform Header Image URL:", encodedImageUrl);
+  const imageUrl = platformData.slug
+    ? `/images/platformHeaders/${platformData.slug}_Banner.jpg`
+    : null;
+  const encodedImageUrl = imageUrl ? encodeURI(imageUrl) : null;
 
   // Use mainCategoryName prop if provided, otherwise fall back to platformData.mainCategory
   const displayMainCategory =
@@ -36,7 +33,12 @@ export default function PlatformHeader({
       <div className="container-fluid p-0 m-0">
         <div
           className="platform-header-container"
-          style={{ backgroundImage: `url(${encodedImageUrl})` }}
+          style={{
+            backgroundColor: "#000",
+            ...(encodedImageUrl && {
+              backgroundImage: `url(${encodedImageUrl})`,
+            }),
+          }}
         >
           <div className="platform-header-overlay" />
           <div className="platform-header-content">

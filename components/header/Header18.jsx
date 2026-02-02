@@ -105,7 +105,7 @@ export default function Header18({ showVehicleSearch = true }) {
           </div>
         </div>
       </div>
-      <div className="header-bottom line hidden-xl bg_black">
+      <div className="header-bottom line-red-2 hidden-xl bg_black">
         <div className="container">
           <nav className="header-navigation-row hidden-xl">
             <MainMenu initialMenuData={menuData} />

@@ -18,19 +18,28 @@ export default function PlatformPage({ params }) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch platform info and main categories
+        setError(null);
         const platformRes = await fetch(
-          `/api/platform-by-slug?platform=${platform}`
+          `/api/platform-by-slug?platform=${encodeURIComponent(platform)}`
         );
         const platformData = await platformRes.json();
 
-        setPlatformInfo(platformData.platformInfo || {});
-        setMainCategories(platformData.mainCategories || []);
-        console.log("mainCategories", platformData.mainCategories || []);
+        if (!platformRes.ok) {
+          setPlatformInfo(null);
+          setMainCategories([]);
+          setError(
+            platformData?.message ||
+              platformData?.error ||
+              "Platform not found"
+          );
+          return;
+        }
 
-        // Fetch initial products for this platform
+        setPlatformInfo(platformData.platformInfo ?? null);
+        setMainCategories(platformData.mainCategories || []);
+
         const productsRes = await fetch(
-          `/api/products?page=1&limit=8&platform=${platform}`,
+          `/api/products?page=1&limit=8&platform=${encodeURIComponent(platform)}`,
           { cache: "no-store" }
         );
         if (productsRes.ok) {
@@ -53,6 +62,17 @@ export default function PlatformPage({ params }) {
 
   if (error) {
     return <div className="text-center py-5 text-danger">{error}</div>;
+  }
+
+  if (!platformInfo) {
+    return (
+      <div className="text-center py-5">
+        <p className="text-muted">Platform not found.</p>
+        <a href="/products" className="btn btn-primary">
+          Browse all platforms
+        </a>
+      </div>
+    );
   }
 
   return (
