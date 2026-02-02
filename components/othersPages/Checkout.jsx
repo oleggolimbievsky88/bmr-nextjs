@@ -95,6 +95,75 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
 
   const searchParams = useSearchParams();
+  const poIdParam = searchParams.get("po");
+
+  // Dealer PO checkout: when ?po= is present, load PO items and use them as the cart
+  const [poCartProducts, setPoCartProducts] = useState([]);
+  const [poCartLoading, setPoCartLoading] = useState(!!poIdParam);
+  const [poCartError, setPoCartError] = useState(null);
+
+  useEffect(() => {
+    if (!poIdParam) {
+      setPoCartProducts([]);
+      setPoCartLoading(false);
+      setPoCartError(null);
+      return;
+    }
+    const poId = parseInt(poIdParam, 10);
+    if (Number.isNaN(poId)) {
+      setPoCartError("Invalid PO");
+      setPoCartLoading(false);
+      return;
+    }
+    setPoCartLoading(true);
+    setPoCartError(null);
+    fetch(`/api/dealer/po/${poId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.items?.length) {
+          const mapped = data.items.map((i) => ({
+            ProductID: i.product_id,
+            ProductName: i.product_name,
+            PartNumber: i.part_number,
+            quantity: i.quantity ?? 1,
+            Price: i.unit_price,
+            defaultColorName: i.color_name || "Default",
+            selectedColor: i.color_name
+              ? { ColorName: i.color_name }
+              : null,
+            PlatformName: "",
+            YearRange: "",
+            images: [],
+            ImageLarge: "",
+            Package: 0,
+            LowMargin: 0,
+            ManufacturerName: "",
+            Bweight: 1,
+            Blength: 10,
+            Bwidth: 10,
+            Bheight: 10,
+          }));
+          setPoCartProducts(mapped);
+          setPoCartError(null);
+        } else if (data.success && (!data.items || data.items.length === 0)) {
+          setPoCartError("This PO has no items.");
+          setPoCartProducts([]);
+        } else {
+          setPoCartError(data.error || "Failed to load PO");
+          setPoCartProducts([]);
+        }
+      })
+      .catch((err) => {
+        setPoCartError(err.message || "Failed to load PO");
+        setPoCartProducts([]);
+      })
+      .finally(() => setPoCartLoading(false));
+  }, [poIdParam]);
+
+  const isPoCheckout = !!poIdParam;
+  const effectiveCartProducts =
+    isPoCheckout && poCartProducts.length > 0 ? poCartProducts : cartProducts;
+  const effectiveCartLoading = isPoCheckout ? poCartLoading : cartLoading;
 
   // Ref to prevent infinite loops when calculating shipping rates
   const isCalculatingShippingRef = useRef(false);
@@ -137,12 +206,24 @@ export default function Checkout() {
     }
   }, [activeStep, searchParams, payPalOnly]);
 
-  // Redirect to products page if cart is empty (but not when redirecting to confirmation)
+  // Redirect to products page if cart is empty (but not when redirecting to confirmation or loading PO)
   useEffect(() => {
-    if (!cartLoading && cartProducts.length === 0 && !isRedirecting) {
+    if (isPoCheckout && poCartError) return;
+    if (
+      !effectiveCartLoading &&
+      effectiveCartProducts.length === 0 &&
+      !isRedirecting
+    ) {
       router.push("/products");
     }
-  }, [cartLoading, cartProducts.length, router, isRedirecting]);
+  }, [
+    effectiveCartLoading,
+    effectiveCartProducts.length,
+    isRedirecting,
+    isPoCheckout,
+    poCartError,
+    router,
+  ]);
 
   // Calculate if we should show account step: user is not logged in AND hasn't completed account step
   // Check session more explicitly - NextAuth might return empty object
@@ -355,7 +436,7 @@ export default function Checkout() {
     try {
       // One package per physical box: each cart line ships quantity boxes (preboxed, not combined)
       const packages = [];
-      cartProducts.forEach((item) => {
+      effectiveCartProducts.forEach((item) => {
         const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
         const weight = Math.max(1, parseInt(item.Bweight, 10) || 1);
         const length = Math.max(1, parseInt(item.Blength, 10) || 10);
@@ -365,7 +446,7 @@ export default function Checkout() {
           packages.push({ weight, length, width, height });
         }
       });
-      const productIds = cartProducts
+      const productIds = effectiveCartProducts
         .map((item) => item.ProductID)
         .filter(Boolean);
 
@@ -382,7 +463,7 @@ export default function Checkout() {
     sameAsBilling,
     billingData,
     shippingData,
-    cartProducts,
+    effectiveCartProducts,
     calculateShippingRates,
   ]);
 
@@ -462,7 +543,7 @@ export default function Checkout() {
       setIsSubmitting(true);
       setSubmitError("");
       try {
-        const orderItems = cartProducts.map((product) => ({
+        const orderItems = effectiveCartProducts.map((product) => ({
           productId: product.ProductID,
           name: product.ProductName,
           partNumber: product.PartNumber,
@@ -542,7 +623,7 @@ export default function Checkout() {
       }
     },
     [
-      cartProducts,
+      effectiveCartProducts,
       sameAsBilling,
       couponDiscount,
       selectedOption,
@@ -659,7 +740,7 @@ export default function Checkout() {
       setIsRedirecting(true);
 
       // Store cart products before clearing (needed for confirmation)
-      const cartProductsForConfirmation = [...cartProducts];
+      const cartProductsForConfirmation = [...effectiveCartProducts];
 
       // Prepare order items for API
       const orderItems = cartProductsForConfirmation.map((product) => {
@@ -1025,7 +1106,7 @@ export default function Checkout() {
   };
 
   const calculateSubtotal = () => {
-    return cartProducts.reduce((total, item) => {
+    return effectiveCartProducts.reduce((total, item) => {
       const basePrice = parseFloat(item.Price || 0);
       const quantity = parseInt(item.quantity || 1);
 
@@ -1050,7 +1131,7 @@ export default function Checkout() {
   const calculateTax = () =>
     getTaxAmount(calculateSubtotal(), couponDiscount, getDestinationState(), {
       shippingCost: selectedOption ? selectedOption.cost : 0,
-      items: cartProducts,
+      items: effectiveCartProducts,
     });
 
   const calculateGrandTotal = () => {
@@ -2119,16 +2200,31 @@ export default function Checkout() {
             <div className="order-summary">
               <div className="summary-header">
                 <h5>ORDER SUMMARY</h5>
-                <Link href="/view-cart" className="edit-cart-link">
-                  EDIT CART
+                <Link
+                  href={isPoCheckout ? `/dealers-portal/po/${poIdParam}` : "/view-cart"}
+                  className="edit-cart-link"
+                >
+                  {isPoCheckout ? "VIEW PO" : "EDIT CART"}
                 </Link>
               </div>
 
+              {isPoCheckout && poCartError && (
+                <div className="alert alert-danger mb-3">
+                  {poCartError}
+                  <Link
+                    href="/dealers-portal/orders"
+                    className="btn btn-sm btn-outline-primary ms-2"
+                  >
+                    Back to Orders
+                  </Link>
+                </div>
+              )}
+
               <div className="summary-items">
-                {cartLoading ? (
+                {effectiveCartLoading ? (
                   <CartSkeleton />
                 ) : (
-                  cartProducts.map((item, index) => (
+                  effectiveCartProducts.map((item, index) => (
                     <div key={index} className="summary-item">
                       <div className="item-image">
                         <Image
@@ -2191,14 +2287,14 @@ export default function Checkout() {
                         <p className="item-color">
                           {item.selectedColor
                             ? item.selectedColor.ColorName
-                            : "Default"}
+                            : item.defaultColorName || "Default"}
                         </p>
                         <div className="quantity-controls">
                           <button
                             type="button"
                             onClick={() => {
                               if (item.quantity > 1) {
-                                const updatedCart = cartProducts.map(
+                                const updatedCart = effectiveCartProducts.map(
                                   (cartItem, i) =>
                                     i === index
                                       ? {
@@ -2207,7 +2303,8 @@ export default function Checkout() {
                                         }
                                       : cartItem
                                 );
-                                setCartProducts(updatedCart);
+                                if (isPoCheckout) setPoCartProducts(updatedCart);
+                                else setCartProducts(updatedCart);
                               }
                             }}
                           >
@@ -2217,7 +2314,7 @@ export default function Checkout() {
                           <button
                             type="button"
                             onClick={() => {
-                              const updatedCart = cartProducts.map(
+                              const updatedCart = effectiveCartProducts.map(
                                 (cartItem, i) =>
                                   i === index
                                     ? {
@@ -2226,7 +2323,8 @@ export default function Checkout() {
                                       }
                                     : cartItem
                               );
-                              setCartProducts(updatedCart);
+                              if (isPoCheckout) setPoCartProducts(updatedCart);
+                              else setCartProducts(updatedCart);
                             }}
                           >
                             +
@@ -2244,12 +2342,14 @@ export default function Checkout() {
                 )}
               </div>
 
-              {cartLoading && (
+              {effectiveCartLoading && (
                 <div className="text-center py-4">
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading cart...</span>
                   </div>
-                  <p className="mt-2">Loading your cart...</p>
+                  <p className="mt-2">
+                    {isPoCheckout ? "Loading PO items..." : "Loading your cart..."}
+                  </p>
                 </div>
               )}
 

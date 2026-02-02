@@ -54,7 +54,7 @@ export default function page() {
       <LazyNewProducts scratchDent="1" />
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
-      {/* <Collections /> */}
+      <Collections />
       {/* <Blogs /> */}
       <VideoPage />
       {/* <Marquee /> */}

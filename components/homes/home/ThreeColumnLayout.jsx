@@ -24,9 +24,13 @@ export default function ThreeColumnLayout() {
             link: "products/mopar",
           },
         ].map((item, index) => (
-          <div key={index} className="col-lg-4 col-md-6 col-sm-12">
+          <div
+            key={index}
+            className="col-lg-4 col-md-6 col-sm-12"
+            style={{ marginBottom: "10px" }}
+          >
             <Link key={index} href={`/${item.link}`}>
-              <div className="card text-white border-0 custom-card">
+              <div className="card text-white border-0 custom-card mb-15">
                 <img
                   src={item.img}
                   className="card-img"
