@@ -122,6 +122,14 @@
         .toggle-content {
             padding: 24px 0 22px;
             border: 0;
+            max-height: none; /* allow full answer height, no clipping */
+            overflow: visible; /* avoid clipping end of text */
+            p {
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+                white-space: normal;
+                margin: 0;
+            }
         }
     }
 

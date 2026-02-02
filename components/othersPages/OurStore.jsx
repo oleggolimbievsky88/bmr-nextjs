@@ -39,7 +39,7 @@ export default function OurStore() {
               </div>
               <div className="mb_36">
                 <p className="mb_15">
-                  <strong>Open Time</strong>
+                  <strong>Hours of Operation</strong>
                 </p>
                 <p className="mb_15">Our store has re-opened for shopping,</p>
                 <p>exchange Every day 11am to 7pm</p>
@@ -117,7 +117,7 @@ export default function OurStore() {
               </div>
               <div className="mb_36">
                 <p className="mb_15">
-                  <strong>Open Time</strong>
+                  <strong>Hours of Operation</strong>
                 </p>
                 <p className="mb_15">Our store has re-opened for shopping,</p>
                 <p>exchange Every day 11am to 7pm</p>
@@ -231,7 +231,7 @@ export default function OurStore() {
               </div>
               <div className="mb_36">
                 <p className="mb_15">
-                  <strong>Open Time</strong>
+                  <strong>Hours of Operation</strong>
                 </p>
                 <p className="mb_15">Our store has re-opened for shopping,</p>
                 <p>exchange Every day 11am to 7pm</p>

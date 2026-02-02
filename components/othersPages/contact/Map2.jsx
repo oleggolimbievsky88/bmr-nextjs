@@ -31,9 +31,9 @@ export default function Map2() {
             </div>
             <div className="mb_36">
               <p className="mb_15">
-                <strong>Open Time</strong>
+                <strong>Hours of Operation</strong>
               </p>
-              <p className="mb_15">Monday - Friday: 8:30AM - 6:00PM</p>
+              <p className="mb_15">Monday - Friday: 8:30AM - 5:30PM EST</p>
               <p>Saturday - Sunday: Closed</p>
             </div>
             <div>

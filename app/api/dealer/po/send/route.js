@@ -33,7 +33,8 @@ export async function POST(request) {
       );
     }
 
-    const sent = await sendDealerPO(poId, customerId);
+    const notes = body.notes != null ? String(body.notes) : null;
+    const sent = await sendDealerPO(poId, customerId, notes);
     if (!sent) {
       return NextResponse.json(
         { error: "PO not found, already sent, or not yours" },

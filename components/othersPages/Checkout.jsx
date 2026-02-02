@@ -2178,7 +2178,14 @@ export default function Checkout() {
                         />
                       </div>
                       <div className="item-details">
-                        <h6>{item.ProductName}</h6>
+                        <h6>
+                          <Link
+                            href={`/product/${item.ProductID}`}
+                            className="text-decoration-none text-body"
+                          >
+                            {item.ProductName}
+                          </Link>
+                        </h6>
                         <p className="item-part">Part #: {item.PartNumber}</p>
                         <p className="item-platform">{item.PlatformName}</p>
                         <p className="item-color">

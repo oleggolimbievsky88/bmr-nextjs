@@ -173,7 +173,7 @@ export default function About() {
             When performance is a must, rely on BMR Suspension!
           </p>
           <a
-            href="/shop"
+            href="/products"
             className="btn btn-light btn-lg px-5 py-3 fw-black italic-heavy"
             style={{ color: "var(--primary)" }}
           >

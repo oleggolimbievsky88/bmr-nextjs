@@ -1,8 +1,8 @@
 "use client";
-import { faqs1 } from "@/data/faqs";
+import { faqsShopping } from "@/data/faqs";
 import React, { useEffect, useRef, useState } from "react";
 
-export default function Accordion({ faqs = faqs1 }) {
+export default function Accordion({ faqs = faqsShopping }) {
   const parentRefs = useRef([]);
   const questionRefs = useRef([]);
   const answerRefs = useRef([]);
@@ -14,7 +14,9 @@ export default function Accordion({ faqs = faqs1 }) {
     parentRefs.current.forEach((el) => {
       el.classList.remove("active");
     });
-    answerRefs.current.forEach((el) => {
+    // Collapse only non-active panels so active panel’s scrollHeight is correct
+    answerRefs.current.forEach((el, i) => {
+      if (i === currentIndex) return;
       el.style.height = "0px";
       el.style.overflow = "hidden";
       el.style.transition = "all 0.4s ease-in-out";
@@ -25,11 +27,19 @@ export default function Accordion({ faqs = faqs1 }) {
       questionRefs.current[currentIndex].classList.add("active");
       parentRefs.current[currentIndex].classList.add("active");
       const element = answerRefs.current[currentIndex];
-      element.style.height = element.scrollHeight + "px";
-      element.style.overflow = "hidden";
       element.style.transition = "all 0.4s ease-in-out";
       element.style.paddingTop = "22px";
       element.style.paddingBottom = "22px";
+      // Visible when expanded so the full answer (e.g. credit card sentence) isn't clipped
+      element.style.overflow = "visible";
+      // Set height so full content is visible; add buffer so last line isn't clipped
+      const setHeight = () => {
+        const buffer = 12;
+        element.style.height = (element.scrollHeight + buffer) + "px";
+      };
+      setHeight();
+      requestAnimationFrame(setHeight);
+      requestAnimationFrame(() => requestAnimationFrame(setHeight));
     }
   }, [currentIndex]);
   return (

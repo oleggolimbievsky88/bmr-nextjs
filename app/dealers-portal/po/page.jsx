@@ -95,7 +95,7 @@ export default function DealersPortalPOPage() {
       const res = await fetch("/api/dealer/po/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ poId: po.id }),
+        body: JSON.stringify({ poId: po.id, notes: notes || "" }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send PO");
@@ -153,7 +153,6 @@ export default function DealersPortalPOPage() {
               placeholder="Notes for this PO..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              readOnly
             />
           </div>
 

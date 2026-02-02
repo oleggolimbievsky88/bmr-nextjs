@@ -1,6 +1,7 @@
 "use client";
 
 import { socialLinksWithBorder } from "@/data/socials";
+import { showToast } from "@/utlis/showToast";
 import React, { useRef, useState } from "react";
 
 const BMR_CONTACT = {
@@ -8,20 +9,12 @@ const BMR_CONTACT = {
   city: "Lakeland, FL 33815",
   phone: "(813) 986-9302",
   email: "sales@bmrsuspension.com",
-  hours: "Mon–Fri 8:30am–6pm EST",
+  hours: "Mon–Fri 8:30am–5:30pm EST",
 };
 
 export default function ContactForm() {
   const formRef = useRef();
-  const [success, setSuccess] = useState(true);
-  const [showMessage, setShowMessage] = useState(false);
   const [sending, setSending] = useState(false);
-
-  const handleShowMessage = (ok) => {
-    setSuccess(ok);
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 4000);
-  };
 
   const sendMail = async (e) => {
     e.preventDefault();
@@ -40,12 +33,25 @@ export default function ContactForm() {
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
         form.reset();
-        handleShowMessage(true);
+        showToast(
+          "Thank you for reaching out! Your message has been sent to our team. We truly value every inquiry—your feedback and questions are very important to us. We'll get back to you as soon as possible.",
+          "success",
+          6000
+        );
       } else {
-        handleShowMessage(false);
+        showToast(
+          data?.error ||
+            "Something went wrong. Please try again or email us directly at sales@bmrsuspension.com.",
+          "error",
+          5000
+        );
       }
     } catch {
-      handleShowMessage(false);
+      showToast(
+        "We couldn't send your message. Please try again or email us directly at sales@bmrsuspension.com.",
+        "error",
+        5000
+      );
     } finally {
       setSending(false);
     }
@@ -160,20 +166,6 @@ export default function ContactForm() {
                   rows={8}
                   defaultValue=""
                 />
-              </div>
-              <div
-                className={`tfSubscribeMsg ${showMessage ? "active" : ""}`}
-                role="alert"
-              >
-                {success ? (
-                  <p className="text-success">
-                    Message sent successfully. We&apos;ll get back to you soon.
-                  </p>
-                ) : (
-                  <p className="text-danger">
-                    Something went wrong. Please try again or email us directly.
-                  </p>
-                )}
               </div>
               <div className="send-wrap">
                 <button

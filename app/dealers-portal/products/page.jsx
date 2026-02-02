@@ -618,6 +618,21 @@ export default function DealersPortalProductsPage() {
                           {getPlatformLabel(filterOptions.platforms, p.BodyID)}
                         </td>
                         {visibleColors.map((c) => {
+                          const isAvailable = productColorIds.includes(
+                            String(c.ColorID)
+                          );
+                          if (!isAvailable) {
+                            return (
+                              <td
+                                key={c.ColorID}
+                                className={`align-middle text-muted ${getColorColumnClass(
+                                  c.ColorName
+                                )}`}
+                              >
+                                —
+                              </td>
+                            );
+                          }
                           const val = qtys[c.ColorID];
                           const displayVal =
                             val === undefined || val === null || val === ""
