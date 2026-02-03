@@ -21,9 +21,30 @@ export async function GET(request) {
     const sortColumn = searchParams.get("sortColumn") || "datecreated";
     const sortDirection = searchParams.get("sortDirection") || "desc";
 
+    const filters = {};
+    const role = searchParams.get("role");
+    if (role && ["customer", "admin", "vendor", "dealer"].includes(role)) {
+      filters.role = role;
+    }
+    const dealerTier = searchParams.get("dealerTier");
+    if (dealerTier !== null && dealerTier !== undefined && dealerTier !== "") {
+      filters.dealerTier = dealerTier;
+    }
+    const dateFrom = searchParams.get("dateFrom");
+    if (dateFrom) filters.dateFrom = dateFrom;
+    const dateTo = searchParams.get("dateTo");
+    if (dateTo) filters.dateTo = dateTo;
+
     const [customers, total] = await Promise.all([
-      getAllCustomersAdmin(limit, offset, search, sortColumn, sortDirection),
-      getCustomersCountAdmin(search),
+      getAllCustomersAdmin(
+        limit,
+        offset,
+        search,
+        sortColumn,
+        sortDirection,
+        filters
+      ),
+      getCustomersCountAdmin(search, filters),
     ]);
 
     return NextResponse.json({
@@ -35,7 +56,7 @@ export async function GET(request) {
     console.error("Error fetching customers:", error);
     return NextResponse.json(
       { error: "Failed to fetch customers" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

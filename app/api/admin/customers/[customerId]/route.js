@@ -4,7 +4,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { updateCustomerAdmin, getCustomerProfileByIdAdmin } from "@/lib/queries";
+import {
+  updateCustomerAdmin,
+  getCustomerProfileByIdAdmin,
+} from "@/lib/queries";
 
 /** GET: fetch single customer by ID for edit form */
 export async function GET(request, { params }) {
@@ -16,11 +19,17 @@ export async function GET(request, { params }) {
     const { customerId } = await params;
     const id = parseInt(customerId, 10);
     if (Number.isNaN(id)) {
-      return NextResponse.json({ error: "Invalid customer ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid customer ID" },
+        { status: 400 }
+      );
     }
     const customer = await getCustomerProfileByIdAdmin(id);
     if (!customer) {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Customer not found" },
+        { status: 404 }
+      );
     }
     return NextResponse.json({
       success: true,
@@ -37,7 +46,10 @@ export async function GET(request, { params }) {
     });
   } catch (error) {
     console.error("Error fetching customer:", error);
-    return NextResponse.json({ error: "Failed to fetch customer" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch customer" },
+      { status: 500 }
+    );
   }
 }
 
@@ -58,11 +70,11 @@ export async function PATCH(request, { params }) {
     }
 
     // Valid roles
-    const validRoles = ["customer", "admin", "vendor"];
+    const validRoles = ["customer", "admin", "vendor", "dealer"];
     if (!validRoles.includes(role)) {
       return NextResponse.json(
-        { error: "Invalid role. Must be customer, admin, or vendor" },
-        { status: 400 },
+        { error: "Invalid role. Must be customer, admin, vendor, or dealer" },
+        { status: 400 }
       );
     }
 
@@ -72,7 +84,7 @@ export async function PATCH(request, { params }) {
       if (isNaN(tier) || tier < 0 || tier > 8) {
         return NextResponse.json(
           { error: "Dealer tier must be between 0 and 8 (0 = non-dealer)" },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -83,7 +95,7 @@ export async function PATCH(request, { params }) {
       if (isNaN(discount) || discount < 0 || discount > 100) {
         return NextResponse.json(
           { error: "Dealer discount must be between 0 and 100" },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -97,7 +109,7 @@ export async function PATCH(request, { params }) {
     if (!updated) {
       return NextResponse.json(
         { error: "Customer not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -109,7 +121,7 @@ export async function PATCH(request, { params }) {
     console.error("Error updating customer:", error);
     return NextResponse.json(
       { error: "Failed to update customer" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

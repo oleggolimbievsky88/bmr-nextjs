@@ -2,6 +2,24 @@
 @use "../abstracts/variable" as *;
 @use "../abstracts/mixin" as *;
 
+/* Admin toast notifications */
+.admin-toast-container .toast {
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	border: none;
+	.toast-header {
+		font-weight: 600;
+		padding: 0.6rem 1rem;
+	}
+	.toast-body {
+		padding: 0.75rem 1rem;
+	}
+	&.bg-success {
+		background-color: var(--primary) !important;
+		.toast-header { background-color: var(--primary) !important; }
+	}
+}
+
 /* Admin sub-navigation bar (below main header) */
 .admin-nav {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -306,8 +324,15 @@
 		background: var(--bg-2);
 	}
 
-	th.sortable:hover {
-		background: rgba(0, 0, 0, 0.06);
+	th.sortable,
+	th[role="button"] {
+		cursor: pointer !important;
+		user-select: none;
+		&:hover {
+			background: rgba(0, 0, 0, 0.06);
+			color: var(--primary);
+			text-decoration: underline;
+		}
 	}
 
 	tbody tr:hover {
@@ -857,6 +882,58 @@
 		background-color: #c00;
 		border-color: #c00;
 		color: #fff;
+	}
+}
+
+/* Admin Customers page */
+.admin-customers-page {
+	/* Filter labels: pointer so they feel clickable (they focus the select) */
+	.admin-card .form-label[for="filter-role"],
+	.admin-card .form-label[for="filter-tier"] {
+		cursor: pointer;
+	}
+
+	.admin-card .btn-primary {
+		background-color: var(--primary);
+		border-color: var(--primary);
+
+		&:hover:not(:disabled) {
+			background-color: #b80e11;
+			border-color: #b80e11;
+			color: var(--white);
+		}
+	}
+
+	.admin-customers-cards {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.admin-customer-card {
+		background: var(--bg-2);
+		border-radius: 8px;
+		border: 1px solid var(--line);
+		cursor: pointer;
+		transition: box-shadow 0.2s;
+
+		&:hover {
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		}
+	}
+
+	.admin-customer-card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1rem;
+		background: var(--white);
+		border-bottom: 1px solid var(--line);
+		border-radius: 8px 8px 0 0;
+	}
+
+	.admin-customer-card-body {
+		padding: 0.75rem 1rem;
 	}
 }
 
