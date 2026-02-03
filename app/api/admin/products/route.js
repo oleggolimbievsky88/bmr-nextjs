@@ -25,6 +25,25 @@ export async function GET(request) {
     const display = searchParams.get("display") || null;
     const displayFilter = display === "1" || display === "0" ? display : null;
 
+    const filters = {};
+    const bodyId = searchParams.get("bodyId");
+    if (bodyId) filters.bodyId = bodyId;
+    const categoryId = searchParams.get("categoryId");
+    if (categoryId) filters.categoryId = categoryId;
+    const manufacturerId = searchParams.get("manufacturerId");
+    if (manufacturerId) filters.manufacturerId = manufacturerId;
+    if (searchParams.get("scratchAndDent") === "1") filters.scratchAndDent = true;
+    const newProductsParam = searchParams.get("newProducts");
+    if (newProductsParam === "all" || newProductsParam === "onsite")
+      filters.newProducts = newProductsParam;
+    if (searchParams.get("noImage") === "1") filters.noImage = true;
+    if (searchParams.get("featured") === "1") filters.featured = true;
+    if (searchParams.get("lowMargin") === "1") filters.lowMargin = true;
+    if (searchParams.get("hardwarePacks") === "1") filters.hardwarePacks = true;
+    if (searchParams.get("multipleBoxes") === "1") filters.multipleBoxes = true;
+    if (searchParams.get("package") === "1") filters.package = true;
+    if (searchParams.get("noManufacturer") === "1") filters.noManufacturer = true;
+
     const [products, total] = await Promise.all([
       getAllProductsAdmin(
         limit,
@@ -33,8 +52,9 @@ export async function GET(request) {
         sortColumn,
         sortDirection,
         displayFilter,
+        filters,
       ),
-      getProductsCountAdmin(search, displayFilter),
+      getProductsCountAdmin(search, displayFilter, filters),
     ]);
 
     return NextResponse.json({ products, total });

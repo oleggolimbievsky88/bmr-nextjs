@@ -6,7 +6,8 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [bodies, setBodies] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [availableCategories, setAvailableCategories] = useState([]); // Categories for selected platform
+  const [availableCategories, setAvailableCategories] = useState([]); // Categories for selected platform (product form)
+  const [filterCategories, setFilterCategories] = useState([]); // Categories for filter dropdown (scoped + grouped when platform selected)
   const [mainCategories, setMainCategories] = useState([]);
   const [manufacturers, setManufacturers] = useState([]);
   const [productOptions, setProductOptions] = useState({
@@ -28,6 +29,18 @@ export default function AdminProductsPage() {
   const [sortColumn, setSortColumn] = useState("PartNumber");
   const [sortDirection, setSortDirection] = useState("asc");
   const [displayFilter, setDisplayFilter] = useState("all");
+  const [filterBodyId, setFilterBodyId] = useState("");
+  const [filterCategoryId, setFilterCategoryId] = useState("");
+  const [filterManufacturerId, setFilterManufacturerId] = useState("");
+  const [filterScratchAndDent, setFilterScratchAndDent] = useState(false);
+  const [filterNewProducts, setFilterNewProducts] = useState(""); // "" | "all" | "onsite"
+  const [filterNoImage, setFilterNoImage] = useState(false);
+  const [filterFeatured, setFilterFeatured] = useState(false);
+  const [filterLowMargin, setFilterLowMargin] = useState(false);
+  const [filterHardwarePacks, setFilterHardwarePacks] = useState(false);
+  const [filterMultipleBoxes, setFilterMultipleBoxes] = useState(false);
+  const [filterPackage, setFilterPackage] = useState(false);
+  const [filterNoManufacturer, setFilterNoManufacturer] = useState(false);
   const [instructionsPdfFile, setInstructionsPdfFile] = useState(null);
   const [instructionsDelete, setInstructionsDelete] = useState(false);
   const [formData, setFormData] = useState({
@@ -133,6 +146,19 @@ export default function AdminProductsPage() {
       if (displayFilter === "1" || displayFilter === "0") {
         params.set("display", displayFilter);
       }
+      if (filterBodyId) params.set("bodyId", filterBodyId);
+      if (filterCategoryId) params.set("categoryId", filterCategoryId);
+      if (filterManufacturerId)
+        params.set("manufacturerId", filterManufacturerId);
+      if (filterScratchAndDent) params.set("scratchAndDent", "1");
+      if (filterNewProducts) params.set("newProducts", filterNewProducts);
+      if (filterNoImage) params.set("noImage", "1");
+      if (filterFeatured) params.set("featured", "1");
+      if (filterLowMargin) params.set("lowMargin", "1");
+      if (filterHardwarePacks) params.set("hardwarePacks", "1");
+      if (filterMultipleBoxes) params.set("multipleBoxes", "1");
+      if (filterPackage) params.set("package", "1");
+      if (filterNoManufacturer) params.set("noManufacturer", "1");
       const response = await fetch(`/api/admin/products?${params}`);
       const data = await response.json();
 
@@ -160,7 +186,42 @@ export default function AdminProductsPage() {
     sortColumn,
     sortDirection,
     displayFilter,
+    filterBodyId,
+    filterCategoryId,
+    filterManufacturerId,
+    filterScratchAndDent,
+    filterNewProducts,
+    filterNoImage,
+    filterFeatured,
+    filterLowMargin,
+    filterHardwarePacks,
+    filterMultipleBoxes,
+    filterPackage,
+    filterNoManufacturer,
   ]);
+
+  const applyFilters = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setSearchTerm("");
+    setDebouncedSearch(""); // Immediate clear for instant refetch
+    setDisplayFilter("all");
+    setFilterBodyId("");
+    setFilterCategoryId("");
+    setFilterManufacturerId("");
+    setFilterScratchAndDent(false);
+    setFilterNewProducts(false);
+    setFilterNoImage(false);
+    setFilterFeatured(false);
+    setFilterLowMargin(false);
+    setFilterHardwarePacks(false);
+    setFilterMultipleBoxes(false);
+    setFilterPackage(false);
+    setFilterNoManufacturer(false);
+    setCurrentPage(1);
+  }, []);
 
   const fetchBodies = async () => {
     try {
@@ -227,19 +288,47 @@ export default function AdminProductsPage() {
   const fetchCategoriesByBody = async (bodyId) => {
     if (!bodyId) {
       setAvailableCategories([]);
-      return;
+      return [];
     }
     try {
       const response = await fetch(`/api/admin/categories/by-body/${bodyId}`);
       const data = await response.json();
       if (response.ok) {
-        setAvailableCategories(data.categories || []);
+        const cats = data.categories || [];
+        setAvailableCategories(cats);
+        return cats;
       }
     } catch (err) {
       console.error("Error fetching categories by body:", err);
       setAvailableCategories([]);
     }
+    return [];
   };
+
+  // When platform/vehicle filter changes: fetch scoped categories and clear category if invalid
+  useEffect(() => {
+    if (filterBodyId) {
+      fetch(`/api/admin/categories/by-body/${filterBodyId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const cats = data.categories || [];
+          setFilterCategories(cats);
+          setFilterCategoryId((prev) => {
+            if (!prev) return prev;
+            const valid = cats.some((c) => String(c.CatID) === String(prev));
+            return valid ? prev : "";
+          });
+        })
+        .catch(() => setFilterCategories([]));
+    } else {
+      setFilterCategories(categories);
+      setFilterCategoryId((prev) => {
+        if (!prev) return prev;
+        const valid = categories.some((c) => String(c.CatID) === String(prev));
+        return valid ? prev : "";
+      });
+    }
+  }, [filterBodyId, categories]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -251,10 +340,10 @@ export default function AdminProductsPage() {
             ? 1
             : 0
           : type === "number"
-            ? value === ""
-              ? 0
-              : parseInt(value)
-            : value,
+          ? value === ""
+            ? 0
+            : parseInt(value)
+          : value,
     };
 
     // If BodyID changes, fetch categories for that platform
@@ -474,7 +563,7 @@ export default function AdminProductsPage() {
       setSuccess(
         editingProduct
           ? "Product updated successfully!"
-          : "Product created successfully!",
+          : "Product created successfully!"
       );
       resetForm();
       fetchProducts();
@@ -552,44 +641,270 @@ export default function AdminProductsPage() {
     );
   }
 
+  const hasActiveFilters =
+    searchTerm ||
+    displayFilter !== "all" ||
+    filterBodyId ||
+    filterCategoryId ||
+    filterManufacturerId ||
+    filterScratchAndDent ||
+    filterNewProducts !== "" ||
+    filterNoImage ||
+    filterFeatured ||
+    filterLowMargin ||
+    filterHardwarePacks ||
+    filterMultipleBoxes ||
+    filterPackage ||
+    filterNoManufacturer;
+
   return (
     <div className="admin-products-page">
-      <div className="admin-page-header">
-        <h1 className="admin-page-title">Product Management</h1>
-        <div className="admin-toolbar">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: "250px" }}
-          />
-          <label className="d-flex align-items-center gap-2 mb-0">
-            <span className="small">Display:</span>
+      <div className="admin-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <h1 className="admin-page-title mb-0">Product Management</h1>
+        <button
+          className="admin-btn-primary"
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
+        >
+          + Add New Product
+        </button>
+      </div>
+
+      {/* Filters - same look as admin orders */}
+      <div className="admin-card mb-3">
+        <div className="row g-2 align-items-end flex-wrap">
+          <div className="col-auto">
+            <label htmlFor="filter-part" className="form-label small mb-0">
+              Part #
+            </label>
+            <input
+              id="filter-part"
+              type="text"
+              className="form-control form-control-sm admin-filter-input"
+              placeholder="Part number or keyword"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+              style={{ minWidth: "160px" }}
+            />
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-vehicle" className="form-label small mb-0">
+              Vehicle
+            </label>
             <select
-              className="form-select form-select-sm"
-              style={{ width: "auto" }}
+              id="filter-vehicle"
+              className="form-select form-select-sm admin-filter-input"
+              value={filterBodyId}
+              onChange={(e) => setFilterBodyId(e.target.value)}
+              style={{ minWidth: "180px" }}
+            >
+              <option value="">All Vehicles</option>
+              {bodies.map((b) => (
+                <option key={b.BodyID} value={b.BodyID}>
+                  {b.StartYear}-{b.EndYear} {b.Name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-category" className="form-label small mb-0">
+              Category
+            </label>
+            <select
+              id="filter-category"
+              className="form-select form-select-sm admin-filter-input"
+              value={filterCategoryId}
+              onChange={(e) => setFilterCategoryId(e.target.value)}
+              style={{ minWidth: "160px" }}
+            >
+              <option value="">All Categories</option>
+              {(() => {
+                const cats = filterCategories;
+                if (!cats.length) return null;
+                const hasMainCat = cats[0]?.MainCatName != null;
+                if (!hasMainCat) {
+                  return cats.map((c) => (
+                    <option key={c.CatID} value={c.CatID}>
+                      {c.CatName}
+                    </option>
+                  ));
+                }
+                const groups = {};
+                cats.forEach((c) => {
+                  const label = filterBodyId
+                    ? (c.MainCatName || "Other")
+                    : `${c.MainCatName || "Other"}${c.PlatformName ? ` (${c.PlatformName})` : ""}`;
+                  if (!groups[label]) groups[label] = [];
+                  groups[label].push(c);
+                });
+                return Object.entries(groups)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([label, items]) => (
+                    <optgroup key={label} label={label}>
+                      {items.map((c) => (
+                        <option key={c.CatID} value={c.CatID}>
+                          {c.CatName}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ));
+              })()}
+            </select>
+          </div>
+          <div className="col-auto">
+            <label
+              htmlFor="filter-manufacturer"
+              className="form-label small mb-0"
+            >
+              Manufacturer
+            </label>
+            <select
+              id="filter-manufacturer"
+              className="form-select form-select-sm admin-filter-input"
+              value={filterManufacturerId}
+              onChange={(e) => setFilterManufacturerId(e.target.value)}
+              style={{ minWidth: "160px" }}
+            >
+              <option value="">All Manufacturers</option>
+              {manufacturers.map((m) => (
+                <option key={m.ManID} value={m.ManID}>
+                  {m.ManName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-display" className="form-label small mb-0">
+              Display
+            </label>
+            <select
+              id="filter-display"
+              className="form-select form-select-sm admin-filter-input"
               value={displayFilter}
-              onChange={(e) => {
-                setDisplayFilter(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setDisplayFilter(e.target.value)}
+              style={{ minWidth: "130px" }}
             >
               <option value="all">All</option>
-              <option value="1">Visible only (1)</option>
-              <option value="0">Hidden only (0)</option>
+              <option value="1">Visible only</option>
+              <option value="0">Hidden only</option>
             </select>
-          </label>
-          <button
-            className="admin-btn-primary"
-            onClick={() => {
-              resetForm();
-              setShowForm(true);
-            }}
-          >
-            + Add New Product
-          </button>
+          </div>
+          <div className="col-auto">
+            <label htmlFor="filter-new-products" className="form-label small mb-0">
+              New Products
+            </label>
+            <select
+              id="filter-new-products"
+              className="form-select form-select-sm admin-filter-input"
+              value={filterNewProducts}
+              onChange={(e) => setFilterNewProducts(e.target.value)}
+              style={{ minWidth: "180px" }}
+            >
+              <option value="">—</option>
+              <option value="all">All (checked)</option>
+              <option value="onsite">On site (&lt;90 days)</option>
+            </select>
+          </div>
+          <div className="col-auto d-flex gap-2">
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="btn btn-sm btn-primary"
+            >
+              Apply filters
+            </button>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="btn btn-sm btn-outline-secondary"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="row g-2 mt-2 pt-2 border-top">
+          <div className="col-12">
+            <span className="admin-view-label me-2">Show:</span>
+            <div className="d-flex flex-wrap gap-3 align-items-center">
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterScratchAndDent}
+                  onChange={(e) => setFilterScratchAndDent(e.target.checked)}
+                />
+                <span className="form-check-label">Scratch and Dent</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterNoImage}
+                  onChange={(e) => setFilterNoImage(e.target.checked)}
+                />
+                <span className="form-check-label">No Image</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterFeatured}
+                  onChange={(e) => setFilterFeatured(e.target.checked)}
+                />
+                <span className="form-check-label">Featured</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterLowMargin}
+                  onChange={(e) => setFilterLowMargin(e.target.checked)}
+                />
+                <span className="form-check-label">Low Margin</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterHardwarePacks}
+                  onChange={(e) => setFilterHardwarePacks(e.target.checked)}
+                />
+                <span className="form-check-label">Hardware Packs</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterMultipleBoxes}
+                  onChange={(e) => setFilterMultipleBoxes(e.target.checked)}
+                />
+                <span className="form-check-label">Multiple Boxes</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterPackage}
+                  onChange={(e) => setFilterPackage(e.target.checked)}
+                />
+                <span className="form-check-label">Packages</span>
+              </label>
+              <label className="form-check form-check-inline mb-0 small">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={filterNoManufacturer}
+                  onChange={(e) => setFilterNoManufacturer(e.target.checked)}
+                />
+                <span className="form-check-label">No Manufacturer</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -953,7 +1268,7 @@ export default function AdminProductsPage() {
                       onChange={(e) => {
                         const v = Array.from(
                           e.target.selectedOptions,
-                          (o) => o.value,
+                          (o) => o.value
                         )
                           .filter(Boolean)
                           .join(",");
@@ -1472,7 +1787,9 @@ export default function AdminProductsPage() {
               >
                 <ul className="pagination pagination-sm mb-0 flex-wrap">
                   <li
-                    className={`page-item ${currentPage <= 1 ? "disabled" : ""}`}
+                    className={`page-item ${
+                      currentPage <= 1 ? "disabled" : ""
+                    }`}
                   >
                     <button
                       type="button"
@@ -1509,7 +1826,9 @@ export default function AdminProductsPage() {
                       ) : (
                         <li
                           key={p}
-                          className={`page-item ${p === currentPage ? "active" : ""}`}
+                          className={`page-item ${
+                            p === currentPage ? "active" : ""
+                          }`}
                         >
                           <button
                             type="button"
@@ -1519,18 +1838,22 @@ export default function AdminProductsPage() {
                             {p}
                           </button>
                         </li>
-                      ),
+                      )
                     );
                   })()}
                   <li
-                    className={`page-item ${currentPage >= Math.ceil(total / perPage) ? "disabled" : ""}`}
+                    className={`page-item ${
+                      currentPage >= Math.ceil(total / perPage)
+                        ? "disabled"
+                        : ""
+                    }`}
                   >
                     <button
                       type="button"
                       className="page-link"
                       onClick={() =>
                         setCurrentPage((p) =>
-                          Math.min(Math.ceil(total / perPage) || 1, p + 1),
+                          Math.min(Math.ceil(total / perPage) || 1, p + 1)
                         )
                       }
                       disabled={currentPage >= Math.ceil(total / perPage)}
@@ -1566,7 +1889,9 @@ export default function AdminProductsPage() {
                 ) : (
                   products.map((product) => (
                     <tr
-                      key={`${product.ProductID}-${(product.PartNumber || "").toString()}`}
+                      key={`${product.ProductID}-${(
+                        product.PartNumber || ""
+                      ).toString()}`}
                     >
                       <td>
                         {product.ImageLarge && product.ImageLarge !== "0" ? (
@@ -1608,7 +1933,11 @@ export default function AdminProductsPage() {
                       <td>{product.Qty}</td>
                       <td>
                         <span
-                          className={`admin-status-badge ${product.Display === 1 ? "badge-active" : "badge-inactive"}`}
+                          className={`admin-status-badge ${
+                            product.Display === 1
+                              ? "badge-active"
+                              : "badge-inactive"
+                          }`}
                         >
                           {product.Display === 1 ? "Yes" : "No"}
                         </span>

@@ -20,7 +20,7 @@ export async function GET() {
     console.error("Error fetching dealer tiers:", error);
     return NextResponse.json(
       { error: "Failed to fetch dealer tiers" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -39,23 +39,30 @@ export async function PUT(request) {
     if (tiers.length === 0) {
       return NextResponse.json(
         { error: "tiers array is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     for (const t of tiers) {
       const tier = parseInt(t.tier, 10);
       const discount = parseFloat(t.discount_percent);
+      const flatRate = parseFloat(t.flat_rate_shipping);
       if (tier < 1 || tier > 8) {
         return NextResponse.json(
           { error: `Tier must be 1-8, got ${tier}` },
-          { status: 400 },
+          { status: 400 }
         );
       }
       if (isNaN(discount) || discount < 0 || discount > 100) {
         return NextResponse.json(
           { error: `Discount must be 0-100, got ${t.discount_percent}` },
-          { status: 400 },
+          { status: 400 }
+        );
+      }
+      if (!isNaN(flatRate) && flatRate < 0) {
+        return NextResponse.json(
+          { error: `Flat rate shipping cannot be negative` },
+          { status: 400 }
         );
       }
     }
@@ -67,7 +74,7 @@ export async function PUT(request) {
     console.error("Error updating dealer tiers:", error);
     return NextResponse.json(
       { error: "Failed to update dealer tiers" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

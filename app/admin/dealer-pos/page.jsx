@@ -363,7 +363,7 @@ export default function AdminDealerPOsPage() {
               <option value="processing">Processing</option>
               <option value="completed">Completed</option>
             </select>
-          </div>
+        </div>
           <div className="col-auto d-flex gap-2">
             <button
               type="button"
