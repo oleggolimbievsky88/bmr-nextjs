@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState([]);
@@ -61,18 +62,39 @@ export default function AdminCustomersPage() {
     return () => clearTimeout(t);
   }, [searchTerm]);
 
+  const searchParams = useSearchParams();
+
   useEffect(() => {
     fetchCustomers();
   }, [fetchCustomers]);
 
-  const handleEdit = (customer) => {
+  const openEditByParam = useCallback((customer) => {
     setEditingCustomer(customer);
     setFormData({
       role: customer.role || "customer",
       dealerTier: customer.dealerTier || 0,
       dealerDiscount: customer.dealerDiscount || 0,
     });
-  };
+  }, []);
+
+  useEffect(() => {
+    const editCustomerId = searchParams.get("editCustomer");
+    if (editCustomerId) {
+      const id = parseInt(editCustomerId, 10);
+      if (!Number.isNaN(id)) {
+        fetch(`/api/admin/customers/${id}`)
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.success && data.customer) {
+              openEditByParam(data.customer);
+            }
+          })
+          .catch(console.error);
+      }
+    }
+  }, [searchParams, openEditByParam]);
+
+  const handleEdit = openEditByParam;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

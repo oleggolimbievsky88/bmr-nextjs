@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getColorBadgeClass } from "@/lib/colorBadge";
+import { useSearchParams } from "next/navigation";
+import { getColorBadgeStyle } from "@/lib/colorBadge";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -19,6 +20,38 @@ export default function AdminOrdersPage() {
   const [filterName, setFilterName] = useState("");
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
+  const [datePreset, setDatePreset] = useState("");
+
+  const setDateRangePreset = useCallback((preset) => {
+    const today = new Date();
+    const toStr = (d) => d.toISOString().slice(0, 10);
+
+    let from = "";
+    let to = "";
+
+    if (preset === "today") {
+      from = toStr(today);
+      to = toStr(today);
+    } else if (preset === "yesterday") {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      from = toStr(yesterday);
+      to = from;
+    } else if (preset === "week") {
+      const weekAgo = new Date(today);
+      weekAgo.setDate(weekAgo.getDate() - 6);
+      from = toStr(weekAgo);
+      to = toStr(today);
+    } else if (preset === "month") {
+      from = toStr(new Date(today.getFullYear(), today.getMonth(), 1));
+      to = toStr(today);
+    }
+
+    setFilterDateFrom(from);
+    setFilterDateTo(to);
+    setDatePreset(preset);
+    setCurrentPage(1);
+  }, []);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -72,9 +105,26 @@ export default function AdminOrdersPage() {
     filterDateTo,
   ]);
 
+  const searchParams = useSearchParams();
+
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  useEffect(() => {
+    const orderId = searchParams.get("orderId");
+    if (orderId) {
+      fetch(`/api/admin/orders?orderId=${orderId}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success && data.order) {
+            setRevealedCc(null);
+            setSelectedOrder(data.order);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [searchParams]);
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -86,9 +136,19 @@ export default function AdminOrdersPage() {
     setCurrentPage(1);
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     setCurrentPage(1);
-  };
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilterOrderNumber("");
+    setFilterName("");
+    setFilterDateFrom("");
+    setFilterDateTo("");
+    setDatePreset("");
+    setStatusFilter("all");
+    setCurrentPage(1);
+  }, []);
 
   const SortableTh = ({ column, label }) => (
     <th
@@ -196,7 +256,7 @@ export default function AdminOrdersPage() {
                         {p}
                       </button>
                     </li>
-                  ),
+                  )
                 );
               })()}
               <li
@@ -338,7 +398,7 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (
     orderId,
     newStatus,
-    trackingNumber = null,
+    trackingNumber = null
   ) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
@@ -361,7 +421,7 @@ export default function AdminOrdersPage() {
       fetchOrders();
       if (selectedOrder?.new_order_id === orderId) {
         const fresh = await fetch(`/api/admin/orders?orderId=${orderId}`).then(
-          (r) => r.json(),
+          (r) => r.json()
         );
         if (fresh?.order) {
           setSelectedOrder(fresh.order);
@@ -400,7 +460,7 @@ export default function AdminOrdersPage() {
     const printWindow = window.open(
       `/admin/orders/${orderId}/print`,
       "_blank",
-      "width=800,height=600",
+      "width=800,height=600"
     );
     if (printWindow) {
       printWindow.focus();
@@ -500,32 +560,17 @@ export default function AdminOrdersPage() {
     );
   }
 
+  const hasActiveFilters =
+    filterOrderNumber.trim() ||
+    filterName.trim() ||
+    filterDateFrom ||
+    filterDateTo ||
+    statusFilter !== "all";
+
   return (
-    <div>
+    <div className="admin-orders-page">
       <div className="admin-page-header">
         <h1 className="admin-page-title">Orders Management</h1>
-        <div className="admin-toolbar">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-select"
-            style={{ width: "auto", minWidth: "160px" }}
-          >
-            <option value="all">All Orders</option>
-            <option value="pending">Pending</option>
-            <option value="processed">Processed</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <button
-            type="button"
-            onClick={fetchOrders}
-            className="admin-btn-primary"
-          >
-            Refresh
-          </button>
-        </div>
       </div>
 
       {/* Filters: order number, name, date range */}
@@ -541,7 +586,7 @@ export default function AdminOrdersPage() {
             <input
               id="filter-order-number"
               type="text"
-              className="form-control form-control-sm"
+              className="form-control form-control-sm admin-filter-input"
               placeholder="Order number"
               value={filterOrderNumber}
               onChange={(e) => setFilterOrderNumber(e.target.value)}
@@ -555,7 +600,7 @@ export default function AdminOrdersPage() {
             <input
               id="filter-name"
               type="text"
-              className="form-control form-control-sm"
+              className="form-control form-control-sm admin-filter-input"
               placeholder="Customer name or email"
               value={filterName}
               onChange={(e) => setFilterName(e.target.value)}
@@ -569,7 +614,7 @@ export default function AdminOrdersPage() {
             <input
               id="filter-date-from"
               type="date"
-              className="form-control form-control-sm"
+              className="form-control form-control-sm admin-filter-input"
               value={filterDateFrom}
               onChange={(e) => setFilterDateFrom(e.target.value)}
             />
@@ -581,19 +626,114 @@ export default function AdminOrdersPage() {
             <input
               id="filter-date-to"
               type="date"
-              className="form-control form-control-sm"
+              className="form-control form-control-sm admin-filter-input"
               value={filterDateTo}
-              onChange={(e) => setFilterDateTo(e.target.value)}
+              onChange={(e) => {
+                setFilterDateTo(e.target.value);
+                setDatePreset("custom");
+              }}
             />
           </div>
           <div className="col-auto">
+            <label htmlFor="filter-status" className="form-label small mb-0">
+              Status
+            </label>
+            <select
+              id="filter-status"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="form-select form-select-sm admin-filter-input"
+              style={{ minWidth: "130px" }}
+            >
+              <option value="all">All Orders</option>
+              <option value="pending">Pending</option>
+              <option value="processed">Processed</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="col-auto d-flex gap-2">
             <button
               type="button"
               onClick={applyFilters}
-              className="admin-btn-primary"
+              className="admin-btn-primary admin-filter-button"
             >
               Apply filters
             </button>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="btn btn-sm btn-outline-secondary"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <div className="col-12 mt-2 pt-2 border-top">
+            <span className="admin-view-label me-2">View:</span>
+            <div
+              className="btn-group btn-group-sm admin-date-presets"
+              role="group"
+              aria-label="Date range preset"
+            >
+              <input
+                type="radio"
+                className="btn-check"
+                name="ordersDatePreset"
+                id="orders-preset-all"
+                checked={datePreset === ""}
+                onChange={() => setDateRangePreset("")}
+              />
+              <label className="btn btn-outline-secondary" htmlFor="orders-preset-all">
+                All
+              </label>
+              <input
+                type="radio"
+                className="btn-check"
+                name="ordersDatePreset"
+                id="orders-preset-today"
+                checked={datePreset === "today"}
+                onChange={() => setDateRangePreset("today")}
+              />
+              <label className="btn btn-outline-secondary" htmlFor="orders-preset-today">
+                Today
+              </label>
+              <input
+                type="radio"
+                className="btn-check"
+                name="ordersDatePreset"
+                id="orders-preset-yesterday"
+                checked={datePreset === "yesterday"}
+                onChange={() => setDateRangePreset("yesterday")}
+              />
+              <label className="btn btn-outline-secondary" htmlFor="orders-preset-yesterday">
+                Yesterday
+              </label>
+              <input
+                type="radio"
+                className="btn-check"
+                name="ordersDatePreset"
+                id="orders-preset-week"
+                checked={datePreset === "week"}
+                onChange={() => setDateRangePreset("week")}
+              />
+              <label className="btn btn-outline-secondary" htmlFor="orders-preset-week">
+                This week
+              </label>
+              <input
+                type="radio"
+                className="btn-check"
+                name="ordersDatePreset"
+                id="orders-preset-month"
+                checked={datePreset === "month"}
+                onChange={() => setDateRangePreset("month")}
+              />
+              <label className="btn btn-outline-secondary" htmlFor="orders-preset-month">
+                This month
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -688,13 +828,15 @@ export default function AdminOrdersPage() {
                     {selectedOrder.free_shipping && selectedOrder.coupon_code
                       ? `Free Shipping (Coupon: ${selectedOrder.coupon_code})`
                       : selectedOrder.free_shipping
-                        ? "Free Shipping"
-                        : (selectedOrder.shipping_method || "—")}
+                      ? "Free Shipping"
+                      : selectedOrder.shipping_method || "—"}
                   </p>
                   {selectedOrder.free_shipping ? (
                     <p className="mb-1">
                       <span className="badge bg-success">
-                        {selectedOrder.coupon_code ? "Free (Coupon)" : "Free Shipping"}
+                        {selectedOrder.coupon_code
+                          ? "Free (Coupon)"
+                          : "Free Shipping"}
                       </span>
                     </p>
                   ) : (
@@ -731,9 +873,8 @@ export default function AdminOrdersPage() {
                             {item.color != null &&
                               String(item.color).trim() !== "" && (
                                 <span
-                                  className={`admin-color-badge admin-color-badge--${getColorBadgeClass(
-                                    item.color,
-                                  ).replace("color-", "")}`}
+                                  className="admin-color-badge"
+                                  style={getColorBadgeStyle(item.color)}
                                 >
                                   {item.color}
                                 </span>
@@ -761,7 +902,7 @@ export default function AdminOrdersPage() {
                           selectedOrder.total -
                             (parseFloat(selectedOrder.shipping_cost) || 0) -
                             (parseFloat(selectedOrder.tax) || 0) +
-                            (parseFloat(selectedOrder.discount) || 0),
+                            (parseFloat(selectedOrder.discount) || 0)
                         )}
                       </span>
                     </div>
@@ -821,7 +962,7 @@ export default function AdminOrdersPage() {
                         });
                         try {
                           const res = await fetch(
-                            `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`,
+                            `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`
                           );
                           const data = await res.json();
                           if (!res.ok)
@@ -832,7 +973,7 @@ export default function AdminOrdersPage() {
                             error: null,
                           });
                           const fresh = await fetch(
-                            `/api/admin/orders?orderId=${selectedOrder.new_order_id}`,
+                            `/api/admin/orders?orderId=${selectedOrder.new_order_id}`
                           ).then((r) => r.json());
                           if (fresh?.order) setSelectedOrder(fresh.order);
                         } catch (e) {
@@ -879,33 +1020,6 @@ export default function AdminOrdersPage() {
               )}
 
               <div className="admin-form-group mb-4">
-                <label htmlFor="order-status-select" className="form-label">
-                  Order Status
-                </label>
-                <OrderStatusDropdown
-                  value={selectedOrder.status}
-                  onSelect={(newStatus) => {
-                    if (newStatus === "shipped") {
-                      const tracking = prompt(
-                        "Enter tracking number (optional):",
-                        selectedOrder.tracking_number || "",
-                      );
-                      updateOrderStatus(
-                        selectedOrder.new_order_id,
-                        newStatus,
-                        tracking || null,
-                      );
-                    } else {
-                      updateOrderStatus(
-                        selectedOrder.new_order_id,
-                        newStatus,
-                        null,
-                      );
-                    }
-                  }}
-                />
-              </div>
-              <div className="admin-form-group mb-4">
                 <label htmlFor="tracking-number" className="form-label">
                   Tracking Number
                 </label>
@@ -925,7 +1039,7 @@ export default function AdminOrdersPage() {
                         updateOrderStatus(
                           selectedOrder.new_order_id,
                           selectedOrder.status,
-                          trackingNumber,
+                          trackingNumber
                         );
                       }
                     }}
@@ -941,7 +1055,7 @@ export default function AdminOrdersPage() {
                         updateOrderStatus(
                           selectedOrder.new_order_id,
                           selectedOrder.status || "shipped",
-                          trackingNumber,
+                          trackingNumber
                         );
                       }
                     }}
@@ -959,7 +1073,29 @@ export default function AdminOrdersPage() {
                   formatDate={formatDate}
                 />
               </div>
-              <div className="admin-toolbar">
+              <div className="admin-toolbar d-flex flex-wrap align-items-center gap-3">
+                <OrderStatusDropdown
+                  value={selectedOrder.status}
+                  onSelect={(newStatus) => {
+                    if (newStatus === "shipped") {
+                      const tracking = prompt(
+                        "Enter tracking number (optional):",
+                        selectedOrder.tracking_number || ""
+                      );
+                      updateOrderStatus(
+                        selectedOrder.new_order_id,
+                        newStatus,
+                        tracking || null
+                      );
+                    } else {
+                      updateOrderStatus(
+                        selectedOrder.new_order_id,
+                        newStatus,
+                        null
+                      );
+                    }
+                  }}
+                />
                 <button
                   type="button"
                   onClick={() => {
@@ -1022,15 +1158,23 @@ export default function AdminOrdersPage() {
                         {order.free_shipping && order.coupon_code
                           ? `Free Shipping (Coupon: ${order.coupon_code})`
                           : order.free_shipping
-                            ? "Free Shipping"
-                            : (order.shipping_method || "—")}
+                          ? "Free Shipping"
+                          : order.shipping_method || "—"}
                       </span>
                       {order.coupon_code && !order.free_shipping && (
-                        <span className="text-muted d-block small">Coupon: {order.coupon_code}</span>
+                        <span className="text-muted d-block small">
+                          Coupon: {order.coupon_code}
+                        </span>
                       )}
                       {order.free_shipping ? (
-                        <span className="badge bg-success ms-1" title="Free shipping">Free</span>
-                      ) : order.shipping_cost != null && parseFloat(order.shipping_cost) > 0 ? (
+                        <span
+                          className="badge bg-success ms-1"
+                          title="Free shipping"
+                        >
+                          Free
+                        </span>
+                      ) : order.shipping_cost != null &&
+                        parseFloat(order.shipping_cost) > 0 ? (
                         <span className="text-muted d-block small">
                           {formatCurrency(order.shipping_cost)}
                         </span>
@@ -1093,18 +1237,18 @@ export default function AdminOrdersPage() {
                             if (newStatus === "shipped") {
                               const tracking = prompt(
                                 "Enter tracking number (optional):",
-                                order.tracking_number || "",
+                                order.tracking_number || ""
                               );
                               updateOrderStatus(
                                 order.new_order_id,
                                 newStatus,
-                                tracking || null,
+                                tracking || null
                               );
                             } else {
                               updateOrderStatus(
                                 order.new_order_id,
                                 newStatus,
-                                null,
+                                null
                               );
                             }
                           }}

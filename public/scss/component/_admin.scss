@@ -1043,3 +1043,196 @@
 	padding-left: 1.25rem;
 	padding-right: 1.25rem;
 }
+
+/* Date presets (shared by Orders and Dealer POs) */
+.admin-view-label {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--text);
+}
+
+.admin-date-presets {
+	.btn-check:checked + .btn-outline-secondary {
+		background-color: var(--primary);
+		border-color: var(--primary);
+		color: #fff;
+	}
+
+	.btn-outline-secondary:hover {
+		border-color: var(--primary);
+		color: var(--primary);
+	}
+}
+
+/* Dealer POs page */
+.admin-dealer-pos-page {
+	.admin-content {
+		padding: 0;
+	}
+
+	/* BMR red for buttons and links */
+	.btn-primary {
+		background-color: var(--primary);
+		border-color: var(--primary);
+
+		&:hover {
+			background-color: #b80e11;
+			border-color: #b80e11;
+			color: #fff;
+		}
+	}
+
+	.btn-outline-primary {
+		color: var(--primary);
+		border-color: var(--primary);
+
+		&:hover {
+			background-color: var(--primary);
+			border-color: var(--primary);
+			color: #fff;
+		}
+	}
+
+	.admin-products-pagination .page-link {
+		color: var(--primary);
+
+		&:hover {
+			color: #b80e11;
+		}
+	}
+
+	.admin-products-pagination .page-item.active .page-link {
+		background-color: var(--primary);
+		border-color: var(--primary);
+		color: #fff;
+	}
+
+	/* Status badges: green for sent, red for cancelled */
+	.dealer-po-status-badge {
+		&.dealer-po-status-sent {
+			background-color: #16a34a;
+			color: #fff;
+			border-color: #16a34a;
+		}
+
+		&.dealer-po-status-completed {
+			background-color: #15803d;
+			color: #fff;
+			border-color: #15803d;
+		}
+
+		&.dealer-po-status-cancelled {
+			background-color: var(--primary);
+			color: #fff;
+			border-color: var(--primary);
+		}
+
+		&.dealer-po-status-processing {
+			background-color: #0284c7;
+			color: #fff;
+			border-color: #0284c7;
+		}
+
+		&.dealer-po-status-default {
+			background-color: #6b7280;
+			color: #fff;
+			border-color: #6b7280;
+		}
+	}
+}
+
+.dealer-po-detail {
+	.dealer-po-detail-section {
+		margin-bottom: 1.5rem;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid var(--line);
+
+		&:last-of-type {
+			border-bottom: none;
+		}
+	}
+
+	.dealer-po-detail-section-title {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--main);
+		margin-bottom: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.dealer-po-detail-row {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.35rem;
+		font-size: 0.9rem;
+	}
+
+	.dealer-po-detail-label {
+		color: var(--text);
+		min-width: 100px;
+		flex-shrink: 0;
+	}
+
+	.dealer-po-detail-value {
+		color: var(--main);
+		font-weight: 500;
+	}
+
+	.dealer-po-detail-card {
+		background: var(--bg-2);
+		border-radius: 8px;
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--line);
+	}
+
+	.dealer-po-detail-block {
+		margin-bottom: 0.75rem;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.dealer-po-detail-block-title {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--text);
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		margin-bottom: 0.4rem;
+	}
+
+	.dealer-po-detail-block-content {
+		font-size: 0.9rem;
+		color: var(--main);
+		line-height: 1.5;
+
+		div {
+			margin-bottom: 0.15rem;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+}
+
+.admin-filter-input {
+	border-radius: 5px !important;
+	color: var(--main);
+	background: var(--bg-2);
+	border: 1px solid var(--line);
+	height: 40px !important;
+	@include transition3;
+
+	&:focus {
+		border-color: var(--primary);
+		box-shadow: 0 0 0 1px rgba(192, 192, 192, 0.986);
+	}
+}
+
+.admin-filter-button {
+	border-radius: 5px !important;
+	height: 40px !important;
+}

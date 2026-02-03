@@ -1631,25 +1631,23 @@ section.tf-slideshow,
   transition: transform 0.3s ease-in-out;
   font-size: 1.1rem;
   background-color: rgb(0, 0, 0); /* Darker overlay on hover */
-  opacity: 0.9;
   padding: 15px;
+  margin-right: auto;
 }
 
 .custom-card:hover {
   transform: scale(1.05); /* Scale the card on hover */
-  background-color: rgb(27, 27, 27); /* Darker overlay on hover */
-  opacity: 1;
 }
 
 .custom-card .card-img-overlay {
   transition: background 0.3s ease-in-out;
   border:2px solid var(--primary);
-
+  text-align: left;
 }
 
 .custom-card:hover .card-img-overlay {
   border:2px solid var(--primary);
-
+  text-align: left;
 
 }
 
@@ -3067,6 +3065,10 @@ header[style*="transform:translateY(-"] {
 
 .three-column-layout {
   margin-top: 50px !important;
+}
+.three-column-card {
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 /* Platform cards grid */
