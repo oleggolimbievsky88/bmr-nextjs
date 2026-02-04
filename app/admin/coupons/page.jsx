@@ -8,6 +8,7 @@ export default function AdminCouponsPage() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
+  const [togglingId, setTogglingId] = useState(null);
   const [formData, setFormData] = useState({
     code: "",
     name: "",
@@ -166,7 +167,7 @@ export default function AdminCouponsPage() {
       alert(
         editingCoupon
           ? "Coupon updated successfully!"
-          : "Coupon created successfully!",
+          : "Coupon created successfully!"
       );
     } catch (err) {
       setError(err.message);
@@ -174,8 +175,36 @@ export default function AdminCouponsPage() {
     }
   };
 
+  const handleToggleActive = async (coupon) => {
+    const isActive = coupon.is_active === 1 || coupon.is_active === true;
+    const newActive = !isActive;
+    setTogglingId(coupon.id);
+    setError("");
+    try {
+      const response = await fetch(`/api/admin/coupons/${coupon.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_active: newActive }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to update coupon status");
+      }
+      await fetchCoupons();
+    } catch (err) {
+      setError(err.message);
+      console.error("Error toggling coupon:", err);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   const handleDelete = async (couponId) => {
-    if (!confirm("Are you sure you want to delete this coupon?")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this coupon? This cannot be undone."
+      )
+    ) {
       return;
     }
 
@@ -518,6 +547,24 @@ export default function AdminCouponsPage() {
                     <td>
                       <button
                         type="button"
+                        onClick={() => handleToggleActive(coupon)}
+                        disabled={togglingId === coupon.id}
+                        className="admin-btn-secondary me-2"
+                        style={{ padding: "0.25rem 0.5rem", fontSize: "13px" }}
+                        title={
+                          coupon.is_active === 1 || coupon.is_active === true
+                            ? "Disable this coupon"
+                            : "Enable this coupon"
+                        }
+                      >
+                        {togglingId === coupon.id
+                          ? "..."
+                          : coupon.is_active === 1 || coupon.is_active === true
+                          ? "Disable"
+                          : "Enable"}
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleEdit(coupon)}
                         className="admin-btn-secondary me-2"
                         style={{ padding: "0.25rem 0.5rem", fontSize: "13px" }}
@@ -529,6 +576,7 @@ export default function AdminCouponsPage() {
                         onClick={() => handleDelete(coupon.id)}
                         className="admin-btn-danger"
                         style={{ padding: "0.25rem 0.5rem", fontSize: "13px" }}
+                        title="Permanently delete this coupon"
                       >
                         Delete
                       </button>

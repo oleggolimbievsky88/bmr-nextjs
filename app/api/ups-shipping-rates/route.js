@@ -3,7 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getCountryCode } from "@/lib/countryCodes";
 import { isLower48UsState } from "@/lib/shipping";
-import { areAllProductsCouponEligible } from "@/lib/queries";
+import {
+  areAllProductsCouponEligible,
+  areAllProductsFreeShippingEligible,
+} from "@/lib/queries";
 
 const DEALER_FLAT_RATE_LOWER48 = 14.95;
 
@@ -421,7 +424,7 @@ export async function POST(request) {
     // Sort by cost (cheapest first)
     shippingOptions.sort((a, b) => a.cost - b.cost);
 
-    // Free shipping only for BMR products (not Low Margin, not Package) to lower 48 US
+    // Free shipping for BMR products (incl. scratch & dent; excl. low margin, package) to lower 48 US
     const stateForShipping = (
       toAddress?.state ??
       toAddress?.stateProvince ??
@@ -433,7 +436,7 @@ export async function POST(request) {
     const allowFreeShipping =
       toCountryCode === "US" &&
       isLower48UsState(stateForShipping) &&
-      (await areAllProductsCouponEligible(productIds));
+      (await areAllProductsFreeShippingEligible(productIds));
     if (allowFreeShipping) {
       shippingOptions.unshift({
         service: "FREE SHIPPING",
@@ -442,7 +445,7 @@ export async function POST(request) {
         currency: "USD",
         deliveryDays: "1-5 business days",
         description:
-          "Free shipping on BMR products (excl. low margin & package) in lower 48 US",
+          "Free shipping on BMR products (incl. scratch & dent; excl. low margin & package) in lower 48 US",
       });
     }
 
@@ -465,7 +468,7 @@ export async function POST(request) {
     console.error("UPS shipping rates error:", error);
 
     // Fallback shipping options when UPS API fails
-    // Free shipping only when BMR (not low margin/package) + lower 48 US
+    // Free shipping when BMR (incl. scratch & dent; excl. low margin/package) + lower 48 US
     let allowFreeShipping = false;
     const toCountryCode = getCountryCode(toAddress?.country) || "US";
     const stateForFallback = (
@@ -480,7 +483,7 @@ export async function POST(request) {
       allowFreeShipping =
         toCountryCode === "US" &&
         isLower48UsState(stateForFallback) &&
-        (await areAllProductsCouponEligible(
+        (await areAllProductsFreeShippingEligible(
           Array.isArray(productIds) ? productIds : []
         ));
     } catch (e) {
@@ -522,7 +525,7 @@ export async function POST(request) {
           currency: "USD",
           deliveryDays: "5-7 business days",
           description:
-            "Free shipping on BMR products (excl. low margin & package) in lower 48 US",
+            "Free shipping on BMR products (incl. scratch & dent; excl. low margin & package) in lower 48 US",
         });
       }
     } else if (toCountryCode === "CA") {
