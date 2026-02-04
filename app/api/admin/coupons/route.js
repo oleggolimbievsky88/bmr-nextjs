@@ -23,6 +23,10 @@ export async function GET(request) {
     const couponId = searchParams.get("id");
     const limit = searchParams.get("limit");
     const offset = searchParams.get("offset");
+    const search = searchParams.get("search")?.trim() || "";
+    const status = searchParams.get("status")?.trim() || "all";
+    const sortColumn = searchParams.get("sortColumn")?.trim() || "created_at";
+    const sortDirection = searchParams.get("sortDirection")?.trim() || "desc";
 
     if (couponId) {
       // Get single coupon
@@ -40,9 +44,15 @@ export async function GET(request) {
     if (limit != null && offset != null) {
       const limitNum = Math.min(Math.max(1, parseInt(limit, 10) || 25), 100);
       const offsetNum = Math.max(0, parseInt(offset, 10) || 0);
+      const statusFilter =
+        status === "active" || status === "inactive" ? status : "all";
       const { coupons, total } = await getCouponsAdminPaginated(
         limitNum,
-        offsetNum
+        offsetNum,
+        search,
+        statusFilter,
+        sortColumn,
+        sortDirection
       );
       return NextResponse.json({ success: true, coupons, total });
     }

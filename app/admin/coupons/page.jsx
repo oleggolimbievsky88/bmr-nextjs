@@ -13,6 +13,11 @@ export default function AdminCouponsPage() {
   const [total, setTotal] = useState(0);
   const [perPage, setPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortColumn, setSortColumn] = useState("created_at");
+  const [sortDirection, setSortDirection] = useState("desc");
   const formCardRef = useRef(null);
   const [formData, setFormData] = useState({
     code: "",
@@ -43,6 +48,10 @@ export default function AdminCouponsPage() {
         limit: String(perPage),
         offset: String(offset),
       });
+      if (searchQuery.trim()) params.set("search", searchQuery.trim());
+      if (statusFilter !== "all") params.set("status", statusFilter);
+      params.set("sortColumn", sortColumn);
+      params.set("sortDirection", sortDirection);
       const response = await fetch(`/api/admin/coupons?${params}`);
       const data = await response.json();
 
@@ -64,11 +73,27 @@ export default function AdminCouponsPage() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, perPage]);
+  }, [
+    currentPage,
+    perPage,
+    searchQuery,
+    statusFilter,
+    sortColumn,
+    sortDirection,
+  ]);
 
   useEffect(() => {
     fetchCoupons();
   }, [fetchCoupons]);
+
+  // Filter-as-you-type: debounce search input into searchQuery
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -186,10 +211,11 @@ export default function AdminCouponsPage() {
 
       resetForm();
       fetchCoupons();
-      alert(
+      showToast(
         editingCoupon
           ? "Coupon updated successfully!"
-          : "Coupon created successfully!"
+          : "Coupon created successfully!",
+        "success"
       );
     } catch (err) {
       setError(err.message);
@@ -251,6 +277,39 @@ export default function AdminCouponsPage() {
       console.error("Error deleting coupon:", err);
     }
   };
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const SortableTh = ({ column, label }) => (
+    <th
+      role="button"
+      tabIndex={0}
+      onClick={() => handleSort(column)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleSort(column);
+        }
+      }}
+      className="sortable"
+      style={{ cursor: "pointer", userSelect: "none" }}
+    >
+      {label}
+      {sortColumn === column && (
+        <span className="ms-1" aria-hidden="true">
+          {sortDirection === "asc" ? "↑" : "↓"}
+        </span>
+      )}
+    </th>
+  );
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -622,6 +681,73 @@ export default function AdminCouponsPage() {
         </div>
       )}
 
+      <div className="admin-card mb-3">
+        <div className="row g-2 align-items-end flex-wrap">
+          <div className="col-auto">
+            <label
+              htmlFor="coupon-filter-search"
+              className="form-label small mb-0"
+            >
+              Search
+            </label>
+            <input
+              id="coupon-filter-search"
+              type="text"
+              className="form-control form-control-sm admin-filter-input"
+              style={{ minWidth: "360px" }}
+              placeholder="Code, name, or description"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  setSearchQuery(searchInput);
+                  setCurrentPage(1);
+                }
+              }}
+            />
+          </div>
+          <div className="col-auto">
+            <label
+              htmlFor="coupon-filter-status"
+              className="form-label small mb-0"
+            >
+              Status
+            </label>
+            <select
+              id="coupon-filter-status"
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="form-select form-select-sm admin-filter-input"
+              style={{ minWidth: "130px" }}
+            >
+              <option value="all">All Coupons</option>
+              <option value="active">Active</option>
+              <option value="inactive">Deactivated</option>
+            </select>
+          </div>
+          <div className="col-auto d-flex gap-2">
+            {(searchInput || searchQuery || statusFilter !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchInput("");
+                  setSearchQuery("");
+                  setStatusFilter("all");
+                  setCurrentPage(1);
+                }}
+                className="btn btn-sm btn-outline-secondary"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       <PaginationBlock />
 
       <div className="admin-card">
@@ -629,12 +755,12 @@ export default function AdminCouponsPage() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Discount</th>
-                <th>Valid Period</th>
-                <th>Usage</th>
-                <th>Status</th>
+                <SortableTh column="code" label="Code" />
+                <SortableTh column="name" label="Name" />
+                <SortableTh column="discount_value" label="Discount" />
+                <SortableTh column="start_date" label="Valid Period" />
+                <SortableTh column="times_used" label="Usage" />
+                <SortableTh column="is_active" label="Status" />
                 <th>Actions</th>
               </tr>
             </thead>
