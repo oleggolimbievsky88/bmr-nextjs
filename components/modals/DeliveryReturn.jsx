@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function DeliveryReturn() {
@@ -13,56 +14,48 @@ export default function DeliveryReturn() {
             <span
               className="icon-close icon-close-popup"
               data-bs-dismiss="modal"
+              aria-label="Close"
             />
           </div>
           <div className="overflow-y-auto">
             <div className="tf-product-popup-delivery">
               <div className="title">Delivery</div>
               <p className="text-paragraph">
-                All orders shipped with UPS Express.
+                We offer multiple shipping options at checkout so you can choose
+                the speed and cost that works for you.
               </p>
               <p className="text-paragraph">
-                Always free shipping for orders over US $250.
-              </p>
-              <p className="text-paragraph">
-                All orders are shipped with a UPS tracking number.
+                All orders ship with tracking. You’ll receive tracking
+                information once your order ships.
               </p>
             </div>
             <div className="tf-product-popup-delivery">
               <div className="title">Returns</div>
               <p className="text-paragraph">
-                Items returned within 14 days of their original shipment date in
-                same as new condition will be eligible for a full refund or
-                store credit.
+                90 day return policy.
               </p>
               <p className="text-paragraph">
-                Refunds will be charged back to the original form of payment
-                used for purchase.
+                Refunds are issued to the original form of payment. The customer
+                is responsible for return shipping; original shipping and
+                handling fees are non-refundable.
               </p>
-              <p className="text-paragraph">
-                Customer is responsible for shipping charges when making returns
-                and shipping/handling fees of original purchase is
-                non-refundable.
-              </p>
-              <p className="text-paragraph">
-                All sale items are final purchases.
-              </p>
+              <p className="text-paragraph">All sale items are final sale.</p>
             </div>
             <div className="tf-product-popup-delivery">
               <div className="title">Help</div>
               <p className="text-paragraph">
-                Give us a shout if you have any other questions and/or concerns.
+                Questions? Get in touch with the BMR team.
               </p>
-              <p className="text-paragraph">
+              <p className="text-paragraph mb-0">
                 Email:{" "}
-                <a
-                  href="mailto:contact@domain.com"
-                  aria-describedby="a11y-external-message"
-                >
-                  <span className="__cf_email__">contact@domain.com</span>
+                <a href="mailto:sales@bmrsuspension.com">
+                  sales@bmrsuspension.com
                 </a>
+                {" · "}
+                Phone: <a href="tel:8139869302">(813) 986-9302</a>
+                {" · "}
+                <Link href="/contact">Contact us</Link>
               </p>
-              <p className="text-paragraph mb-0">Phone: +1 (23) 456 789</p>
             </div>
           </div>
         </div>

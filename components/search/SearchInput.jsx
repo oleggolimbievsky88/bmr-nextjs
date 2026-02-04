@@ -273,7 +273,7 @@ export default function SearchInput({ initialQuery = "" }) {
             ref={inputRef}
             type="text"
             className="form-control search-input-field"
-            placeholder="Search by part #, product name, or platform"
+            placeholder="Search by part #, product name, year & vehicle (e.g. 2015 Mustang)"
             value={query}
             onChange={handleInputChange}
             onFocus={() => {
@@ -362,7 +362,9 @@ export default function SearchInput({ initialQuery = "" }) {
                       years.push(p.PlatformEndYear);
                     }
                     if (years.length > 0) {
-                      platformWithYears = `${years.join("-")} ${p.PlatformName}`;
+                      platformWithYears = `${years.join("-")} ${
+                        p.PlatformName
+                      }`;
                     } else {
                       platformWithYears = p.PlatformName;
                     }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function PayPalReturnPage() {
+function PayPalReturnContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [orderNumber, setOrderNumber] = useState("");
@@ -77,5 +77,22 @@ export default function PayPalReturnPage() {
       <p>Redirecting to your order confirmation...</p>
       {orderNumber && <p className="text-muted small">Order {orderNumber}</p>}
     </div>
+  );
+}
+
+export default function PayPalReturnPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container py-5 text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3">Completing your order...</p>
+        </div>
+      }
+    >
+      <PayPalReturnContent />
+    </Suspense>
   );
 }

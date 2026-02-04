@@ -10,6 +10,7 @@ export default function SearchResults({
   const {
     products = [],
     categories = [],
+    platforms = [],
     vehicles = [],
     brands = [],
   } = groupedResults;
@@ -42,7 +43,11 @@ export default function SearchResults({
   const hasMoreProducts = products.length > 8;
 
   const totalResults =
-    products.length + categories.length + vehicles.length + brands.length;
+    products.length +
+    categories.length +
+    platforms.length +
+    vehicles.length +
+    brands.length;
 
   // Sanitize slug by removing/replacing special characters
   const sanitizeSlug = (slug) => {
@@ -164,6 +169,76 @@ export default function SearchResults({
                 </button>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Platforms Section - direct link to vehicle platform (e.g. Mustang) */}
+        {platforms.length > 0 && (
+          <div className="mb-5">
+            <div className="flat-title">
+              <span
+                className="title wow fadeInUp home-title"
+                data-wow-delay="0s"
+              >
+                Platforms ({platforms.length})
+              </span>
+            </div>
+            <div className="row">
+              {platforms.map((platform) => (
+                <div
+                  key={platform.BodyID || platform.slug}
+                  className="col-lg-3 col-md-4 col-sm-6 col-12 mb-3"
+                >
+                  <Link
+                    href={
+                      platform.slug
+                        ? `/products/${platform.slug}`
+                        : `/homes/home-search?q=${encodeURIComponent(
+                            platform.Name || ""
+                          )}`
+                    }
+                    className="card h-100 text-decoration-none search-result-card"
+                    style={{
+                      borderRadius: "15px",
+                      border: "2px solid #e9ecef",
+                      overflow: "hidden",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "var(--primary)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 12px rgba(204, 0, 0, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#e9ecef";
+                      e.currentTarget.style.boxShadow =
+                        "0 2px 8px rgba(0,0,0,0.1)";
+                    }}
+                  >
+                    <div className="card-body" style={{ padding: "1.5rem" }}>
+                      <h5
+                        className="card-title"
+                        style={{ color: "#000", marginBottom: "0.5rem" }}
+                      >
+                        {platform.Name}
+                      </h5>
+                      <p
+                        className="text-muted small mb-0"
+                        style={{
+                          color: "#cc0000 !important",
+                          fontWeight: "600",
+                        }}
+                      >
+                        {platform.StartYear && platform.EndYear
+                          ? `${platform.StartYear}-${platform.EndYear}`
+                          : "View products"}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

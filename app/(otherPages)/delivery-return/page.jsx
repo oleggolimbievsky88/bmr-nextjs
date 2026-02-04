@@ -2,61 +2,81 @@ import Footer1 from "@/components/footer/Footer";
 import Header18 from "@/components/header/Header18";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
+import Link from "next/link";
 import React from "react";
 
-export default function page() {
+export const metadata = {
+  title: "Delivery & Returns | BMR Suspension | Shipping & Return Policy",
+  description:
+    "BMR Suspension shipping options, delivery information, and return policy. Free shipping on qualifying orders. Contact us for support.",
+};
+
+export default function DeliveryReturnPage() {
   return (
     <>
       <Topbar4 />
       <Header18 showVehicleSearch={false} />
       <PageHeader title="DELIVERY & RETURN" />
-      <>
-        {/* main-page */}
-        <section className="flat-spacing-25">
-          <div className="container">
-            <div className="tf-main-area-page tf-page-delivery">
-              <div className="box">
-                <h4>Delivery</h4>
-                <ul className="tag-list">
-                  <li>All orders shipped with UPS Express.</li>
-                  <li>Always free shipping for orders over US $250.</li>
-                  <li>All orders are shipped with a UPS tracking number.</li>
-                </ul>
-              </div>
-              <div className="box">
-                <h4>Returns</h4>
-                <ul className="tag-list">
-                  <li>
-                    Items returned within 14 days of their original shipment
-                    date in same as new condition will be eligible for a full
-                    refund or store credit.
-                  </li>
-                  <li>
-                    Refunds will be charged back to the original form of payment
-                    used for purchase.
-                  </li>
-                  <li>
-                    Customer is responsible for shipping charges when making
-                    returns and shipping/handling fees of original purchase is
-                    non-refundable.t
-                  </li>
-                  <li>All sale items are final purchases.</li>
-                </ul>
-              </div>
-              <div className="box">
-                <h4>Help</h4>
-                <p>
-                  Give us a shout if you have any other questions and/or
-                  concerns.
-                </p>
-                <p className="text_black-2">Email: contact@domain.com</p>
-                <p className="text_black-2">Phone: +1 (23) 456 789</p>
+      <section className="flat-spacing-25 delivery-return-page">
+        <div className="container">
+          <div className="delivery-return-page__grid">
+            <div className="delivery-return-page__card">
+              <h2 className="delivery-return-page__title">
+                Shipping &amp; Delivery
+              </h2>
+              <ul className="delivery-return-page__list">
+                <li>
+                  We offer multiple shipping options at checkout so you can
+                  choose the speed and cost that works for you.
+                </li>
+                <li>
+                  Free shipping for qualifying orders over US $250 (lower 48
+                  states; exclusions may apply).
+                </li>
+                <li>
+                  All orders ship with tracking. You’ll receive tracking
+                  information once your order ships.
+                </li>
+              </ul>
+            </div>
+
+            <div className="delivery-return-page__card">
+              <h2 className="delivery-return-page__title">Returns</h2>
+              <ul className="delivery-return-page__list">
+                <li>
+                  Items returned within 14 days of the original shipment date in
+                  same-as-new condition are eligible for a full refund or store
+                  credit.
+                </li>
+                <li>
+                  Refunds are issued to the original form of payment used for
+                  purchase.
+                </li>
+                <li>
+                  The customer is responsible for return shipping costs.
+                  Original shipping and handling fees are non-refundable.
+                </li>
+                <li>All sale items are final sale.</li>
+              </ul>
+            </div>
+
+            <div className="delivery-return-page__card">
+              <h2 className="delivery-return-page__title">Need Help?</h2>
+              <p className="delivery-return-page__text">
+                Questions about your order, shipping, or returns? Get in touch
+                with the BMR team.
+              </p>
+              <div className="delivery-return-page__contact">
+                <Link href="mailto:sales@bmrsuspension.com">
+                  sales@bmrsuspension.com
+                </Link>
+                <a href="tel:8139869302">(813) 986-9302</a>
+                <Link href="/contact">Contact us</Link>
               </div>
             </div>
           </div>
-        </section>
-      </>
-
+        </div>
+      </section>
       <Footer1 />
     </>
   );

@@ -14,6 +14,7 @@ async function getSearchResults(searchQuery = "") {
     return {
       products: [],
       categories: [],
+      platforms: [],
       vehicles: [],
       brands: [],
     };
@@ -21,10 +22,11 @@ async function getSearchResults(searchQuery = "") {
 
   try {
     const results = await searchAllQuick(searchQuery.trim(), {
-      products: 50,
-      categories: 20,
-      vehicles: 20,
-      brands: 20,
+      products: 80,
+      categories: 25,
+      platforms: 15,
+      vehicles: 25,
+      brands: 15,
     });
     return results;
   } catch (error) {
@@ -32,6 +34,7 @@ async function getSearchResults(searchQuery = "") {
     return {
       products: [],
       categories: [],
+      platforms: [],
       vehicles: [],
       brands: [],
     };
@@ -53,10 +56,11 @@ export default async function page({ searchParams }) {
   const searchQuery = params?.q || "";
   const groupedResults = await getSearchResults(searchQuery);
   const totalResults =
-    groupedResults.products.length +
-    groupedResults.categories.length +
-    groupedResults.vehicles.length +
-    groupedResults.brands.length;
+    (groupedResults.products?.length || 0) +
+    (groupedResults.categories?.length || 0) +
+    (groupedResults.platforms?.length || 0) +
+    (groupedResults.vehicles?.length || 0) +
+    (groupedResults.brands?.length || 0);
 
   return (
     <>

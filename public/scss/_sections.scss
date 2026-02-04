@@ -1858,6 +1858,97 @@
         margin-bottom: 10px;
     }
 }
+
+/* Delivery & Return page - modern, mobile-friendly */
+.delivery-return-page {
+    --dr-spacing: 1.5rem;
+    --dr-radius: 12px;
+    --dr-card-bg: #fff;
+    --dr-text: #374151;
+    --dr-text-muted: #6b7280;
+    --dr-accent: var(--main, #c8102e);
+    padding: clamp(1.5rem, 4vw, 2.5rem) 0;
+
+    .delivery-return-page__grid {
+        display: grid;
+        gap: clamp(1.25rem, 3vw, 2rem);
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .delivery-return-page__card {
+        background: var(--dr-card-bg);
+        border-radius: var(--dr-radius);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .delivery-return-page__title {
+        font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+        font-weight: 600;
+        color: var(--dr-accent);
+        margin: 0 0 var(--dr-spacing);
+        letter-spacing: 0.02em;
+    }
+
+    .delivery-return-page__list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .delivery-return-page__list li {
+        position: relative;
+        padding-left: 1.25rem;
+        font-size: clamp(0.9375rem, 1.5vw, 1rem);
+        line-height: 1.5;
+        color: var(--dr-text);
+    }
+
+    .delivery-return-page__list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.5em;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--dr-accent);
+    }
+
+    .delivery-return-page__text {
+        font-size: clamp(0.9375rem, 1.5vw, 1rem);
+        line-height: 1.6;
+        color: var(--dr-text);
+        margin: 0 0 0.75rem;
+    }
+
+    .delivery-return-page__text:last-child {
+        margin-bottom: 0;
+    }
+
+    .delivery-return-page__contact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .delivery-return-page__contact a {
+        color: var(--dr-accent);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .delivery-return-page__contact a:hover {
+        text-decoration: underline;
+    }
+}
+
 .tf-terms-conditions{
     .box{
         &:not(:last-child){
