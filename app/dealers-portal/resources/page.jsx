@@ -45,8 +45,9 @@ export default function DealersPortalResourcesPage() {
         Installation instructions, Hi-Res images, price lists, and new product
         info.
       </p>
-      //TODO: Add files to public/dealer-resources/ and list them in
-      data/dealer-resources.js.
+      {/* TODO: Add files to public/dealer-resources/ and list them in
+      data/dealer-resources.js. */}
+
       {error && (
         <div className="alert alert-danger mb-3" role="alert">
           {error}
