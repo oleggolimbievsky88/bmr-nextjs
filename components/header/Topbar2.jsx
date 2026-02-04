@@ -20,8 +20,8 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
         const list = Array.isArray(data.messages) ? data.messages : [];
         setMessages(
           list.filter(
-            (m) => m && m.content != null && String(m.content).trim() !== "",
-          ),
+            (m) => m && m.content != null && String(m.content).trim() !== ""
+          )
         );
       })
       .catch(() => setMessages([]));
@@ -65,11 +65,11 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
               speed={1000}
               autoplay={{ delay: getDelay(0) }}
               onSlideChangeTransitionEnd={onSlideChange}
-              loop
+              loop={slides.length > 1}
             >
               {slides.map((m, i) => (
                 <SwiperSlide key={i} className="swiper-slide">
-                  <p
+                  <div
                     className="top-bar-text fw-5 text_white"
                     dangerouslySetInnerHTML={{
                       __html: m.content || DEFAULT_MESSAGE,

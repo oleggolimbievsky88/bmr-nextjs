@@ -929,6 +929,9 @@ export default function Checkout() {
           notes: orderNotes,
           customerId:
             session?.user?.id != null ? parseInt(session.user.id, 10) : null,
+          isDealer: !!(
+            session?.user && ["dealer", "admin"].includes(session.user.role)
+          ),
           paymentMethod: "Credit Card",
           ccPaymentToken: null,
           ccLastFour: lastFourDigits || null,
@@ -1165,32 +1168,7 @@ export default function Checkout() {
         JSON.stringify(confirmationData)
       );
 
-      // Automatically send receipt email
-      try {
-        const emailResponse = await fetch("/api/send-receipt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: billingData.email,
-            orderId: orderId,
-            orderData: confirmationData,
-          }),
-        });
-
-        const emailResult = await emailResponse.json();
-        if (emailResponse.ok) {
-          console.log("Receipt email sent successfully:", emailResult);
-        } else {
-          console.error("Failed to send receipt email:", emailResult);
-          // Don't block the order process if email fails
-        }
-      } catch (emailError) {
-        console.error("Failed to send receipt email:", emailError);
-        // Don't block the order process if email fails
-      }
-
+      // Single confirmation email is sent by api/orders when order is created
       // Redirect to confirmation page
       window.location.href = `/confirmation?orderId=${orderId}`;
     } catch (error) {

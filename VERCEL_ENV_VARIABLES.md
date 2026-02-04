@@ -36,6 +36,17 @@ SMTP_FROM=noreply@bmrsuspension.com
 SMTP_FROM_NAME=BMR Suspension
 ```
 
+## PayPal (for checkout)
+
+```
+PAYPAL_CLIENT_ID=your-paypal-client-id
+PAYPAL_CLIENT_SECRET=your-paypal-secret
+PAYPAL_SANDBOX=false
+```
+
+- Set `PAYPAL_SANDBOX=true` only for sandbox/testing. Use `false` or leave unset for live payments.
+- **Production:** ensure these are set for the **Production** environment in Vercel (not only Preview).
+
 ## Optional OAuth Variables (if using Google/Facebook login)
 
 ```

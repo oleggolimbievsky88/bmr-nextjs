@@ -47,6 +47,18 @@ PAYPAL_CLIENT_SECRET=your_secret_here
 
 Never commit the Secret to git; use env vars only.
 
+**Sandbox vs Live:** set `PAYPAL_SANDBOX=true` when using **Sandbox** credentials; leave unset or `false` for **Live**.
+
+### Vercel production
+
+If PayPal works locally but fails in production on Vercel with "PayPal authentication failed":
+
+1. **Environment scope** – In Vercel → Settings → Environment Variables, ensure `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `PAYPAL_SANDBOX` are enabled for **Production** (not only Preview or Development).
+2. **No spaces** – When pasting values, avoid leading/trailing spaces (the app trims them, but double-check).
+3. **Sandbox vs Live** – Production should use **Live** credentials and `PAYPAL_SANDBOX` unset or `false`. If you use Sandbox in production for testing, set `PAYPAL_SANDBOX=true`.
+4. **Redeploy** – After changing env vars, trigger a new deployment so the runtime picks them up.
+5. **Logs** – In Vercel → Deployments → your deployment → Functions → select the failing request and check logs for "PayPal OAuth token failed:" to see the HTTP status and PayPal’s response.
+
 ---
 
 ## 4. Complete the Create-Order API (Backend)

@@ -3,7 +3,9 @@ import pool from "@/lib/db";
 import { SITE_URL } from "@/lib/site-url";
 
 const PAYPAL_BASE =
-  process.env.PAYPAL_SANDBOX === "true"
+  String(process.env.PAYPAL_SANDBOX || "")
+    .trim()
+    .toLowerCase() === "true"
     ? "https://api-m.sandbox.paypal.com"
     : "https://api-m.paypal.com";
 
@@ -25,6 +27,12 @@ async function getPayPalAccessToken(clientId, clientSecret) {
   });
   if (!res.ok) {
     const err = await res.text();
+    // Log safe hint for Vercel (no credentials)
+    console.error(
+      "PayPal OAuth token failed:",
+      res.status,
+      err?.slice?.(0, 200) || err
+    );
     throw new Error(`PayPal token failed: ${res.status} ${err}`);
   }
   const data = await res.json();
@@ -38,8 +46,10 @@ async function getPayPalAccessToken(clientId, clientSecret) {
  */
 export async function POST(request) {
   try {
-    const clientId = process.env.PAYPAL_CLIENT_ID;
-    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+    // Trim to avoid auth failures from accidental whitespace in Vercel env vars
+    const clientId = (process.env.PAYPAL_CLIENT_ID || "").trim() || null;
+    const clientSecret =
+      (process.env.PAYPAL_CLIENT_SECRET || "").trim() || null;
 
     if (!clientId || !clientSecret) {
       return jsonError(
@@ -188,7 +198,7 @@ export async function POST(request) {
       "PayPal checkout failed. Please try again or use another payment method.";
     if (msg.includes("token") || msg.includes("oauth") || /401|403/.test(msg)) {
       userMessage =
-        "PayPal authentication failed. Check PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and PAYPAL_SANDBOX in Vercel environment variables.";
+        "PayPal authentication failed. On Vercel: ensure PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET are set for Production (not only Preview), have no leading/trailing spaces, and PAYPAL_SANDBOX matches your credentials (true=sandbox, false/unset=live). Check Vercel logs for the PayPal OAuth response.";
     } else if (
       /ECONNREFUSED|ETIMEDOUT|connect|ER_|MySQL|ECONNRESET/.test(msg)
     ) {

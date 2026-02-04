@@ -68,7 +68,7 @@ export default function Topbar4() {
             </div>
             <div className="text-center overflow-hidden">
               {slides.length === 1 ? (
-                <p
+                <div
                   className="top-bar-text fw-5 mb-0"
                   style={{ letterSpacing: "0px" }}
                   dangerouslySetInnerHTML={{
@@ -88,7 +88,7 @@ export default function Topbar4() {
                 >
                   {slides.map((m, i) => (
                     <SwiperSlide key={i} className="swiper-slide">
-                      <p
+                      <div
                         className="top-bar-text fw-5"
                         style={{ letterSpacing: "0px" }}
                         dangerouslySetInnerHTML={{

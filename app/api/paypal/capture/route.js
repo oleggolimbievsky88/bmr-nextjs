@@ -3,13 +3,15 @@ import pool from "@/lib/db";
 import { SITE_URL } from "@/lib/site-url";
 
 const PAYPAL_BASE =
-  process.env.PAYPAL_SANDBOX === "true"
+  String(process.env.PAYPAL_SANDBOX || "")
+    .trim()
+    .toLowerCase() === "true"
     ? "https://api-m.sandbox.paypal.com"
     : "https://api-m.paypal.com";
 
 async function getPayPalAccessToken() {
-  const clientId = process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  const clientId = (process.env.PAYPAL_CLIENT_ID || "").trim() || null;
+  const clientSecret = (process.env.PAYPAL_CLIENT_SECRET || "").trim() || null;
   if (!clientId || !clientSecret) {
     throw new Error("PayPal not configured");
   }

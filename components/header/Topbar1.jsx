@@ -20,8 +20,8 @@ export default function Topbar1() {
         const list = Array.isArray(data.messages) ? data.messages : [];
         setMessages(
           list.filter(
-            (m) => m && m.content != null && String(m.content).trim() !== "",
-          ),
+            (m) => m && m.content != null && String(m.content).trim() !== ""
+          )
         );
       })
       .catch(() => setMessages([]));
@@ -111,11 +111,11 @@ export default function Topbar1() {
               speed={1000}
               autoplay={{ delay: getDelay(0) }}
               onSlideChangeTransitionEnd={onSlideChange}
-              loop
+              loop={slides.length > 1}
             >
               {slides.map((m, i) => (
                 <SwiperSlide key={i} className="swiper-slide">
-                  <p
+                  <div
                     className="top-bar-text fw-5"
                     dangerouslySetInnerHTML={{
                       __html: m.content || DEFAULT_MESSAGE,
