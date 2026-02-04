@@ -7,6 +7,12 @@ const PAYPAL_BASE =
     ? "https://api-m.sandbox.paypal.com"
     : "https://api-m.paypal.com";
 
+const isDev = process.env.NODE_ENV === "development";
+
+function jsonError(message, status = 500, extra = {}) {
+  return NextResponse.json({ message, ...extra }, { status });
+}
+
 async function getPayPalAccessToken(clientId, clientSecret) {
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   const res = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
@@ -36,17 +42,19 @@ export async function POST(request) {
     const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-      return NextResponse.json(
-        {
-          message:
-            "PayPal is not configured. Add PAYPAL_CLIENT_ID and " +
-            "PAYPAL_CLIENT_SECRET to your environment. See PAYPAL_SETUP.md.",
-        },
-        { status: 501 }
+      return jsonError(
+        "PayPal is not configured. Add PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET to your environment. See PAYPAL_SETUP.md.",
+        501
       );
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseErr) {
+      console.error("PayPal create-order: invalid JSON body", parseErr);
+      return jsonError("Invalid request body.");
+    }
     const {
       billing,
       shipping,
@@ -64,10 +72,7 @@ export async function POST(request) {
     } = body;
 
     if (!billing || !shipping || !items || items.length === 0) {
-      return NextResponse.json(
-        { message: "Missing required order data" },
-        { status: 400 }
-      );
+      return jsonError("Missing required order data", 400);
     }
 
     const totalValue =
@@ -106,22 +111,25 @@ export async function POST(request) {
     if (!createRes.ok) {
       const errText = await createRes.text();
       console.error("PayPal create order failed:", createRes.status, errText);
-      return NextResponse.json(
-        { message: "PayPal could not create order. Please try again." },
-        { status: 502 }
-      );
+      return jsonError("PayPal could not create order. Please try again.", 502);
     }
 
-    const orderData = await createRes.json();
+    let orderData;
+    try {
+      orderData = await createRes.json();
+    } catch (parseErr) {
+      console.error(
+        "PayPal create-order: invalid create response JSON",
+        parseErr
+      );
+      return jsonError("PayPal checkout failed. Please try again.");
+    }
     const paypalOrderId = orderData.id;
     const approveLink = orderData.links?.find((l) => l.rel === "approve")?.href;
 
     if (!approveLink) {
       console.error("PayPal response missing approve link:", orderData);
-      return NextResponse.json(
-        { message: "PayPal checkout configuration error." },
-        { status: 502 }
-      );
+      return jsonError("PayPal checkout configuration error.", 502);
     }
 
     // Store payload for capture (ensure table exists)
@@ -153,19 +161,40 @@ export async function POST(request) {
         [paypalOrderId, JSON.stringify(payload)]
       );
     } catch (dbErr) {
-      console.error("Failed to store PayPal pending order:", dbErr);
-      return NextResponse.json(
-        { message: "Could not save checkout session. Please try again." },
-        { status: 500 }
+      console.error("PayPal create-order: DB error", {
+        message: dbErr.message,
+        code: dbErr.code,
+        errno: dbErr.errno,
+      });
+      return jsonError(
+        "Could not save checkout session. Please try again.",
+        500,
+        isDev
+          ? {
+              hint: "Check DB connectivity and MYSQL_* env on Vercel.",
+              detail: dbErr.message,
+            }
+          : {}
       );
     }
 
     return NextResponse.json({ approvalUrl: approveLink });
   } catch (err) {
-    console.error("PayPal create-order error:", err);
-    return NextResponse.json(
-      { message: err.message || "PayPal checkout failed" },
-      { status: 500 }
+    console.error(
+      "PayPal create-order error:",
+      err?.message || err,
+      err?.stack
+    );
+    const safeMessage =
+      err?.message &&
+      !err.message.includes("token") &&
+      !err.message.includes("PAYPAL_")
+        ? err.message
+        : "PayPal checkout failed. Please try again or use another payment method.";
+    return jsonError(
+      safeMessage,
+      500,
+      isDev ? { detail: err?.message, stack: err?.stack } : {}
     );
   }
 }

@@ -81,12 +81,12 @@ The route `app/api/paypal/create-order/route.js` is a stub. To finish PayPal che
 
 ## 5. Payment Rules (Already Implemented)
 
-- **`lib/paymentRules.js`**  
-  - `mustUsePayPal(country)` – `true` when the shipping country is **not** US or Canada.  
+- **`lib/paymentRules.js`**
+  - `mustUsePayPal(country)` – `true` when the shipping country is **not** US or Canada.
   - `canUseCreditCard(country)` – `true` only for US and Canada.
 
-- **Checkout**  
-  - If the shipping country is outside US & Canada, only the **PayPal** option is shown and the customer must pay with PayPal.  
+- **Checkout**
+  - If the shipping country is outside US & Canada, only the **PayPal** option is shown and the customer must pay with PayPal.
   - If the shipping country is US or Canada, the customer can choose **Credit card** or **PayPal**.
 
 ---
@@ -106,3 +106,28 @@ The route `app/api/paypal/create-order/route.js` is a stub. To finish PayPal che
 - Ensure return/cancel URLs use your live domain (e.g. `https://yourdomain.com/checkout/paypal/return`).
 
 For full API reference and samples, see: [PayPal Orders v2](https://developer.paypal.com/docs/api/orders/v2/).
+
+---
+
+## 8. PayPal on Vercel (Production 500 errors)
+
+If `/api/paypal/create-order` returns **500** on Vercel:
+
+1. **Environment variables**
+   In Vercel → Project → **Settings → Environment Variables**, set for Production (and Preview if needed):
+   - `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` (Live credentials for production).
+   - `PAYPAL_SANDBOX=true` only for sandbox/testing; leave unset or `false` for live.
+   - `NEXT_PUBLIC_SITE_URL` or `VERCEL_URL` so return/cancel URLs are correct (e.g. `https://dev.bmrsuspension.com`).
+
+2. **Database**
+   The route stores the pending order in MySQL (`paypal_pending_orders`). Ensure:
+   - `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE` are set in Vercel.
+   - If your DB requires SSL, set `MYSQL_SSL=true`.
+   - The database must be reachable from Vercel (e.g. not bound to localhost; allow Vercel’s outbound IPs or use a cloud DB with public access).
+
+3. **Logs**
+   In Vercel → **Deployments** → select a deployment → **Functions** → open the log for the failing request. You’ll see either:
+   - `PayPal create-order: DB error` → fix DB connectivity or env.
+   - `PayPal create-order error:` / `PayPal token failed` → fix PayPal credentials or network.
+
+After fixing env or DB, redeploy so the new variables are applied.

@@ -663,7 +663,7 @@ export default function Checkout() {
             notes: orderNotes,
           }),
         });
-        const data = res.ok ? await res.json().catch(() => ({})) : {};
+        const data = await res.json().catch(() => ({}));
         if (res.ok && data.approvalUrl) {
           window.location.href = data.approvalUrl;
           return;
