@@ -84,10 +84,22 @@ export default function CategoryPage({ params }) {
         const decodedCategory = decodeURIComponent(category);
         const sanitizedCategorySlug = sanitizeSlug(decodedCategory);
         const currentCat = subcatData.categories?.find((cat) => {
-          const dbSlug = cat.CatSlug || cat.slug || cat.CatNameSlug;
-          return sanitizeSlug(dbSlug) === sanitizedCategorySlug;
+          const dbSlug = cat.CatSlug ?? cat.slug ?? cat.CatNameSlug ?? "";
+          const nameSlug = (cat.CatName ?? cat.name ?? "")
+            .toString()
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^\w-]/g, "");
+          return (
+            sanitizeSlug(dbSlug) === sanitizedCategorySlug ||
+            sanitizeSlug(nameSlug) === sanitizedCategorySlug ||
+            nameSlug === sanitizedCategorySlug
+          );
         });
-        if (!currentCat) throw new Error("Category not found");
+        if (!currentCat)
+          throw new Error(
+            `Category not found for slug "${decodedCategory}". Check the URL or try the main category.`
+          );
         setCurrentCategory(currentCat);
 
         // 4. Fetch products for this category by slug (API resolves all category IDs with this slug, so duplicates show combined products)

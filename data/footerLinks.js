@@ -10,6 +10,7 @@ export const aboutLinks = [
   { href: "/contact", text: "Contact Us" },
   { href: "/about-us", text: "About Us" },
   { href: "/login", text: "Account" },
+  { href: "/dealers-portal", text: "Dealer Portal" },
 ];
 
 export const paymentImages = [

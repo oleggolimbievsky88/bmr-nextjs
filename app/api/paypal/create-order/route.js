@@ -180,21 +180,32 @@ export async function POST(request) {
 
     return NextResponse.json({ approvalUrl: approveLink });
   } catch (err) {
-    console.error(
-      "PayPal create-order error:",
-      err?.message || err,
-      err?.stack
-    );
-    const safeMessage =
-      err?.message &&
-      !err.message.includes("token") &&
-      !err.message.includes("PAYPAL_")
-        ? err.message
-        : "PayPal checkout failed. Please try again or use another payment method.";
+    const msg = err?.message || String(err);
+    console.error("PayPal create-order error:", msg, err?.stack);
+
+    // User-facing message: give a hint without exposing secrets
+    let userMessage =
+      "PayPal checkout failed. Please try again or use another payment method.";
+    if (msg.includes("token") || msg.includes("oauth") || /401|403/.test(msg)) {
+      userMessage =
+        "PayPal authentication failed. Check PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and PAYPAL_SANDBOX in Vercel environment variables.";
+    } else if (
+      /ECONNREFUSED|ETIMEDOUT|connect|ER_|MySQL|ECONNRESET/.test(msg)
+    ) {
+      userMessage =
+        "Database connection error. Check MYSQL_* env vars in Vercel and that the database is reachable from the server.";
+    } else if (
+      msg &&
+      !msg.includes("PAYPAL_") &&
+      !/client.?credentials|secret/i.test(msg)
+    ) {
+      userMessage = msg;
+    }
+
     return jsonError(
-      safeMessage,
+      userMessage,
       500,
-      isDev ? { detail: err?.message, stack: err?.stack } : {}
+      isDev ? { detail: msg, stack: err?.stack } : {}
     );
   }
 }
