@@ -31,7 +31,7 @@ export default function PrintOrderReceipt() {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/admin/orders?orderId=${params.orderId}`,
+        `/api/admin/orders?orderId=${params.orderId}`
       );
       const data = await response.json();
 
@@ -273,12 +273,14 @@ export default function PrintOrderReceipt() {
               {order.free_shipping && order.coupon_code
                 ? `Free Shipping (Coupon: ${order.coupon_code})`
                 : order.free_shipping
-                  ? "Free Shipping"
-                  : (order.shipping_method || "—")}
+                ? "Free Shipping"
+                : order.shipping_method || "—"}
             </p>
             {order.free_shipping ? (
               <p className="mb-0">
-                <strong>{order.coupon_code ? "Free (Coupon)" : "Free Shipping"}</strong>
+                <strong>
+                  {order.coupon_code ? "Free (Coupon)" : "Free Shipping"}
+                </strong>
               </p>
             ) : (
               <p className="mb-0">
@@ -296,33 +298,42 @@ export default function PrintOrderReceipt() {
             {(order.payment_method ||
               order.cc_last_four ||
               order.cc_type ||
-              order.cc_payment_token) && (
+              order.cc_payment_token ||
+              order.paypal_email) && (
               <>
                 <h5 className="mb-2">Payment</h5>
                 {order.payment_method && (
                   <p className="mb-1">
                     <strong>Payment Method:</strong> {order.payment_method}
+                    {order.payment_method === "PayPal" &&
+                      order.paypal_email && (
+                        <span> ({order.paypal_email})</span>
+                      )}
                   </p>
                 )}
-                <p className="mb-1">
-                  <strong>Card:</strong>{" "}
-                  {order.cc_type ? <span>{order.cc_type} </span> : null}
-                  {order.cc_last_four ? (
-                    <span>****{order.cc_last_four}</span>
-                  ) : (
-                    <span>••••</span>
-                  )}
-                </p>
-                {order.cc_exp_month && order.cc_exp_year && (
-                  <p className="mb-1">
-                    <strong>Exp:</strong> {order.cc_exp_month}/
-                    {String(order.cc_exp_year).slice(-2)}
-                  </p>
-                )}
-                {order.cc_payment_token && !order.cc_last_four && (
-                  <p className="mb-0">
-                    <strong>Payment:</strong> Card on file
-                  </p>
+                {order.payment_method !== "PayPal" && (
+                  <>
+                    <p className="mb-1">
+                      <strong>Card:</strong>{" "}
+                      {order.cc_type ? <span>{order.cc_type} </span> : null}
+                      {order.cc_last_four ? (
+                        <span>****{order.cc_last_four}</span>
+                      ) : (
+                        <span>••••</span>
+                      )}
+                    </p>
+                    {order.cc_exp_month && order.cc_exp_year && (
+                      <p className="mb-1">
+                        <strong>Exp:</strong> {order.cc_exp_month}/
+                        {String(order.cc_exp_year).slice(-2)}
+                      </p>
+                    )}
+                    {order.cc_payment_token && !order.cc_last_four && (
+                      <p className="mb-0">
+                        <strong>Payment:</strong> Card on file
+                      </p>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -349,7 +360,7 @@ export default function PrintOrderReceipt() {
                     {item.color != null && String(item.color).trim() !== "" && (
                       <span
                         className={`admin-color-badge admin-color-badge--${getColorBadgeClass(
-                          item.color,
+                          item.color
                         ).replace("color-", "")}`}
                       >
                         {item.color}
@@ -379,7 +390,7 @@ export default function PrintOrderReceipt() {
                       order.total -
                         (parseFloat(order.shipping_cost) || 0) -
                         (parseFloat(order.tax) || 0) +
-                        (parseFloat(order.discount) || 0),
+                        (parseFloat(order.discount) || 0)
                     )}
                   </span>
                 </div>
@@ -392,12 +403,15 @@ export default function PrintOrderReceipt() {
                   </div>
                 )}
                 <div className="d-flex justify-content-between mb-2">
-                  <span>Shipping ({order.free_shipping && order.coupon_code
-                    ? `Free Shipping (Coupon: ${order.coupon_code})`
-                    : order.free_shipping
+                  <span>
+                    Shipping (
+                    {order.free_shipping && order.coupon_code
+                      ? `Free Shipping (Coupon: ${order.coupon_code})`
+                      : order.free_shipping
                       ? "Free Shipping"
-                      : (order.shipping_method || "—")}
-                    {order.free_shipping ? ", Free" : ""}):</span>
+                      : order.shipping_method || "—"}
+                    {order.free_shipping ? ", Free" : ""}):
+                  </span>
                   <span>
                     {order.free_shipping
                       ? "$0.00"

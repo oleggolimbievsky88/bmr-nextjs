@@ -3,13 +3,11 @@ export const dynamic = "force-dynamic";
 import pool from "@/lib/db";
 import { NextResponse } from "next/server";
 import {
-  getFilteredProducts,
-  getNewProducts,
   getFilteredProductsPaginated,
   getPlatformBySlug,
   getPlatformById,
   getMainCategoryIdBySlugAndPlatform,
-  getCategoryIdBySlugAndMainCat,
+  getCategoryIdsBySlugAndMainCat,
 } from "@/lib/queries";
 
 export async function GET(request) {
@@ -76,13 +74,27 @@ export async function GET(request) {
   console.log("mainCategory", mainCategory);
   console.log("platform", platform);
 
-  // Get categoryId if category slug is provided
+  // Get categoryId(s) if category slug is provided (can be multiple when slug is duplicated)
   if (!categoryId && category && mainCategoryId) {
-    categoryId = await getCategoryIdBySlugAndMainCat(mainCategoryId, category);
+    const categoryIds = await getCategoryIdsBySlugAndMainCat(
+      mainCategoryId,
+      category
+    );
+    categoryId =
+      categoryIds.length === 1
+        ? categoryIds[0]
+        : categoryIds.length > 1
+        ? categoryIds
+        : null;
   }
 
   // If we have a specific category (either by ID or slug), don't use mainCategoryId
-  if (categoryId || category) {
+  const hasCategoryFilter =
+    (categoryId != null &&
+      categoryId !== "" &&
+      (Array.isArray(categoryId) ? categoryId.length > 0 : true)) ||
+    category;
+  if (hasCategoryFilter) {
     mainCategoryId = null;
   }
 

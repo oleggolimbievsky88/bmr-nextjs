@@ -33,5 +33,10 @@ export const dealerResources = [
   // { categoryId: "installation", title: "Sway Bar Install Guide", fileUrl: "/dealer-resources/install-sway-bar.pdf", description: "Step-by-step sway bar installation" },
   // { categoryId: "images", title: "Product Line Hi-Res Images", fileUrl: "/dealer-resources/product-images.zip", description: "ZIP of Hi-Res product images" },
   // { categoryId: "pricelists", title: "Dealer Price List", fileUrl: "/dealer-resources/price-list.pdf", description: "Current dealer pricing" },
-  // { categoryId: "new-products", title: "New Product Info", fileUrl: "/dealer-resources/new-products.pdf", description: "New product release info" },
+  {
+    categoryId: "new-products",
+    title: "New Product Info",
+    fileUrl: "/dealer-resources/new-products.zip",
+    description: "New product release info",
+  },
 ];

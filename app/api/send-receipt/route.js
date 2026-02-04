@@ -8,7 +8,7 @@ export async function POST(request) {
     if (!email || !orderId || !orderData) {
       return NextResponse.json(
         { message: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request) {
             "Email service not configured. Please set SMTP environment variables.",
           error: "SMTP configuration missing",
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(request) {
             "Email service configuration error. Please check your SMTP settings.",
           error: verifyError.message,
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -96,7 +96,7 @@ export async function POST(request) {
         message: "Failed to send receipt",
         error: error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -478,12 +478,37 @@ function generateReceiptHTML(orderData) {
                   <h5>Payment Information</h5>
                   <div class="payment-info">
                     <div>
-                      <span>💳</span>
-                      <span>Card ending in ${orderData.cardLastFour}</span>
+                      <span>${
+                        orderData.paymentMethod === "PayPal" &&
+                        orderData.paypalEmail
+                          ? "🅿️"
+                          : "💳"
+                      }</span>
+                      <span>${
+                        orderData.paymentMethod === "PayPal" &&
+                        orderData.paypalEmail
+                          ? `PayPal (${orderData.paypalEmail})`
+                          : `${orderData.cardType || "Card"} ending in ${
+                              orderData.cardLastFour || "••••"
+                            }`
+                      }</span>
                     </div>
                     <div>
                       <span>🚚</span>
-                      <span>${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) && orderData.couponCode ? `Free Shipping (Coupon: ${orderData.couponCode})` : (orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? "Free Shipping" : (orderData.shippingMethod || "—")}${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? "" : ` — $${parseFloat(orderData.shippingCost || 0).toFixed(2)}`}</span>
+                      <span>${
+                        (orderData.freeShipping ||
+                          parseFloat(orderData.shippingCost || 0) === 0) &&
+                        orderData.couponCode
+                          ? `Standard Free Shipping (from coupon: ${orderData.couponCode})`
+                          : orderData.freeShipping ||
+                            parseFloat(orderData.shippingCost || 0) === 0
+                          ? "Standard Free Shipping"
+                          : orderData.shippingMethod || "—"
+                      }${
+    orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0
+      ? ""
+      : ` — $${parseFloat(orderData.shippingCost || 0).toFixed(2)}`
+  }</span>
                     </div>
                     ${
                       orderData.couponCode
@@ -541,7 +566,7 @@ function generateReceiptHTML(orderData) {
                       }</code></td>
                       <td>
                         <span class="color-badge ${getEmailColorClass(
-                          item.color,
+                          item.color
                         )}">${
                         item.color != null && String(item.color).trim() !== ""
                           ? item.color
@@ -550,13 +575,13 @@ function generateReceiptHTML(orderData) {
                       </td>
                       <td>${item.quantity}</td>
                       <td class="text-end">$${parseFloat(item.price).toFixed(
-                        2,
+                        2
                       )}</td>
                       <td class="text-end" style="font-weight: bold;">$${(
                         parseFloat(item.price) * item.quantity
                       ).toFixed(2)}</td>
                     </tr>
-                  `,
+                  `
                     )
                     .join("")}
                 </tbody>
@@ -583,8 +608,20 @@ function generateReceiptHTML(orderData) {
                     : ""
                 }
                 <div class="total-row">
-                  <span>Shipping${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? (orderData.couponCode ? ` (Free, Coupon: ${orderData.couponCode})` : " (Free)") : ""}:</span>
-                  <span>$${(orderData.freeShipping || parseFloat(orderData.shippingCost || 0) === 0) ? "0.00" : parseFloat(orderData.shippingCost || 0).toFixed(2)}</span>
+                  <span>Shipping${
+                    orderData.freeShipping ||
+                    parseFloat(orderData.shippingCost || 0) === 0
+                      ? orderData.couponCode
+                        ? ` (Standard Free Shipping, from coupon: ${orderData.couponCode})`
+                        : " (Standard Free Shipping)"
+                      : ""
+                  }:</span>
+                  <span>$${
+                    orderData.freeShipping ||
+                    parseFloat(orderData.shippingCost || 0) === 0
+                      ? "0.00"
+                      : parseFloat(orderData.shippingCost || 0).toFixed(2)
+                  }</span>
                 </div>
                 <div class="total-row">
                   <span>Tax:</span>

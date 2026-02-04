@@ -2,6 +2,7 @@ import React from "react";
 
 export default function PageHeader({ title, subtitle = null }) {
   if (!title) return null;
+  if (title === "ABOUT BMR") return null;
 
   // Use the same banner image as installation page or fallback
   const imageUrl = `/images/slider/S650 Mustang_Banner.jpg`;

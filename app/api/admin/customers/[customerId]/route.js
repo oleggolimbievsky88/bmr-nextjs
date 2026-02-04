@@ -5,7 +5,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
-  updateCustomerAdmin,
+  updateCustomerRoleAndTierAdmin,
+  updateCustomerProfileAdmin,
   getCustomerProfileByIdAdmin,
 } from "@/lib/queries";
 
@@ -38,9 +39,23 @@ export async function GET(request, { params }) {
         firstname: customer.firstname,
         lastname: customer.lastname,
         email: customer.email,
+        phonenumber: customer.phonenumber,
+        address1: customer.address1,
+        address2: customer.address2,
+        city: customer.city,
+        state: customer.state,
+        zip: customer.zip,
+        country: customer.country,
+        shippingfirstname: customer.shippingfirstname,
+        shippinglastname: customer.shippinglastname,
+        shippingaddress1: customer.shippingaddress1,
+        shippingaddress2: customer.shippingaddress2,
+        shippingcity: customer.shippingcity,
+        shippingstate: customer.shippingstate,
+        shippingzip: customer.shippingzip,
+        shippingcountry: customer.shippingcountry,
         role: customer.role,
         dealerTier: customer.dealerTier,
-        dealerDiscount: customer.dealerDiscount,
         datecreated: customer.createdAt || customer.datecreated,
       },
     });
@@ -63,13 +78,33 @@ export async function PATCH(request, { params }) {
 
     const { customerId } = await params;
     const body = await request.json();
-    const { role, dealerDiscount, dealerTier } = body;
+    const {
+      role,
+      dealerTier,
+      firstname,
+      lastname,
+      email,
+      phonenumber,
+      address1,
+      address2,
+      city,
+      state,
+      zip,
+      country,
+      shippingfirstname,
+      shippinglastname,
+      shippingaddress1,
+      shippingaddress2,
+      shippingcity,
+      shippingstate,
+      shippingzip,
+      shippingcountry,
+    } = body;
 
     if (!role) {
       return NextResponse.json({ error: "Role is required" }, { status: 400 });
     }
 
-    // Valid roles
     const validRoles = ["customer", "admin", "vendor", "dealer"];
     if (!validRoles.includes(role)) {
       return NextResponse.json(
@@ -78,7 +113,6 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Validate tier (0 = non-dealer, 1-8 = dealer tiers)
     if (dealerTier !== null && dealerTier !== undefined) {
       const tier = parseInt(dealerTier);
       if (isNaN(tier) || tier < 0 || tier > 8) {
@@ -89,24 +123,43 @@ export async function PATCH(request, { params }) {
       }
     }
 
-    // Validate discount (0-100)
-    if (dealerDiscount !== null && dealerDiscount !== undefined) {
-      const discount = parseFloat(dealerDiscount);
-      if (isNaN(discount) || discount < 0 || discount > 100) {
+    try {
+      await updateCustomerProfileAdmin(customerId, {
+        firstname,
+        lastname,
+        email,
+        phonenumber,
+        address1,
+        address2,
+        city,
+        state,
+        zip,
+        country,
+        shippingfirstname,
+        shippinglastname,
+        shippingaddress1,
+        shippingaddress2,
+        shippingcity,
+        shippingstate,
+        shippingzip,
+        shippingcountry,
+      });
+    } catch (profileError) {
+      if (profileError?.code === "EMAIL_EXISTS") {
         return NextResponse.json(
-          { error: "Dealer discount must be between 0 and 100" },
+          { error: "That email is already in use by another customer." },
           { status: 400 }
         );
       }
+      throw profileError;
     }
 
-    const updated = await updateCustomerAdmin(customerId, {
+    const roleUpdated = await updateCustomerRoleAndTierAdmin(customerId, {
       role,
-      dealerDiscount: dealerDiscount || 0,
-      dealerTier: dealerTier || 0,
+      dealerTier: dealerTier ?? 0,
     });
 
-    if (!updated) {
+    if (!roleUpdated) {
       return NextResponse.json(
         { error: "Customer not found" },
         { status: 404 }
@@ -120,7 +173,7 @@ export async function PATCH(request, { params }) {
   } catch (error) {
     console.error("Error updating customer:", error);
     return NextResponse.json(
-      { error: "Failed to update customer" },
+      { error: error.message || "Failed to update customer" },
       { status: 500 }
     );
   }

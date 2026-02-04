@@ -17,6 +17,18 @@ export default function DealersPortalPOViewPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dealerDiscountPercent, setDealerDiscountPercent] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/dealer/discount")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.discount != null) {
+          setDealerDiscountPercent(parseFloat(data.discount) || 0);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!poId) return;
@@ -66,6 +78,10 @@ export default function DealersPortalPOViewPage() {
     (sum, i) => sum + (parseFloat(i.unit_price) || 0) * (i.quantity || 1),
     0
   );
+  const discountPercent = dealerDiscountPercent;
+  const listSubtotal =
+    discountPercent > 0 ? subtotal / (1 - discountPercent / 100) : subtotal;
+  const discountAmount = listSubtotal - subtotal;
 
   return (
     <div className="my-account-content">
@@ -132,7 +148,20 @@ export default function DealersPortalPOViewPage() {
         </table>
       </div>
 
-      <div className="mb-4 fw-6">Subtotal: {formatPrice(subtotal)}</div>
+      <div className="mb-4">
+        {discountPercent > 0 ? (
+          <div className="d-flex flex-column gap-1 fw-6">
+            <div>Subtotal (before discount): {formatPrice(listSubtotal)}</div>
+            <div className="text-success small">
+              Dealer discount ({discountPercent}%): -
+              {formatPrice(discountAmount)}
+            </div>
+            <div>Total: {formatPrice(subtotal)}</div>
+          </div>
+        ) : (
+          <div className="fw-6">Subtotal: {formatPrice(subtotal)}</div>
+        )}
+      </div>
 
       {po.status === "sent" && (
         <div className="d-flex gap-2 flex-wrap">

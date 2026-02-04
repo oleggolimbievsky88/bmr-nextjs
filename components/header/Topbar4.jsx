@@ -20,8 +20,8 @@ export default function Topbar4() {
         const list = Array.isArray(data.messages) ? data.messages : [];
         setMessages(
           list.filter(
-            (m) => m && m.content != null && String(m.content).trim() !== "",
-          ),
+            (m) => m && m.content != null && String(m.content).trim() !== ""
+          )
         );
       })
       .catch(() => setMessages([]));
@@ -67,28 +67,38 @@ export default function Topbar4() {
               </div>
             </div>
             <div className="text-center overflow-hidden">
-              <Swiper
-                key={slides.length}
-                className="swiper tf-sw-top_bar"
-                slidesPerView={1}
-                modules={[Autoplay]}
-                speed={1000}
-                autoplay={{ delay: getDelay(0) }}
-                onSlideChangeTransitionEnd={onSlideChange}
-                loop
-              >
-                {slides.map((m, i) => (
-                  <SwiperSlide key={i} className="swiper-slide">
-                    <p
-                      className="top-bar-text fw-5"
-                      style={{ letterSpacing: "0px" }}
-                      dangerouslySetInnerHTML={{
-                        __html: m.content || DEFAULT_MESSAGE,
-                      }}
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+              {slides.length === 1 ? (
+                <p
+                  className="top-bar-text fw-5 mb-0"
+                  style={{ letterSpacing: "0px" }}
+                  dangerouslySetInnerHTML={{
+                    __html: slides[0].content || DEFAULT_MESSAGE,
+                  }}
+                />
+              ) : (
+                <Swiper
+                  key={`topbar-swiper-${slides.length}`}
+                  className="swiper tf-sw-top_bar"
+                  slidesPerView={1}
+                  modules={[Autoplay]}
+                  speed={1000}
+                  autoplay={{ delay: getDelay(0) }}
+                  onSlideChangeTransitionEnd={onSlideChange}
+                  loop={true}
+                >
+                  {slides.map((m, i) => (
+                    <SwiperSlide key={i} className="swiper-slide">
+                      <p
+                        className="top-bar-text fw-5"
+                        style={{ letterSpacing: "0px" }}
+                        dangerouslySetInnerHTML={{
+                          __html: m.content || DEFAULT_MESSAGE,
+                        }}
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              )}
             </div>
             <div className="top-bar-language tf-cur justify-content-end">
               <ul className="d-flex gap-20">

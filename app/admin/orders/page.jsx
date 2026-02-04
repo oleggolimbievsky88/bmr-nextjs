@@ -686,7 +686,10 @@ export default function AdminOrdersPage() {
                 checked={datePreset === ""}
                 onChange={() => setDateRangePreset("")}
               />
-              <label className="btn btn-outline-secondary" htmlFor="orders-preset-all">
+              <label
+                className="btn btn-outline-secondary"
+                htmlFor="orders-preset-all"
+              >
                 All
               </label>
               <input
@@ -697,7 +700,10 @@ export default function AdminOrdersPage() {
                 checked={datePreset === "today"}
                 onChange={() => setDateRangePreset("today")}
               />
-              <label className="btn btn-outline-secondary" htmlFor="orders-preset-today">
+              <label
+                className="btn btn-outline-secondary"
+                htmlFor="orders-preset-today"
+              >
                 Today
               </label>
               <input
@@ -708,7 +714,10 @@ export default function AdminOrdersPage() {
                 checked={datePreset === "yesterday"}
                 onChange={() => setDateRangePreset("yesterday")}
               />
-              <label className="btn btn-outline-secondary" htmlFor="orders-preset-yesterday">
+              <label
+                className="btn btn-outline-secondary"
+                htmlFor="orders-preset-yesterday"
+              >
                 Yesterday
               </label>
               <input
@@ -719,7 +728,10 @@ export default function AdminOrdersPage() {
                 checked={datePreset === "week"}
                 onChange={() => setDateRangePreset("week")}
               />
-              <label className="btn btn-outline-secondary" htmlFor="orders-preset-week">
+              <label
+                className="btn btn-outline-secondary"
+                htmlFor="orders-preset-week"
+              >
                 This week
               </label>
               <input
@@ -730,7 +742,10 @@ export default function AdminOrdersPage() {
                 checked={datePreset === "month"}
                 onChange={() => setDateRangePreset("month")}
               />
-              <label className="btn btn-outline-secondary" htmlFor="orders-preset-month">
+              <label
+                className="btn btn-outline-secondary"
+                htmlFor="orders-preset-month"
+              >
                 This month
               </label>
             </div>
@@ -931,66 +946,77 @@ export default function AdminOrdersPage() {
               </div>
 
               {(selectedOrder.cc_last_four ||
-                selectedOrder.cc_payment_token) && (
+                selectedOrder.cc_payment_token ||
+                selectedOrder.paypal_email) && (
                 <div className="mb-4">
                   <h3 className="h6 fw-6 mb-2">Payment</h3>
-                  <p className="mb-1">
-                    {selectedOrder.cc_type && (
-                      <span>{selectedOrder.cc_type} </span>
-                    )}
-                    {selectedOrder.cc_last_four ? (
-                      <span>****{selectedOrder.cc_last_four}</span>
-                    ) : (
-                      <span>••••</span>
-                    )}
-                    {selectedOrder.cc_exp_month &&
-                      selectedOrder.cc_exp_year && (
-                        <span className="ms-2">
-                          Exp: {selectedOrder.cc_exp_month}/
-                          {String(selectedOrder.cc_exp_year).slice(-2)}
-                        </span>
+                  {selectedOrder.payment_method === "PayPal" &&
+                  selectedOrder.paypal_email ? (
+                    <p className="mb-1">
+                      PayPal ({selectedOrder.paypal_email})
+                    </p>
+                  ) : (
+                    <p className="mb-1">
+                      {selectedOrder.cc_type && (
+                        <span>{selectedOrder.cc_type} </span>
                       )}
-                  </p>
-                  {selectedOrder.cc_last_four && (
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        setRevealedCc({
-                          loading: true,
-                          value: null,
-                          error: null,
-                        });
-                        try {
-                          const res = await fetch(
-                            `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`
-                          );
-                          const data = await res.json();
-                          if (!res.ok)
-                            throw new Error(data.error || "Failed to decrypt");
+                      {selectedOrder.cc_last_four ? (
+                        <span>****{selectedOrder.cc_last_four}</span>
+                      ) : (
+                        <span>••••</span>
+                      )}
+                      {selectedOrder.cc_exp_month &&
+                        selectedOrder.cc_exp_year && (
+                          <span className="ms-2">
+                            Exp: {selectedOrder.cc_exp_month}/
+                            {String(selectedOrder.cc_exp_year).slice(-2)}
+                          </span>
+                        )}
+                    </p>
+                  )}
+                  {selectedOrder.payment_method !== "PayPal" &&
+                    selectedOrder.cc_last_four && (
+                      <button
+                        type="button"
+                        onClick={async () => {
                           setRevealedCc({
-                            loading: false,
-                            value: data.ccNumber || null,
+                            loading: true,
+                            value: null,
                             error: null,
                           });
-                          const fresh = await fetch(
-                            `/api/admin/orders?orderId=${selectedOrder.new_order_id}`
-                          ).then((r) => r.json());
-                          if (fresh?.order) setSelectedOrder(fresh.order);
-                        } catch (e) {
-                          setRevealedCc({
-                            loading: false,
-                            value: null,
-                            error: e.message,
-                          });
-                        }
-                      }}
-                      className="admin-btn-secondary mt-1"
-                      style={{ fontSize: "13px" }}
-                      disabled={revealedCc?.loading}
-                    >
-                      {revealedCc?.loading ? "..." : "Reveal card number"}
-                    </button>
-                  )}
+                          try {
+                            const res = await fetch(
+                              `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`
+                            );
+                            const data = await res.json();
+                            if (!res.ok)
+                              throw new Error(
+                                data.error || "Failed to decrypt"
+                              );
+                            setRevealedCc({
+                              loading: false,
+                              value: data.ccNumber || null,
+                              error: null,
+                            });
+                            const fresh = await fetch(
+                              `/api/admin/orders?orderId=${selectedOrder.new_order_id}`
+                            ).then((r) => r.json());
+                            if (fresh?.order) setSelectedOrder(fresh.order);
+                          } catch (e) {
+                            setRevealedCc({
+                              loading: false,
+                              value: null,
+                              error: e.message,
+                            });
+                          }
+                        }}
+                        className="admin-btn-secondary mt-1"
+                        style={{ fontSize: "13px" }}
+                        disabled={revealedCc?.loading}
+                      >
+                        {revealedCc?.loading ? "..." : "Reveal card number"}
+                      </button>
+                    )}
                   {revealedCc?.value != null && (
                     <div className="mt-2">
                       <code style={{ fontSize: "14px", letterSpacing: "1px" }}>
@@ -1013,9 +1039,12 @@ export default function AdminOrdersPage() {
                       </button>
                     </div>
                   )}
-                  {revealedCc?.error && (
-                    <p className="text-danger small mt-1">{revealedCc.error}</p>
-                  )}
+                  {selectedOrder.payment_method !== "PayPal" &&
+                    revealedCc?.error && (
+                      <p className="text-danger small mt-1">
+                        {revealedCc.error}
+                      </p>
+                    )}
                 </div>
               )}
 

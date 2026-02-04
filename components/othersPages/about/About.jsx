@@ -5,7 +5,10 @@ export default function About() {
   return (
     <>
       {/* --- MODERN HEADER SECTION --- */}
-      <header className="bmr-hero py-5 text-center border-bottom border-secondary">
+      <header
+        className="bmr-hero py-5 text-center"
+        style={{ borderBottom: "4px solid var(--primary)" }}
+      >
         <div className="container py-3 animate__animated animate__fadeIn">
           <h6
             className="fw-bold tracking-widest d-block mb-2"
@@ -42,25 +45,31 @@ export default function About() {
                 Quality Construction.
               </h2>
               <p className="lead mb-4">
-                Since 1998, BMR Suspension has been serving the needs of
-                performance automotive enthusiasts by filling the market void
-                for innovative, affordable suspension products.
+                When BMR Suspension began back in 1998, it was difficult for
+                performance automotive enthusiasts to find suspension products
+                that had an innovative design and quality construction at an
+                affordable price. BMR turned this market void into a business
+                philosophy, and has been serving our customers&apos; needs ever
+                since.
               </p>
               <p className="lead text-secondary">
-                Currently offering products for{" "}
-                <strong>22 different vehicles</strong>, BMR is the leading
-                suspension manufacturer in many of the market segments it
-                serves.
+                Currently offering chassis, suspension, and drivetrain products
+                for over <strong>50 different vehicles</strong>, BMR is the
+                leading suspension manufacturer in many of the market segments
+                that it serves.
               </p>
             </div>
             <div className="col-lg-6">
-              <div className="card bg-secondary bg-opacity-10 border-secondary p-4 rounded-4">
+              <div
+                className="card bg-secondary bg-opacity-10 p-4 rounded-4"
+                style={{ border: "2px solid var(--primary)" }}
+              >
                 <div className="card-body text-center">
                   <h3
                     className="italic-heavy display-4"
                     style={{ color: "var(--primary)" }}
                   >
-                    22+
+                    50+
                   </h3>
                   <p className="text-uppercase tracking-wider fw-bold">
                     Vehicle Platforms Supported
@@ -73,7 +82,13 @@ export default function About() {
       </section>
 
       {/* --- MANUFACTURING SECTION --- */}
-      <section className="bg-black py-5 border-top border-bottom border-secondary">
+      <section
+        className="bg-black py-5"
+        style={{
+          borderTop: "4px solid var(--primary)",
+          borderBottom: "4px solid var(--primary)",
+        }}
+      >
         <div className="container">
           <div className="row mb-5">
             <div className="col-md-8">
@@ -97,26 +112,40 @@ export default function About() {
                 In-House Quality
               </h4>
               <p className="text-secondary">
-                American workers cut, bend, and mill components from
-                American-made DOM and chrome-moly steel near Tampa, Florida.
+                Whether you are modifying your vehicle for street performance,
+                drag racing, or handling applications, BMR Suspension has the
+                products that you need. Proudly made in the USA in two
+                manufacturing facilities near Tampa, Florida, American workers
+                cut, bend, notch, drill, and mill components from American-made
+                DOM and chrome-moly steel.
               </p>
             </div>
-            <div className="col-md-4 border-start border-secondary">
+            <div
+              className="col-md-4 border-start"
+              style={{ borderColor: "var(--primary)" }}
+            >
               <h4 className="italic-heavy" style={{ color: "var(--primary)" }}>
                 Precision Finish
               </h4>
               <p className="text-secondary">
-                Every product is fixture-welded and powdercoated using BMR's
-                in-house powdercoating line for total quality control.
+                Every product is fixture-welded to maintain consistent quality.
+                Workers bead-blast parts and then powder coat them using
+                BMR&apos;s in-house powder coating line. Finished parts are then
+                assembled, packaged, and shipped to distributors and customers
+                like you to get the performance you need right to your door.
               </p>
             </div>
-            <div className="col-md-4 border-start border-secondary">
+            <div
+              className="col-md-4 border-start"
+              style={{ borderColor: "var(--primary)" }}
+            >
               <h4 className="italic-heavy" style={{ color: "var(--primary)" }}>
                 Real Testing
               </h4>
               <p className="text-secondary">
-                Products are street driven and track tested on our massive fleet
-                of project vehicles to ensure perfect fitment.
+                By manufacturing every product in-house, BMR can ensure the
+                highest quality at every stage of the manufacturing process and
+                deliver the performance you need right to your door.
               </p>
             </div>
           </div>
@@ -129,11 +158,21 @@ export default function About() {
           <div className="row justify-content-center">
             <div className="col-lg-10 text-center">
               <h2 className="italic-heavy">Built by Racers for Racers</h2>
+              <p className="mb-4" style={{ fontSize: "18px" }}>
+                BMR Suspension products fit and work so well because they are
+                street driven and track tested on BMR project vehicles! Past
+                project cars include a 2011 Mustang, a 1968 GTO, a 1994 Camaro,
+                a 2018 Challenger, and many more. BMR&apos;s current project
+                vehicles include a 1965 Mustang, a 1972 C10, a 2024 Mustang, and
+                a 2015 Corvette.
+              </p>
               <p className="mb-5" style={{ fontSize: "18px" }}>
-                Virtually every BMR employee is a racer or hot rodder. This love
-                of racing is demonstrated everyday in BMR's customer service,
-                design innovation, and manufacturing quality. From 1960s muscle
-                cars to modern 2016+ Camaros, we live and breathe performance.
+                But it is more than just great vehicles involved in testing our
+                products: many BMR employees are racers as well and use BMR
+                parts to get the extra performance they need to win in a variety
+                of racing applications. This love of racing is demonstrated
+                every day in BMR&apos;s customer service, design innovation, and
+                manufacturing quality!
               </p>
 
               <div className="d-flex flex-wrap justify-content-center gap-2">
@@ -170,7 +209,11 @@ export default function About() {
         >
           <h2 className="italic-heavy display-4 mb-3">Push the Envelope</h2>
           <p className="mb-4 opacity-75" style={{ fontSize: "18px" }}>
-            When performance is a must, rely on BMR Suspension!
+            By continuing to push the envelope in product design innovation and
+            manufacturing technology, you can be sure that BMR Suspension will
+            continue to offer the most innovative, quality-oriented, and
+            affordable suspension products available. When performance is a
+            must, rely on BMR Suspension!
           </p>
           <a
             href="/products"

@@ -1133,6 +1133,8 @@
   ul {
     margin-top: 15px;
     margin-bottom: 30px;
+    padding-left: 0;
+    list-style: none;
     li {
       color: var(--text-2);
       line-height: 24px !important;
@@ -1143,17 +1145,31 @@
         margin-bottom: 12px;
         color: black !important;
       }
+      /* Align bullet with first line so multi-line items don't look broken */
       &::before {
         position: absolute;
         content: "";
-        left: 5px;
         left: 0;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 0.55em;
+        transform: none;
         background-color: var(--text-2);
         width: 4px;
         height: 4px;
         border-radius: 50%;
+      }
+    }
+  }
+  /* Product features list: proper hanging indent and full-width on mobile */
+  ul.tf-product-features-list {
+    padding-left: 1.5em;
+    list-style: disc;
+    list-style-position: outside;
+    li {
+      padding-left: 0;
+      list-style-type: disc;
+      list-style-position: outside;
+      &::before {
+        display: none;
       }
     }
   }
@@ -1172,6 +1188,20 @@
     }
     span {
       color: var(--text-2);
+    }
+  }
+}
+
+/* Mobile: single column so features list uses full width (fixes narrow column + short line breaks) */
+@media (max-width: 767px) {
+  .tf-product-des-demo {
+    grid-template-columns: 1fr;
+    .right {
+      min-width: 0;
+    }
+    ul.tf-product-features-list {
+      min-width: 0;
+      padding-left: 1.25em;
     }
   }
 }

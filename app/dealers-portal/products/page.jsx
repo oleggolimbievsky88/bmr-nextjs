@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { showToast } from "@/utlis/showToast";
 
 const PER_PAGE = 50;
 const IMAGE_BASE = "https://bmrsuspension.com/siteart/products";
@@ -52,6 +53,26 @@ function parseProductAddonIds(str) {
     .filter(Boolean);
 }
 
+function buildPOItemsIndex(items) {
+  const index = {};
+  (items || []).forEach((item) => {
+    const pid = item.product_id ?? item.ProductID ?? item.productId;
+    if (!pid) return;
+    const productKey = String(pid);
+    const qty = Math.max(0, parseInt(item.quantity, 10) || 0);
+    if (!index[productKey]) {
+      index[productKey] = { totalQty: 0, colors: {} };
+    }
+    index[productKey].totalQty += qty;
+    if (item.color_id != null) {
+      const colorKey = String(item.color_id);
+      index[productKey].colors[colorKey] =
+        (index[productKey].colors[colorKey] || 0) + qty;
+    }
+  });
+  return index;
+}
+
 /** CSS class for color column: Red -> light red tint; Black Hammertone (powder coat) -> dark. */
 function getColorColumnClass(colorName) {
   const name = (colorName || "").toLowerCase();
@@ -92,11 +113,29 @@ export default function DealersPortalProductsPage() {
   const [rowQtys, setRowQtys] = useState({});
   const [rowAddOns, setRowAddOns] = useState({});
   const [addRowSending, setAddRowSending] = useState(null);
+  const [poItemsIndex, setPoItemsIndex] = useState({});
+
+  const refreshDraftPO = useCallback(async () => {
+    try {
+      const res = await fetch("/api/dealer/po");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to load PO");
+      setDraftPOId(data.po?.id || null);
+      setPoItemsIndex(buildPOItemsIndex(data.items || []));
+    } catch (err) {
+      console.error(err);
+      setPoItemsIndex({});
+    }
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(t);
   }, [search]);
+
+  useEffect(() => {
+    refreshDraftPO();
+  }, [refreshDraftPO]);
 
   useEffect(() => {
     let cancelled = false;
@@ -228,7 +267,14 @@ export default function DealersPortalProductsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add");
+      await refreshDraftPO();
+      const partNumber = addToPOModal.PartNumber;
       closeAddToPOModal();
+      showToast(
+        `${partNumber} was added to the PO. Go to Purchase Order to view and complete your order.`,
+        "success",
+        5000
+      );
     } catch (err) {
       setAddToPOError(err.message);
     } finally {
@@ -241,6 +287,7 @@ export default function DealersPortalProductsPage() {
     addToPOColorId,
     addToPOColors,
     closeAddToPOModal,
+    refreshDraftPO,
   ]);
 
   const setRowQty = useCallback((productId, colorId, value) => {
@@ -327,6 +374,13 @@ export default function DealersPortalProductsPage() {
           }
           return next;
         });
+        await refreshDraftPO();
+        const partNumber = product.PartNumber;
+        showToast(
+          `${partNumber} was added to the PO. Go to Purchase Order to view and complete your order.`,
+          "success",
+          5000
+        );
       } catch (err) {
         setAddToPOError(err.message);
       } finally {
@@ -341,6 +395,7 @@ export default function DealersPortalProductsPage() {
       anglefinderList,
       hardwareList,
       draftPOId,
+      refreshDraftPO,
     ]
   );
 
@@ -500,13 +555,31 @@ export default function DealersPortalProductsPage() {
         </div>
       ) : (
         <>
+          <div
+            className="alert alert-info py-2 small mb-3 d-flex align-items-center flex-wrap gap-2"
+            role="status"
+          >
+            <span>
+              To view your cart and complete your order, Click on{" "}
+              <Link
+                href="/dealers-portal/po"
+                className="alert-link fw-bold"
+                style={{
+                  textDecoration: "underline",
+                }}
+              >
+                Purchase Order
+              </Link>{" "}
+              in the menu above.
+            </span>
+          </div>
           {addToPOError && (
             <div className="alert alert-danger py-2 small mb-3" role="alert">
               {addToPOError}
             </div>
           )}
           <div className="dealer-products-table-wrap table-responsive mb-4">
-            <table className="table table-bordered dealer-products-table mb-0">
+            <table className="table table-bordered table-striped table-hover dealer-products-table mb-0">
               <thead>
                 <tr>
                   <th className="dealer-col-product">Product</th>
@@ -552,6 +625,7 @@ export default function DealersPortalProductsPage() {
                     usedColorIds.has(String(c.ColorID))
                   );
                   return products.map((p) => {
+                    const poInfo = poItemsIndex[String(p.ProductID)] || null;
                     const imgSrc = getProductImageUrl(p);
                     const productColorIds = parseProductColorIds(p.Color);
                     const qtys = rowQtys[p.ProductID] || {};
@@ -564,7 +638,10 @@ export default function DealersPortalProductsPage() {
                     );
                     const isSending = addRowSending === p.ProductID;
                     return (
-                      <tr key={p.ProductID}>
+                      <tr
+                        key={p.ProductID}
+                        className={poInfo ? "dealer-row-added" : undefined}
+                      >
                         <td className="dealer-col-product align-middle">
                           <Link
                             href={`/product/${p.ProductID}`}
@@ -575,7 +652,7 @@ export default function DealersPortalProductsPage() {
                               style={{
                                 width: 48,
                                 height: 48,
-                                backgroundColor: "var(--bg-11, #f0f0f0)",
+                                backgroundColor: "#fff",
                                 display: "inline-flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -598,9 +675,16 @@ export default function DealersPortalProductsPage() {
                                 <span className="small text-muted">—</span>
                               )}
                             </span>
-                            <span className="small fw-semibold text-truncate">
-                              {formatPrice(p.dealerPrice)}
-                            </span>
+                            <div className="d-flex flex-column">
+                              <span className="small fw-semibold text-truncate">
+                                {formatPrice(p.dealerPrice)}
+                              </span>
+                              {poInfo && (
+                                <span className="dealer-po-added-badge mt-1">
+                                  In PO: {poInfo.totalQty}
+                                </span>
+                              )}
+                            </div>
                           </Link>
                         </td>
                         <td className="dealer-col-part align-middle small">
@@ -638,6 +722,8 @@ export default function DealersPortalProductsPage() {
                             val === undefined || val === null || val === ""
                               ? ""
                               : String(val);
+                          const addedQty =
+                            poInfo?.colors?.[String(c.ColorID)] || 0;
                           return (
                             <td
                               key={c.ColorID}
@@ -660,6 +746,11 @@ export default function DealersPortalProductsPage() {
                                   )
                                 }
                               />
+                              {addedQty > 0 && (
+                                <small className="dealer-po-added-qty">
+                                  Added: {addedQty}
+                                </small>
+                              )}
                             </td>
                           );
                         })}

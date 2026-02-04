@@ -43,7 +43,27 @@ export async function GET(request) {
     }
 
     // Get categories for this main category (including CatSlug)
-    const categories = await getCategoriesByMainCatId(mainCategoryId);
+    const rawCategories = await getCategoriesByMainCatId(mainCategoryId);
+
+    // Deduplicate by slug so the same slug (e.g. "vertical-links") appears once with combined product count
+    const slugMap = new Map();
+    for (const cat of rawCategories) {
+      const slug =
+        (cat.CatSlug || cat.CatNameSlug || cat.slug || "").toString().trim() ||
+        (cat.CatName || "").toLowerCase().replace(/\s+/g, "-");
+      if (!slug) continue;
+      const existing = slugMap.get(slug);
+      const productCount = Number(cat.productCount || 0);
+      if (!existing) {
+        slugMap.set(slug, {
+          ...cat,
+          productCount,
+        });
+      } else {
+        existing.productCount += productCount;
+      }
+    }
+    const categories = Array.from(slugMap.values());
 
     // Get initial products for this main category using the working pagination function
     const products = await getFilteredProductsPaginated({
@@ -59,14 +79,14 @@ export async function GET(request) {
       categories: categories.map((cat) => ({
         CatID: cat.CatID,
         CatName: cat.CatName,
-        CatSlug: cat.CatSlug,
+        CatSlug: cat.CatSlug || cat.CatNameSlug,
         CatImage: cat.CatImage,
         MainCatID: cat.MainCatID,
         productCount: cat.productCount || 0,
         // Add aliases for easier access
         id: cat.CatID,
         name: cat.CatName,
-        slug: cat.CatSlug,
+        slug: cat.CatSlug || cat.CatNameSlug,
         image: cat.CatImage,
       })),
       products: products || [],

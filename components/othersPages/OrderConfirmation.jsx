@@ -2,7 +2,7 @@
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getColorBadgeClass } from "@/lib/colorBadge";
 
 // Email Receipt Form Component
@@ -109,9 +109,18 @@ function EmailReceiptForm({ order }) {
 }
 
 export default function OrderConfirmation({ orderData }) {
-  const { cartProducts } = useContextElement();
+  const { cartProducts, clearCart } = useContextElement();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const cartClearedForOrder = useRef(false);
+
+  // Clear cart when we successfully show an order (covers PayPal return and any checkout flow)
+  useEffect(() => {
+    if (order && !loading && !cartClearedForOrder.current) {
+      cartClearedForOrder.current = true;
+      clearCart();
+    }
+  }, [order, loading, clearCart]);
 
   useEffect(() => {
     // If orderData is passed as prop, use it directly
@@ -260,10 +269,10 @@ export default function OrderConfirmation({ orderData }) {
           <div className="receipt-header">
             <div className="receipt-header-inner">
               <Image
-                src="/images/logo/bmr-logo.webp"
+                src="/images/logo/BMR-Logo.webp"
                 alt="BMR Suspension"
-                width={240}
-                height={80}
+                width={320}
+                height={137}
                 className="receipt-logo"
                 priority
               />
@@ -342,20 +351,53 @@ export default function OrderConfirmation({ orderData }) {
                   <h5>Payment Information</h5>
                   <div className="payment-info">
                     <div className="d-flex align-items-center mb-2">
-                      <i className="fas fa-credit-card me-2 text-muted"></i>
-                      <span>Card ending in {order.cardLastFour}</span>
+                      {String(order.paymentMethod || "").toLowerCase() ===
+                        "paypal" || order.paypalEmail ? (
+                        <div className="d-flex flex-column align-items-start">
+                          <div
+                            style={{ display: "block", width: "fit-content" }}
+                          >
+                            <img
+                              style={{ display: "block" }}
+                              src="/images/logo/PayPal_Logo.png"
+                              height={30}
+                              width={120}
+                              alt="PayPal"
+                              className="order-confirmation-paypal-logo"
+                            />
+                          </div>
+                          {order.paypalEmail ? (
+                            <div className="order-confirmation-paypal-email mt-1">
+                              {order.paypalEmail}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <>
+                          <i className="fas fa-credit-card me-2 text-muted"></i>
+                          <span>
+                            {order.cardType ? `${order.cardType} ` : "Card "}
+                            ending in {order.cardLastFour || "••••"}
+                          </span>
+                        </>
+                      )}
                     </div>
-                    <div className="d-flex align-items-center mb-2">
-                      <i className="fas fa-truck me-2 text-muted"></i>
+                    <div className="d-flex align-items-center mb-2 mt-3">
                       <span>
-                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0) && order.couponCode
-                          ? `Free Shipping (Coupon: ${order.couponCode})`
-                          : (order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
-                            ? "Free Shipping"
-                            : order.shippingMethod}
-                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                        {(order.freeShipping ||
+                          parseFloat(order.shippingCost || 0) === 0) &&
+                        order.couponCode
+                          ? `Standard Free Shipping (from coupon: ${order.couponCode})`
+                          : order.freeShipping ||
+                            parseFloat(order.shippingCost || 0) === 0
+                          ? "Standard Free Shipping"
+                          : order.shippingMethod}
+                        {order.freeShipping ||
+                        parseFloat(order.shippingCost || 0) === 0
                           ? ""
-                          : ` — $${parseFloat(order.shippingCost || 0).toFixed(2)}`}
+                          : ` — $${parseFloat(order.shippingCost || 0).toFixed(
+                              2
+                            )}`}
                       </span>
                     </div>
                     {order.couponCode && (
@@ -416,7 +458,7 @@ export default function OrderConfirmation({ orderData }) {
                         <td>
                           <span
                             className={`color-badge ${getColorBadgeClass(
-                              item.color,
+                              item.color
                             )}`}
                           >
                             {item.color != null &&
@@ -457,18 +499,29 @@ export default function OrderConfirmation({ orderData }) {
                       </div>
                     )}
                     <div className="d-flex justify-content-between mb-2">
-                      <span>Shipping ({(order.freeShipping || parseFloat(order.shippingCost || 0) === 0) && order.couponCode
-                        ? `Free Shipping (Coupon: ${order.couponCode})`
-                        : (order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
-                          ? "Free Shipping"
-                          : (order.shippingMethod || "—")}
-                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
-                          ? ", Free"
-                          : ""}):</span>
                       <span>
-                        {(order.freeShipping || parseFloat(order.shippingCost || 0) === 0)
+                        Shipping (
+                        {(order.freeShipping ||
+                          parseFloat(order.shippingCost || 0) === 0) &&
+                        order.couponCode
+                          ? `Standard Free Shipping (from coupon: ${order.couponCode})`
+                          : order.freeShipping ||
+                            parseFloat(order.shippingCost || 0) === 0
+                          ? "Standard Free Shipping"
+                          : order.shippingMethod || "—"}
+                        {order.freeShipping ||
+                        parseFloat(order.shippingCost || 0) === 0
+                          ? ", Free"
+                          : ""}
+                        ):
+                      </span>
+                      <span>
+                        {order.freeShipping ||
+                        parseFloat(order.shippingCost || 0) === 0
                           ? "$0.00"
-                          : `$${parseFloat(order.shippingCost || 0).toFixed(2)}`}
+                          : `$${parseFloat(order.shippingCost || 0).toFixed(
+                              2
+                            )}`}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
@@ -480,8 +533,9 @@ export default function OrderConfirmation({ orderData }) {
                       <strong>Total:</strong>
                       <strong>
                         $
-                        {order.total
-                          ? order.total.toFixed(2)
+                        {order.total != null &&
+                        !Number.isNaN(Number(order.total))
+                          ? Number(order.total).toFixed(2)
                           : calculateTotal().toFixed(2)}
                       </strong>
                     </div>
@@ -537,7 +591,7 @@ export default function OrderConfirmation({ orderData }) {
                     className="btn btn-outline-primary btn-sm me-2"
                     onClick={() => {
                       const emailForm = document.querySelector(
-                        ".email-receipt-form",
+                        ".email-receipt-form"
                       );
                       if (emailForm) {
                         emailForm.style.display =

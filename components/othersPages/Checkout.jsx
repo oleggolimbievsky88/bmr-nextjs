@@ -94,6 +94,10 @@ export default function Checkout() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
 
+  // Defer order summary content until after mount to avoid hydration mismatch (cart from context/localStorage differs on server vs client)
+  const [summaryMounted, setSummaryMounted] = useState(false);
+  useEffect(() => setSummaryMounted(true), []);
+
   const searchParams = useSearchParams();
   const poIdParam = searchParams.get("po");
 
@@ -101,6 +105,9 @@ export default function Checkout() {
   const [poCartProducts, setPoCartProducts] = useState([]);
   const [poCartLoading, setPoCartLoading] = useState(!!poIdParam);
   const [poCartError, setPoCartError] = useState(null);
+
+  // Dealer discount (percentage) - fetched when user is dealer/admin
+  const [dealerDiscountPercent, setDealerDiscountPercent] = useState(0);
 
   useEffect(() => {
     if (!poIdParam) {
@@ -128,9 +135,7 @@ export default function Checkout() {
             quantity: i.quantity ?? 1,
             Price: i.unit_price,
             defaultColorName: i.color_name || "Default",
-            selectedColor: i.color_name
-              ? { ColorName: i.color_name }
-              : null,
+            selectedColor: i.color_name ? { ColorName: i.color_name } : null,
             PlatformName: "",
             YearRange: "",
             images: [],
@@ -159,6 +164,22 @@ export default function Checkout() {
       })
       .finally(() => setPoCartLoading(false));
   }, [poIdParam]);
+
+  // Fetch dealer discount when user is dealer or admin
+  useEffect(() => {
+    if (!session?.user || !["dealer", "admin"].includes(session.user.role)) {
+      setDealerDiscountPercent(0);
+      return;
+    }
+    fetch("/api/dealer/discount")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.discount != null) {
+          setDealerDiscountPercent(parseFloat(data.discount) || 0);
+        }
+      })
+      .catch(() => setDealerDiscountPercent(0));
+  }, [session?.user?.role, session?.user?.id]);
 
   const isPoCheckout = !!poIdParam;
   const effectiveCartProducts =
@@ -425,7 +446,9 @@ export default function Checkout() {
     const toAddress = sameAsBilling ? billingData : shippingData;
 
     // Create a unique key for this address to prevent duplicate calculations
-    const addressKey = `${toAddress.address1}-${toAddress.city}-${toAddress.state}-${toAddress.zip}`;
+    const addressKey = `${toAddress.country ?? ""}-${toAddress.address1}-${
+      toAddress.city
+    }-${toAddress.state}-${toAddress.zip}`;
     if (lastShippingAddressRef.current === addressKey) {
       return; // Already calculated for this address
     }
@@ -447,7 +470,7 @@ export default function Checkout() {
         }
       });
       const productIds = effectiveCartProducts
-        .map((item) => item.ProductID)
+        .map((item) => item.ProductID ?? item.productId)
         .filter(Boolean);
 
       await calculateShippingRates(
@@ -489,6 +512,29 @@ export default function Checkout() {
       lastShippingAddressRef.current = "";
     }
   }, [sameAsBilling]);
+
+  // Recalculate shipping when state or country changes on shipping step
+  // so lower-48 customers get the free shipping option
+  const destState = sameAsBilling ? billingData.state : shippingData.state;
+  const destCountry = sameAsBilling
+    ? billingData.country
+    : shippingData.country;
+  const prevDestRef = useRef({ state: destState, country: destCountry });
+  useEffect(() => {
+    if (activeStep !== "shipping") return;
+    const prev = prevDestRef.current;
+    const changed = prev.state !== destState || prev.country !== destCountry;
+    prevDestRef.current = { state: destState, country: destCountry };
+    if (changed && (destState || destCountry)) {
+      lastShippingAddressRef.current = "";
+      calculateShippingRatesForCurrentAddress();
+    }
+  }, [
+    activeStep,
+    destState,
+    destCountry,
+    calculateShippingRatesForCurrentAddress,
+  ]);
 
   const handleCouponApply = async () => {
     if (!couponCode.trim()) {
@@ -564,12 +610,16 @@ export default function Checkout() {
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
           0
         );
+        const dealerDisc =
+          !isPoCheckout && dealerDiscountPercent > 0
+            ? Math.round(subtotal * (dealerDiscountPercent / 100) * 100) / 100
+            : 0;
         const destState = sameAsBilling
           ? cleanBilling.state
           : cleanShipping.state;
         const payloadTax = getTaxAmount(
           subtotal,
-          couponDiscount || 0,
+          (couponDiscount || 0) + dealerDisc,
           destState,
           {
             shippingCost: selectedOption?.cost || 0,
@@ -580,7 +630,12 @@ export default function Checkout() {
           subtotal +
           (selectedOption?.cost || 0) +
           payloadTax -
-          (couponDiscount || 0);
+          (couponDiscount || 0) -
+          dealerDisc;
+        let orderNotes = "";
+        try {
+          orderNotes = localStorage.getItem("orderNotes") || "";
+        } catch (e) {}
         const res = await fetch("/api/paypal/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -588,18 +643,24 @@ export default function Checkout() {
             billing: cleanBilling,
             shipping: cleanShipping,
             items: orderItems,
-            shippingMethod: selectedOption?.name || selectedOption?.service || "Standard Shipping",
+            shippingMethod:
+              selectedOption?.name ||
+              selectedOption?.service ||
+              "Standard Shipping",
             shippingCost: selectedOption?.cost || 0,
             freeShipping:
-              (selectedOption?.cost === 0) ||
-              /free/i.test(selectedOption?.service || selectedOption?.name || ""),
+              selectedOption?.cost === 0 ||
+              /free/i.test(
+                selectedOption?.service || selectedOption?.name || ""
+              ),
             tax: payloadTax,
-            discount: couponDiscount || 0,
+            discount: (couponDiscount || 0) + dealerDisc,
             total,
             couponCode: appliedCoupon?.code || "",
             couponId: appliedCoupon?.id || null,
             customerId:
               session?.user?.id != null ? parseInt(session.user.id, 10) : null,
+            notes: orderNotes,
           }),
         });
         const data = res.ok ? await res.json().catch(() => ({})) : {};
@@ -629,6 +690,8 @@ export default function Checkout() {
       selectedOption,
       session?.user?.id,
       appliedCoupon,
+      isPoCheckout,
+      dealerDiscountPercent,
     ]
   );
 
@@ -807,12 +870,18 @@ export default function Checkout() {
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
           0
         );
+        const payloadDealerDisc =
+          !isPoCheckout && dealerDiscountPercent > 0
+            ? Math.round(
+                payloadSubtotal * (dealerDiscountPercent / 100) * 100
+              ) / 100
+            : 0;
         const destState = sameAsBilling
           ? cleanBilling.state
           : cleanShipping.state;
         const payloadTax = getTaxAmount(
           payloadSubtotal,
-          couponDiscount || 0,
+          (couponDiscount || 0) + payloadDealerDisc,
           destState,
           {
             shippingCost: selectedOption?.cost || 0,
@@ -820,9 +889,11 @@ export default function Checkout() {
           }
         );
         const shippingMethodLabel =
-          selectedOption?.name || selectedOption?.service || "Standard Shipping";
+          selectedOption?.name ||
+          selectedOption?.service ||
+          "Standard Shipping";
         const freeShipping =
-          (selectedOption?.cost === 0) ||
+          selectedOption?.cost === 0 ||
           /free/i.test(selectedOption?.service || selectedOption?.name || "");
         const orderPayload = {
           billing: cleanBilling,
@@ -1053,13 +1124,16 @@ export default function Checkout() {
         })),
         billing: billingData,
         shipping: sameAsBilling ? billingData : shippingData,
-        shippingMethod: selectedOption?.name || selectedOption?.service || "Standard Shipping",
+        shippingMethod:
+          selectedOption?.name ||
+          selectedOption?.service ||
+          "Standard Shipping",
         shippingCost: selectedOption?.cost || 0,
         freeShipping:
-          (selectedOption?.cost === 0) ||
+          selectedOption?.cost === 0 ||
           /free/i.test(selectedOption?.service || selectedOption?.name || ""),
         couponCode: appliedCoupon?.code || "",
-        discount: couponDiscount || 0,
+        discount: couponDiscount + dealerDiscountAmount,
       };
 
       // Store order data in sessionStorage for the confirmation page
@@ -1128,17 +1202,34 @@ export default function Checkout() {
   const getDestinationState = () =>
     sameAsBilling ? billingData.state : shippingData.state;
 
+  // Dealer discount: for PO checkout prices are already dealer; for regular cart apply % to subtotal
+  const calculateDealerDiscountAmount = () => {
+    if (dealerDiscountPercent <= 0) return 0;
+    if (isPoCheckout) return 0; // PO prices already include dealer discount
+    const subtotal = calculateSubtotal();
+    return Math.round(subtotal * (dealerDiscountPercent / 100) * 100) / 100;
+  };
+
+  const dealerDiscountAmount = calculateDealerDiscountAmount();
+  const isDealer =
+    session?.user && ["dealer", "admin"].includes(session.user.role);
+
   const calculateTax = () =>
-    getTaxAmount(calculateSubtotal(), couponDiscount, getDestinationState(), {
-      shippingCost: selectedOption ? selectedOption.cost : 0,
-      items: effectiveCartProducts,
-    });
+    getTaxAmount(
+      calculateSubtotal(),
+      couponDiscount + dealerDiscountAmount,
+      getDestinationState(),
+      {
+        shippingCost: selectedOption ? selectedOption.cost : 0,
+        items: effectiveCartProducts,
+      }
+    );
 
   const calculateGrandTotal = () => {
     const subtotal = calculateSubtotal();
     const shipping = selectedOption ? selectedOption.cost : 0;
     const tax = calculateTax();
-    return subtotal + shipping + tax - couponDiscount;
+    return subtotal + shipping + tax - couponDiscount - dealerDiscountAmount;
   };
 
   return (
@@ -1817,9 +1908,12 @@ export default function Checkout() {
                           <div className="form-group">
                             <div className="shipping-options-header">
                               <h4>Choose Your Shipping Speed</h4>
-                              <span className="shipping-note">
-                                Need it faster? Select an expedited option below
-                              </span>
+                              {shippingOptions.length > 1 && (
+                                <span className="shipping-note">
+                                  Need it faster? Select an expedited option
+                                  below
+                                </span>
+                              )}
                             </div>
                             {shippingLoading ? (
                               <div className="text-center py-3">
@@ -1963,39 +2057,100 @@ export default function Checkout() {
                           </div>
                         )}
                         {showPaymentMethodChoice && !payPalOnly && (
-                          <div className="form-group mb-4">
-                            <label className="d-block mb-2">
+                          <div className="checkout-payment-methods">
+                            <label className="checkout-payment-methods__label">
                               Payment method
                             </label>
-                            <div className="d-flex gap-3">
-                              <label className="d-flex align-items-center gap-2">
-                                <input
-                                  type="radio"
-                                  name="paymentMethod"
-                                  checked={paymentMethod === "credit_card"}
-                                  onChange={() =>
-                                    setPaymentMethod("credit_card")
-                                  }
-                                />
-                                Credit card
-                              </label>
-                              <label className="d-flex align-items-center gap-2">
-                                <input
-                                  type="radio"
-                                  name="paymentMethod"
-                                  checked={paymentMethod === "paypal"}
-                                  onChange={() => setPaymentMethod("paypal")}
-                                />
-                                PayPal
-                              </label>
+                            <div className="checkout-payment-methods__list">
+                              <button
+                                type="button"
+                                onClick={() => setPaymentMethod("paypal")}
+                                className={`checkout-payment-method ${
+                                  paymentMethod === "paypal"
+                                    ? "checkout-payment-method--selected"
+                                    : ""
+                                }`}
+                                aria-pressed={paymentMethod === "paypal"}
+                              >
+                                <span className="checkout-payment-method__logo checkout-payment-method__logo--paypal">
+                                  <Image
+                                    src="/images/logo/PayPal_Logo.png"
+                                    alt="PayPal"
+                                    width={120}
+                                    height={32}
+                                  />
+                                </span>
+                                <span className="checkout-payment-method__desc">
+                                  Pay with PayPal or pay in 4 installments
+                                </span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPaymentMethod("credit_card")}
+                                className={`checkout-payment-method ${
+                                  paymentMethod === "credit_card"
+                                    ? "checkout-payment-method--selected"
+                                    : ""
+                                }`}
+                                aria-pressed={paymentMethod === "credit_card"}
+                              >
+                                <span className="checkout-payment-method__logo checkout-payment-method__logo--card">
+                                  <svg
+                                    width="40"
+                                    height="28"
+                                    viewBox="0 0 40 28"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden
+                                  >
+                                    <rect
+                                      width="40"
+                                      height="28"
+                                      rx="4"
+                                      fill="#1a1f71"
+                                    />
+                                    <rect
+                                      x="4"
+                                      y="12"
+                                      width="20"
+                                      height="3"
+                                      rx="1"
+                                      fill="white"
+                                      opacity="0.9"
+                                    />
+                                    <rect
+                                      x="4"
+                                      y="18"
+                                      width="12"
+                                      height="2"
+                                      rx="1"
+                                      fill="white"
+                                      opacity="0.6"
+                                    />
+                                  </svg>
+                                </span>
+                                <span className="checkout-payment-method__text">
+                                  <span className="checkout-payment-method__title">
+                                    Debit or Credit Card{" "}
+                                  </span>
+                                  <span
+                                    className="checkout-card-logos"
+                                    aria-label="Accepted cards"
+                                  >
+                                    <CreditCardIcons className="checkout-card-logos__icons" />
+                                  </span>
+                                </span>
+                              </button>
                             </div>
                           </div>
                         )}
                         {paymentMethod === "paypal" && (
-                          <p className="text-muted mb-4">
-                            Please contact our helpfullstaff during bussiness
-                            hours and they will be happy to help.
-                          </p>
+                          <div className="checkout-paypal-notice mb-4">
+                            <p className="mb-0">
+                              You will be redirected to PayPal to complete
+                              payment securely.
+                            </p>
+                          </div>
                         )}
                         {paymentMethod === "credit_card" && (
                           <form className="checkout-form">
@@ -2177,7 +2332,29 @@ export default function Checkout() {
                           </div>
                         )}
 
-                        <div className="d-flex justify-content-start mt-4">
+                        <div className="terms-checkbox mt-4 mb-3">
+                          <label className="d-flex align-items-start gap-2">
+                            <input
+                              type="checkbox"
+                              checked={termsAgreed}
+                              onChange={(e) => setTermsAgreed(e.target.checked)}
+                              className="mt-1"
+                            />
+                            <span>
+                              I agree to BMR Suspension&apos;s{" "}
+                              <Link
+                                href="/terms-conditions"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary"
+                              >
+                                Terms &amp; Conditions
+                              </Link>
+                            </span>
+                          </label>
+                        </div>
+
+                        <div className="d-flex flex-wrap gap-3 align-items-center mt-3">
                           <button
                             type="button"
                             className="btn btn-outline-secondary"
@@ -2185,6 +2362,41 @@ export default function Checkout() {
                             disabled={isSubmitting}
                           >
                             Back
+                          </button>
+                          <button
+                            type="button"
+                            className={`btn ${
+                              paymentMethod === "paypal"
+                                ? "btn-paypal btn-paypal--compact"
+                                : "btn-lg btn-danger"
+                            } `}
+                            onClick={handleOrderSubmission}
+                            disabled={isSubmitting || !termsAgreed}
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <span
+                                  className="spinner-border spinner-border-sm me-2"
+                                  role="status"
+                                  aria-hidden="true"
+                                />
+                                {paymentMethod === "paypal"
+                                  ? "Redirecting to PayPal..."
+                                  : "Processing Order..."}
+                              </>
+                            ) : paymentMethod === "paypal" ? (
+                              <span className="checkout-paypal-btn__content">
+                                <Image
+                                  src="/images/logo/PayPal_Logo.png"
+                                  alt=""
+                                  width={32}
+                                  height={10}
+                                />
+                                <span>Pay with PayPal</span>
+                              </span>
+                            ) : (
+                              "Place order (credit card)"
+                            )}
                           </button>
                         </div>
                       </div>
@@ -2201,7 +2413,11 @@ export default function Checkout() {
               <div className="summary-header">
                 <h5>ORDER SUMMARY</h5>
                 <Link
-                  href={isPoCheckout ? `/dealers-portal/po/${poIdParam}` : "/view-cart"}
+                  href={
+                    isPoCheckout
+                      ? `/dealers-portal/po/${poIdParam}`
+                      : "/view-cart"
+                  }
                   className="edit-cart-link"
                 >
                   {isPoCheckout ? "VIEW PO" : "EDIT CART"}
@@ -2221,7 +2437,7 @@ export default function Checkout() {
               )}
 
               <div className="summary-items">
-                {effectiveCartLoading ? (
+                {!summaryMounted || effectiveCartLoading ? (
                   <CartSkeleton />
                 ) : (
                   effectiveCartProducts.map((item, index) => (
@@ -2303,7 +2519,8 @@ export default function Checkout() {
                                         }
                                       : cartItem
                                 );
-                                if (isPoCheckout) setPoCartProducts(updatedCart);
+                                if (isPoCheckout)
+                                  setPoCartProducts(updatedCart);
                                 else setCartProducts(updatedCart);
                               }
                             }}
@@ -2342,20 +2559,30 @@ export default function Checkout() {
                 )}
               </div>
 
-              {effectiveCartLoading && (
+              {/* Avoid hydration mismatch: defer client-only cart loading state */}
+              {!summaryMounted ? (
+                <div className="text-center py-4">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading cart...</span>
+                  </div>
+                  <p className="mt-2">Loading your cart...</p>
+                </div>
+              ) : effectiveCartLoading ? (
                 <div className="text-center py-4">
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading cart...</span>
                   </div>
                   <p className="mt-2">
-                    {isPoCheckout ? "Loading PO items..." : "Loading your cart..."}
+                    {isPoCheckout
+                      ? "Loading PO items..."
+                      : "Loading your cart..."}
                   </p>
                 </div>
+              ) : (
+                <div className="shipping-estimate-section mb-4">
+                  <ShippingEstimate inline={true} />
+                </div>
               )}
-
-              <div className="shipping-estimate-section mb-4">
-                <ShippingEstimate inline={true} />
-              </div>
 
               <div className="coupon-section">
                 <p>Have a coupon code? Enter it here!</p>
@@ -2407,37 +2634,81 @@ export default function Checkout() {
               </div>
 
               <div className="order-totals">
-                <div className="total-line">
-                  <span>Subtotal:</span>
-                  <span>${calculateSubtotal().toFixed(2)}</span>
-                </div>
-                <div className="total-line">
-                  <span>Shipping:</span>
-                  <span>
-                    ${selectedOption ? selectedOption.cost.toFixed(2) : "0.00"}
-                  </span>
-                </div>
-                {appliedCoupon && (
-                  <div
-                    className="d-flex justify-content-between mb-2 text-danger total-line"
-                    style={{ fontSize: "14px" }}
-                  >
-                    <span>Coupon ({appliedCoupon.code}):</span>
-                    <span>-${couponDiscount.toFixed(2)}</span>
-                  </div>
+                {!summaryMounted ? (
+                  /* Placeholder so server and client match (avoids hydration error) */
+                  <>
+                    <div className="total-line">
+                      <span>Subtotal:</span>
+                      <span>$—</span>
+                    </div>
+                    <div className="total-line">
+                      <span>Shipping:</span>
+                      <span>$—</span>
+                    </div>
+                    <div className="total-line">
+                      <span>Gift Certificate:</span>
+                      <span>$0.00</span>
+                    </div>
+                    <div className="total-line">
+                      <span>Tax:</span>
+                      <span>$—</span>
+                    </div>
+                    <div className="total-line grand-total">
+                      <span>Grand Total:</span>
+                      <span>$—</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="total-line">
+                      <span>Subtotal:</span>
+                      <span>${calculateSubtotal().toFixed(2)}</span>
+                    </div>
+                    <div className="total-line">
+                      <span>Shipping:</span>
+                      <span>
+                        $
+                        {selectedOption
+                          ? selectedOption.cost.toFixed(2)
+                          : "0.00"}
+                      </span>
+                    </div>
+                    {isDealer && dealerDiscountPercent > 0 && (
+                      <div
+                        className="d-flex justify-content-between mb-2 text-success total-line"
+                        style={{ fontSize: "14px" }}
+                      >
+                        <span>Dealer discount ({dealerDiscountPercent}%):</span>
+                        <span>
+                          {isPoCheckout
+                            ? "Reflected in item prices"
+                            : `-$${dealerDiscountAmount.toFixed(2)}`}
+                        </span>
+                      </div>
+                    )}
+                    {appliedCoupon && (
+                      <div
+                        className="d-flex justify-content-between mb-2 text-danger total-line"
+                        style={{ fontSize: "14px" }}
+                      >
+                        <span>Coupon ({appliedCoupon.code}):</span>
+                        <span>-${couponDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="total-line">
+                      <span>Gift Certificate:</span>
+                      <span>$0.00</span>
+                    </div>
+                    <div className="total-line">
+                      <span>Tax:</span>
+                      <span>${calculateTax().toFixed(2)}</span>
+                    </div>
+                    <div className="total-line grand-total">
+                      <span>Grand Total:</span>
+                      <span>${calculateGrandTotal().toFixed(2)}</span>
+                    </div>
+                  </>
                 )}
-                <div className="total-line">
-                  <span>Gift Certificate:</span>
-                  <span>$0.00</span>
-                </div>
-                <div className="total-line">
-                  <span>Tax:</span>
-                  <span>${calculateTax().toFixed(2)}</span>
-                </div>
-                <div className="total-line grand-total">
-                  <span>Grand Total:</span>
-                  <span>${calculateGrandTotal().toFixed(2)}</span>
-                </div>
               </div>
 
               <div className="terms-checkbox">
@@ -2467,7 +2738,11 @@ export default function Checkout() {
               </div>
 
               <button
-                className="btn btn-lg w-100 place-order-btn"
+                className={`btn w-100 place-order-btn ${
+                  paymentMethod === "paypal"
+                    ? "place-order-btn--paypal place-order-btn--paypal-compact"
+                    : "btn-lg"
+                }`}
                 onClick={handleOrderSubmission}
                 disabled={
                   activeStep !== "payment" || isSubmitting || !termsAgreed
@@ -2485,7 +2760,16 @@ export default function Checkout() {
                       : "Processing Order..."}
                   </>
                 ) : paymentMethod === "paypal" ? (
-                  "Pay with PayPal"
+                  <span className="checkout-paypal-btn__content">
+                    <div className="checkout-paypal-btn__content-text"></div>
+                    <Image
+                      src="/images/logo/PayPal_Logo.png"
+                      alt=""
+                      width={32}
+                      height={10}
+                    />
+                    <span>Pay with PayPal</span>
+                  </span>
                 ) : (
                   "PLACE ORDER"
                 )}

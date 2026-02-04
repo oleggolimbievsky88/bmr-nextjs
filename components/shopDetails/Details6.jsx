@@ -483,13 +483,14 @@ export default function ou({ product, initialColor, searchParams }) {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-            <div className="tf-product-media-wrap thumbs-bottom sticky-top">
-            <div className="thumbs-slider">
+              <div className="tf-product-media-wrap thumbs-bottom sticky-top tf-product-media-wrap-zoom">
+                <div className="thumbs-slider">
                   <Slider3BottomThumbs
                     productId={product.ProductID}
                     selectedColor={currentColor}
                   />
                 </div>
+                <div className="tf-zoom-main" />
               </div>
             </div>
             <div className="col-md-6">
@@ -497,7 +498,6 @@ export default function ou({ product, initialColor, searchParams }) {
                 className="tf-product-info-wrap position-relative"
                 style={{ overflow: "visible" }}
               >
-                <div className="tf-zoom-main" />
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
                     <h5>{product?.ProductName}</h5>
@@ -900,7 +900,12 @@ export default function ou({ product, initialColor, searchParams }) {
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
                       >
                         <span>Add to cart -</span>
-                        <span className="tf-qty-price">${product.Price}</span>
+                        <span className="tf-qty-price">
+                          $
+                          {(
+                            (Number(product.Price) || 0) * (quantity || 1)
+                          ).toFixed(2)}
+                        </span>
                       </button>
                     </form>
                     {/* Temporary debug buttons - remove after testing */}

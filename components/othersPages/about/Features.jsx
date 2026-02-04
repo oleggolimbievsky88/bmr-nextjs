@@ -10,7 +10,7 @@ export default function Features() {
       <div className="container">
         <div
           className="bg_grey-7 radius-20 flat-wrap-iconbox mb-5 mt-5"
-          style={{ border: "1px solid grey" }}
+          style={{ border: "2px solid var(--primary)" }}
         >
           <div className="flat-title lg">
             <span className="title mb-5 italic-heavy">
@@ -21,7 +21,7 @@ export default function Features() {
                 Every BMR Suspension product is engineered with precision and
                 tested on our own project vehicles.
               </p>
-              <p className="sub-title text_black-2">
+              <p className="sub-title text_black-2 mb-5">
                 From street performance to hardcore drag racing, we deliver
                 innovative, quality-oriented suspension solutions made right
                 here in the USA.
@@ -45,17 +45,34 @@ export default function Features() {
                 {iconBoxes4.map((box, index) => (
                   <SwiperSlide key={index}>
                     <div className="tf-icon-box text-center">
-                      <div className="icon">
-                        <i className={box.iconClass} />
+                      <div
+                        className="icon"
+                        style={{
+                          color: "var(--primary)",
+                          border: "2px solid var(--primary)",
+                          borderRadius: "50%",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <i
+                          className={box.iconClass}
+                          style={{ color: "var(--primary)" }}
+                        />
                       </div>
                       <div className="content">
-                        <div className="title">{box.title}</div>
+                        <div
+                          className="title"
+                          style={{ color: "var(--primary)" }}
+                        >
+                          {box.title}
+                        </div>
                         <p className="text_black-2">{box.description}</p>
                       </div>
                     </div>
                   </SwiperSlide>
                 ))}
-                <div className="sw-dots style-2 sw-pagination-mb justify-content-center spd303" />
               </Swiper>
             </div>
           </div>

@@ -90,11 +90,11 @@ export default function CategoryPage({ params }) {
         if (!currentCat) throw new Error("Category not found");
         setCurrentCategory(currentCat);
 
-        // 4. Fetch products for this category using the resolved category ID
+        // 4. Fetch products for this category by slug (API resolves all category IDs with this slug, so duplicates show combined products)
         const query = new URLSearchParams({
           platform,
           mainCategory,
-          catid: currentCat.CatID || currentCat.id, // Use the resolved category ID
+          category: decodedCategory, // slug so API returns products from all categories with this slug
           page: 1,
           limit: 12,
         }).toString();

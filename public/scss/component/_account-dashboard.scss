@@ -308,7 +308,7 @@
 /* Dealer Portal: top nav bar (horizontal links) */
 .dealer-nav-top {
 	background-color: var(--bg-2, #f8f9fa);
-	border-bottom: 1px solid var(--line, #dee2e6);
+	border-bottom: 2px solid var(--bmr-red);
 	padding: 12px 0;
 	margin-bottom: 0;
 
@@ -396,6 +396,11 @@
 	/* Dealer products list table: subtle color column hints (Red / Black / Black Hammertone etc.) */
 	.dealer-products-table-wrap {
 		.dealer-products-table {
+			th {
+				background-color: #f8f9fa;
+				border-bottom: 1px solid #000000;
+
+			}
 			th.dealer-col-qty,
 			td.dealer-col-qty {
 				min-width: 4rem;
@@ -446,6 +451,52 @@
 			.dealer-addon-select {
 				width: 100%;
 			}
+			tr.dealer-row-added {
+				background-color: #f2fbf2;
+				transition: background-color 0.2s ease;
+			}
+			tr.dealer-row-added:hover {
+				background-color: #e5f5e5;
+			}
+			.dealer-po-added-badge {
+				font-size: 0.72rem;
+				font-weight: 600;
+				color: #0f5132;
+				background-color: #e6f4ea;
+				border-radius: 999px;
+				padding: 0.15rem 0.55rem;
+				display: inline-flex;
+				align-items: center;
+				width: fit-content;
+			}
+			.dealer-po-added-qty {
+				display: inline-block;
+				margin-top: 0.25rem;
+				font-size: 0.7rem;
+				font-weight: 600;
+				color: #198754;
+			}
+		}
+	}
+
+	/* Dealer Portal buttons: BMR red */
+	.btn-primary {
+		background-color: var(--bmr-red, var(--primary)) !important;
+		border-color: var(--bmr-red, var(--primary)) !important;
+		color: var(--white) !important;
+		&:hover:not(:disabled) {
+			background-color: #b80f12 !important;
+			border-color: #b80f12 !important;
+			color: var(--white) !important;
+		}
+	}
+	.btn-outline-primary {
+		color: var(--bmr-red, var(--primary)) !important;
+		border-color: var(--bmr-red, var(--primary)) !important;
+		&:hover:not(:disabled) {
+			background-color: var(--bmr-red, var(--primary)) !important;
+			border-color: var(--bmr-red, var(--primary)) !important;
+			color: var(--white) !important;
 		}
 	}
 }

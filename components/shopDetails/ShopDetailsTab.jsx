@@ -91,22 +91,20 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                               fontSize: "16px !important",
                             }}
                           ></h2>
-                          <div className="row">
-                            <ul>
-                              {featuresArr.map((feature, idx) => (
-                                <li
-                                  key={idx}
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "20px !important",
-                                    color: "black !important",
-                                  }}
-                                >
-                                  {feature}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <ul className="tf-product-features-list">
+                            {featuresArr.map((feature, idx) => (
+                              <li
+                                key={idx}
+                                style={{
+                                  fontSize: "15px",
+                                  lineHeight: "20px !important",
+                                  color: "black !important",
+                                }}
+                              >
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
                     )}
@@ -117,33 +115,27 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                     currentTab == 2 ? "active" : ""
                   } `}
                 >
-                  <div className="row">
-                    <ul>
-                      {featuresArr.length > 0 && (
-                        <div className="tf-product-des-demo">
-                          <div className="right">
-                            <h2 className="fs-16 fw-5"></h2>
-                            <div className="row">
-                              <ul>
-                                {featuresArr.map((feature, idx) => (
-                                  <li
-                                    key={idx}
-                                    style={{
-                                      fontSize: "15px",
-                                      color: "black !important",
-                                      lineHeight: "15px",
-                                    }}
-                                  >
-                                    {feature}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </ul>
-                  </div>
+                  {featuresArr.length > 0 && (
+                    <div className="tf-product-des-demo">
+                      <div className="right">
+                        <h2 className="fs-16 fw-5"></h2>
+                        <ul className="tf-product-features-list">
+                          {featuresArr.map((feature, idx) => (
+                            <li
+                              key={idx}
+                              style={{
+                                fontSize: "15px",
+                                color: "black !important",
+                                lineHeight: "20px !important",
+                              }}
+                            >
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div
                   className={`widget-content-inner ${

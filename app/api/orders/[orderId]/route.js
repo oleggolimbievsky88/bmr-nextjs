@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
       );
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
 
     // Fetch order details - try by order_number first (e.g., "BMR-660000"), then by ID
     const order = await getOrderById(orderId);
@@ -32,7 +32,9 @@ export async function GET(request, { params }) {
       orderNumber: order.order_number,
       orderDate: order.order_date,
       status: order.status,
-      cardLastFour: "", // Not stored in database, will be empty when fetched from API
+      cardLastFour: order.cc_last_four || "",
+      cardType: order.cc_type || "",
+      paypalEmail: order.paypal_email || "",
       billing: {
         firstName: order.billing_first_name,
         lastName: order.billing_last_name,
@@ -56,19 +58,19 @@ export async function GET(request, { params }) {
         country: order.shipping_country,
       },
       shippingMethod: order.shipping_method,
-      shippingCost: order.shipping_cost,
-      tax: order.tax,
-      discount: order.discount,
+      shippingCost: parseFloat(order.shipping_cost) || 0,
+      tax: parseFloat(order.tax) || 0,
+      discount: parseFloat(order.discount) || 0,
       couponCode: order.coupon_code,
       paymentMethod: order.payment_method,
       notes: order.notes || "",
-      total: order.total,
+      total: parseFloat(order.total) || 0,
       items: itemsResult.map((item) => ({
         productId: item.product_id,
         name: item.product_name,
         partNumber: item.part_number,
         quantity: item.quantity,
-        price: item.price,
+        price: parseFloat(item.price) || 0,
         color: item.color,
         platform: item.platform,
         yearRange: item.year_range,

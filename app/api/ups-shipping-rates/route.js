@@ -18,7 +18,7 @@ export async function POST(request) {
   } catch (parseErr) {
     return NextResponse.json(
       { error: "Invalid request body" },
-      { status: 400 },
+      { status: 400 }
     );
   }
   try {
@@ -26,11 +26,11 @@ export async function POST(request) {
     const role = session?.user?.role;
     const dealerTier = parseInt(session?.user?.dealerTier ?? 0, 10);
     const isDealer = role === "dealer" || role === "admin";
+    const toCountryForDealer = getCountryCode(toAddress?.country) || "US";
     const lower48 =
-      (toAddress?.country === "US" || toAddress?.country === "United States") &&
-      isLower48UsState(toAddress?.state);
+      toCountryForDealer === "US" && isLower48UsState(toAddress?.state);
 
-    if (isDealer && dealerTier >= 1 && dealerTier <= 2 && lower48) {
+    if (isDealer && dealerTier >= 1 && dealerTier <= 3 && lower48) {
       return NextResponse.json({
         success: true,
         shippingOptions: [
@@ -40,12 +40,12 @@ export async function POST(request) {
             cost: DEALER_FLAT_RATE_LOWER48,
             currency: "USD",
             deliveryDays: "3–5 business days",
-            description: "Flat rate for Tier 1 & 2 dealers in lower 48",
+            description: "Flat rate for Tier 1 - 3 dealers in lower 48",
           },
         ],
       });
     }
-    if (isDealer && dealerTier >= 3) {
+    if (isDealer && dealerTier >= 4) {
       // Tier 3+ always pay full shipping; fall through to UPS rates below
     }
     // UPS API credentials - Client Credentials flow only needs Client ID and Client Secret
@@ -61,7 +61,7 @@ export async function POST(request) {
       });
       return NextResponse.json(
         { error: "UPS API credentials not configured" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -208,12 +208,12 @@ export async function POST(request) {
       : "https://onlinetools.ups.com";
 
     console.log(
-      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`,
+      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`
     );
 
     // Get OAuth token using Client Credentials flow
     const basicAuth = Buffer.from(`${upsClientId}:${upsClientSecret}`).toString(
-      "base64",
+      "base64"
     );
 
     console.log("Basic Auth header:", {
@@ -237,7 +237,7 @@ export async function POST(request) {
       const errorText = await tokenResponse.text();
       console.error("UPS OAuth error details:", errorText);
       throw new Error(
-        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`,
+        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`
       );
     }
 
@@ -284,14 +284,14 @@ export async function POST(request) {
           const errorText = await rateResponse.text();
           console.log(
             `UPS Rate API error for service ${serviceInfo.code}:`,
-            errorText,
+            errorText
           );
           return null;
         }
       } catch (error) {
         console.log(
           `Error fetching rate for service ${serviceInfo.code}:`,
-          error,
+          error
         );
         return null;
       }
@@ -481,7 +481,7 @@ export async function POST(request) {
         toCountryCode === "US" &&
         isLower48UsState(stateForFallback) &&
         (await areAllProductsCouponEligible(
-          Array.isArray(productIds) ? productIds : [],
+          Array.isArray(productIds) ? productIds : []
         ));
     } catch (e) {
       allowFreeShipping = false;

@@ -76,74 +76,92 @@ export default function DealersPortalOrdersPage() {
                   <th>Date</th>
                   <th>Status</th>
                   <th>Total</th>
+                  <th>Discount</th>
                   <th>Payment</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
-                  <tr key={order.new_order_id}>
-                    <td>#{order.order_number}</td>
-                    <td>{formatDate(order.order_date)}</td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          order.status === "completed" ||
-                          order.status === "delivered"
-                            ? "bg-success"
-                            : order.status === "processed"
+                {orders.map((order) => {
+                  const discount = parseFloat(order.discount) || 0;
+                  return (
+                    <tr key={order.new_order_id}>
+                      <td>#{order.order_number}</td>
+                      <td>{formatDate(order.order_date)}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            order.status === "completed" ||
+                            order.status === "delivered"
+                              ? "bg-success"
+                              : order.status === "processed"
                               ? "bg-warning"
                               : order.status === "shipped"
-                                ? "bg-info"
-                                : "bg-secondary"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td>{formatPrice(order.total)}</td>
-                    <td>
-                      {order.payment_status === "paid" ? (
-                        <span className="text-success">Paid</span>
-                      ) : (
-                        <span className="text-muted">
-                          {order.payment_method || "—"}
+                              ? "bg-info"
+                              : "bg-secondary"
+                          }`}
+                        >
+                          {order.status}
                         </span>
-                      )}
-                    </td>
-                    <td>
-                      <Link
-                        href={`/my-account-orders/${order.order_number}`}
-                        className="btn btn-outline-primary btn-sm me-1"
-                      >
-                        View
-                      </Link>
-                      {order.payment_status !== "paid" &&
-                        order.status !== "cancelled" && (
-                          <>
-                            <button
-                              type="button"
-                              className="btn btn-primary btn-sm me-1"
-                              onClick={() =>
-                                (window.location.href = `/checkout?order=${order.order_number}`)
-                              }
-                            >
-                              Pay with CC
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-outline-secondary btn-sm"
-                              onClick={() =>
-                                (window.location.href = `/checkout?order=${order.order_number}&pay=paypal`)
-                              }
-                            >
-                              PayPal
-                            </button>
-                          </>
+                      </td>
+                      <td>{formatPrice(order.total)}</td>
+                      <td>
+                        {discount > 0 ? (
+                          <span className="text-success">
+                            -{formatPrice(discount)}
+                          </span>
+                        ) : (
+                          "—"
                         )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td>
+                        {order.payment_status === "paid" ? (
+                          <span className="text-success">Paid</span>
+                        ) : (
+                          <span className="text-muted">
+                            {order.payment_method === "PayPal" &&
+                            order.paypal_email
+                              ? `PayPal (${order.paypal_email})`
+                              : order.cc_type && order.cc_last_four
+                              ? `${order.cc_type} ****${order.cc_last_four}`
+                              : order.payment_method || "—"}
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <Link
+                          href={`/my-account-orders/${order.order_number}`}
+                          className="btn btn-outline-primary btn-sm me-1"
+                        >
+                          View
+                        </Link>
+                        {order.payment_status !== "paid" &&
+                          order.status !== "cancelled" && (
+                            <>
+                              <button
+                                type="button"
+                                className="btn btn-primary btn-sm me-1"
+                                onClick={() =>
+                                  (window.location.href = `/checkout?order=${order.order_number}`)
+                                }
+                              >
+                                Pay with CC
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-outline-secondary btn-sm"
+                                onClick={() =>
+                                  (window.location.href = `/checkout?order=${order.order_number}&pay=paypal`)
+                                }
+                              >
+                                PayPal
+                              </button>
+                            </>
+                          )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -178,8 +196,8 @@ export default function DealersPortalOrdersPage() {
                           po.status === "sent"
                             ? "bg-primary"
                             : po.status === "draft"
-                              ? "bg-secondary"
-                              : "bg-info"
+                            ? "bg-secondary"
+                            : "bg-info"
                         }`}
                       >
                         {po.status}
@@ -188,7 +206,7 @@ export default function DealersPortalOrdersPage() {
                     <td>
                       {po.status === "draft" ? (
                         <Link
-                          href="/dealers-portal/po"
+                          href={`/dealers-portal/po?draft=${po.id}`}
                           className="btn btn-outline-primary btn-sm"
                         >
                           Edit / Send
@@ -229,7 +247,10 @@ export default function DealersPortalOrdersPage() {
           </div>
         )}
         <div className="mt-3">
-          <Link href="/dealers-portal/po" className="btn btn-outline-primary btn-sm">
+          <Link
+            href="/dealers-portal/po"
+            className="btn btn-outline-primary btn-sm"
+          >
             Create / Edit Draft PO
           </Link>
         </div>

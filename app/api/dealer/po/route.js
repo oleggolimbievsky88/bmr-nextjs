@@ -39,6 +39,7 @@ export async function GET() {
       po: {
         id: full.id,
         status: full.status,
+        po_number: full.po_number,
         notes: full.notes,
         created_at: full.created_at,
         updated_at: full.updated_at,
@@ -47,10 +48,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching dealer PO:", error);
-    return NextResponse.json(
-      { error: "Failed to load PO" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to load PO" }, { status: 500 });
   }
 }
 
@@ -79,6 +77,7 @@ export async function POST() {
       po: {
         id: draft.id,
         status: draft.status,
+        po_number: draft.po_number,
         notes: draft.notes,
         created_at: draft.created_at,
         updated_at: draft.updated_at,
@@ -87,9 +86,6 @@ export async function POST() {
     });
   } catch (error) {
     console.error("Error creating dealer PO:", error);
-    return NextResponse.json(
-      { error: "Failed to create PO" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to create PO" }, { status: 500 });
   }
 }

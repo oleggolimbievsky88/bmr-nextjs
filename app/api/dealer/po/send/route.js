@@ -29,25 +29,28 @@ export async function POST(request) {
     if (!poId || Number.isNaN(poId)) {
       return NextResponse.json(
         { error: "Missing or invalid poId" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    const notes = body.notes != null ? String(body.notes) : null;
-    const sent = await sendDealerPO(poId, customerId, notes);
+    const notesRaw = body.notes != null ? String(body.notes) : "";
+    const notes = notesRaw.trim() ? notesRaw : null;
+    const poNumberRaw = body.poNumber != null ? String(body.poNumber) : "";
+    const poNumber = poNumberRaw.trim() ? poNumberRaw : null;
+    const sent = await sendDealerPO(poId, customerId, {
+      notes,
+      poNumber,
+    });
     if (!sent) {
       return NextResponse.json(
         { error: "PO not found, already sent, or not yours" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     return NextResponse.json({ success: true, sent: true });
   } catch (error) {
     console.error("Error sending dealer PO:", error);
-    return NextResponse.json(
-      { error: "Failed to send PO" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to send PO" }, { status: 500 });
   }
 }

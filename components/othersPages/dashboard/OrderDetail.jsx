@@ -190,37 +190,45 @@ export default function OrderDetail({ orderNumber }) {
             {(order.payment_method ||
               order.cc_last_four ||
               order.cc_type ||
-              order.cc_payment_token) && (
+              order.cc_payment_token ||
+              order.paypal_email) && (
               <>
                 <h6 className="fw-5 mb_15">Payment Information</h6>
                 <div className="address-box">
                   {order.payment_method && (
                     <p className="mb-1">
                       <strong>Payment Method:</strong> {order.payment_method}
+                      {order.payment_method === "PayPal" &&
+                        order.paypal_email && (
+                          <span> ({order.paypal_email})</span>
+                        )}
                     </p>
                   )}
-                  {(order.cc_type || order.cc_last_four) && (
-                    <p className="mb-1">
-                      <strong>Card:</strong>{" "}
-                      {order.cc_type && <span>{order.cc_type} </span>}
-                      {order.cc_last_four ? (
-                        <span>****{order.cc_last_four}</span>
-                      ) : (
-                        <span>••••</span>
-                      )}
-                      {order.cc_exp_month && order.cc_exp_year && (
-                        <span className="ms-2">
-                          (Exp: {order.cc_exp_month}/
-                          {String(order.cc_exp_year).slice(-2)})
-                        </span>
-                      )}
-                    </p>
-                  )}
-                  {order.cc_payment_token && !order.cc_last_four && (
-                    <p className="mb-0">
-                      <strong>Payment:</strong> Card on file
-                    </p>
-                  )}
+                  {order.payment_method !== "PayPal" &&
+                    (order.cc_type || order.cc_last_four) && (
+                      <p className="mb-1">
+                        <strong>Card:</strong>{" "}
+                        {order.cc_type && <span>{order.cc_type} </span>}
+                        {order.cc_last_four ? (
+                          <span>****{order.cc_last_four}</span>
+                        ) : (
+                          <span>••••</span>
+                        )}
+                        {order.cc_exp_month && order.cc_exp_year && (
+                          <span className="ms-2">
+                            (Exp: {order.cc_exp_month}/
+                            {String(order.cc_exp_year).slice(-2)})
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  {order.payment_method !== "PayPal" &&
+                    order.cc_payment_token &&
+                    !order.cc_last_four && (
+                      <p className="mb-0">
+                        <strong>Payment:</strong> Card on file
+                      </p>
+                    )}
                 </div>
               </>
             )}
@@ -270,7 +278,7 @@ export default function OrderDetail({ orderNumber }) {
                       parseFloat(order.total) -
                         (parseFloat(order.shipping_cost) || 0) -
                         (parseFloat(order.tax) || 0) +
-                        (parseFloat(order.discount) || 0),
+                        (parseFloat(order.discount) || 0)
                     )}
                   </span>
                 </div>

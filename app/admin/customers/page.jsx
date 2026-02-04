@@ -23,10 +23,28 @@ export default function AdminCustomersPage() {
   const [datePreset, setDatePreset] = useState("");
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    phonenumber: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    shippingfirstname: "",
+    shippinglastname: "",
+    shippingaddress1: "",
+    shippingaddress2: "",
+    shippingcity: "",
+    shippingstate: "",
+    shippingzip: "",
+    shippingcountry: "",
     role: "customer",
     dealerTier: 0,
-    dealerDiscount: 0,
   });
+  const [sendingReset, setSendingReset] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -143,14 +161,38 @@ export default function AdminCustomersPage() {
     setCurrentPage(1);
   }, []);
 
-  const openEditByParam = useCallback((customer) => {
-    setEditingCustomer(customer);
+  const applyCustomerToForm = useCallback((customer) => {
     setFormData({
+      firstname: customer.firstname ?? "",
+      lastname: customer.lastname ?? "",
+      email: customer.email ?? "",
+      phonenumber: customer.phonenumber ?? "",
+      address1: customer.address1 ?? "",
+      address2: customer.address2 ?? "",
+      city: customer.city ?? "",
+      state: customer.state ?? "",
+      zip: customer.zip ?? "",
+      country: customer.country ?? "",
+      shippingfirstname: customer.shippingfirstname ?? "",
+      shippinglastname: customer.shippinglastname ?? "",
+      shippingaddress1: customer.shippingaddress1 ?? "",
+      shippingaddress2: customer.shippingaddress2 ?? "",
+      shippingcity: customer.shippingcity ?? "",
+      shippingstate: customer.shippingstate ?? "",
+      shippingzip: customer.shippingzip ?? "",
+      shippingcountry: customer.shippingcountry ?? "",
       role: customer.role || "customer",
-      dealerTier: customer.dealerTier || 0,
-      dealerDiscount: customer.dealerDiscount || 0,
+      dealerTier: customer.dealerTier ?? 0,
     });
   }, []);
+
+  const openEditByParam = useCallback(
+    (customer) => {
+      setEditingCustomer(customer);
+      applyCustomerToForm(customer);
+    },
+    [applyCustomerToForm]
+  );
 
   useEffect(() => {
     const editCustomerId = searchParams.get("editCustomer");
@@ -169,7 +211,57 @@ export default function AdminCustomersPage() {
     }
   }, [searchParams, openEditByParam]);
 
-  const handleEdit = openEditByParam;
+  const handleEdit = useCallback(
+    async (customer) => {
+      setEditingCustomer(customer);
+      if (
+        customer.address1 !== undefined &&
+        customer.shippingfirstname !== undefined
+      ) {
+        applyCustomerToForm(customer);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/admin/customers/${customer.CustomerID}`);
+        const data = await res.json();
+        if (data.success && data.customer) {
+          setEditingCustomer(data.customer);
+          applyCustomerToForm(data.customer);
+        } else {
+          applyCustomerToForm(customer);
+        }
+      } catch (e) {
+        console.error(e);
+        applyCustomerToForm(customer);
+      }
+    },
+    [applyCustomerToForm]
+  );
+
+  const handleSendPasswordReset = useCallback(async () => {
+    if (!editingCustomer?.CustomerID) return;
+    setSendingReset(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `/api/admin/customers/${editingCustomer.CustomerID}/send-password-reset`,
+        { method: "POST" }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        showToast(
+          "Password reset email sent to the customer's email address.",
+          "success"
+        );
+      } else {
+        setError(data.error || "Failed to send password reset email");
+      }
+    } catch (err) {
+      setError(err.message || "Failed to send password reset email");
+    } finally {
+      setSendingReset(false);
+    }
+  }, [editingCustomer?.CustomerID]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,7 +280,20 @@ export default function AdminCustomersPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update customer");
+        const msg = data.error || "Failed to update customer";
+        if (
+          response.status === 400 &&
+          msg.toLowerCase().includes("email") &&
+          msg.toLowerCase().includes("already in use")
+        ) {
+          showToast(
+            "That email address is already in use by another customer.",
+            "error"
+          );
+          setError("");
+          return;
+        }
+        throw new Error(msg);
       }
 
       setEditingCustomer(null);
@@ -543,7 +648,295 @@ export default function AdminCustomersPage() {
             Edit Customer: {editingCustomer.firstname}{" "}
             {editingCustomer.lastname}
           </h2>
+          <p className="text-muted small mb-3">
+            Dealer discount is set by dealer tier on the Dealer Tiers page; it
+            is not edited here.
+          </p>
           <form onSubmit={handleSubmit}>
+            <div className="row g-3 mb-3">
+              <div className="col-md-6">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-firstname">First name *</label>
+                  <input
+                    id="edit-firstname"
+                    type="text"
+                    value={formData.firstname}
+                    onChange={(e) =>
+                      setFormData({ ...formData, firstname: e.target.value })
+                    }
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-lastname">Last name *</label>
+                  <input
+                    id="edit-lastname"
+                    type="text"
+                    value={formData.lastname}
+                    onChange={(e) =>
+                      setFormData({ ...formData, lastname: e.target.value })
+                    }
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-email">Email *</label>
+                  <input
+                    id="edit-email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-phone">Phone</label>
+                  <input
+                    id="edit-phone"
+                    type="text"
+                    value={formData.phonenumber}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phonenumber: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-address1">Address line 1</label>
+                  <input
+                    id="edit-address1"
+                    type="text"
+                    value={formData.address1}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address1: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-address2">Address line 2</label>
+                  <input
+                    id="edit-address2"
+                    type="text"
+                    value={formData.address2}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address2: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-city">City</label>
+                  <input
+                    id="edit-city"
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-state">State</label>
+                  <input
+                    id="edit-state"
+                    type="text"
+                    value={formData.state}
+                    onChange={(e) =>
+                      setFormData({ ...formData, state: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-2">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-zip">ZIP</label>
+                  <input
+                    id="edit-zip"
+                    type="text"
+                    value={formData.zip}
+                    onChange={(e) =>
+                      setFormData({ ...formData, zip: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-2">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-country">Country</label>
+                  <input
+                    id="edit-country"
+                    type="text"
+                    value={formData.country}
+                    onChange={(e) =>
+                      setFormData({ ...formData, country: e.target.value })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+            </div>
+            <h3 className="h6 mt-4 mb-2">Shipping address</h3>
+            <div className="row g-3 mb-3">
+              <div className="col-md-6">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-firstname">First name</label>
+                  <input
+                    id="edit-ship-firstname"
+                    type="text"
+                    value={formData.shippingfirstname}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingfirstname: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-lastname">Last name</label>
+                  <input
+                    id="edit-ship-lastname"
+                    type="text"
+                    value={formData.shippinglastname}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippinglastname: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-address1">Address line 1</label>
+                  <input
+                    id="edit-ship-address1"
+                    type="text"
+                    value={formData.shippingaddress1}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingaddress1: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-address2">Address line 2</label>
+                  <input
+                    id="edit-ship-address2"
+                    type="text"
+                    value={formData.shippingaddress2}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingaddress2: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-city">City</label>
+                  <input
+                    id="edit-ship-city"
+                    type="text"
+                    value={formData.shippingcity}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingcity: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-state">State</label>
+                  <input
+                    id="edit-ship-state"
+                    type="text"
+                    value={formData.shippingstate}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingstate: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-2">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-zip">ZIP</label>
+                  <input
+                    id="edit-ship-zip"
+                    type="text"
+                    value={formData.shippingzip}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingzip: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-md-2">
+                <div className="admin-form-group">
+                  <label htmlFor="edit-ship-country">Country</label>
+                  <input
+                    id="edit-ship-country"
+                    type="text"
+                    value={formData.shippingcountry}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingcountry: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                  />
+                </div>
+              </div>
+            </div>
             <div className="row g-3 mb-3">
               <div className="col-md-4">
                 <div className="admin-form-group">
@@ -567,7 +960,7 @@ export default function AdminCustomersPage() {
               </div>
               <div className="col-md-4">
                 <div className="admin-form-group">
-                  <label htmlFor="edit-tier">Dealer Tier (1-8)</label>
+                  <label htmlFor="edit-tier">Dealer Tier (0 = none, 1–8)</label>
                   <input
                     id="edit-tier"
                     type="number"
@@ -576,38 +969,31 @@ export default function AdminCustomersPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        dealerTier: parseInt(e.target.value) || 0,
+                        dealerTier: parseInt(e.target.value, 10) || 0,
                       })
                     }
                     min="0"
                     max="8"
                     className="form-control"
-                  />
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="admin-form-group">
-                  <label htmlFor="edit-discount">Dealer Discount (%)</label>
-                  <input
-                    id="edit-discount"
-                    type="number"
-                    name="dealerDiscount"
-                    value={formData.dealerDiscount}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        dealerDiscount: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    className="form-control"
+                    style={{ maxWidth: "100px" }}
                   />
                 </div>
               </div>
             </div>
-            <div className="d-flex gap-2">
+            <div className="mb-3">
+              <label className="d-block small text-muted mb-1">Password</label>
+              <button
+                type="button"
+                onClick={handleSendPasswordReset}
+                disabled={sendingReset}
+                className="btn btn-outline-secondary"
+              >
+                {sendingReset
+                  ? "Sending…"
+                  : "Send password reset email to this customer"}
+              </button>
+            </div>
+            <div className="d-flex gap-2 flex-wrap">
               <button type="submit" className="btn btn-primary">
                 Update Customer
               </button>

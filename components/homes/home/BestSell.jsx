@@ -28,9 +28,6 @@ export default function BestSell() {
 
   return (
     <>
-      <div className="container">
-        <div className="line" />
-      </div>
       {/* detail */}
       <section className="flat-spacing-11">
         <div className="container">

@@ -147,7 +147,7 @@ export default function MobileMenu() {
       label: "Pages",
       type: "dropdown",
       links: [
-        { href: "/faq-1", label: "FAQ" },
+        { href: "/faq", label: "FAQ" },
         { href: "/terms-conditions", label: "Terms and conditions" },
         { href: "/privacy-policy", label: "Privacy Policy" },
         { href: "/shipping-delivery", label: "Shipping & Delivery" },
@@ -243,7 +243,7 @@ export default function MobileMenu() {
                                               {platform.heading}
                                             </Link>
                                           </li>
-                                        ),
+                                        )
                                       )
                                     ) : (
                                       <li>

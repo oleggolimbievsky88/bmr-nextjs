@@ -30,6 +30,34 @@
     }
 }
 
+/* Mobile: show zoom pane right below the main product image (in flow) */
+@media (max-width: 767px) {
+    .tf-product-media-wrap-zoom {
+        position: relative;
+    }
+
+    .tf-zoom-main {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 60vh !important;
+        max-height: 400px !important;
+        min-height: 280px !important;
+        transform: none !important;
+        margin-top: 0.5rem;
+        box-sizing: border-box;
+
+        .drift-zoom-pane {
+            height: 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+    }
+}
+
 .tf-zoom-main.drift-open {
     display: block !important;
     pointer-events: none !important;

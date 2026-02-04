@@ -29,12 +29,20 @@ const nextConfig = {
         protocol: "https",
         hostname: "img.youtube.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.paypalobjects.com",
+      },
     ],
   },
 
-  // Redirect old contact-1 URL to contact
+  // Redirect old URLs to current pages
   async redirects() {
-    return [{ source: "/contact-1", destination: "/contact", permanent: true }];
+    return [
+      { source: "/contact-1", destination: "/contact", permanent: true },
+      { source: "/faq-1", destination: "/faq", permanent: true },
+      { source: "/faq-2", destination: "/faq", permanent: true },
+    ];
   },
 
   // Disable static optimization for API routes that use database

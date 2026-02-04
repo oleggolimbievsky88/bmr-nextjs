@@ -266,7 +266,7 @@ export const allPagesLinks = [
     href: "/brands",
     text: "Brands",
   },
-  { href: "/faq-1", text: "FAQ" },
+  { href: "/faq", text: "FAQ" },
   { href: "/our-store", text: "Our store" },
   { href: "/store-locations", text: "Store locator" },
   {
@@ -474,7 +474,7 @@ export const navItems = [
       { href: "/brands", label: "Brands", demoLabel: true },
       { href: "/brands-v2", label: "Brands V2" },
       { href: "/contact", label: "Contact" },
-      { href: "/faq-1", label: "FAQ 01" },
+      { href: "/faq", label: "FAQ" },
       { href: "/our-store", label: "Our store" },
       { href: "/store-locations", label: "Store locator" },
       { href: "/timeline", label: "Timeline", demoLabel: true },
