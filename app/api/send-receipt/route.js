@@ -601,7 +601,11 @@ function generateReceiptHTML(orderData) {
                   orderData.discount > 0
                     ? `
                   <div class="total-row text-success">
-                    <span>Discount (${orderData.couponCode || "Coupon"}):</span>
+                    <span>${
+                      orderData.isDealer
+                        ? "Dealer:"
+                        : `Discount (${orderData.couponCode || "Coupon"}):`
+                    }</span>
                     <span>-$${parseFloat(orderData.discount).toFixed(2)}</span>
                   </div>
                 `

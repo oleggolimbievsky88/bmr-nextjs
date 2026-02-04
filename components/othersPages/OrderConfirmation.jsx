@@ -494,7 +494,11 @@ export default function OrderConfirmation({ orderData }) {
                     </div>
                     {order.discount > 0 && (
                       <div className="d-flex justify-content-between mb-2 text-success">
-                        <span>Discount ({order.couponCode || "Coupon"}):</span>
+                        <span>
+                          {order.isDealer
+                            ? "Dealer:"
+                            : `Discount (${order.couponCode || "Coupon"}):`}
+                        </span>
                         <span>-${parseFloat(order.discount).toFixed(2)}</span>
                       </div>
                     )}

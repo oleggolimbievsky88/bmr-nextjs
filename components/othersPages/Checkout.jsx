@@ -1134,6 +1134,9 @@ export default function Checkout() {
           /free/i.test(selectedOption?.service || selectedOption?.name || ""),
         couponCode: appliedCoupon?.code || "",
         discount: couponDiscount + dealerDiscountAmount,
+        isDealer: !!(
+          session?.user && ["dealer", "admin"].includes(session.user.role)
+        ),
       };
 
       // Store order data in sessionStorage for the confirmation page

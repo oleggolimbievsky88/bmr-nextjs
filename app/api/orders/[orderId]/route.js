@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrderById, getOrderItems } from "@/lib/queries";
+import { getOrderById, getOrderItems, getCustomerRole } from "@/lib/queries";
 
 export async function GET(request, { params }) {
   try {
@@ -22,6 +22,11 @@ export async function GET(request, { params }) {
         { status: 404 }
       );
     }
+
+    const customerRole = order.customer_id
+      ? await getCustomerRole(order.customer_id)
+      : null;
+    const isDealer = customerRole === "dealer" || customerRole === "admin";
 
     // Fetch order items using the actual database ID
     const itemsResult = await getOrderItems(order.new_order_id);
@@ -65,6 +70,7 @@ export async function GET(request, { params }) {
       paymentMethod: order.payment_method,
       notes: order.notes || "",
       total: parseFloat(order.total) || 0,
+      isDealer: !!isDealer,
       items: itemsResult.map((item) => ({
         productId: item.product_id,
         name: item.product_name,
