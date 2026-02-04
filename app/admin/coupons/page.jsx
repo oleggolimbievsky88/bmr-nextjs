@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { showToast } from "@/utlis/showToast";
 
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState([]);
@@ -9,6 +10,10 @@ export default function AdminCouponsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [perPage, setPerPage] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
+  const formCardRef = useRef(null);
   const [formData, setFormData] = useState({
     code: "",
     name: "",
@@ -30,21 +35,28 @@ export default function AdminCouponsPage() {
     min_products: "1",
   });
 
-  useEffect(() => {
-    fetchCoupons();
-  }, []);
-
-  const fetchCoupons = async () => {
+  const fetchCoupons = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/admin/coupons");
+      const offset = (currentPage - 1) * perPage;
+      const params = new URLSearchParams({
+        limit: String(perPage),
+        offset: String(offset),
+      });
+      const response = await fetch(`/api/admin/coupons?${params}`);
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch coupons");
       }
 
-      setCoupons(data.coupons || []);
+      const list = data.coupons || [];
+      const tot = typeof data.total === "number" ? data.total : list.length;
+      setCoupons(list);
+      setTotal(tot);
+      if (list.length === 0 && currentPage > 1 && tot > 0) {
+        setCurrentPage(1);
+      }
       setError("");
     } catch (err) {
       setError(err.message);
@@ -52,7 +64,11 @@ export default function AdminCouponsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, perPage]);
+
+  useEffect(() => {
+    fetchCoupons();
+  }, [fetchCoupons]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -89,6 +105,7 @@ export default function AdminCouponsPage() {
 
   const handleEdit = (coupon) => {
     setEditingCoupon(coupon);
+    setShowForm(true);
     setFormData({
       code: coupon.code || "",
       name: coupon.name || "",
@@ -110,7 +127,12 @@ export default function AdminCouponsPage() {
       is_public: coupon.is_public === 1 || coupon.is_public === true,
       min_products: coupon.min_products || "1",
     });
-    setShowForm(true);
+    setTimeout(() => {
+      formCardRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   };
 
   const handleSubmit = async (e) => {
@@ -171,6 +193,7 @@ export default function AdminCouponsPage() {
       );
     } catch (err) {
       setError(err.message);
+      showToast(err.message, "error");
       console.error("Error saving coupon:", err);
     }
   };
@@ -191,8 +214,10 @@ export default function AdminCouponsPage() {
         throw new Error(data.error || "Failed to update coupon status");
       }
       await fetchCoupons();
+      showToast(newActive ? "Coupon enabled." : "Coupon disabled.", "success");
     } catch (err) {
       setError(err.message);
+      showToast(err.message, "error");
       console.error("Error toggling coupon:", err);
     } finally {
       setTogglingId(null);
@@ -220,9 +245,9 @@ export default function AdminCouponsPage() {
       }
 
       fetchCoupons();
-      alert("Coupon deleted successfully!");
+      showToast("Coupon deleted successfully!", "success");
     } catch (err) {
-      alert(err.message);
+      showToast(err.message, "error");
       console.error("Error deleting coupon:", err);
     }
   };
@@ -235,6 +260,115 @@ export default function AdminCouponsPage() {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const totalPages = Math.ceil(total / perPage) || 1;
+  const PaginationBlock = () => {
+    if (total <= 0) return null;
+    return (
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div className="d-flex align-items-center gap-3 flex-wrap">
+          <span className="text-muted small">
+            {total} coupon{total !== 1 ? "s" : ""}
+          </span>
+          <span className="text-muted small">
+            Showing {Math.min((currentPage - 1) * perPage + 1, total)}–
+            {Math.min(currentPage * perPage, total)} of {total}
+          </span>
+          <label className="d-flex align-items-center gap-2 mb-0">
+            <span className="small">Per page:</span>
+            <select
+              className="form-select form-select-sm"
+              style={{ width: "auto" }}
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </label>
+        </div>
+        {total > perPage && (
+          <nav
+            aria-label="Coupons pagination"
+            className="admin-products-pagination"
+          >
+            <ul className="pagination pagination-sm mb-0 flex-wrap">
+              <li className={`page-item ${currentPage <= 1 ? "disabled" : ""}`}>
+                <button
+                  type="button"
+                  className="page-link"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage <= 1}
+                >
+                  Prev
+                </button>
+              </li>
+              {(() => {
+                const pages = [];
+                if (totalPages <= 5) {
+                  for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                  pages.push(1);
+                  if (currentPage > 3) pages.push("…");
+                  for (
+                    let i = Math.max(2, currentPage - 1);
+                    i <= Math.min(totalPages - 1, currentPage + 1);
+                    i++
+                  ) {
+                    if (!pages.includes(i)) pages.push(i);
+                  }
+                  if (currentPage < totalPages - 2) pages.push("…");
+                  if (totalPages > 1) pages.push(totalPages);
+                }
+                return pages.map((p, i) =>
+                  p === "…" ? (
+                    <li key={`el-${i}`} className="page-item disabled">
+                      <span className="page-link">…</span>
+                    </li>
+                  ) : (
+                    <li
+                      key={p}
+                      className={`page-item ${
+                        p === currentPage ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        className="page-link"
+                        onClick={() => setCurrentPage(p)}
+                      >
+                        {p}
+                      </button>
+                    </li>
+                  )
+                );
+              })()}
+              <li
+                className={`page-item ${
+                  currentPage >= totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  type="button"
+                  className="page-link"
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage >= totalPages}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        )}
+      </div>
+    );
   };
 
   if (loading && coupons.length === 0) {
@@ -257,6 +391,12 @@ export default function AdminCouponsPage() {
           onClick={() => {
             resetForm();
             setShowForm(true);
+            setTimeout(() => {
+              formCardRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }, 100);
           }}
           className="admin-btn-primary"
         >
@@ -267,7 +407,7 @@ export default function AdminCouponsPage() {
       {error && <div className="admin-alert-error">{error}</div>}
 
       {showForm && (
-        <div className="admin-card mb-4">
+        <div ref={formCardRef} className="admin-card mb-4">
           <h2 className="h5 fw-6 mb-4">
             {editingCoupon ? "Edit Coupon" : "Create New Coupon"}
           </h2>
@@ -482,6 +622,8 @@ export default function AdminCouponsPage() {
         </div>
       )}
 
+      <PaginationBlock />
+
       <div className="admin-card">
         <div className="admin-table-wrap">
           <table className="admin-table">
@@ -541,7 +683,7 @@ export default function AdminCouponsPage() {
                       >
                         {coupon.is_active === 1 || coupon.is_active === true
                           ? "Active"
-                          : "Inactive"}
+                          : "Deactivated"}
                       </span>
                     </td>
                     <td>
@@ -587,6 +729,10 @@ export default function AdminCouponsPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="mt-3">
+        <PaginationBlock />
       </div>
     </div>
   );

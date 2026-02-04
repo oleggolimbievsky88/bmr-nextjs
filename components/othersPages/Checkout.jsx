@@ -2,7 +2,7 @@
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AddressAutocomplete from "@/components/common/AddressAutocomplete";
@@ -535,6 +535,26 @@ export default function Checkout() {
     destCountry,
     calculateShippingRatesForCurrentAddress,
   ]);
+
+  // Recalculate shipping when cart contents or quantity change on shipping step
+  const cartSignature = useMemo(
+    () =>
+      JSON.stringify(
+        effectiveCartProducts.map((i) => ({
+          id: i.ProductID ?? i.productId,
+          qty: i.quantity,
+        }))
+      ),
+    [effectiveCartProducts]
+  );
+  const lastCartSignatureRef = useRef("");
+  useEffect(() => {
+    if (activeStep !== "shipping") return;
+    if (lastCartSignatureRef.current === cartSignature) return;
+    lastCartSignatureRef.current = cartSignature;
+    lastShippingAddressRef.current = "";
+    calculateShippingRatesForCurrentAddress();
+  }, [activeStep, cartSignature, calculateShippingRatesForCurrentAddress]);
 
   const handleCouponApply = async () => {
     if (!couponCode.trim()) {
