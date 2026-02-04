@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 export default function MobileMenu() {
   const pathname = usePathname();
+  const offcanvasRef = useRef(null);
   const [menuData, setMenuData] = useState({
     fordLinks: [],
     moparLinks: [],
@@ -39,6 +40,58 @@ export default function MobileMenu() {
     };
 
     fetchMenuData();
+  }, []);
+
+  // Close mobile menu when a navigation link is clicked (so menu doesn't stay open after navigation)
+  useEffect(() => {
+    const el = offcanvasRef.current;
+    if (!el) return;
+
+    const closeMobileMenu = () => {
+      const offcanvasEl = document.getElementById("mobileMenu");
+      if (!offcanvasEl) return;
+      // 1) Prefer clicking the close button so Bootstrap handles it the same way as user close
+      const closeBtn = offcanvasEl.querySelector(
+        '[data-bs-dismiss="offcanvas"]'
+      );
+      if (closeBtn) {
+        closeBtn.click();
+        return;
+      }
+      // 2) Use Bootstrap API if available
+      try {
+        const bootstrap = require("bootstrap");
+        const instance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (instance) {
+          instance.hide();
+          return;
+        }
+        const newInstance = new bootstrap.Offcanvas(offcanvasEl);
+        newInstance.hide();
+        return;
+      } catch (_) {}
+      // 3) DOM fallback
+      offcanvasEl.classList.remove("show");
+      offcanvasEl.setAttribute("aria-hidden", "true");
+      offcanvasEl.removeAttribute("aria-modal");
+      offcanvasEl.removeAttribute("role");
+      const backdrop = document.querySelector(".offcanvas-backdrop");
+      if (backdrop) backdrop.remove();
+      document.body.classList.remove("offcanvas-backdrop");
+    };
+
+    const handleClick = (e) => {
+      const link = e.target.closest("a[href]");
+      if (!link) return;
+      const href = (link.getAttribute("href") || "").trim();
+      // Only close for real navigation (path starting with /), not for collapse toggles (#id)
+      if (href.startsWith("/")) {
+        closeMobileMenu();
+      }
+    };
+
+    el.addEventListener("click", handleClick, true);
+    return () => el.removeEventListener("click", handleClick, true);
   }, []);
 
   const isMenuActive = (menuItem) => {
@@ -165,7 +218,11 @@ export default function MobileMenu() {
   ];
 
   return (
-    <div className="offcanvas offcanvas-start canvas-mb" id="mobileMenu">
+    <div
+      ref={offcanvasRef}
+      className="offcanvas offcanvas-start canvas-mb"
+      id="mobileMenu"
+    >
       <span
         className="icon-close icon-close-popup"
         data-bs-dismiss="offcanvas"

@@ -43,20 +43,17 @@ export default function DealersPortalResourcesPage() {
       <h5 className="fw-bold mb_30">Download Resources</h5>
       <p className="text-muted mb-4">
         Installation instructions, Hi-Res images, price lists, and new product
-        info. Add files to <code>public/dealer-resources/</code> and list them
-        in <code>data/dealer-resources.js</code>.
+        info.
       </p>
-
+      //TODO: Add files to public/dealer-resources/ and list them in
+      data/dealer-resources.js.
       {error && (
         <div className="alert alert-danger mb-3" role="alert">
           {error}
         </div>
       )}
-
       {categories.map((cat) => {
-        const items = resources.filter(
-          (r) => r.categoryId === cat.id,
-        );
+        const items = resources.filter((r) => r.categoryId === cat.id);
         return (
           <div key={cat.id} className="dashboard-card mb-4 p-4">
             <h6 className="fw-6 mb-2">{cat.title}</h6>
@@ -68,9 +65,16 @@ export default function DealersPortalResourcesPage() {
             ) : (
               <ul className="list-unstyled mb-0">
                 {items.map((res, idx) => {
-                  const ext = (res.fileUrl || "").split(".").pop()?.toLowerCase();
+                  const ext = (res.fileUrl || "")
+                    .split(".")
+                    .pop()
+                    ?.toLowerCase();
                   const isZip = ext === "zip";
-                  const label = isZip ? "ZIP" : (ext === "pdf" ? "PDF" : "Download");
+                  const label = isZip
+                    ? "ZIP"
+                    : ext === "pdf"
+                    ? "PDF"
+                    : "Download";
                   return (
                     <li key={idx} className="mb-2">
                       <a

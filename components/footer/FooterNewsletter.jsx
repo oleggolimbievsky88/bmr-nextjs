@@ -70,8 +70,15 @@ export default function FooterNewsletter() {
         showToast("You are already subscribed.", "info");
         showInlineMessage("You are already subscribed.", "info");
       } else if (response.ok) {
-        showToast("Thanks for subscribing!", "success");
-        showInlineMessage("You have successfully subscribed.", "success");
+        showToast(
+          "You're subscribed! Check your inbox for a confirmation email.",
+          "success",
+          5000
+        );
+        showInlineMessage(
+          "You're subscribed! Check your inbox for a confirmation email.",
+          "success"
+        );
         event.target.reset();
       } else {
         showToast(payload?.error || "Something went wrong.", "error");
@@ -90,8 +97,8 @@ export default function FooterNewsletter() {
     messageType === "success"
       ? "rgb(52, 168, 83)"
       : messageType === "info"
-        ? "rgb(13, 202, 240)"
-        : "red";
+      ? "rgb(13, 202, 240)"
+      : "red";
 
   return (
     <div className="footer-newsletter footer-col-block">

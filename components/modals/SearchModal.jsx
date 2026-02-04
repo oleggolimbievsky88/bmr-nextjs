@@ -24,64 +24,17 @@ export default function SearchModal() {
   const containerRef = useRef(null);
   const router = useRouter();
 
-  // Fetch quick links
+  // Quick links point to category landing pages (all vehicles), not a single vehicle
   useEffect(() => {
-    const fetchQuickLinks = async () => {
-      try {
-        const response = await fetch("/api/menu");
-        if (!response.ok) throw new Error("Failed to fetch menu");
-        const data = await response.json();
-
-        // Build quick links from menu data
-        const links = [];
-        if (data.fordLinks && data.fordLinks.length > 0) {
-          links.push({
-            name: "Ford",
-            href: `/products/${data.fordLinks[0].slug}`,
-          });
-        }
-        if (data.gmLateModelLinks && data.gmLateModelLinks.length > 0) {
-          links.push({
-            name: "GM Late Model",
-            href: `/products/${data.gmLateModelLinks[0].slug}`,
-          });
-        }
-        if (data.gmMidMuscleLinks && data.gmMidMuscleLinks.length > 0) {
-          links.push({
-            name: "GM Mid Muscle",
-            href: `/products/${data.gmMidMuscleLinks[0].slug}`,
-          });
-        }
-        if (data.gmClassicMuscleLinks && data.gmClassicMuscleLinks.length > 0) {
-          links.push({
-            name: "GM Classic Muscle",
-            href: `/products/${data.gmClassicMuscleLinks[0].slug}`,
-          });
-        }
-        if (data.moparLinks && data.moparLinks.length > 0) {
-          links.push({
-            name: "Mopar",
-            href: `/products/${data.moparLinks[0].slug}`,
-          });
-        }
-
-        setQuickLinks(links);
-      } catch (err) {
-        console.error("Error fetching quick links:", err);
-        // Fallback to default links
-        setQuickLinks([
-          { name: "Ford", href: "/shop-default" },
-          { name: "GM Late Model", href: "/shop-default" },
-          { name: "GM Mid Muscle", href: "/shop-default" },
-          { name: "GM Classic Muscle", href: "/shop-default" },
-          { name: "Mopar", href: "/shop-default" },
-        ]);
-      } finally {
-        setQuickLinksLoading(false);
-      }
-    };
-
-    fetchQuickLinks();
+    const links = [
+      { name: "Ford", href: "/products/ford" },
+      { name: "GM Late Model", href: "/products/gm/late-model" },
+      { name: "GM Mid Muscle", href: "/products/gm/mid-muscle" },
+      { name: "GM Classic Muscle", href: "/products/gm/classic-muscle" },
+      { name: "Mopar", href: "/products/mopar" },
+    ];
+    setQuickLinks(links);
+    setQuickLinksLoading(false);
   }, []);
 
   // Fetch new products
@@ -89,7 +42,7 @@ export default function SearchModal() {
     const fetchNewProducts = async () => {
       try {
         const response = await fetch(
-          "/api/products/new-products?scrachDent=0&limit=8",
+          "/api/products/new-products?scrachDent=0&limit=8"
         );
         if (!response.ok) throw new Error("Failed to fetch new products");
         const data = await response.json();
@@ -150,7 +103,7 @@ export default function SearchModal() {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < allItems.length - 1 ? prev + 1 : prev,
+          prev < allItems.length - 1 ? prev + 1 : prev
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -218,7 +171,7 @@ export default function SearchModal() {
   const handleSearch = async (searchQuery = query) => {
     if (searchQuery.trim()) {
       const params = new URLSearchParams(
-        typeof window !== "undefined" ? window.location.search : "",
+        typeof window !== "undefined" ? window.location.search : ""
       );
       params.set("q", searchQuery.trim());
       router.push(`/homes/home-search?${params.toString()}`);
@@ -244,7 +197,7 @@ export default function SearchModal() {
     setIsLoading(true);
     try {
       const results = await fetch(
-        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`,
+        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`
       );
       const data = await results.json();
       setGrouped(
@@ -254,7 +207,7 @@ export default function SearchModal() {
           vehicles: [],
           brands: [],
           platforms: [],
-        },
+        }
       );
       setShowSuggestions(true);
       setSelectedIndex(-1);
@@ -329,7 +282,7 @@ export default function SearchModal() {
         closeModal();
         setTimeout(() => {
           router.push(
-            `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`,
+            `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`
           );
         }, 150);
       } else {
@@ -413,7 +366,7 @@ export default function SearchModal() {
                   onFocus={() => {
                     if (
                       Object.values(grouped).some(
-                        (arr) => arr && arr.length > 0,
+                        (arr) => arr && arr.length > 0
                       )
                     ) {
                       setShowSuggestions(true);

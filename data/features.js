@@ -3,17 +3,18 @@ export const iconBoxes = [
   {
     iconClass: "icon-shipping-1",
     title: "Free Shipping",
-    description: "Free shipping over order $120",
+    description:
+      "Free shipping to the 48 continental U.S. states on all BMR products.",
   },
   {
     iconClass: "icon-payment-1",
     title: "Flexible Payment",
-    description: "Pay with Multiple Credit Cards",
+    description: "Pay with Credit, Debit, or PayPal",
   },
   {
     iconClass: "icon-return-1",
-    title: "14 Day Returns",
-    description: "Within 30 days for an exchange",
+    title: "90 Day Returns",
+    description: "Subject to a 15% restocking fee.",
   },
 ];
 
@@ -21,17 +22,18 @@ export const iconBoxData = [
   {
     iconClass: "icon-shipping",
     title: "Free Shipping",
-    description: "Free shipping on all BMR Products",
+    description:
+      "Free shipping to the 48 continental U.S. states on all BMR products.",
   },
   {
     iconClass: "icon-payment fs-22",
     title: "Flexible Payment",
-    description: "Pay with Multiple Credit Cards",
+    description: "Pay with Credit, Debit, or PayPal",
   },
   {
     iconClass: "icon-return fs-20",
     title: "14 Day Returns",
-    description: "Within 30 days for an exchange",
+    description: "Subject to a 15% restocking fee",
   },
   {
     iconClass: "icon-suport",
@@ -41,17 +43,18 @@ export const iconBoxData = [
   {
     iconClass: "icon-shipping",
     title: "Free Shipping",
-    description: "Free shipping over order $120",
+    description:
+      "Free shipping to the 48 continental U.S. states on all BMR products",
   },
   {
     iconClass: "icon-payment fs-22",
     title: "Flexible Payment",
-    description: "Pay with Multiple Credit Cards",
+    description: "Pay with Credit, Debit, or PayPal",
   },
   {
     iconClass: "icon-return fs-20",
     title: "14 Day Returns",
-    description: "Within 30 days for an exchange",
+    description: "Subject to a 15% restocking fee",
   },
   {
     iconClass: "icon-suport",
@@ -127,17 +130,18 @@ export const iconBoxes3 = [
   {
     iconClass: "icon-shipping",
     title: "Free Shipping",
-    description: "Free shipping over order $120",
+    description:
+      "Free shipping to the 48 continental U.S. states on all BMR products.",
   },
   {
     iconClass: "icon-payment fs-22",
     title: "Flexible Payment",
-    description: "Pay with Multiple Credit Cards",
+    description: "Pay with Credit, Debit, or PayPal",
   },
   {
     iconClass: "icon-return fs-20",
     title: "14 Day Returns",
-    description: "Within 30 days for an exchange",
+    description: "Subject to a 15% restocking fee.",
   },
   {
     iconClass: "icon-suport",
@@ -148,7 +152,7 @@ export const iconBoxes3 = [
   {
     iconClass: "icon-return fs-20",
     title: "14 Day Returns",
-    description: "Within 30 days for an exchange",
+    description: "Subject to a 15% restocking fee.",
   },
 ];
 

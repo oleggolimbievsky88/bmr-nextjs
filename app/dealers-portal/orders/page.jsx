@@ -78,12 +78,21 @@ export default function DealersPortalOrdersPage() {
                   <th>Total</th>
                   <th>Discount</th>
                   <th>Payment</th>
+                  <th>Paid</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order) => {
                   const discount = parseFloat(order.discount) || 0;
+                  // Consider paid: payment_status paid, or delivered/completed, or card charged, or PayPal (email set = paid)
+                  const isPaid =
+                    String(order.payment_status || "").toLowerCase() ===
+                      "paid" ||
+                    order.status === "delivered" ||
+                    order.status === "completed" ||
+                    (order.cc_type && order.cc_last_four) ||
+                    (order.payment_method === "PayPal" && order.paypal_email);
                   return (
                     <tr key={order.new_order_id}>
                       <td>#{order.order_number}</td>
@@ -115,17 +124,25 @@ export default function DealersPortalOrdersPage() {
                         )}
                       </td>
                       <td>
-                        {order.payment_status === "paid" ? (
-                          <span className="text-success">Paid</span>
-                        ) : (
-                          <span className="text-muted">
-                            {order.payment_method === "PayPal" &&
-                            order.paypal_email
-                              ? `PayPal (${order.paypal_email})`
-                              : order.cc_type && order.cc_last_four
-                              ? `${order.cc_type} ****${order.cc_last_four}`
-                              : order.payment_method || "—"}
+                        <span className="text-muted">
+                          {order.payment_method === "PayPal" &&
+                          order.paypal_email
+                            ? `PayPal (${order.paypal_email})`
+                            : order.cc_type && order.cc_last_four
+                            ? `${order.cc_type} ****${order.cc_last_four}`
+                            : order.payment_method || "—"}
+                        </span>
+                      </td>
+                      <td>
+                        {isPaid ? (
+                          <span className="text-success" title="Paid">
+                            <i
+                              className="bi bi-check-circle-fill"
+                              aria-hidden="true"
+                            />
                           </span>
+                        ) : (
+                          "—"
                         )}
                       </td>
                       <td>
@@ -135,29 +152,28 @@ export default function DealersPortalOrdersPage() {
                         >
                           View
                         </Link>
-                        {order.payment_status !== "paid" &&
-                          order.status !== "cancelled" && (
-                            <>
-                              <button
-                                type="button"
-                                className="btn btn-primary btn-sm me-1"
-                                onClick={() =>
-                                  (window.location.href = `/checkout?order=${order.order_number}`)
-                                }
-                              >
-                                Pay with CC
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={() =>
-                                  (window.location.href = `/checkout?order=${order.order_number}&pay=paypal`)
-                                }
-                              >
-                                PayPal
-                              </button>
-                            </>
-                          )}
+                        {!isPaid && order.status !== "cancelled" && (
+                          <>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-sm me-1"
+                              onClick={() =>
+                                (window.location.href = `/checkout?order=${order.order_number}`)
+                              }
+                            >
+                              Pay with CC
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={() =>
+                                (window.location.href = `/checkout?order=${order.order_number}&pay=paypal`)
+                              }
+                            >
+                              PayPal
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   );
@@ -211,6 +227,21 @@ export default function DealersPortalOrdersPage() {
                         >
                           Edit / Send
                         </Link>
+                      ) : po.status === "completed" ? (
+                        <>
+                          <Link
+                            href={`/dealers-portal/po/${po.id}`}
+                            className="btn btn-outline-primary btn-sm me-1"
+                          >
+                            View
+                          </Link>
+                          <span className="text-success ms-1" title="Paid">
+                            <i
+                              className="bi bi-check-circle-fill"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </>
                       ) : (
                         <>
                           <Link
