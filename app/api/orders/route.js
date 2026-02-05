@@ -11,6 +11,7 @@ import {
   createOrderItems,
   recordCouponUsage,
   insertOrderStatusHistory,
+  getCouponByIdIfActive,
 } from "@/lib/queries";
 import { getTaxAmount } from "@/lib/tax";
 
@@ -89,6 +90,22 @@ export async function POST(request) {
         },
         { status: 400 }
       );
+    }
+
+    // Reject order if a coupon is applied but it is not active (is_active !== 1)
+    if (orderData.couponId) {
+      const activeCoupon = await getCouponByIdIfActive(orderData.couponId);
+      if (!activeCoupon) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "The coupon is no longer valid. Please remove it and try again.",
+            error: "Coupon is inactive or invalid",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Generate order number (sequential starting from 660000)

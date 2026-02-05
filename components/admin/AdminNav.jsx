@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useCallback } from "react";
 
 export default function AdminNav({ user }) {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const navLinks = [
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/topbar", label: "Topbar" },
@@ -22,42 +25,85 @@ export default function AdminNav({ user }) {
     window.location.href = "/api/auth/logout?callbackUrl=/";
   };
 
+  const closeMobileMenu = useCallback(() => {
+    setMobileMenuOpen(false);
+  }, []);
+
+  const displayName = user?.name || user?.email || "Admin";
+
   return (
-    <nav className="admin-nav bg_black">
-      <div className="container-wide">
-        <div className="d-flex align-items-center justify-content-between flex-wrap admin-nav-inner">
-          <ul className="admin-nav-links d-flex align-items-center gap-4 flex-wrap">
-            {navLinks.map(({ href, label }) => {
-              const isActive =
-                href === "/admin"
-                  ? pathname === "/admin"
-                  : pathname.startsWith(href);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={`admin-nav-link ${isActive ? "active" : ""}`}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="admin-nav-user d-flex align-items-center gap-3">
-            <span className="admin-nav-name text-white">
-              {user?.name || user?.email}
-            </span>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="tf-btn btn-primary btn-admin-logout"
-            >
-              Logout
-            </button>
+    <header className="admin-header">
+      {/* Welcome bar + user + logout */}
+      <div className="admin-header-top">
+        <div className="container-wide">
+          <div className="admin-header-top-inner">
+            <div className="admin-welcome">
+              <span className="admin-welcome-icon" aria-hidden="true">
+                👋
+              </span>
+              <span className="admin-welcome-text">
+                Welcome, <strong>{displayName}</strong>
+              </span>
+            </div>
+            <div className="admin-header-actions">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="admin-btn-logout"
+                aria-label="Log out"
+              >
+                Logout
+              </button>
+              <button
+                type="button"
+                className="admin-nav-toggle"
+                onClick={() => setMobileMenuOpen((o) => !o)}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="admin-nav-menu"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              >
+                <span className="admin-nav-toggle-bar" />
+                <span className="admin-nav-toggle-bar" />
+                <span className="admin-nav-toggle-bar" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </nav>
+
+      {/* Main nav */}
+      <nav
+        className={`admin-nav ${mobileMenuOpen ? "admin-nav-open" : ""}`}
+        aria-label="Admin section"
+      >
+        <div className="container-wide">
+          <div className="admin-nav-inner">
+            <ul
+              id="admin-nav-menu"
+              className="admin-nav-links"
+              role="list"
+            >
+              {navLinks.map(({ href, label }) => {
+                const isActive =
+                  href === "/admin"
+                    ? pathname === "/admin"
+                    : pathname.startsWith(href);
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={`admin-nav-link ${isActive ? "active" : ""}`}
+                      onClick={closeMobileMenu}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
   );
 }

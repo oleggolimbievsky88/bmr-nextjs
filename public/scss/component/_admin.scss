@@ -15,39 +15,160 @@
 		padding: 0.75rem 1rem;
 	}
 	&.bg-success {
-		background-color: var(--primary) !important;
-		.toast-header { background-color: var(--primary) !important; }
+		background-color: var(--success) !important;
+		.toast-header { background-color: var(--success) !important; }
+	}
+	&.bg-danger {
+		background-color: #dc3545 !important;
+		.toast-header { background-color: #dc3545 !important; }
 	}
 }
 
-/* Admin sub-navigation bar (below main header) */
+/* Admin header: welcome bar + nav (consistent across all admin pages, mobile responsive) */
+.admin-header {
+	background: linear-gradient(180deg, #2d2d2d 0%, #1f1f1f 100%);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	position: relative;
+	z-index: 100;
+}
+
+.admin-header-top {
+	padding: 0.875rem 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-header-top-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.admin-welcome {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.admin-welcome-icon {
+	font-size: 1.25rem;
+	line-height: 1;
+}
+
+.admin-welcome-text {
+	color: rgba(255, 255, 255, 0.95);
+	font-size: 1rem;
+	font-weight: 500;
+
+	strong {
+		color: var(--white);
+		font-weight: 700;
+	}
+}
+
+.admin-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.admin-btn-logout {
+	padding: 0.5rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--white);
+	background: rgba(220, 53, 69, 0.9);
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	@include transition3;
+
+	&:hover {
+		background: #dc3545;
+		color: var(--white);
+	}
+}
+
+.admin-nav-toggle {
+	display: none;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	cursor: pointer;
+	@include transition3;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.18);
+	}
+
+	&[aria-expanded="true"] .admin-nav-toggle-bar:nth-child(1) {
+		top: 21px;
+		transform: rotate(45deg);
+	}
+	&[aria-expanded="true"] .admin-nav-toggle-bar:nth-child(2) {
+		opacity: 0;
+	}
+	&[aria-expanded="true"] .admin-nav-toggle-bar:nth-child(3) {
+		top: 21px;
+		transform: rotate(-45deg);
+	}
+}
+
+.admin-nav-toggle-bar {
+	display: block;
+	width: 20px;
+	height: 2px;
+	background: var(--white);
+	border-radius: 1px;
+	position: absolute;
+	left: 50%;
+	margin-left: -10px;
+	@include transition3;
+
+	&:nth-child(1) { top: 13px; }
+	&:nth-child(2) { top: 21px; }
+	&:nth-child(3) { top: 29px; }
+}
+
 .admin-nav {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-	padding: 12px 0;
+	padding: 0;
+	border-bottom: none;
+	@include transition3;
 
 	.admin-nav-inner {
-		min-height: 44px;
+		min-height: 52px;
+		display: flex;
+		align-items: center;
 	}
 
 	.admin-nav-links {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		gap: 0.5rem 1.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem;
 	}
 
 	.admin-nav-link {
-		color: rgba(255, 255, 255, 0.85);
+		color: rgba(255, 255, 255, 0.88);
 		text-decoration: none;
-		font-size: 14px;
-		font-weight: 500;
-		padding: 6px 12px;
-		border-radius: 4px;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		padding: 0.625rem 1rem;
+		border-radius: 6px;
 		@include transition3;
 
 		&:hover {
 			color: var(--white);
-			background: rgba(255, 255, 255, 0.1);
+			background: rgba(255, 255, 255, 0.12);
 		}
 
 		&.active {
@@ -55,36 +176,51 @@
 			background: var(--primary);
 		}
 	}
+}
 
-	.admin-nav-name {
-		font-size: 13px;
-		opacity: 0.9;
+/* Mobile: hamburger + collapsible nav */
+@media (max-width: 991.98px) {
+	.admin-nav-toggle {
+		display: flex;
+		position: relative;
 	}
 
-	.btn-admin-logout {
-		padding: 8px 16px;
-		font-size: 13px;
-		background-color: rgba(220, 53, 69, 0.9);
-		border-color: transparent;
+	.admin-nav {
+		overflow: hidden;
+		max-height: 0;
+		opacity: 0;
+		padding: 0;
+		border-bottom: none;
 
-		&:hover {
-			background-color: #dc3545;
-			color: var(--white);
+		&.admin-nav-open {
+			max-height: 80vh;
+			opacity: 1;
+			padding: 0.75rem 0 1rem;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		}
+
+		.admin-nav-inner {
+			min-height: 0;
+		}
+
+		.admin-nav-links {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.25rem;
+		}
+
+		.admin-nav-link {
+			display: block;
+			padding: 0.75rem 1rem;
+			font-size: 1rem;
+			border-radius: 6px;
 		}
 	}
 }
 
-@media (max-width: 991.98px) {
-	.admin-nav {
-		.admin-nav-inner {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 12px;
-		}
-
-		.admin-nav-links {
-			flex-wrap: wrap;
-		}
+@media (min-width: 992px) {
+	.admin-nav-toggle {
+		display: none !important;
 	}
 }
 
@@ -97,11 +233,34 @@
 
 /* Admin dashboard */
 .admin-dashboard {
+	.admin-dashboard-header {
+		border-bottom: 2px solid var(--line);
+		padding-bottom: 1rem;
+		margin-bottom: 1.75rem;
+	}
+
 	.admin-dashboard-title {
-		font-size: 28px;
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: var(--main);
-		margin-bottom: 1.5rem;
+		margin: 0 0 0.25rem 0;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
+
+		@media (min-width: 768px) {
+			font-size: 2rem;
+		}
+	}
+
+	.admin-dashboard-welcome {
+		font-size: 1rem;
+		color: var(--text);
+		margin: 0;
+
+		strong {
+			color: var(--main);
+			font-weight: 600;
+		}
 	}
 
 	.admin-stats-grid {
@@ -261,20 +420,28 @@
 	}
 }
 
-/* Admin sub-pages: header, toolbar, alerts, tables, modals */
+/* Admin sub-pages: consistent page header and title across all admin pages */
 .admin-page-header {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
-	margin-bottom: 1.5rem;
+	margin-bottom: 1.75rem;
+	padding-bottom: 1rem;
+	border-bottom: 2px solid var(--line);
+}
 
-	.admin-page-title {
-		font-size: 24px;
-		font-weight: 700;
-		color: var(--main);
-		margin: 0;
+.admin-page-title {
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: var(--main);
+	margin: 0;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+
+	@media (min-width: 768px) {
+		font-size: 2rem;
 	}
 }
 

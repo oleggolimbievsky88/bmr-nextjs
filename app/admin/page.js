@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function AdminPage() {
+  const { data: session } = useSession();
   const [stats, setStats] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -58,9 +60,18 @@ export default function AdminPage() {
     );
   }
 
+  const displayName = session?.user?.name || session?.user?.email || "Admin";
+
   return (
     <div className="admin-dashboard">
-      <h1 className="admin-dashboard-title">Admin Dashboard</h1>
+      <div className="admin-page-header admin-dashboard-header">
+        <div>
+          <h1 className="admin-dashboard-title">Admin Dashboard</h1>
+          <p className="admin-dashboard-welcome">
+            Welcome back, <strong>{displayName}</strong>
+          </p>
+        </div>
+      </div>
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-label">Total Orders</div>

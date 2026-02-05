@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { SITE_URL } from "@/lib/site-url";
+import { getCouponByIdIfActive, getCouponByCode } from "@/lib/queries";
 
 const PAYPAL_BASE =
   String(process.env.PAYPAL_SANDBOX || "")
@@ -83,6 +84,25 @@ export async function POST(request) {
 
     if (!billing || !shipping || !items || items.length === 0) {
       return jsonError("Missing required order data", 400);
+    }
+
+    // Require coupon to be active (is_active = 1) when one is applied
+    const hasCoupon =
+      couponId != null || (couponCode && String(couponCode).trim() !== "");
+    if (hasCoupon) {
+      const byId =
+        couponId != null ? await getCouponByIdIfActive(couponId) : null;
+      const byCode =
+        byId == null && couponCode
+          ? await getCouponByCode(String(couponCode).trim())
+          : null;
+      const activeCoupon = byId || byCode;
+      if (!activeCoupon) {
+        return jsonError(
+          "The coupon is no longer valid. Please remove it and try again.",
+          400
+        );
+      }
     }
 
     const totalValue =
@@ -198,7 +218,7 @@ export async function POST(request) {
       "PayPal checkout failed. Please try again or use another payment method.";
     if (msg.includes("token") || msg.includes("oauth") || /401|403/.test(msg)) {
       userMessage =
-        "PayPal authentication failed. On Vercel: ensure PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET are set for Production (not only Preview), have no leading/trailing spaces, and PAYPAL_SANDBOX matches your credentials (true=sandbox, false/unset=live). Check Vercel logs for the PayPal OAuth response.";
+        "PayPal authentication failed. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET in .env.local (local) or in Vercel → Settings → Environment Variables for Production. Use PAYPAL_SANDBOX=true for sandbox credentials, false or unset for live. Remove any leading/trailing spaces.";
     } else if (
       /ECONNREFUSED|ETIMEDOUT|connect|ER_|MySQL|ECONNRESET/.test(msg)
     ) {

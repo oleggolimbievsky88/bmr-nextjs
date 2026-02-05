@@ -16,21 +16,42 @@ export default function AdminLayout({ children }) {
   const isPrintPage = pathname?.includes("/print");
 
   useEffect(() => {
-    if (isLoginPage) return;
     if (status === "loading") return;
 
+    // Already logged in as admin on login page -> go to dashboard
+    if (isLoginPage && session?.user?.role === "admin") {
+      router.replace("/admin");
+      return;
+    }
+
+    if (isLoginPage) return;
+
+    // Session expired or not admin -> leave sensitive admin pages
     if (!session) {
-      router.push("/admin/login");
+      router.replace("/admin/login");
       return;
     }
 
     if (session.user?.role !== "admin") {
-      router.push("/");
+      router.replace("/");
       return;
     }
   }, [session, status, router, isLoginPage]);
 
   if (isLoginPage) {
+    // Already logged in as admin: show loading while redirecting to dashboard
+    if (status === "authenticated" && session?.user?.role === "admin") {
+      return (
+        <div className="min-vh-100 d-flex align-items-center justify-content-center">
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3 mb-0">Redirecting...</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <>
         <Topbar4 />

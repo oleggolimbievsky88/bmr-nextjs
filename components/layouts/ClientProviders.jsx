@@ -120,7 +120,7 @@ export default function ClientProviders({ children }) {
 
 	return (
 		<>
-			<SessionProvider>
+			<SessionProvider refetchInterval={60} refetchOnWindowFocus={true}>
 				<Context>
 					<div id="wrapper">{children}</div>
 					<ProductSidebar />

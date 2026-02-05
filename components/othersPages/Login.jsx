@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 const MAX_LOGIN_ATTEMPTS = 3;
 
 export default function Login() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || null;
   const recoverFromUrl = searchParams.get("recover") === "1";
@@ -28,6 +29,20 @@ export default function Login() {
   const [resendVerifyMessage, setResendVerifyMessage] = useState("");
   const [resendVerifyError, setResendVerifyError] = useState("");
   const [resendVerifyLoading, setResendVerifyLoading] = useState(false);
+
+  // Redirect already logged-in users to the correct dashboard
+  useEffect(() => {
+    if (status !== "authenticated" || !session) return;
+    if (session.user?.role === "admin") {
+      router.replace("/admin");
+      return;
+    }
+    if (callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
+      router.replace(callbackUrl);
+      return;
+    }
+    router.replace("/my-account");
+  }, [session, status, router, callbackUrl]);
 
   // Show recover form when landing from /login?recover=1 (e.g. from checkout)
   useEffect(() => {
@@ -206,6 +221,20 @@ export default function Login() {
       : "/login";
     router.replace(url, { scroll: false });
   }, [callbackUrl, router]);
+
+  // Don't show form while checking session or redirecting logged-in user
+  if (status === "loading" || status === "authenticated") {
+    return (
+      <section className="flat-spacing-10">
+        <div className="container">
+          <div className="text-center py-5">
+            <div className="spinner-border text-danger" role="status" aria-hidden="true" />
+            <p className="mt-2 mb-0">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section>
