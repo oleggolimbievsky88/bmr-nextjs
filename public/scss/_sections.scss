@@ -1960,6 +1960,96 @@
     }
 }
 
+/* Terms & Conditions page - modern, mobile-friendly */
+.terms-conditions-page {
+    --tcp-spacing: 1.5rem;
+    --tcp-radius: 12px;
+    --tcp-card-bg: #fff;
+    --tcp-text: #374151;
+    --tcp-text-muted: #6b7280;
+    --tcp-accent: var(--main, #c8102e);
+    padding: clamp(1.5rem, 4vw, 2.5rem) 0;
+
+    .terms-conditions-page__grid {
+        display: grid;
+        gap: clamp(1.25rem, 3vw, 2rem);
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .terms-conditions-page__card {
+        background: var(--tcp-card-bg);
+        border-radius: var(--tcp-radius);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .terms-conditions-page__title {
+        font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+        font-weight: 600;
+        color: var(--tcp-accent);
+        margin: 0 0 var(--tcp-spacing);
+        letter-spacing: 0.02em;
+        line-height: 1.3;
+    }
+
+    .terms-conditions-page__text {
+        font-size: clamp(0.9375rem, 1.5vw, 1rem);
+        line-height: 1.6;
+        color: var(--tcp-text);
+        margin: 0 0 0.75rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &--legal {
+            font-size: clamp(0.875rem, 1.25vw, 0.9375rem);
+            color: var(--tcp-text-muted);
+        }
+    }
+
+    .terms-conditions-page__list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        li {
+            position: relative;
+            padding-left: 1.25rem;
+            font-size: clamp(0.9375rem, 1.5vw, 1rem);
+            line-height: 1.5;
+            color: var(--tcp-text);
+
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0.5em;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--tcp-accent);
+            }
+        }
+    }
+
+    .terms-conditions-page__link {
+        color: var(--tcp-accent);
+        text-decoration: none;
+        font-weight: 500;
+        word-break: break-word;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
 .images-group-item {
     &.active {
         display: block;
