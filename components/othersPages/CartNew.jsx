@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useState } from "react";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
 
+const MAX_QTY = 10;
+
 export default function CartNew() {
   const {
     cartProducts,
@@ -25,14 +27,14 @@ export default function CartNew() {
   const [showCouponModal, setShowCouponModal] = useState(false);
 
   const setQuantity = (id, quantity) => {
-    if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
-      const items = [...cartProducts];
-      const itemIndex = items.indexOf(item);
-      item.quantity = quantity;
-      items[itemIndex] = item;
-      setCartProducts(items);
-    }
+    const qty = Math.min(MAX_QTY, Math.max(1, parseInt(quantity, 10) || 1));
+    const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
+    if (!item) return;
+    const items = [...cartProducts];
+    const itemIndex = items.indexOf(item);
+    item.quantity = qty;
+    items[itemIndex] = item;
+    setCartProducts(items);
   };
 
   const removeItem = (id) => {
@@ -337,8 +339,9 @@ export default function CartNew() {
                               name="number"
                               value={elm.quantity}
                               min={1}
+                              max={MAX_QTY}
                               onChange={(e) =>
-                                setQuantity(elm.ProductID, e.target.value / 1)
+                                setQuantity(elm.ProductID, e.target.value)
                               }
                               style={{
                                 width: "60px",

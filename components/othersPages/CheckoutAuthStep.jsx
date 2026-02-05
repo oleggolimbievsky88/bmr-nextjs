@@ -25,6 +25,9 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [resendVerifyLoading, setResendVerifyLoading] = useState(false);
+  const [resendVerifyMessage, setResendVerifyMessage] = useState("");
+  const [resendVerifyError, setResendVerifyError] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -32,6 +35,8 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
       [e.target.name]: e.target.value,
     });
     setError("");
+    setResendVerifyMessage("");
+    setResendVerifyError("");
   };
 
   const handleLogin = async (e) => {
@@ -47,11 +52,17 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
       });
 
       if (result?.error) {
-        const msg =
-          result.error === "CredentialsSignin"
-            ? "Invalid email or password"
-            : result.error;
-        setError(typeof msg === "string" ? msg : "Invalid email or password");
+        if (result.error.includes("verify your email")) {
+          setError(
+            "Please verify your email before logging in. Check your inbox for the verification link."
+          );
+        } else {
+          const msg =
+            result.error === "CredentialsSignin"
+              ? "Invalid email or password"
+              : result.error;
+          setError(typeof msg === "string" ? msg : "Invalid email or password");
+        }
         setIsLoading(false);
         return;
       }
@@ -118,6 +129,8 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
     setIsForgotPasswordMode(false);
     setError("");
     setSuccess("");
+    setResendVerifyMessage("");
+    setResendVerifyError("");
     setFormData({ firstname: "", lastname: "", email: "", password: "" });
     setAgreeToTerms(false);
   };
@@ -127,6 +140,8 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
     setIsRegisterMode(false);
     setError("");
     setSuccess("");
+    setResendVerifyMessage("");
+    setResendVerifyError("");
     setForgotEmail(formData.email || "");
   };
 
@@ -134,7 +149,42 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
     setIsForgotPasswordMode(false);
     setError("");
     setSuccess("");
+    setResendVerifyMessage("");
+    setResendVerifyError("");
     setForgotEmail("");
+  };
+
+  const handleResendVerification = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!formData.email) {
+      setResendVerifyError("Please enter your email above.");
+      return;
+    }
+    setResendVerifyError("");
+    setResendVerifyMessage("");
+    setResendVerifyLoading(true);
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setResendVerifyError(data.error || "Failed to send. Please try again.");
+        return;
+      }
+      setResendVerifyMessage(
+        data.message ||
+          "A new verification link has been sent. Check your inbox."
+      );
+    } catch (err) {
+      console.error("Resend verification error:", err);
+      setResendVerifyError("An error occurred. Please try again.");
+    } finally {
+      setResendVerifyLoading(false);
+    }
   };
 
   const handleForgotPassword = async (e) => {
@@ -209,6 +259,36 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
       {error && (
         <div className="alert alert-danger" role="alert">
           {error}
+          {error.includes("verify your email") && (
+            <>
+              <p className="mb-0 mt-2">
+                Didn&apos;t receive it?{" "}
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={isLoading || resendVerifyLoading}
+                  className="btn btn-link p-0 text-danger"
+                  style={{
+                    fontWeight: 600,
+                    textDecoration: "underline",
+                    verticalAlign: "baseline",
+                  }}
+                >
+                  {resendVerifyLoading
+                    ? "Sending..."
+                    : "Resend verification link"}
+                </button>
+              </p>
+              {resendVerifyError && (
+                <p className="text-danger small mb-0 mt-1">{resendVerifyError}</p>
+              )}
+              {resendVerifyMessage && (
+                <p className="text-success small mb-0 mt-1">
+                  {resendVerifyMessage}
+                </p>
+              )}
+            </>
+          )}
         </div>
       )}
       {success && (

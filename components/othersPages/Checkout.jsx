@@ -2532,6 +2532,7 @@ export default function Checkout() {
                           <button
                             type="button"
                             onClick={() => {
+                              if (item.quantity >= 10) return;
                               const updatedCart = effectiveCartProducts.map(
                                 (cartItem, i) =>
                                   i === index

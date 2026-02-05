@@ -63,7 +63,9 @@ export default function Context({ children }) {
     setTotalPrice(subtotal);
   }, [cartProducts]);
 
+  const MAX_CART_QTY = 10;
   const addProductToCart = async (productId, qty = 1, options = {}) => {
+    const cappedQty = Math.min(MAX_CART_QTY, Math.max(1, parseInt(qty, 10) || 1));
     console.log("addProductToCart called with:", { productId, qty, options });
 
     try {
@@ -82,7 +84,7 @@ export default function Context({ children }) {
 
         const newItem = {
           ...productData.product,
-          quantity: qty,
+          quantity: cappedQty,
           selectedColor,
           selectedGrease: options.selectedGrease || null,
           selectedAnglefinder: options.selectedAnglefinder || null,
@@ -105,9 +107,12 @@ export default function Context({ children }) {
         });
 
         if (existingItemIndex !== -1) {
-          // Same product with same options - increase quantity
+          // Same product with same options - increase quantity (cap at MAX_CART_QTY)
           const updatedCart = [...cartProducts];
-          updatedCart[existingItemIndex].quantity += qty;
+          updatedCart[existingItemIndex].quantity = Math.min(
+            MAX_CART_QTY,
+            updatedCart[existingItemIndex].quantity + cappedQty
+          );
           setCartProducts(updatedCart);
           console.log("Increased quantity of existing item");
           showToast(
@@ -262,10 +267,18 @@ export default function Context({ children }) {
     const items = JSON.parse(localStorage.getItem("cartList"));
     console.log("Loading cart from localStorage:", items);
     if (items?.length) {
-      // Filter out any invalid items and ensure proper structure
-      const validItems = items.filter(
-        (item) => item && item.ProductID && item.ProductName && item.Price,
-      );
+      // Filter out any invalid items, ensure proper structure, and cap quantity at MAX_CART_QTY
+      const validItems = items
+        .filter(
+          (item) => item && item.ProductID && item.ProductName && item.Price,
+        )
+        .map((item) => ({
+          ...item,
+          quantity: Math.min(
+            MAX_CART_QTY,
+            Math.max(1, parseInt(item.quantity, 10) || 1),
+          ),
+        }));
       console.log("Valid items from localStorage:", validItems);
       setCartProducts(validItems);
     }

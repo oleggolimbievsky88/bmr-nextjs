@@ -93,14 +93,15 @@ export default function QuickOrderList() {
   const [currentProducts, setCurrentProducts] = useState([
     ...products.map((el) => ({ ...el, quantity: 1 })),
   ]);
+  const MAX_QTY = 10;
   const handleQuantityChange = (index, quantity) => {
-    if (quantity > 1) {
-      const items = [...currentProducts];
-      const item = items[index];
-      item.quantity = quantity;
-      items[index] = item;
-      setCurrentProducts(items);
-    }
+    const qty = Math.min(MAX_QTY, Math.max(1, Math.floor(Number(quantity)) || 1));
+    const items = [...currentProducts];
+    const item = items[index];
+    if (!item) return;
+    item.quantity = qty;
+    items[index] = item;
+    setCurrentProducts(items);
   };
   return (
     <section className="flat-spacing-22">
