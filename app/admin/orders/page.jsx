@@ -868,6 +868,24 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
+              {selectedOrder.notes &&
+                selectedOrder.notes.trim() && (
+                  <div className="mb-4">
+                    <h3 className="h6 fw-6 mb-2">Order Notes</h3>
+                    <div
+                      className="admin-order-notes p-3 rounded"
+                      style={{
+                        background: "#f8f9fa",
+                        border: "1px solid #dee2e6",
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {selectedOrder.notes}
+                    </div>
+                  </div>
+                )}
+
               <div className="mb-4">
                 <h3 className="h6 fw-6 mb-2">Order Items</h3>
                 <div className="admin-table-wrap">

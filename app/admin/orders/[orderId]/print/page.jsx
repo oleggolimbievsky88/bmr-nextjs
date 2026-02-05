@@ -340,6 +340,22 @@ export default function PrintOrderReceipt() {
           </div>
         </div>
 
+        {order.notes && order.notes.trim() && (
+          <div className="mb-4">
+            <h5 className="mb-2">Order Notes</h5>
+            <div
+              className="p-3 rounded border"
+              style={{
+                background: "#f8f9fa",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+              }}
+            >
+              {order.notes}
+            </div>
+          </div>
+        )}
+
         <div className="mb-4">
           <h5 className="mb-2">Order Items</h5>
           <table className="table table-bordered">
