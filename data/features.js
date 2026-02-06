@@ -32,7 +32,7 @@ export const iconBoxData = [
   },
   {
     iconClass: "icon-return fs-20",
-    title: "14 Day Returns",
+    title: "90 Day Returns",
     description: "Subject to a 15% restocking fee",
   },
   {
@@ -53,7 +53,7 @@ export const iconBoxData = [
   },
   {
     iconClass: "icon-return fs-20",
-    title: "14 Day Returns",
+    title: "90 Day Returns",
     description: "Subject to a 15% restocking fee",
   },
   {
@@ -140,7 +140,7 @@ export const iconBoxes3 = [
   },
   {
     iconClass: "icon-return fs-20",
-    title: "14 Day Returns",
+    title: "90 Day Returns",
     description: "Subject to a 15% restocking fee.",
   },
   {
@@ -151,7 +151,7 @@ export const iconBoxes3 = [
 
   {
     iconClass: "icon-return fs-20",
-    title: "14 Day Returns",
+    title: "90 Day Returns",
     description: "Subject to a 15% restocking fee.",
   },
 ];

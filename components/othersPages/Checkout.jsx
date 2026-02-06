@@ -825,9 +825,9 @@ export default function Checkout() {
       // Store cart products before clearing (needed for confirmation)
       const cartProductsForConfirmation = [...effectiveCartProducts];
 
-      // Prepare order items for API
-      const orderItems = cartProductsForConfirmation.map((product) => {
-        // Get the correct color-specific image
+      // Prepare order items for API (main product lines + hardware pack add-on lines)
+      const orderItems = [];
+      for (const product of cartProductsForConfirmation) {
         let productImage = null;
         if (
           product.selectedColor &&
@@ -861,7 +861,7 @@ export default function Checkout() {
           productImage = product.ImageLarge;
         }
 
-        return {
+        orderItems.push({
           productId: product.ProductID,
           name: product.ProductName,
           partNumber: product.PartNumber,
@@ -877,8 +877,32 @@ export default function Checkout() {
           Package: product.Package ?? 0,
           LowMargin: product.LowMargin ?? 0,
           ManufacturerName: product.ManufacturerName ?? "",
-        };
-      });
+        });
+
+        // Add one order line per selected hardware pack (same quantity as main product)
+        if (
+          product.selectedHardwarePacks &&
+          Array.isArray(product.selectedHardwarePacks) &&
+          product.selectedHardwarePacks.length > 0
+        ) {
+          for (const pack of product.selectedHardwarePacks) {
+            orderItems.push({
+              productId: pack.ProductID,
+              name: pack.ProductName,
+              partNumber: pack.PartNumber || "",
+              quantity: product.quantity,
+              price: pack.Price || "0",
+              color: "",
+              platform: product.PlatformName || "",
+              yearRange: product.YearRange || "",
+              image: null,
+              Package: 0,
+              LowMargin: 0,
+              ManufacturerName: product.ManufacturerName ?? "",
+            });
+          }
+        }
+      }
 
       // Create order in database first
       let orderId = null;
@@ -1194,6 +1218,14 @@ export default function Checkout() {
       }
       if (item.selectedHardware?.HardwarePrice) {
         addOnPrice += parseFloat(item.selectedHardware.HardwarePrice);
+      }
+      if (
+        item.selectedHardwarePacks &&
+        Array.isArray(item.selectedHardwarePacks)
+      ) {
+        item.selectedHardwarePacks.forEach((pack) => {
+          addOnPrice += parseFloat(pack.Price || 0);
+        });
       }
 
       return total + (basePrice + addOnPrice) * quantity;
@@ -2552,9 +2584,30 @@ export default function Checkout() {
                       </div>
                       <div className="item-price">
                         $
-                        {(
-                          (parseFloat(item.Price) || 0) * item.quantity
-                        ).toFixed(2)}
+                        {(() => {
+                          const basePrice = parseFloat(item.Price) || 0;
+                          let addOnPrice = 0;
+                          if (item.selectedGrease?.GreasePrice) {
+                            addOnPrice += parseFloat(item.selectedGrease.GreasePrice);
+                          }
+                          if (item.selectedAnglefinder?.AnglePrice) {
+                            addOnPrice += parseFloat(item.selectedAnglefinder.AnglePrice);
+                          }
+                          if (item.selectedHardware?.HardwarePrice) {
+                            addOnPrice += parseFloat(item.selectedHardware.HardwarePrice);
+                          }
+                          if (
+                            item.selectedHardwarePacks &&
+                            Array.isArray(item.selectedHardwarePacks)
+                          ) {
+                            item.selectedHardwarePacks.forEach((pack) => {
+                              addOnPrice += parseFloat(pack.Price || 0);
+                            });
+                          }
+                          return (
+                            (basePrice + addOnPrice) * item.quantity
+                          ).toFixed(2);
+                        })()}
                       </div>
                     </div>
                   ))

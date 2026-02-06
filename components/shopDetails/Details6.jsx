@@ -30,12 +30,11 @@ export default function ou({ product, initialColor, searchParams }) {
   const [currentColor, setCurrentColor] = useState(null);
   const [currentGrease, setCurrentGrease] = useState(undefined);
   const [currentAnglefinder, setCurrentAnglefinder] = useState(undefined);
-  const [currentHardware, setCurrentHardware] = useState(undefined);
   const [quantity, setQuantity] = useState(1);
   const [colorOptions, setColorOptions] = useState([]);
   const [greaseOptions, setGreaseOptions] = useState([]);
   const [anglefinderOptions, setAnglefinderOptions] = useState([]);
-  const [hardwareOptions, setHardwareOptions] = useState([]);
+  const [selectedHardwarePacks, setSelectedHardwarePacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
 
@@ -180,34 +179,24 @@ export default function ou({ product, initialColor, searchParams }) {
     const fetchOptions = async () => {
       try {
         console.log("Fetching options from API...");
-        const [colorsRes, greaseRes, anglefinderRes, hardwareRes] =
-          await Promise.all([
-            fetch("/api/colors"),
-            fetch("/api/grease"),
-            fetch("/api/anglefinder"),
-            fetch("/api/hardware"),
-          ]);
+        const [colorsRes, greaseRes, anglefinderRes] = await Promise.all([
+          fetch("/api/colors"),
+          fetch("/api/grease"),
+          fetch("/api/anglefinder"),
+        ]);
 
-        // Check if all responses are ok
-        if (
-          !colorsRes.ok ||
-          !greaseRes.ok ||
-          !anglefinderRes.ok ||
-          !hardwareRes.ok
-        ) {
+        if (!colorsRes.ok || !greaseRes.ok || !anglefinderRes.ok) {
           throw new Error("One or more API calls failed");
         }
 
         const colorsData = await colorsRes.json();
         const greaseData = await greaseRes.json();
         const anglefinderData = await anglefinderRes.json();
-        const hardwareData = await hardwareRes.json();
 
         console.log("API responses:", {
           colors: colorsData,
           grease: greaseData,
           anglefinder: anglefinderData,
-          hardware: hardwareData,
         });
 
         // Filter colors based on product's available colors
@@ -317,25 +306,6 @@ export default function ou({ product, initialColor, searchParams }) {
           setCurrentAnglefinder(undefined);
         }
 
-        if (
-          hardwareData.success &&
-          hardwareData.hardware &&
-          hardwareData.hardware.length > 0 &&
-          product.Hardware &&
-          product.Hardware !== "0"
-        ) {
-          console.log("Using database hardware:", hardwareData.hardware);
-          setHardwareOptions(hardwareData.hardware);
-          // Always start with undefined - no pre-selection
-          setCurrentHardware(undefined);
-        } else {
-          console.log(
-            "No database hardware options or product doesn't support hardware, hiding hardware options"
-          );
-          console.log("Product Hardware field:", product.Hardware);
-          setHardwareOptions([]);
-          setCurrentHardware(undefined);
-        }
       } catch (error) {
         console.error("Error fetching options:", error);
         // Fallback to static data with no defaults
@@ -370,11 +340,6 @@ export default function ou({ product, initialColor, searchParams }) {
       newErrors.anglefinder = "Please select an angle finder option";
     }
 
-    // Require hardware selection if there are any hardware options available
-    if (hardwareOptions.length > 0 && currentHardware === undefined) {
-      newErrors.hardware = "Please select a hardware option";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -397,29 +362,19 @@ export default function ou({ product, initialColor, searchParams }) {
       return;
     }
 
-    // Add product to cart with selected options
     console.log("Adding to cart with options:", {
       color: currentColor,
       grease: currentGrease,
       anglefinder: currentAnglefinder,
-      hardware: currentHardware,
+      selectedHardwarePacks: selectedHardwarePacks,
     });
 
-    // Create a product object with selected options
-    const productWithOptions = {
-      ...product,
-      selectedColor: currentColor,
-      selectedGrease: currentGrease,
-      selectedAnglefinder: currentAnglefinder,
-      selectedHardware: currentHardware,
-    };
-
-    // Call the context function to add product to cart with selected quantity
     addProductToCart(product.ProductID, quantity, {
       selectedColor: currentColor,
       selectedGrease: currentGrease,
       selectedAnglefinder: currentAnglefinder,
-      selectedHardware: currentHardware,
+      selectedHardware: null,
+      selectedHardwarePacks: selectedHardwarePacks,
     });
   };
 
@@ -524,12 +479,16 @@ export default function ou({ product, initialColor, searchParams }) {
                     </div>
                   </div>
 
-                  <div className="tf-product-info-variant-picker">
+                  <div
+                    className="tf-product-info-variant-picker"
+                    style={{ borderRadius: "20px", padding: "16px" }}
+                  >
                     {/* Show message if no options are available */}
                     {colorOptions.length === 0 &&
                       greaseOptions.length === 0 &&
                       anglefinderOptions.length === 0 &&
-                      hardwareOptions.length === 0 && (
+                      (!product.hardwarePackProducts ||
+                        product.hardwarePackProducts.length === 0) && (
                         <div className="text-center py-3">
                           <p className="text-muted">
                             No product options available at this time.
@@ -539,7 +498,10 @@ export default function ou({ product, initialColor, searchParams }) {
 
                     {/* Color Selection */}
                     {colorOptions.length > 0 && (
-                      <div className="variant-picker-item">
+                      <div
+                        className="variant-picker-item"
+                        style={{ borderRadius: "20px" }}
+                      >
                         <div className="variant-picker-label">
                           Color:{" "}
                           <span className="fw-6 variant-picker-label-value">
@@ -648,7 +610,10 @@ export default function ou({ product, initialColor, searchParams }) {
 
                     {/* Grease Selection */}
                     {greaseOptions.length > 0 && (
-                      <div className="variant-picker-item">
+                      <div
+                        className="variant-picker-item"
+                        style={{ borderRadius: "20px" }}
+                      >
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="variant-picker-label">
                             Grease:{" "}
@@ -733,7 +698,10 @@ export default function ou({ product, initialColor, searchParams }) {
 
                     {/* Angle Finder Selection */}
                     {anglefinderOptions.length > 0 && (
-                      <div className="variant-picker-item">
+                      <div
+                        className="variant-picker-item"
+                        style={{ borderRadius: "20px" }}
+                      >
                         <div className="variant-picker-label">
                           Angle Finder:{" "}
                           <span className="fw-6 variant-picker-label-value">
@@ -809,86 +777,85 @@ export default function ou({ product, initialColor, searchParams }) {
                       </div>
                     )}
 
-                    {/* Hardware Selection */}
-                    {hardwareOptions.length > 0 && (
-                      <div className="variant-picker-item">
-                        <div className="variant-picker-label">
-                          Hardware:{" "}
-                          <span className="fw-6 variant-picker-label-value">
-                            {currentHardware === undefined
-                              ? "Please select"
-                              : currentHardware === null
-                              ? "No Thanks"
-                              : currentHardware
-                              ? currentHardware.HardwareName
-                              : "Please select"}
-                          </span>
-                          {errors.hardware && (
-                            <span className="text-danger ms-2">
-                              {errors.hardware}
+                    {/* Hardware: No Thanks + hardware packs from product.hardwarePackProducts */}
+                    {product.hardwarePackProducts &&
+                      product.hardwarePackProducts.length > 0 && (
+                        <div
+                          className="variant-picker-item"
+                          style={{ borderRadius: "20px" }}
+                        >
+                          <div className="variant-picker-label">
+                            Hardware:{" "}
+                            <span className="fw-6 variant-picker-label-value">
+                              {selectedHardwarePacks.length === 0
+                                ? "No Thanks"
+                                : selectedHardwarePacks.length === 1
+                                ? `${selectedHardwarePacks[0].ProductName}${selectedHardwarePacks[0].Price && parseFloat(selectedHardwarePacks[0].Price) > 0 ? ` (+$${parseFloat(selectedHardwarePacks[0].Price).toFixed(2)})` : ""}`
+                                : `${selectedHardwarePacks.length} pack(s) selected`}
                             </span>
-                          )}
-                        </div>
-                        <form className="variant-picker-values">
-                          {/* No Thanks option */}
-                          <React.Fragment key="hardware-none">
-                            <input
-                              type="radio"
-                              name="hardware"
-                              id="hardware-none"
-                              checked={currentHardware === null}
-                              onChange={() => {
-                                setCurrentHardware(null);
-                                clearError("hardware");
-                              }}
-                            />
+                          </div>
+                          <form className="variant-picker-values">
                             <label
-                              className={`style-text ${
-                                errors.hardware ? "error" : ""
-                              }`}
-                              htmlFor="hardware-none"
-                              data-value="No Thanks"
+                              className="style-text"
+                              style={{
+                                cursor: "pointer",
+                                borderRadius: "20px",
+                              }}
+                              onClick={() => setSelectedHardwarePacks([])}
                             >
-                              <p>No Thanks</p>
-                            </label>
-                          </React.Fragment>
-                          {hardwareOptions.map((hardware) => (
-                            <React.Fragment key={hardware.HardwareID}>
                               <input
                                 type="radio"
                                 name="hardware"
-                                id={`hardware-${hardware.HardwareID}`}
-                                checked={
-                                  currentHardware?.HardwareID ===
-                                    hardware.HardwareID || false
-                                }
-                                onChange={() => {
-                                  setCurrentHardware(hardware);
-                                  clearError("hardware");
-                                }}
+                                readOnly
+                                checked={selectedHardwarePacks.length === 0}
                               />
-                              <label
-                                className={`style-text ${
-                                  errors.hardware ? "error" : ""
-                                }`}
-                                htmlFor={`hardware-${hardware.HardwareID}`}
-                                data-value={hardware.HardwareName}
-                              >
-                                <p>
-                                  {hardware.HardwareName}{" "}
-                                  {hardware.HardwarePrice !== "0"
-                                    ? `(+$${hardware.HardwarePrice})`
-                                    : ""}
-                                </p>
-                              </label>
-                            </React.Fragment>
-                          ))}
-                        </form>
-                      </div>
+                              <p>No Thanks</p>
+                            </label>
+                            {product.hardwarePackProducts.map((pack) => {
+                              const isSelected = selectedHardwarePacks.some(
+                                (p) => p.ProductID === pack.ProductID
+                              );
+                              return (
+                                <label
+                                  key={pack.ProductID}
+                                  className="style-text d-flex align-items-center gap-2"
+                                  style={{
+                                    cursor: "pointer",
+                                    borderRadius: "20px",
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={() => {
+                                      setSelectedHardwarePacks((prev) =>
+                                        isSelected
+                                          ? prev.filter(
+                                              (p) => p.ProductID !== pack.ProductID
+                                            )
+                                          : [...prev, pack]
+                                      );
+                                    }}
+                                  />
+                                  <span>
+                                    {pack.ProductName}{" "}
+                                    {pack.Price && parseFloat(pack.Price) > 0
+                                      ? `(+$${parseFloat(pack.Price).toFixed(2)})`
+                                      : ""}
+                                  </span>
+                                </label>
+                              );
+                            })}
+                          </form>
+                        </div>
                     )}
+
                   </div>
 
-                  <div className="tf-product-info-quantity">
+                  <div
+                    className="tf-product-info-quantity"
+                    style={{ borderRadius: "20px" }}
+                  >
                     <div className="quantity-title fw-6">Quantity</div>
                     <Quantity value={quantity} onChange={setQuantity} />
                   </div>
@@ -898,12 +865,21 @@ export default function ou({ product, initialColor, searchParams }) {
                       <button
                         type="submit"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
+                        style={{ borderRadius: "20px" }}
                       >
                         <span>Add to cart -</span>
                         <span className="tf-qty-price">
                           $
                           {(
-                            (Number(product.Price) || 0) * (quantity || 1)
+                            (Number(product.Price) || 0) * (quantity || 1) +
+                            (selectedHardwarePacks.length > 0
+                              ? selectedHardwarePacks.reduce(
+                                  (sum, p) =>
+                                    sum +
+                                    (parseFloat(p.Price) || 0) * (quantity || 1),
+                                  0
+                                )
+                              : 0)
                           ).toFixed(2)}
                         </span>
                       </button>

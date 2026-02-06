@@ -270,6 +270,24 @@ export default function CartNew() {
                                   {elm.selectedHardware.HardwarePrice})
                                 </div>
                               )}
+                            {elm.selectedHardwarePacks &&
+                              elm.selectedHardwarePacks.length > 0 &&
+                              elm.selectedHardwarePacks.map((pack) => (
+                                <div
+                                  key={pack.ProductID}
+                                  style={{
+                                    fontSize: "12px",
+                                    marginBottom: "2px",
+                                    color: "#666666",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Hardware pack: {pack.ProductName}
+                                  {pack.Price &&
+                                    parseFloat(pack.Price) > 0 &&
+                                    ` (+$${parseFloat(pack.Price).toFixed(2)})`}
+                                </div>
+                              ))}
                             {elm.selectedAngleFinder &&
                               elm.selectedAngleFinder.AngleName && (
                                 <div
@@ -397,9 +415,30 @@ export default function CartNew() {
                           }}
                         >
                           $
-                          {(
-                            (parseFloat(elm.Price) || 0) * elm.quantity
-                          ).toFixed(2)}
+                          {(() => {
+                            const basePrice = parseFloat(elm.Price) || 0;
+                            let addOnPrice = 0;
+                            if (elm.selectedGrease?.GreasePrice) {
+                              addOnPrice += parseFloat(elm.selectedGrease.GreasePrice);
+                            }
+                            if (elm.selectedAnglefinder?.AnglePrice) {
+                              addOnPrice += parseFloat(elm.selectedAnglefinder.AnglePrice);
+                            }
+                            if (elm.selectedHardware?.HardwarePrice) {
+                              addOnPrice += parseFloat(elm.selectedHardware.HardwarePrice);
+                            }
+                            if (
+                              elm.selectedHardwarePacks &&
+                              Array.isArray(elm.selectedHardwarePacks)
+                            ) {
+                              elm.selectedHardwarePacks.forEach((pack) => {
+                                addOnPrice += parseFloat(pack.Price || 0);
+                              });
+                            }
+                            return (
+                              (basePrice + addOnPrice) * elm.quantity
+                            ).toFixed(2);
+                          })()}
                         </div>
                       </td>
                     </tr>

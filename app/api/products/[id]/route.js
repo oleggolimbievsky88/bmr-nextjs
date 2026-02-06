@@ -84,7 +84,7 @@ export async function GET(_, context) {
                 /\.(jpg|jpeg|png|gif|webp)$/i,
                 "_small.$1"
               )}`,
-              alt: `Main image for ${product?.ProductName}`,
+              alt: `Image for${product?.PartNumber} - ${product?.ProductName}`,
               width: 770,
               height: 1075,
             }

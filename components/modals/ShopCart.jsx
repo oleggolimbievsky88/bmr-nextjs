@@ -277,10 +277,29 @@ export default function ShopCart() {
                                   elm.selectedHardware}
                               </div>
                             )}
+                            {elm.selectedHardwarePacks &&
+                              elm.selectedHardwarePacks.length > 0 &&
+                              elm.selectedHardwarePacks.map((pack) => (
+                                <div
+                                  key={pack.ProductID}
+                                  style={{
+                                    fontSize: "12px",
+                                    marginBottom: "2px",
+                                    color: "#666",
+                                  }}
+                                >
+                                  Hardware pack: {pack.ProductName}
+                                  {pack.Price &&
+                                    parseFloat(pack.Price) > 0 &&
+                                    ` (+$${parseFloat(pack.Price).toFixed(2)})`}
+                                </div>
+                              ))}
                             {!elm.selectedColor &&
                               !elm.selectedGrease &&
                               !elm.selectedAnglefinder &&
-                              !elm.selectedHardware && (
+                              !elm.selectedHardware &&
+                              (!elm.selectedHardwarePacks ||
+                                elm.selectedHardwarePacks.length === 0) && (
                                 <div
                                   style={{ fontSize: "12px", color: "#666" }}
                                 >
@@ -322,6 +341,14 @@ export default function ShopCart() {
                                 addOnPrice += parseFloat(
                                   elm.selectedHardware.HardwarePrice || 0
                                 );
+                              }
+                              if (
+                                elm.selectedHardwarePacks &&
+                                Array.isArray(elm.selectedHardwarePacks)
+                              ) {
+                                elm.selectedHardwarePacks.forEach((pack) => {
+                                  addOnPrice += parseFloat(pack.Price || 0);
+                                });
                               }
 
                               const totalItemPrice =

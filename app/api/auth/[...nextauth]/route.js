@@ -37,7 +37,7 @@ export const authOptions = {
 
         const isValid = await verifyPassword(
           credentials.password,
-          user.password,
+          user.password
         );
 
         if (!isValid) {
@@ -64,10 +64,10 @@ export const authOptions = {
       },
     }),
     // OAuth providers disabled for now - uncomment to enable
-    // GoogleProvider({
-    // 	clientId: process.env.GOOGLE_CLIENT_ID,
-    // 	clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     // FacebookProvider({
     // 	clientId: process.env.FACEBOOK_CLIENT_ID,
     // 	clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
@@ -85,7 +85,7 @@ export const authOptions = {
           // Check if account already exists
           const existingAccount = await getOAuthAccount(
             account.provider,
-            account.providerAccountId,
+            account.providerAccountId
           );
 
           if (existingAccount) {
@@ -115,7 +115,7 @@ export const authOptions = {
             if (!existingUser.emailVerified) {
               await pool.query(
                 "UPDATE customers SET emailVerified = NOW() WHERE CustomerID = ?",
-                [existingUser.CustomerID],
+                [existingUser.CustomerID]
               );
             }
           } else {
@@ -130,7 +130,7 @@ export const authOptions = {
                 profile?.family_name ||
                   user.name?.split(" ").slice(1).join(" ") ||
                   "",
-              ],
+              ]
             );
 
             const customerId = result.insertId;
@@ -154,7 +154,7 @@ export const authOptions = {
             if (user.image) {
               await pool.query(
                 "UPDATE customers SET image = ? WHERE CustomerID = ?",
-                [user.image, customerId],
+                [user.image, customerId]
               );
             }
           }
@@ -185,7 +185,7 @@ export const authOptions = {
         // Resolve dealer discount from tier config on first sign-in too
         token.dealerDiscount = await getEffectiveDealerDiscount(
           user.dealerTier,
-          user.dealerDiscount,
+          user.dealerDiscount
         );
       }
 
@@ -198,7 +198,7 @@ export const authOptions = {
           // Resolve dealer discount from tier config (1-8) or customer override
           token.dealerDiscount = await getEffectiveDealerDiscount(
             dbUser.dealerTier,
-            dbUser.dealerDiscount,
+            dbUser.dealerDiscount
           );
         }
       }

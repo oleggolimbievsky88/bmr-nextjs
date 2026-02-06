@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { getColorBadgeStyle } from "@/lib/colorBadge";
+import { showToast } from "@/utlis/showToast";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -416,6 +417,13 @@ export default function AdminOrdersPage() {
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to update order status");
+      }
+
+      if (trackingNumber) {
+        showToast(
+          "Tracking number added and order marked as shipped.",
+          "success"
+        );
       }
 
       fetchOrders();
@@ -1077,19 +1085,6 @@ export default function AdminOrdersPage() {
                     className="form-control"
                     placeholder="Enter tracking number"
                     defaultValue={selectedOrder.tracking_number || ""}
-                    onBlur={(e) => {
-                      const trackingNumber = e.target.value.trim();
-                      if (
-                        trackingNumber &&
-                        trackingNumber !== selectedOrder.tracking_number
-                      ) {
-                        updateOrderStatus(
-                          selectedOrder.new_order_id,
-                          selectedOrder.status,
-                          trackingNumber
-                        );
-                      }
-                    }}
                   />
                   <button
                     type="button"
@@ -1101,7 +1096,7 @@ export default function AdminOrdersPage() {
                       if (trackingNumber) {
                         updateOrderStatus(
                           selectedOrder.new_order_id,
-                          selectedOrder.status || "shipped",
+                          "shipped",
                           trackingNumber
                         );
                       }

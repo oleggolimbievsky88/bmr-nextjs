@@ -51,6 +51,17 @@ export default function Context({ children }) {
         addOnPrice += parseFloat(product.selectedHardware.HardwarePrice || 0);
       }
 
+      // Add hardware pack add-ons (products with hardwarepack=1)
+      if (
+        product.selectedHardwarePacks &&
+        Array.isArray(product.selectedHardwarePacks) &&
+        product.selectedHardwarePacks.length > 0
+      ) {
+        product.selectedHardwarePacks.forEach((pack) => {
+          addOnPrice += parseFloat(pack.Price || 0);
+        });
+      }
+
       const totalItemPrice = (basePrice + addOnPrice) * quantity;
 
       console.log(
@@ -82,6 +93,7 @@ export default function Context({ children }) {
             ? { ColorName: productData.product.defaultColorName }
             : null);
 
+        const selectedHardwarePacks = options.selectedHardwarePacks || [];
         const newItem = {
           ...productData.product,
           quantity: cappedQty,
@@ -89,7 +101,16 @@ export default function Context({ children }) {
           selectedGrease: options.selectedGrease || null,
           selectedAnglefinder: options.selectedAnglefinder || null,
           selectedHardware: options.selectedHardware || null,
+          selectedHardwarePacks,
         };
+
+        // Stable comparison for hardware packs (same ProductIDs in same order)
+        const hardwarePacksSignature = (packs) =>
+          Array.isArray(packs)
+            ? JSON.stringify(
+                packs.map((p) => p.ProductID).sort((a, b) => a - b)
+              )
+            : "[]";
 
         // Check if exact same product with same options already exists
         const existingItemIndex = cartProducts.findIndex((item) => {
@@ -102,7 +123,9 @@ export default function Context({ children }) {
             JSON.stringify(item.selectedAnglefinder) ===
               JSON.stringify(newItem.selectedAnglefinder) &&
             JSON.stringify(item.selectedHardware) ===
-              JSON.stringify(newItem.selectedHardware)
+              JSON.stringify(newItem.selectedHardware) &&
+            hardwarePacksSignature(item.selectedHardwarePacks) ===
+              hardwarePacksSignature(newItem.selectedHardwarePacks)
           );
         });
 
@@ -136,7 +159,13 @@ export default function Context({ children }) {
     }
   };
   const isAddedToCartProducts = (productId, options = {}) => {
-    // Check if exact same product with same options already exists
+    const optsPacks = options.selectedHardwarePacks || [];
+    const packsSig = (packs) =>
+      Array.isArray(packs)
+        ? JSON.stringify(
+            packs.map((p) => p.ProductID).sort((a, b) => a - b)
+          )
+        : "[]";
     const existingItem = cartProducts.find((item) => {
       return (
         item.ProductID === productId &&
@@ -147,7 +176,8 @@ export default function Context({ children }) {
         JSON.stringify(item.selectedAnglefinder) ===
           JSON.stringify(options.selectedAnglefinder || null) &&
         JSON.stringify(item.selectedHardware) ===
-          JSON.stringify(options.selectedHardware || null)
+          JSON.stringify(options.selectedHardware || null) &&
+        packsSig(item.selectedHardwarePacks) === packsSig(optsPacks)
       );
     });
 

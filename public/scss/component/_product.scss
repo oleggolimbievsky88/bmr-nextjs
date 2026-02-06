@@ -320,7 +320,14 @@
     margin-bottom: 5px;
   }
 }
+.tf-product-info-variant-picker .variant-picker-values label.style-text {
+  border-radius: 20px;
+}
+
 .tf-product-info-buy-button {
+  .tf-btn {
+    border-radius: 20px;
+  }
   form {
     display: flex;
     gap: 8px;
