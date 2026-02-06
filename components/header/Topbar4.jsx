@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import TopbarUserMenu from "./TopbarUserMenu";
-import ViewToggle from "../common/ViewToggle";
 
 const DEFAULT_MESSAGE = "FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!";
 const DEFAULT_DURATION = 3000;
@@ -121,7 +120,6 @@ export default function Topbar4() {
                     Dealers
                   </Link>
                 </li>
-                <ViewToggle />
               </ul>
             </div>
           </div>

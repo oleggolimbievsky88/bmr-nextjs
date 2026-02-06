@@ -1,6 +1,8 @@
 # Device-Based Routing Setup
 
-This document explains how device-based routing works between the ColdFusion site and the NextJS site.
+> **Note:** Device-based routing (mobile/desktop redirects between NextJS and ColdFusion) has been **removed**. This document is kept for reference only. All users now stay on the NextJS site; no redirects to ColdFusion or view toggle.
+
+This document explains how device-based routing *used to* work between the ColdFusion site and the NextJS site.
 
 ## Overview
 

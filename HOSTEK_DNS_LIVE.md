@@ -75,24 +75,9 @@ Allow up to 24–48 hours for full DNS propagation; often it’s within 15–60 
 
 ---
 
-## 6. If you still use ColdFusion (device routing)
+## 6. Device routing (removed)
 
-From your `DEVICE_ROUTING_SETUP.md`:
-
-- **Desktop** → ColdFusion at **www.bmrsuspension.com**
-- **Mobile** → Next.js at **dev.bmrsuspension.com**
-
-If you are **replacing** the ColdFusion site with this Next.js app on **bmrsuspension.com** and **www.bmrsuspension.com**:
-
-1. Point both root and www to Vercel using the records above.
-2. Update env vars (e.g. in Vercel):
-   - `NEXT_PUBLIC_SITE_URL=https://www.bmrsuspension.com` (or `https://bmrsuspension.com` if that’s canonical).
-   - If you no longer use the CF site, you can remove or repurpose `CF_SITE_URL` and `NEXT_PUBLIC_CF_SITE_URL` later.
-
-If you are **keeping** ColdFusion on www and only using Next.js on **dev.bmrsuspension.com**:
-
-- Leave **www** and **root** pointing to your current ColdFusion host (don’t change those to Vercel).
-- Add only a **CNAME** for **dev** → `cname.vercel-dns.com` so **dev.bmrsuspension.com** goes to Vercel.
+Device-based redirects between ColdFusion and Next.js have been removed. All traffic stays on this Next.js app. You can ignore `CF_SITE_URL` and `NEXT_PUBLIC_CF_SITE_URL` if you no longer use the ColdFusion site.
 
 ---
 
