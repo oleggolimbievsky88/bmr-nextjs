@@ -126,6 +126,15 @@ export default function Login() {
     }
   };
 
+  const handleOAuthSignIn = async (provider) => {
+    try {
+      await signIn(provider, { callbackUrl: callbackUrl || "/my-account" });
+    } catch (err) {
+      console.error(`OAuth ${provider} error:`, err);
+      setError(`Failed to sign in with ${provider}`);
+    }
+  };
+
   const handlePasswordReset = async (e) => {
     e.preventDefault();
     setRecoverMessage("");
@@ -471,8 +480,8 @@ export default function Login() {
                     <button
                       type="button"
                       className="modern-btn modern-btn-google"
-                      disabled
-                      style={{ opacity: 0.5, cursor: "not-allowed" }}
+                      onClick={() => handleOAuthSignIn("google")}
+                      disabled={isLoading}
                     >
                       <span className="modern-social-icon">G</span>
                       <span>Google</span>
@@ -480,8 +489,8 @@ export default function Login() {
                     <button
                       type="button"
                       className="modern-btn modern-btn-facebook"
-                      disabled
-                      style={{ opacity: 0.5, cursor: "not-allowed" }}
+                      onClick={() => handleOAuthSignIn("facebook")}
+                      disabled={isLoading}
                     >
                       <span className="modern-social-icon">f</span>
                       <span>Facebook</span>
