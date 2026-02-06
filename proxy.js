@@ -5,6 +5,28 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import { isMobileOrTablet } from "./lib/deviceDetection";
 
+/**
+ * Build a clean search string with at most one "view" param to prevent
+ * ?view=mobile?view=mobile&view=mobile... redirect loops from CF or bad links.
+ */
+function getCleanViewSearch(existingParams, viewValue) {
+  const params = new URLSearchParams();
+  for (const [key, value] of existingParams.entries()) {
+    if (key === "view") continue;
+    params.set(key, value);
+  }
+  if (viewValue) params.set("view", viewValue);
+  const s = params.toString();
+  return s ? "?" + s : "";
+}
+
+/** True if URL search has duplicate or malformed view= params (e.g. ?view=mobile?view=mobile). */
+function isViewSearchMalformed(search) {
+  if (!search || search.length < 2) return false;
+  const viewMatches = search.match(/[?&]view=/g);
+  return viewMatches ? viewMatches.length > 1 : false;
+}
+
 export default withAuth(
   function proxy(req) {
     const { nextUrl, headers } = req;
@@ -57,11 +79,11 @@ export default withAuth(
 
       // If user wants desktop view, redirect to CF site
       if (shouldUseDesktop) {
-        // Build the redirect URL preserving path and query params
+        // Build redirect URL with clean query (no duplicate/malformed view params)
         const redirectPath = pathname === "/" ? "/index.cfm" : pathname;
-        const redirectUrl = new URL(redirectPath + nextUrl.search, cfUrl);
+        const cleanSearch = getCleanViewSearch(nextUrl.searchParams, "desktop");
+        const redirectUrl = new URL(redirectPath + cleanSearch, cfUrl);
 
-        // Set cookie for preference
         const response = NextResponse.redirect(redirectUrl);
         response.cookies.set("viewPreference", "desktop", {
           path: "/",
@@ -73,8 +95,20 @@ export default withAuth(
 
       // If user wants mobile view or is on mobile device, stay on NextJS
       if (shouldUseMobile || isMobileOrTablet(userAgent)) {
-        // Set cookie for preference if query param was used
         if (viewPreference === "mobile") {
+          // If URL has duplicate/malformed view=mobile (redirect loop), redirect once to clean URL
+          const search = nextUrl.search || "";
+          if (isViewSearchMalformed(search)) {
+            const cleanSearch = getCleanViewSearch(nextUrl.searchParams, "mobile");
+            const cleanUrl = new URL(pathname + cleanSearch, nextUrl.origin);
+            const response = NextResponse.redirect(cleanUrl);
+            response.cookies.set("viewPreference", "mobile", {
+              path: "/",
+              maxAge: 60 * 60 * 24 * 365,
+              sameSite: "lax",
+            });
+            return response;
+          }
           const response = NextResponse.next();
           response.cookies.set("viewPreference", "mobile", {
             path: "/",
