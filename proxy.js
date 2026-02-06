@@ -4,10 +4,36 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+/** Redirect if URL has duplicate/malformed view= params (e.g. from old CF "Mobile View" link). */
+function hasMalformedViewQuery(search) {
+  if (!search || search.length < 2) return false;
+  const viewMatches = search.match(/[?&]view=/g);
+  return viewMatches ? viewMatches.length > 1 : false;
+}
+
+/** Build search string without any view param. */
+function searchWithoutView(searchParams) {
+  const params = new URLSearchParams();
+  for (const [key, value] of searchParams.entries()) {
+    if (key === "view") continue;
+    params.set(key, value);
+  }
+  const s = params.toString();
+  return s ? "?" + s : "";
+}
+
 export default withAuth(
   function proxy(req) {
     const { nextUrl } = req;
     const pathname = nextUrl.pathname;
+
+    // Clean malformed ?view=mobile?view=mobile&... from old ColdFusion "Mobile View" links
+    const search = nextUrl.search || "";
+    if (hasMalformedViewQuery(search)) {
+      const cleanSearch = searchWithoutView(nextUrl.searchParams);
+      const cleanUrl = new URL(pathname + cleanSearch, nextUrl.origin);
+      return NextResponse.redirect(cleanUrl);
+    }
 
     // /admin/login is allowed without auth (handled in authorized callback)
     if (pathname === "/admin/login") {

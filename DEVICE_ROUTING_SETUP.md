@@ -22,7 +22,7 @@ The middleware automatically:
 
 **Priority order:**
 1. Query parameter (`?view=desktop` or `?view=mobile`)
-2. Cookie preference (`viewPreference`)
+2. Cookie preference (`viewPreference`)git 
 3. Device detection (default behavior)
 
 ### 2. ColdFusion Application.cfm
