@@ -253,7 +253,9 @@ export default function MyAccount() {
   const isDealer = userRole === "dealer";
   const recentOrders = orders.slice(0, 5);
   const ordersCount = orders.length;
-  const memberSince = formatDate(profile?.createdAt || profile?.datecreated);
+  const rawDate = profile?.createdAt || profile?.datecreated;
+  const memberSince =
+    formatDate(rawDate) !== "N/A" ? formatDate(rawDate) : formatDate(new Date());
   const billingLines = buildAddressLines(profile, "billing");
   const shippingLines = buildAddressLines(profile, "shipping");
 

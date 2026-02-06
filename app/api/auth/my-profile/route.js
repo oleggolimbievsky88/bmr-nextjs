@@ -45,7 +45,8 @@ export async function GET(request) {
 				role,
 				dealerTier,
 				dealerDiscount,
-				createdAt
+				COALESCE(createdAt, datecreated) AS createdAt,
+				datecreated
 			FROM customers 
 			WHERE CustomerID = ?`,
 			[customerId]
