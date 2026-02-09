@@ -1,15 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Topbar4 from "@/components/header/Topbar4";
 import Header18 from "@/components/header/Header18";
-import Image from "next/image";
-import Link from "next/link";
 import { getInstallUrl } from "@/lib/assets";
 
 export default function InstallationPage() {
-  const router = useRouter();
   const [partNumber, setPartNumber] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -18,6 +14,8 @@ export default function InstallationPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchType, setSearchType] = useState(null); // 'partNumber' or 'platform'
+  const [hasPartNumberSearched, setHasPartNumberSearched] = useState(false);
+  const [hasPlatformSearched, setHasPlatformSearched] = useState(false);
 
   // Fetch platforms on mount
   useEffect(() => {
@@ -72,6 +70,12 @@ export default function InstallationPage() {
     }
   }, [selectedPlatform]);
 
+  useEffect(() => {
+    if (partNumber) {
+      setHasPartNumberSearched(false);
+    }
+  }, [partNumber]);
+
   // Handle part number search
   const handlePartNumberSearch = async (e) => {
     e.preventDefault();
@@ -80,6 +84,8 @@ export default function InstallationPage() {
     setLoading(true);
     setSelectedPlatform(""); // Clear platform selection when searching by part number
     setSelectedCategory(""); // Clear category selection
+    setHasPartNumberSearched(true);
+    setHasPlatformSearched(false);
     try {
       const res = await fetch(
         `/api/installation/search?partNumber=${encodeURIComponent(partNumber.trim())}`,
@@ -112,11 +118,14 @@ export default function InstallationPage() {
       setProducts([]);
       setSearchType(null);
       setPartNumber(""); // Clear part number when searching by platform
+      setHasPlatformSearched(false);
       return;
     }
 
     setLoading(true);
     setPartNumber(""); // Clear part number when searching by platform
+    setHasPlatformSearched(true);
+    setHasPartNumberSearched(false);
     try {
       const res = await fetch(
         `/api/installation/products?platform=${selectedPlatform}${selectedCategory ? `&category=${selectedCategory}` : ""}`,
@@ -143,6 +152,12 @@ export default function InstallationPage() {
     handlePlatformCategorySearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPlatform, selectedCategory]);
+
+  const shouldShowNoResults =
+    !loading &&
+    products.length === 0 &&
+    ((hasPartNumberSearched && partNumber) ||
+      (hasPlatformSearched && selectedPlatform));
 
   return (
     <div>
@@ -362,19 +377,17 @@ export default function InstallationPage() {
             </div>
           )}
 
-          {!loading &&
-            products.length === 0 &&
-            (selectedPlatform || partNumber) && (
-              <div className="row mb-5">
-                <div className="col-12">
-                  <div className="alert alert-info text-center">
-                    {searchType === "partNumber" && partNumber
-                      ? `No installation instructions found for part numbers matching "${partNumber}".`
-                      : `No installation instructions found for the selected ${selectedCategory ? "platform and category" : "platform"}.`}
-                  </div>
+          {shouldShowNoResults && (
+            <div className="row mb-5">
+              <div className="col-12">
+                <div className="alert alert-info text-center">
+                  {hasPartNumberSearched && partNumber
+                    ? `No installation instructions found for part numbers matching "${partNumber}".`
+                    : `No installation instructions found for the selected ${selectedCategory ? "platform and category" : "platform"}.`}
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
           <div className="row">
             {/* YouTube Videos */}
