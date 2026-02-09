@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getProductImageUrl } from "@/lib/assets";
 
 export default function Subcollections() {
   const [mainCategories, setMainCategories] = useState([]);
@@ -35,7 +36,7 @@ export default function Subcollections() {
                 <div className="card category-card h-100">
                   {category.image && (
                     <img
-                      src={`https://www.bmrsuspension.com/siteart/categories/${category.image}`}
+                      src={`http://legacy.bmrsuspension.com/siteart/categories/${category.image}`}
                       alt={category.name}
                       className="card-img-top"
                     />

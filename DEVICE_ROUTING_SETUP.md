@@ -22,7 +22,7 @@ The middleware automatically:
 
 **Priority order:**
 1. Query parameter (`?view=desktop` or `?view=mobile`)
-2. Cookie preference (`viewPreference`)git 
+2. Cookie preference (`viewPreference`)git
 3. Device detection (default behavior)
 
 ### 2. ColdFusion Application.cfm
@@ -63,7 +63,7 @@ Add these to your `.env.local` or deployment environment:
 NEXTJS_URL=https://dev.bmrsuspension.com
 
 # ColdFusion site URL (where desktop users go)
-CF_SITE_URL=https://www.bmrsuspension.com
+CF_SITE_URL=http://legacy.bmrsuspension.com
 
 # For client-side components
 NEXT_PUBLIC_CF_SITE_URL=https://www.bmrsuspension.com

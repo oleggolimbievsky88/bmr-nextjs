@@ -19,8 +19,8 @@ export default function Topbar4() {
         const list = Array.isArray(data.messages) ? data.messages : [];
         setMessages(
           list.filter(
-            (m) => m && m.content != null && String(m.content).trim() !== ""
-          )
+            (m) => m && m.content != null && String(m.content).trim() !== "",
+          ),
         );
       })
       .catch(() => setMessages([]));
@@ -65,7 +65,7 @@ export default function Topbar4() {
                 </span>
               </div>
             </div>
-            <div className="text-center overflow-hidden">
+            <div className="text-center overflow-hidden xs-hidden">
               {slides.length === 1 ? (
                 <div
                   className="top-bar-text fw-5 mb-0"

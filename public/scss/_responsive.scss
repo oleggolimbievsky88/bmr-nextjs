@@ -307,16 +307,26 @@
       }
     }
   }
-  .logo-header img {
-    max-width: 200px;
+  .logo-header .logo {
+    max-width: 225px !important;
   }
 
-  // Override for mobile - make logo much larger
+  @media (max-width: 1200px) {
+    .logo-header .logo {
+      max-width: 200px !important;
+    }
+  }
+
+  // Override for mobile - make logo smaller
   @media (max-width: 767px) {
-    .logo-header img {
-      height: 30px !important;
+    .logo-header .logo {
+      max-width: 100px !important;
+    }
+  }
 
-
+  @media (max-width: 500px) {
+    .logo-header .logo {
+      max-width: 75px !important;
     }
   }
   .canvas-mb {
@@ -1800,7 +1810,7 @@
   }
   .header-style-4 {
     .wrapper-header {
-      min-height: 55px;
+      min-height: 35px;
     }
   }
   .header-absolute {

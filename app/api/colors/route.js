@@ -17,9 +17,6 @@ export async function GET() {
 
     const colors = await getAllColors();
 
-    console.log("Colors API - fetched colors:", colors);
-    console.log("Colors API - colors length:", colors ? colors.length : 0);
-
     return Response.json({
       success: true,
       colors: colors || [],
@@ -32,7 +29,7 @@ export async function GET() {
         error: "Failed to fetch colors",
         colors: [],
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

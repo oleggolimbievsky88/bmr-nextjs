@@ -99,7 +99,7 @@
   .swiper-button-prev {
     width: 46px;
     height: 46px;
-    background-color: var(--white);
+    background-color: var(--white) !important;
     border-radius: 50%;
     transition: all 0.3s ease;
 

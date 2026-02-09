@@ -33,9 +33,9 @@ export const metadata = {
     "sway bars",
     "lowering springs",
   ],
-  authors: [{ name: "BMR Suspension", url: SITE_URL }],
-  creator: "BMR Suspension",
-  publisher: "BMR Suspension",
+  authors: [{ name: "Oleg Golimbievsky", url: SITE_URL }],
+  creator: "Oleg Golimbievsky",
+  publisher: "Oleg Golimbievsky - OG Web Services LLC",
   formatDetection: { email: false, address: false, telephone: false },
   openGraph: {
     type: "website",

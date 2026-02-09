@@ -151,8 +151,8 @@ export default function CategoryGrid({
           const href = isSubCategory
             ? `/products/${platform}/${mainCategory}/${categorySlug}`
             : mainCategory
-            ? `/products/${platform}/${mainCategory}/${categoryId}`
-            : `/products/${platform}/${categorySlug}`;
+              ? `/products/${platform}/${mainCategory}/${categoryId}`
+              : `/products/${platform}/${categorySlug}`;
 
           if (!categoryName) {
             console.warn(`⚠️ Skipping category at index ${index}:`, category);
@@ -171,7 +171,7 @@ export default function CategoryGrid({
                 >
                   {categoryImage && (
                     <Image
-                      src={`https://www.bmrsuspension.com/siteart/categories/${categoryImage}`}
+                      src={`http://legacy.bmrsuspension.com/siteart/categories/${categoryImage}`}
                       alt={categoryName}
                       width={100}
                       height={90}

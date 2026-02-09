@@ -478,7 +478,7 @@ export default function Checkout() {
         fromAddress,
         toAddress,
         packages,
-        productIds
+        productIds,
       );
     } finally {
       isCalculatingShippingRef.current = false;
@@ -544,9 +544,9 @@ export default function Checkout() {
         effectiveCartProducts.map((i) => ({
           id: i.ProductID ?? i.productId,
           qty: i.quantity,
-        }))
+        })),
       ),
-    [effectiveCartProducts]
+    [effectiveCartProducts],
   );
   const lastCartSignatureRef = useRef("");
   useEffect(() => {
@@ -591,7 +591,7 @@ export default function Checkout() {
         setActiveStep("payment");
       } else {
         alert(
-          "Please ensure your shipping address is valid before continuing."
+          "Please ensure your shipping address is valid before continuing.",
         );
       }
     }
@@ -629,7 +629,7 @@ export default function Checkout() {
         }));
         const subtotal = orderItems.reduce(
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
-          0
+          0,
         );
         const dealerDisc =
           !isPoCheckout && dealerDiscountPercent > 0
@@ -645,7 +645,7 @@ export default function Checkout() {
           {
             shippingCost: selectedOption?.cost || 0,
             items: orderItems,
-          }
+          },
         );
         const total =
           subtotal +
@@ -672,7 +672,7 @@ export default function Checkout() {
             freeShipping:
               selectedOption?.cost === 0 ||
               /free/i.test(
-                selectedOption?.service || selectedOption?.name || ""
+                selectedOption?.service || selectedOption?.name || "",
               ),
             tax: payloadTax,
             discount: (couponDiscount || 0) + dealerDisc,
@@ -698,7 +698,7 @@ export default function Checkout() {
       } catch (err) {
         console.error("PayPal checkout error:", err);
         setSubmitError(
-          "Could not start PayPal checkout. Please check your connection and try again."
+          "Could not start PayPal checkout. Please check your connection and try again.",
         );
       } finally {
         setIsSubmitting(false);
@@ -713,7 +713,7 @@ export default function Checkout() {
       appliedCoupon,
       isPoCheckout,
       dealerDiscountPercent,
-    ]
+    ],
   );
 
   const handleOrderSubmission = async () => {
@@ -913,12 +913,12 @@ export default function Checkout() {
         const expParts = (paymentData.expiryDate || "").split("/");
         const payloadSubtotal = orderItems.reduce(
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
-          0
+          0,
         );
         const payloadDealerDisc =
           !isPoCheckout && dealerDiscountPercent > 0
             ? Math.round(
-                payloadSubtotal * (dealerDiscountPercent / 100) * 100
+                payloadSubtotal * (dealerDiscountPercent / 100) * 100,
               ) / 100
             : 0;
         const destState = sameAsBilling
@@ -931,7 +931,7 @@ export default function Checkout() {
           {
             shippingCost: selectedOption?.cost || 0,
             items: orderItems,
-          }
+          },
         );
         const shippingMethodLabel =
           selectedOption?.name ||
@@ -994,7 +994,7 @@ export default function Checkout() {
         } catch (fetchError) {
           console.error("Network error fetching order API:", fetchError);
           setSubmitError(
-            "Network error: Could not connect to server. Please check your connection and try again."
+            "Network error: Could not connect to server. Please check your connection and try again.",
           );
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -1018,7 +1018,7 @@ export default function Checkout() {
               responseText: responseText.substring(0, 500), // First 500 chars
             });
             setSubmitError(
-              `Server returned invalid response (${orderResponse.status}). Please try again.`
+              `Server returned invalid response (${orderResponse.status}). Please try again.`,
             );
             setIsRedirecting(false);
             setIsSubmitting(false);
@@ -1027,7 +1027,7 @@ export default function Checkout() {
         } catch (textError) {
           console.error("Failed to read order response:", textError);
           setSubmitError(
-            `Failed to read server response: ${textError.message}. Please try again.`
+            `Failed to read server response: ${textError.message}. Please try again.`,
           );
           setIsRedirecting(false);
           setIsSubmitting(false);
@@ -1040,7 +1040,7 @@ export default function Checkout() {
           console.error(
             "Status:",
             orderResponse.status,
-            orderResponse.statusText
+            orderResponse.statusText,
           );
           console.error("Full Response Text:", responseText);
           console.error("Parsed Result:", orderResult);
@@ -1142,7 +1142,7 @@ export default function Checkout() {
       } catch (orderError) {
         console.error("Failed to create order:", orderError);
         setSubmitError(
-          "Could not connect to save your order. Please check your connection and try again."
+          "Could not connect to save your order. Please check your connection and try again.",
         );
         setIsRedirecting(false);
         setIsSubmitting(false);
@@ -1190,7 +1190,7 @@ export default function Checkout() {
       // Store order data in sessionStorage for the confirmation page
       sessionStorage.setItem(
         "orderConfirmation",
-        JSON.stringify(confirmationData)
+        JSON.stringify(confirmationData),
       );
 
       // Single confirmation email is sent by api/orders when order is created
@@ -1256,7 +1256,7 @@ export default function Checkout() {
       {
         shippingCost: selectedOption ? selectedOption.cost : 0,
         items: effectiveCartProducts,
-      }
+      },
     );
 
   const calculateGrandTotal = () => {
@@ -1447,8 +1447,8 @@ export default function Checkout() {
                                   {billingData.country === "United States"
                                     ? "State*"
                                     : billingData.country === "Canada"
-                                    ? "Province*"
-                                    : "State / Province / Region"}
+                                      ? "Province*"
+                                      : "State / Province / Region"}
                                 </label>
                                 {billingData.country === "United States" ? (
                                   <select
@@ -1773,8 +1773,8 @@ export default function Checkout() {
                                       {shippingData.country === "United States"
                                         ? "State*"
                                         : shippingData.country === "Canada"
-                                        ? "Province*"
-                                        : "State / Province / Region"}
+                                          ? "Province*"
+                                          : "State / Province / Region"}
                                     </label>
                                     {shippingData.country ===
                                     "United States" ? (
@@ -2198,7 +2198,7 @@ export default function Checkout() {
                                   value={paymentData.cardNumber}
                                   onChange={(e) => {
                                     const formatted = handleCardNumberChange(
-                                      e.target.value
+                                      e.target.value,
                                     );
                                     setPaymentData({
                                       ...paymentData,
@@ -2241,7 +2241,7 @@ export default function Checkout() {
                                     value={paymentData.expiryDate}
                                     onChange={(e) => {
                                       const formatted = formatExpiryDate(
-                                        e.target.value
+                                        e.target.value,
                                       );
                                       const validation =
                                         validateExpiryDate(formatted);
@@ -2284,11 +2284,11 @@ export default function Checkout() {
                                     onChange={(e) => {
                                       const cleaned = e.target.value.replace(
                                         /\D/g,
-                                        ""
+                                        "",
                                       );
                                       const validation = validateCVV(
                                         cleaned,
-                                        detectedType
+                                        detectedType,
                                       );
                                       setPaymentData({
                                         ...paymentData,
@@ -2489,7 +2489,7 @@ export default function Checkout() {
                               if (item.selectedColor.ColorID === 1) {
                                 imageIndex = Math.min(
                                   1,
-                                  item.images.length - 1
+                                  item.images.length - 1,
                                 );
                               } else if (item.selectedColor.ColorID === 2) {
                                 imageIndex = 0;
@@ -2551,7 +2551,7 @@ export default function Checkout() {
                                           ...cartItem,
                                           quantity: cartItem.quantity - 1,
                                         }
-                                      : cartItem
+                                      : cartItem,
                                 );
                                 if (isPoCheckout)
                                   setPoCartProducts(updatedCart);
@@ -2573,7 +2573,7 @@ export default function Checkout() {
                                         ...cartItem,
                                         quantity: cartItem.quantity + 1,
                                       }
-                                    : cartItem
+                                    : cartItem,
                               );
                               if (isPoCheckout) setPoCartProducts(updatedCart);
                               else setCartProducts(updatedCart);
@@ -2589,13 +2589,19 @@ export default function Checkout() {
                           const basePrice = parseFloat(item.Price) || 0;
                           let addOnPrice = 0;
                           if (item.selectedGrease?.GreasePrice) {
-                            addOnPrice += parseFloat(item.selectedGrease.GreasePrice);
+                            addOnPrice += parseFloat(
+                              item.selectedGrease.GreasePrice,
+                            );
                           }
                           if (item.selectedAnglefinder?.AnglePrice) {
-                            addOnPrice += parseFloat(item.selectedAnglefinder.AnglePrice);
+                            addOnPrice += parseFloat(
+                              item.selectedAnglefinder.AnglePrice,
+                            );
                           }
                           if (item.selectedHardware?.HardwarePrice) {
-                            addOnPrice += parseFloat(item.selectedHardware.HardwarePrice);
+                            addOnPrice += parseFloat(
+                              item.selectedHardware.HardwarePrice,
+                            );
                           }
                           if (
                             item.selectedHardwarePacks &&
@@ -2606,7 +2612,8 @@ export default function Checkout() {
                             });
                           }
                           return (
-                            (basePrice + addOnPrice) * item.quantity
+                            (basePrice + addOnPrice) *
+                            item.quantity
                           ).toFixed(2);
                         })()}
                       </div>

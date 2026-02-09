@@ -20,7 +20,7 @@ export default function ShopCart() {
   console.log("Total price:", totalPrice);
 
   const setQuantity = (item, quantity) => {
-    if (quantity >= 1) {
+    if (quantity >= 1 && quantity <= 10) {
       const items = [...cartProducts];
       const itemIndex = items.indexOf(item);
       items[itemIndex].quantity = quantity;
@@ -28,9 +28,9 @@ export default function ShopCart() {
     }
   };
   const removeItem = (item) => {
-    const productName = item.ProductName || 'Item';
+    const productName = item.ProductName || "Item";
     setCartProducts((pre) => [...pre.filter((elm) => elm !== item)]);
-    showToast(`${productName} removed from cart`, 'info');
+    showToast(`${productName} removed from cart`, "info");
   };
 
   const handleCheckoutClick = () => {
@@ -75,7 +75,7 @@ export default function ShopCart() {
           // Get recommendations based on the first product in cart
           const firstProduct = cartProducts[0];
           const response = await fetch(
-            `/api/related-products?productId=${firstProduct.ProductID}`
+            `/api/related-products?productId=${firstProduct.ProductID}`,
           );
           if (response.ok) {
             const data = await response.json();
@@ -128,7 +128,7 @@ export default function ShopCart() {
                                         // Black Hammertone - show second image if available
                                         imageIndex = Math.min(
                                           1,
-                                          elm.images.length - 1
+                                          elm.images.length - 1,
                                         );
                                       } else if (
                                         elm.selectedColor.ColorID === 2
@@ -138,14 +138,14 @@ export default function ShopCart() {
                                       }
                                       // Add more color mappings as needed
 
-                              return (
-                                elm.images[imageIndex]?.imgSrc ||
-                                elm.images[0]?.imgSrc
-                              );
+                                      return (
+                                        elm.images[imageIndex]?.imgSrc ||
+                                        elm.images[0]?.imgSrc
+                                      );
                                     })()
                                   : elm.images?.[0]?.imgSrc || elm.ImageLarge
-                                  ? getProductImageUrl(elm.ImageLarge)
-                                  : "/images/logo/bmr_logo_square_small.webp"
+                                    ? getProductImageUrl(elm.ImageLarge)
+                                    : "/images/logo/bmr_logo_square_small.webp"
                               }
                               width={135}
                               height={135}
@@ -174,10 +174,10 @@ export default function ShopCart() {
                               {elm.selectedColor && (
                                 <>
                                   {elm.selectedColor.ColorName?.toLowerCase().includes(
-                                    "red"
+                                    "red",
                                   ) && "R"}
                                   {elm.selectedColor.ColorName?.toLowerCase().includes(
-                                    "black"
+                                    "black",
                                   ) && "H"}
                                 </>
                               )}
@@ -320,7 +320,7 @@ export default function ShopCart() {
                                 elm.selectedGrease.GreasePrice
                               ) {
                                 addOnPrice += parseFloat(
-                                  elm.selectedGrease.GreasePrice || 0
+                                  elm.selectedGrease.GreasePrice || 0,
                                 );
                               }
 
@@ -330,7 +330,7 @@ export default function ShopCart() {
                                 elm.selectedAnglefinder.AnglePrice
                               ) {
                                 addOnPrice += parseFloat(
-                                  elm.selectedAnglefinder.AnglePrice || 0
+                                  elm.selectedAnglefinder.AnglePrice || 0,
                                 );
                               }
 
@@ -340,7 +340,7 @@ export default function ShopCart() {
                                 elm.selectedHardware.HardwarePrice
                               ) {
                                 addOnPrice += parseFloat(
-                                  elm.selectedHardware.HardwarePrice || 0
+                                  elm.selectedHardware.HardwarePrice || 0,
                                 );
                               }
                               if (
@@ -372,6 +372,7 @@ export default function ShopCart() {
                                 name="number"
                                 value={elm.quantity}
                                 min={1}
+                                max={10}
                                 onChange={(e) =>
                                   setQuantity(elm, e.target.value / 1)
                                 }
@@ -462,7 +463,14 @@ export default function ShopCart() {
                                 {elm.ProductName || "Product"}
                               </Link>
                               {elm.PlatformName && (
-                                <div className="item-platform" style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>
+                                <div
+                                  className="item-platform"
+                                  style={{
+                                    fontSize: "13px",
+                                    color: "#666",
+                                    marginTop: "4px",
+                                  }}
+                                >
                                   {elm.YearRange ? `${elm.YearRange} ` : ""}
                                   {elm.PlatformName}
                                 </div>

@@ -73,7 +73,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
           imageIndex = Math.min(1, product.images.length - 1);
           console.log(
             "Black Hammertone selected, switching to image index:",
-            imageIndex
+            imageIndex,
           );
         } else if (selectedColor.ColorID === 2) {
           // Red - show first image
@@ -82,7 +82,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
         }
 
         console.log(
-          `Switching to image ${imageIndex} for color: ${selectedColor.ColorName} (ColorID: ${selectedColor.ColorID})`
+          `Switching to image ${imageIndex} for color: ${selectedColor.ColorName} (ColorID: ${selectedColor.ColorID})`,
         );
 
         try {
@@ -231,7 +231,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
           allowPanToPrev: true,
           getThumbBoundsFn: function (index) {
             const thumbnail = document.querySelectorAll(
-              ".tf-product-media-thumbs .item img"
+              ".tf-product-media-thumbs .item img",
             )[index];
             if (thumbnail) {
               const rect = thumbnail.getBoundingClientRect();
@@ -263,9 +263,9 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
         >
           {images.map((slide, index) => {
             // Calculate display dimensions - scale down to max 600px width while maintaining aspect ratio
-            const maxDisplayWidth = 600;
-            const originalWidth = slide.width || 600;
-            const originalHeight = slide.height || 500;
+            const maxDisplayWidth = 1400;
+            const originalWidth = slide.width || 1400;
+            const originalHeight = slide.height || 1000;
             const aspectRatio = originalHeight / originalWidth;
             const displayWidth = Math.min(originalWidth, maxDisplayWidth);
             const displayHeight = Math.round(displayWidth * aspectRatio);
@@ -341,12 +341,13 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
           <SwiperSlide key={index} className="stagger-item">
             <div className="item">
               <Image
-                className="lazyload"
                 src={slide.smallImgSrc || slide.imgSrc} // Use small image for thumbnails, fallback to large if small doesn't exist
                 alt={slide.alt}
                 width={133}
                 height={100}
                 style={{ objectFit: "cover" }}
+                loading="eager"
+                priority
               />
             </div>
           </SwiperSlide>

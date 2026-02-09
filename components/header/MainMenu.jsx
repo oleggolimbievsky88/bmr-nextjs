@@ -105,7 +105,7 @@ export default function MainMenu({ initialMenuData }) {
   const handleImageError = (e) => {
     // Replace with fallback image on error
     e.target.onerror = null; // Prevent infinite loops
-    e.target.src = "/images/logo/bmr-logo-white.webp";
+    e.target.src = "/images/logo/BMR-Logo-White.png";
   };
 
   // Render function for the mega menu - simple list with thumbnails
