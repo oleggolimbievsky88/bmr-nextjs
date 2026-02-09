@@ -44,15 +44,29 @@ export default withAuth(
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
 
-    // Handle legacy URL redirects
+    // Legacy ColdFusion URLs: ?page=products&vehicleid=&maincatid=&catid= or &productid=
     const url = new URL(req.url);
-    if (
-      url.pathname === "/index.cfm" &&
-      url.searchParams.get("page") === "products"
-    ) {
+    const isLegacyProducts =
+      (pathname === "/" || pathname === "/index.cfm") &&
+      url.searchParams.get("page") === "products";
+
+    if (isLegacyProducts) {
       const productid = url.searchParams.get("productid");
+      const vehicleid = url.searchParams.get("vehicleid");
+      const maincatid = url.searchParams.get("maincatid");
+      const catid = url.searchParams.get("catid");
+
       if (productid) {
-        return NextResponse.redirect(`/product/${productid}`);
+        return NextResponse.redirect(new URL(`/product/${productid}`, url.origin));
+      }
+      if (vehicleid && maincatid) {
+        const legacyQuery = new URLSearchParams({ vehicleid, maincatid });
+        if (catid) legacyQuery.set("catid", catid);
+        const legacyUrl = new URL(
+          `/api/legacy-redirect?${legacyQuery}`,
+          url.origin
+        );
+        return NextResponse.redirect(legacyUrl);
       }
     }
 

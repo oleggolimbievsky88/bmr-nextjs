@@ -2,6 +2,21 @@
 
 Copy and paste these into your Vercel project settings under **Settings → Environment Variables**.
 
+## ⚠️ Required in production: NEXTAUTH_SECRET
+
+If you see **`[next-auth][error][NO_SECRET]`** or "Please define a `secret` in production" in Vercel logs, add **`NEXTAUTH_SECRET`**:
+
+1. **Vercel** → your project → **Settings** → **Environment Variables**
+2. **Add**: Name `NEXTAUTH_SECRET`, Value = a random string (see below)
+3. **Environments**: check **Production** (and Preview if you use auth there)
+4. **Save** and **redeploy** the project
+
+Generate a value (run locally):
+```bash
+openssl rand -base64 32
+```
+Or use: https://generate-secret.vercel.app/32 — then paste the result as the value. Do not use a placeholder like `your-secret-key-here` in production.
+
 ## SMTP Configuration Notes
 
 **You can use any SMTP server** - it doesn't have to be Gmail! Common options:
