@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import pool from "@/lib/db"; // Import the pool directly
+import { getProductImageUrl } from "@/lib/assets";
 
 export const dynamic = "force-dynamic";
 
@@ -63,8 +64,8 @@ export async function GET(_, context) {
               // Only add if both small and large images are valid
               if (smallImg !== "0" && largeImg !== "0") {
                 acc.push({
-                  imgSrc: `https://bmrsuspension.com/siteart/products/${largeImg}`,
-                  smallImgSrc: `https://bmrsuspension.com/siteart/products/${smallImg}`,
+                  imgSrc: getProductImageUrl(largeImg),
+                  smallImgSrc: getProductImageUrl(smallImg),
                   alt: `Image ${acc.length + 1} for ${product?.ProductName}`,
                   width: 770,
                   height: 1075,
@@ -79,11 +80,13 @@ export async function GET(_, context) {
       const mainImage =
         product.ImageLarge && product.ImageLarge.trim() !== "0"
           ? {
-              imgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim()}`,
-              smallImgSrc: `https://bmrsuspension.com/siteart/products/${product.ImageLarge.trim().replace(
-                /\.(jpg|jpeg|png|gif|webp)$/i,
-                "_small.$1"
-              )}`,
+              imgSrc: getProductImageUrl(product.ImageLarge.trim()),
+              smallImgSrc: getProductImageUrl(
+                product.ImageLarge.trim().replace(
+                  /\.(jpg|jpeg|png|gif|webp)$/i,
+                  "_small.$1"
+                )
+              ),
               alt: `Image for${product?.PartNumber} - ${product?.ProductName}`,
               width: 770,
               height: 1075,

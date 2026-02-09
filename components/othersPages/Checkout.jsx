@@ -1,6 +1,7 @@
 "use client";
 import { useContextElement } from "@/context/Context";
 import Image from "next/image";
+import { getProductImageUrl } from "@/lib/assets";
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -2514,7 +2515,7 @@ export default function Checkout() {
                               item.ImageLarge.trim() !== "" &&
                               item.ImageLarge !== "0"
                             ) {
-                              return `https://bmrsuspension.com/siteart/products/${item.ImageLarge}`;
+                              return getProductImageUrl(item.ImageLarge);
                             }
                             return "/images/logo/bmr_logo_square_small.webp";
                           })()}

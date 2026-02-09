@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContextElement } from "@/context/Context";
+import { getProductImageUrl } from "@/lib/assets";
 export default function Productcard23({ product, colorsMap = {} }) {
   const [currentImage, setCurrentImage] = useState(product.imgSrc);
   const { setQuickViewItem } = useContextElement();
@@ -16,8 +17,8 @@ export default function Productcard23({ product, colorsMap = {} }) {
   } = useContextElement();
 
   const imageSrc = product.ImageSmall
-    ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}`
-    : "https://bmrsuspension.com/siteart/products/noimage.jpg";
+    ? getProductImageUrl(product.ImageSmall)
+    : getProductImageUrl("noimage.jpg");
 
   // Limit description to 200 chars
   const shortDescription =

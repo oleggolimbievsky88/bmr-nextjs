@@ -2,6 +2,7 @@
 import { useContextElement } from "@/context/Context";
 import { showToast } from "@/utlis/showToast";
 import Image from "next/image";
+import { getProductImageUrl } from "@/lib/assets";
 import Link from "next/link";
 import { useState } from "react";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
@@ -145,14 +146,14 @@ export default function CartNew() {
                                 return elm.images[0].imgSrc;
                               }
 
-                              // Fallback to external BMR image
-                              if (
-                                elm.ImageLarge &&
-                                elm.ImageLarge.trim() !== "" &&
-                                elm.ImageLarge !== "0"
-                              ) {
-                                return `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`;
-                              }
+                                // Fallback to product image
+                                if (
+                                  elm.ImageLarge &&
+                                  elm.ImageLarge.trim() !== "" &&
+                                  elm.ImageLarge !== "0"
+                                ) {
+                                  return getProductImageUrl(elm.ImageLarge);
+                                }
 
                               // Final fallback to BMR logo
                               return "/images/logo/bmr_logo_square_small.webp";

@@ -27,9 +27,27 @@ export default function AdminCategoriesPage() {
   const [mainCategoryImage, setMainCategoryImage] = useState(null);
 
   useEffect(() => {
-    fetchCategories();
-    fetchMainCategories();
-    fetchBodies();
+    let isMounted = true;
+
+    async function loadInitialData() {
+      try {
+        await Promise.all([
+          fetchCategories(),
+          fetchMainCategories(),
+          fetchBodies(),
+        ]);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadInitialData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const fetchCategories = async () => {
@@ -41,8 +59,6 @@ export default function AdminCategoriesPage() {
       }
     } catch (err) {
       console.error("Error fetching categories:", err);
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -4,6 +4,7 @@ import Image from "next/image";
 import React from "react";
 import Quantity from "./Quantity";
 import { useContextElement } from "@/context/Context";
+import { getProductImageUrl } from "@/lib/assets";
 
 export default function StickyItem({ soldOut = false, product }) {
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
@@ -18,16 +19,15 @@ export default function StickyItem({ soldOut = false, product }) {
             <div className="tf-sticky-atc-img">
               <Image
                 className="lazyloaded"
-                data-src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
+                data-src={getProductImageUrl(product?.ImageLarge)}
                 alt={product?.ProductName || "Product image"}
-                src={`https://bmrsuspension.com/siteart/products/${product?.ImageLarge}`}
+                src={getProductImageUrl(product?.ImageLarge)}
                 width={770}
                 height={1075}
                 unoptimized={true}
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src =
-                    "https://bmrsuspension.com/siteart/products/noimage.jpg";
+                  e.target.src = getProductImageUrl("noimage.jpg");
                 }}
               />
             </div>

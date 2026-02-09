@@ -6,6 +6,7 @@ import Topbar4 from "@/components/header/Topbar4";
 import Header18 from "@/components/header/Header18";
 import Image from "next/image";
 import Link from "next/link";
+import { getInstallUrl } from "@/lib/assets";
 
 export default function InstallationPage() {
   const router = useRouter();
@@ -343,11 +344,7 @@ export default function InstallationPage() {
                             </td>
                             <td>
                               <a
-                                href={
-                                  product.Instructions.startsWith("inst_")
-                                    ? `/instructions/${product.Instructions}`
-                                    : `https://www.bmrsuspension.com/siteart/install/${product.Instructions}`
-                                }
+                                href={getInstallUrl(product.Instructions)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-sm btn-danger"

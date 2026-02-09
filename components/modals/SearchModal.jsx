@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getProductImageUrl } from "@/lib/assets";
 
 export default function SearchModal() {
   const [query, setQuery] = useState("");
@@ -322,10 +323,10 @@ export default function SearchModal() {
 
   const getProductImage = (product) => {
     if (product.ImageSmall && product.ImageSmall !== "0") {
-      return `https://bmrsuspension.com/siteart/products/${product.ImageSmall}`;
+      return getProductImageUrl(product.ImageSmall);
     }
     if (product.ImageLarge && product.ImageLarge !== "0") {
-      return `https://bmrsuspension.com/siteart/products/${product.ImageLarge}`;
+      return getProductImageUrl(product.ImageLarge);
     }
     return "/images/placeholder-product.jpg";
   };

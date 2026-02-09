@@ -10,6 +10,7 @@ import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details6 from "@/components/shopDetails/Details6";
 import { getProductById } from "@/lib/queries";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -20,14 +21,29 @@ export const metadata = {
 };
 
 export default async function ProductPage({ params }) {
-  const { id } = await params;
+  const { id } = params || {};
 
-  // Fetch product data directly from database (more efficient than API call)
-  const product = await getProductById(id);
+  if (!id) {
+    return notFound();
+  }
+
+  let product;
+  try {
+    // Fetch product data directly from database (more efficient than API call)
+    product = await getProductById(id);
+  } catch (error) {
+    console.error("Error loading product detail", { id, error });
+    // Surface a generic error to the user but keep details in logs
+    return (
+      <p style={{ padding: "2rem", textAlign: "center" }}>
+        Sorry, something went wrong loading this product.
+      </p>
+    );
+  }
 
   if (!product) {
-    // Handle product not found
-    return <p>Product not found.</p>;
+    // Let Next.js render a 404 page for missing products
+    return notFound();
   }
 
   return (

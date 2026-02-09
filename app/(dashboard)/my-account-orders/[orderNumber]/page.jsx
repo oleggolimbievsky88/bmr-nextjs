@@ -7,7 +7,8 @@ import OrderDetail from "@/components/othersPages/dashboard/OrderDetail";
 import React from "react";
 
 export default function OrderDetailPage({ params }) {
-  const { orderNumber } = React.use(params);
+  // `params` is passed directly into client components in App Router
+  const { orderNumber } = params || {};
   return (
     <>
       <Header2 />

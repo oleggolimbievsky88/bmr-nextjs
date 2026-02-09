@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import CountdownComponent from "../common/Countdown";
+import { getProductImageUrl } from "@/lib/assets";
 export const ProductCard = ({
   product,
   colorsMap = {},
@@ -29,8 +30,8 @@ export const ProductCard = ({
   }, [product]);
 
   const imageSrc = product.ImageSmall
-    ? `https://bmrsuspension.com/siteart/products/${product.ImageSmall}`
-    : "https://bmrsuspension.com/siteart/products/noimage.jpg";
+    ? getProductImageUrl(product.ImageSmall)
+    : getProductImageUrl("noimage.jpg");
 
   // Color swatch logic
   const colorIds = product.Color ? product.Color.split(",") : [];

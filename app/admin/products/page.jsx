@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { getProductImageUrl, getInstallUrl } from "@/lib/assets";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -93,18 +94,8 @@ export default function AdminProductsPage() {
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
 
-  // Helper function to get correct image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath || imagePath === "0") return "";
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith("http")) return imagePath;
-    // If it starts with /, it's already a local path
-    if (imagePath.startsWith("/")) return imagePath;
-    // If it contains /, it's a relative path from public
-    if (imagePath.includes("/")) return `/${imagePath}`;
-    // Otherwise, it's just a filename - use the external CDN path
-    return `https://bmrsuspension.com/siteart/products/${imagePath}`;
-  };
+  // Helper function to get correct image URL (env-configured)
+  const getImageUrl = (imagePath) => getProductImageUrl(imagePath);
 
   useEffect(() => {
     fetchProducts();
@@ -1414,11 +1405,7 @@ export default function AdminProductsPage() {
                   !instructionsDelete && (
                     <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
                       <a
-                        href={
-                          formData.Instructions.startsWith("inst_")
-                            ? `/instructions/${formData.Instructions}`
-                            : `https://www.bmrsuspension.com/siteart/install/${formData.Instructions}`
-                        }
+                        href={getInstallUrl(formData.Instructions)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-decoration-none"

@@ -13,3 +13,4 @@ node_modules
 *.backup
 .vscode/settings.json
 .idea/
+public/siteart/

@@ -105,7 +105,7 @@ export default function MainMenu({ initialMenuData }) {
   const handleImageError = (e) => {
     // Replace with fallback image on error
     e.target.onerror = null; // Prevent infinite loops
-    e.target.src = "https://bmrsuspension.com/siteart/logo/bmr-logo-white.png";
+    e.target.src = "/siteart/logo/bmr-logo-white.png";
   };
 
   // Render function for the mega menu - simple list with thumbnails

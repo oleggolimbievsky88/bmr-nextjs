@@ -4,9 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { showToast } from "@/utlis/showToast";
+import { getProductImageUrl } from "@/lib/assets";
 
 const PER_PAGE = 50;
-const IMAGE_BASE = "https://bmrsuspension.com/siteart/products";
 const ALL = "";
 
 function formatPrice(val) {
@@ -15,12 +15,12 @@ function formatPrice(val) {
   return `$${n.toFixed(2)}`;
 }
 
-function getProductImageUrl(p) {
+function getDealerProductImageUrl(p) {
   const small = (p.ImageSmall && String(p.ImageSmall).trim()) || "";
   const large = (p.ImageLarge && String(p.ImageLarge).trim()) || "";
   const filename = (small !== "" && small !== "0" ? small : large) || "";
   if (!filename || filename === "0") return null;
-  return `${IMAGE_BASE}/${encodeURIComponent(filename)}`;
+  return getProductImageUrl(filename);
 }
 
 function getPlatformLabel(platforms, bodyId) {
@@ -626,7 +626,7 @@ export default function DealersPortalProductsPage() {
                   );
                   return products.map((p) => {
                     const poInfo = poItemsIndex[String(p.ProductID)] || null;
-                    const imgSrc = getProductImageUrl(p);
+                    const imgSrc = getDealerProductImageUrl(p);
                     const productColorIds = parseProductColorIds(p.Color);
                     const qtys = rowQtys[p.ProductID] || {};
                     const qtyNum = (cid) =>

@@ -2,6 +2,7 @@
 import { useContextElement } from "@/context/Context";
 import { showToast } from "@/utlis/showToast";
 import Image from "next/image";
+import { getProductImageUrl } from "@/lib/assets";
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -137,13 +138,13 @@ export default function ShopCart() {
                                       }
                                       // Add more color mappings as needed
 
-                                      return (
-                                        elm.images[imageIndex]?.imgSrc ||
-                                        elm.images[0]?.imgSrc
-                                      );
+                              return (
+                                elm.images[imageIndex]?.imgSrc ||
+                                elm.images[0]?.imgSrc
+                              );
                                     })()
                                   : elm.images?.[0]?.imgSrc || elm.ImageLarge
-                                  ? `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`
+                                  ? getProductImageUrl(elm.ImageLarge)
                                   : "/images/logo/bmr_logo_square_small.webp"
                               }
                               width={135}
@@ -445,7 +446,7 @@ export default function ShopCart() {
                                   alt={elm.ProductName || "Product"}
                                   src={
                                     elm.ImageLarge
-                                      ? `https://bmrsuspension.com/siteart/products/${elm.ImageLarge}`
+                                      ? getProductImageUrl(elm.ImageLarge)
                                       : "/images/logo/bmr_logo_square_small.webp"
                                   }
                                   width={720}
