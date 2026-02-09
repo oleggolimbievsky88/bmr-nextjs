@@ -10,6 +10,7 @@ const nextConfig = {
 
   // Image configuration for external domains
   // In development, use unoptimized images to avoid EACCES on .next/cache/images
+
   images: {
     unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
@@ -21,6 +22,19 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.bmrsuspension.com",
       },
+
+      // ✅ ADD THIS ONE
+      {
+        protocol: "https",
+        hostname: "legacy.bmrsuspension.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "legacy.bmrsuspension.com",
+        pathname: "/**",
+      },
+
       {
         protocol: "https",
         hostname: "i.ytimg.com",
