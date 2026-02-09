@@ -64,7 +64,7 @@ export default function Header18({ showVehicleSearch = true }) {
                 <Image
                   alt="BMR Suspension Logo"
                   className="logo"
-                  src="/images/logo/bmr-logo-white.png"
+                  src="/images/logo/bmr-logo-white.webp"
                   width={300}
                   height={100}
                   style={{

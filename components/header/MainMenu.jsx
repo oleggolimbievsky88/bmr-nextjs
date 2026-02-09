@@ -105,7 +105,7 @@ export default function MainMenu({ initialMenuData }) {
   const handleImageError = (e) => {
     // Replace with fallback image on error
     e.target.onerror = null; // Prevent infinite loops
-    e.target.src = "/images/logo/bmr-logo-white.png";
+    e.target.src = "/images/logo/bmr-logo-white.webp";
   };
 
   // Render function for the mega menu - simple list with thumbnails
@@ -113,79 +113,80 @@ export default function MainMenu({ initialMenuData }) {
     const isActive = activePlatform === platform;
 
     // Always render the menu, but control visibility with CSS classes
-    const menuContent = (!links || links.length === 0) ? (
-      isLoading ? (
-        <div className="mega-menu-inner">
-          <div className="container">
-            <div className="row g-2 p-4">
-              <div className="col-12 text-center py-4">Loading...</div>
+    const menuContent =
+      !links || links.length === 0 ? (
+        isLoading ? (
+          <div className="mega-menu-inner">
+            <div className="container">
+              <div className="row g-2 p-4">
+                <div className="col-12 text-center py-4">Loading...</div>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="mega-menu-inner">
+            <div className="container">
+              <div className="row g-2 p-4">
+                <div className="col-12 text-center py-4 text-muted">
+                  No platforms in this category yet.
+                </div>
+              </div>
+            </div>
+          </div>
+        )
       ) : (
         <div className="mega-menu-inner">
-          <div className="container">
-            <div className="row g-2 p-4">
-              <div className="col-12 text-center py-4 text-muted">
-                No platforms in this category yet.
+          <div className="mega-menu-container">
+            <div className="container">
+              <div className="row g-3 px-5">
+                {links.map((platformItem) => (
+                  <div
+                    key={platformItem.slug || platformItem.bodyId}
+                    className="col-12 col-md-6 col-lg-4 mega-menu-platform-col"
+                  >
+                    <Link
+                      href={`/products/${encodeURIComponent(
+                        platformItem.slug,
+                      )}`}
+                      className="platform-menu-item d-flex align-items-center text-decoration-none"
+                    >
+                      {platformItem.image && (
+                        <div className="platform-thumbnail me-3 flex-shrink-0">
+                          <img
+                            src={platformItem.image}
+                            alt={platformItem.heading}
+                            className="img-fluid"
+                            style={{
+                              objectFit: "contain",
+                              maxHeight: "50px",
+                              maxWidth: "80px",
+                              width: "auto",
+                              transition: "transform 0.3s ease",
+                            }}
+                            onError={handleImageError}
+                          />
+                        </div>
+                      )}
+                      <div className="text-dark fw-semibold small">
+                        {platformItem.heading}
+                      </div>
+                    </Link>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
-      )
-    ) : (
-      <div className="mega-menu-inner">
-        <div className="mega-menu-container">
-          <div className="container">
-            <div className="row g-3 px-5">
-              {links.map((platformItem) => (
-                <div
-                  key={platformItem.slug || platformItem.bodyId}
-                  className="col-12 col-md-6 col-lg-4 mega-menu-platform-col"
-                >
-                  <Link
-                    href={`/products/${encodeURIComponent(
-                      platformItem.slug
-                    )}`}
-                    className="platform-menu-item d-flex align-items-center text-decoration-none"
-                  >
-                    {platformItem.image && (
-                      <div className="platform-thumbnail me-3 flex-shrink-0">
-                        <img
-                          src={platformItem.image}
-                          alt={platformItem.heading}
-                          className="img-fluid"
-                          style={{
-                            objectFit: "contain",
-                            maxHeight: "50px",
-                            maxWidth: "80px",
-                            width: "auto",
-                            transition: "transform 0.3s ease",
-                          }}
-                          onError={handleImageError}
-                        />
-                      </div>
-                    )}
-                    <div className="text-dark fw-semibold small">
-                      {platformItem.heading}
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+      );
 
     return (
       <div
-        className={`dropdown-menu mega-menu ${isActive ? 'show active' : ''}`}
+        className={`dropdown-menu mega-menu ${isActive ? "show active" : ""}`}
         onMouseEnter={() => clearTimeout(hoverTimeoutRef.current)}
         onMouseLeave={handlePlatformLeave}
         style={{
           position: "fixed",
-          top: megaMenuTop !== null ? `${megaMenuTop}px` : '100%',
+          top: megaMenuTop !== null ? `${megaMenuTop}px` : "100%",
           zIndex: 99999,
           isolation: "isolate",
           backgroundColor: "#ffffff",

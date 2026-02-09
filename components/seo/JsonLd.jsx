@@ -5,7 +5,7 @@ const organization = {
   "@type": "Organization",
   name: "BMR Suspension",
   url: SITE_URL,
-  logo: `${SITE_URL}/images/logo/bmr-logo-white.png`,
+  logo: `${SITE_URL}/images/logo/bmr-logo-white.webp`,
   contactPoint: {
     "@type": "ContactPoint",
     email: "sales@bmrsuspension.com",
