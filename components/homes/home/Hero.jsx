@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
 import Image from "next/image";
+
 const slideshowSlides = [
   "/images/slider/SP086-88_Banner_S650.webp",
   "/images/slider/CJR760_Banner_S650.jpg",
@@ -11,18 +13,47 @@ const slideshowSlides = [
   "/images/slider/S650 Mustang_Banner.jpg",
   "/images/slider/CB763_Banner (S650).jpg",
 ];
+
 export default function Hero() {
+  const [bannerImages, setBannerImages] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/banner")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.images?.length) {
+          setBannerImages(
+            data.images.map((img) => ({
+              src: img.ImageSrc?.startsWith("/")
+                ? img.ImageSrc
+                : `/${img.ImageSrc || ""}`,
+              link: img.ImageUrl?.trim() || null,
+            })),
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const slides =
+    bannerImages.length > 0
+      ? bannerImages
+      : slideshowSlides.map((src) => ({ src, link: null }));
+
   return (
     <section
       className="tf-slideshow slider-collection hover-sw-nav pb_0"
       style={{
         marginBottom: 0,
         paddingBottom: 0,
-        position: 'relative',
-        zIndex: 0
+        position: "relative",
+        zIndex: 0,
       }}
     >
-      <div className="wrap-slider" style={{ marginBottom: 0, paddingBottom: 0 }}>
+      <div
+        className="wrap-slider"
+        style={{ marginBottom: 0, paddingBottom: 0 }}
+      >
         {/* <Swiper
           slidesPerView={3}
           spaceBetween={0}
@@ -72,30 +103,44 @@ export default function Hero() {
             backgroundColor: "black",
             marginBottom: 0,
             paddingBottom: 0,
-            position: 'relative',
-            zIndex: 0
+            position: "relative",
+            zIndex: 0,
           }}
         >
-          {slideshowSlides.map((imgSrc, index) => (
-            <SwiperSlide key={index}>
-              <div className="collection-item">
-                <div className="collection-inner">
-                  <Link
-                    href={`#`}
-                    className="collection-image img-style rounded-0"
-                  >
-                    <Image
-                      src={imgSrc}
-                      alt={`Slide ${index + 1}`}
-                      width={1920}
-                      height={550}
-                      priority
-                    />
-                  </Link>
+          {slides.map((slide, index) => {
+            const src = typeof slide === "string" ? slide : slide.src;
+            const link =
+              typeof slide === "object" && slide.link ? slide.link : null;
+            const content = (
+              <Image
+                src={src}
+                alt={`Slide ${index + 1}`}
+                width={1920}
+                height={550}
+                priority={index === 0}
+              />
+            );
+            return (
+              <SwiperSlide key={index}>
+                <div className="collection-item">
+                  <div className="collection-inner">
+                    {link ? (
+                      <Link
+                        href={link}
+                        className="collection-image img-style rounded-0 d-block"
+                      >
+                        {content}
+                      </Link>
+                    ) : (
+                      <span className="collection-image img-style rounded-0 d-block">
+                        {content}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </SwiperSlide>
-          ))}
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
         {/* <div className="box-content z-5">
                 <div className="container">

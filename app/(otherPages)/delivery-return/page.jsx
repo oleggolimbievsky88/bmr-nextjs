@@ -30,8 +30,9 @@ export default function DeliveryReturnPage() {
                   choose the speed and cost that works for you.
                 </li>
                 <li>
-                  Free shipping for qualifying orders over US $250 (lower 48
-                  states; exclusions may apply).
+                  Free shipping is available on qualifying orders (lower 48
+                  states; conditions and exclusions may apply). See checkout for
+                  current offers.
                 </li>
                 <li>
                   All orders ship with tracking. You’ll receive tracking

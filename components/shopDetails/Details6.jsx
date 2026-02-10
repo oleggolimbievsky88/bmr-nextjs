@@ -95,7 +95,7 @@ export default function ou({ product, initialColor, searchParams }) {
       .filter((color) => {
         const isIncluded = availableColorIds.includes(color.ColorID.toString());
         console.log(
-          `Color ${color.ColorName} (ID: ${color.ColorID}) included: ${isIncluded}`
+          `Color ${color.ColorName} (ID: ${color.ColorID}) included: ${isIncluded}`,
         );
         return isIncluded;
       })
@@ -207,14 +207,14 @@ export default function ou({ product, initialColor, searchParams }) {
         ) {
           const filteredColors = filterColorsByProduct(
             colorsData.colors,
-            product.Color
+            product.Color,
           );
           console.log("Using filtered database colors:", filteredColors);
           setColorOptions(filteredColors);
 
           // Check if initial color from URL matches any filtered colors
           const urlColorSlug = new URLSearchParams(
-            typeof window !== "undefined" ? window.location.search : ""
+            typeof window !== "undefined" ? window.location.search : "",
           ).get("color");
           console.log("URL Color Slug:", urlColorSlug);
 
@@ -233,7 +233,7 @@ export default function ou({ product, initialColor, searchParams }) {
               const singleColor = filteredColors[0];
               console.log(
                 "Only one color option available, auto-selecting:",
-                singleColor
+                singleColor,
               );
               setCurrentColor(singleColor);
               // Update URL with the auto-selected color
@@ -241,14 +241,14 @@ export default function ou({ product, initialColor, searchParams }) {
             } else {
               // No color in URL and multiple options - require selection
               console.log(
-                "No color in URL - requiring selection for all color options"
+                "No color in URL - requiring selection for all color options",
               );
               setCurrentColor(null);
             }
           }
         } else {
           console.log(
-            "No database colors available, using static data with no defaults"
+            "No database colors available, using static data with no defaults",
           );
           console.log("Colors API response:", colorsData);
           setColorOptions(removeDefaultSelections(colors));
@@ -275,7 +275,7 @@ export default function ou({ product, initialColor, searchParams }) {
           setCurrentGrease(undefined);
         } else {
           console.log(
-            "No database grease available or product doesn't support grease, hiding grease options"
+            "No database grease available or product doesn't support grease, hiding grease options",
           );
           console.log("Grease API response:", greaseData);
           console.log("Product Grease field:", product.Grease);
@@ -292,20 +292,19 @@ export default function ou({ product, initialColor, searchParams }) {
         ) {
           console.log(
             "Using database anglefinder:",
-            anglefinderData.anglefinder
+            anglefinderData.anglefinder,
           );
           setAnglefinderOptions(anglefinderData.anglefinder);
           // Always start with undefined - no pre-selection
           setCurrentAnglefinder(undefined);
         } else {
           console.log(
-            "No database anglefinder options or product doesn't support angle finder, hiding angle finder options"
+            "No database anglefinder options or product doesn't support angle finder, hiding angle finder options",
           );
           console.log("Product AngleFinder field:", product.AngleFinder);
           setAnglefinderOptions([]);
           setCurrentAnglefinder(undefined);
         }
-
       } catch (error) {
         console.error("Error fetching options:", error);
         // Fallback to static data with no defaults
@@ -543,7 +542,7 @@ export default function ou({ product, initialColor, searchParams }) {
                                   checked={isSelected || false}
                                   onChange={() => {
                                     console.log(
-                                      "=== COLOR SELECTION DEBUG ==="
+                                      "=== COLOR SELECTION DEBUG ===",
                                     );
                                     console.log("Color selected:", color);
                                     console.log("Color ID:", color.ColorID);
@@ -559,7 +558,7 @@ export default function ou({ product, initialColor, searchParams }) {
                                     updateColorInURL(color);
 
                                     console.log(
-                                      "=== END COLOR SELECTION DEBUG ==="
+                                      "=== END COLOR SELECTION DEBUG ===",
                                     );
                                   }}
                                 />
@@ -572,11 +571,11 @@ export default function ou({ product, initialColor, searchParams }) {
                                   onClick={() => {
                                     console.log(
                                       "Label clicked for color:",
-                                      color.ColorName
+                                      color.ColorName,
                                     );
                                     // Force the radio button to be selected
                                     const radioButton = document.getElementById(
-                                      `color-${color.ColorID || color.id}`
+                                      `color-${color.ColorID || color.id}`,
                                     );
                                     if (radioButton) {
                                       radioButton.checked = true;
@@ -584,7 +583,7 @@ export default function ou({ product, initialColor, searchParams }) {
                                       setCurrentColor(color);
                                       console.log(
                                         "Radio button checked:",
-                                        radioButton
+                                        radioButton,
                                       );
                                     }
                                   }}
@@ -621,11 +620,11 @@ export default function ou({ product, initialColor, searchParams }) {
                               {currentGrease === undefined
                                 ? "Please select"
                                 : currentGrease === null
-                                ? "No Thanks"
-                                : currentGrease
-                                ? currentGrease.GreaseName ||
-                                  currentGrease.value
-                                : "Please select"}
+                                  ? "No Thanks"
+                                  : currentGrease
+                                    ? currentGrease.GreaseName ||
+                                      currentGrease.value
+                                    : "Please select"}
                             </span>
                             {errors.grease && (
                               <span className="text-danger ms-2">
@@ -708,10 +707,10 @@ export default function ou({ product, initialColor, searchParams }) {
                             {currentAnglefinder === undefined
                               ? "Please select"
                               : currentAnglefinder === null
-                              ? "No Thanks"
-                              : currentAnglefinder
-                              ? currentAnglefinder.AngleName
-                              : "Please select"}
+                                ? "No Thanks"
+                                : currentAnglefinder
+                                  ? currentAnglefinder.AngleName
+                                  : "Please select"}
                           </span>
                           {errors.anglefinder && (
                             <span className="text-danger ms-2">
@@ -790,8 +789,8 @@ export default function ou({ product, initialColor, searchParams }) {
                               {selectedHardwarePacks.length === 0
                                 ? "No Thanks"
                                 : selectedHardwarePacks.length === 1
-                                ? `${selectedHardwarePacks[0].ProductName}${selectedHardwarePacks[0].Price && parseFloat(selectedHardwarePacks[0].Price) > 0 ? ` (+$${parseFloat(selectedHardwarePacks[0].Price).toFixed(2)})` : ""}`
-                                : `${selectedHardwarePacks.length} pack(s) selected`}
+                                  ? `${selectedHardwarePacks[0].ProductName}${selectedHardwarePacks[0].Price && parseFloat(selectedHardwarePacks[0].Price) > 0 ? ` (+$${parseFloat(selectedHardwarePacks[0].Price).toFixed(2)})` : ""}`
+                                  : `${selectedHardwarePacks.length} pack(s) selected`}
                             </span>
                           </div>
                           <form className="variant-picker-values">
@@ -813,7 +812,7 @@ export default function ou({ product, initialColor, searchParams }) {
                             </label>
                             {product.hardwarePackProducts.map((pack) => {
                               const isSelected = selectedHardwarePacks.some(
-                                (p) => p.ProductID === pack.ProductID
+                                (p) => p.ProductID === pack.ProductID,
                               );
                               return (
                                 <label
@@ -831,9 +830,10 @@ export default function ou({ product, initialColor, searchParams }) {
                                       setSelectedHardwarePacks((prev) =>
                                         isSelected
                                           ? prev.filter(
-                                              (p) => p.ProductID !== pack.ProductID
+                                              (p) =>
+                                                p.ProductID !== pack.ProductID,
                                             )
-                                          : [...prev, pack]
+                                          : [...prev, pack],
                                       );
                                     }}
                                   />
@@ -848,8 +848,7 @@ export default function ou({ product, initialColor, searchParams }) {
                             })}
                           </form>
                         </div>
-                    )}
-
+                      )}
                   </div>
 
                   <div
@@ -872,12 +871,21 @@ export default function ou({ product, initialColor, searchParams }) {
                           $
                           {(
                             (Number(product.Price) || 0) * (quantity || 1) +
+                            (currentGrease
+                              ? (parseFloat(currentGrease.GreasePrice) || 0) *
+                                (quantity || 1)
+                              : 0) +
+                            (currentAnglefinder
+                              ? (parseFloat(currentAnglefinder.AnglePrice) ||
+                                  0) * (quantity || 1)
+                              : 0) +
                             (selectedHardwarePacks.length > 0
                               ? selectedHardwarePacks.reduce(
                                   (sum, p) =>
                                     sum +
-                                    (parseFloat(p.Price) || 0) * (quantity || 1),
-                                  0
+                                    (parseFloat(p.Price) || 0) *
+                                      (quantity || 1),
+                                  0,
                                 )
                               : 0)
                           ).toFixed(2)}

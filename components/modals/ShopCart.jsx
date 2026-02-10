@@ -558,7 +558,7 @@ export default function ShopCart() {
                     </div>
                   </div>
                   <div className="tf-cart-tax">
-                    Taxes and <a href="#"> shipping</a> calculated at checkout
+                    Taxes and shipping calculated at checkout
                   </div>
                   <div className="tf-mini-cart-line" />
                   {/* <div className="tf-cart-checkbox">

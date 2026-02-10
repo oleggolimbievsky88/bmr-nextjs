@@ -2,7 +2,7 @@
 import { openCartModal } from "@/utlis/openCartModal";
 import { showToast } from "@/utlis/showToast";
 //import { openCart } from "@/utlis/toggleCart";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useContext, useState } from "react";
 const dataContext = React.createContext();
 export const useContextElement = () => {
@@ -76,7 +76,10 @@ export default function Context({ children }) {
 
   const MAX_CART_QTY = 10;
   const addProductToCart = async (productId, qty = 1, options = {}) => {
-    const cappedQty = Math.min(MAX_CART_QTY, Math.max(1, parseInt(qty, 10) || 1));
+    const cappedQty = Math.min(
+      MAX_CART_QTY,
+      Math.max(1, parseInt(qty, 10) || 1),
+    );
     console.log("addProductToCart called with:", { productId, qty, options });
 
     try {
@@ -108,7 +111,7 @@ export default function Context({ children }) {
         const hardwarePacksSignature = (packs) =>
           Array.isArray(packs)
             ? JSON.stringify(
-                packs.map((p) => p.ProductID).sort((a, b) => a - b)
+                packs.map((p) => p.ProductID).sort((a, b) => a - b),
               )
             : "[]";
 
@@ -134,7 +137,7 @@ export default function Context({ children }) {
           const updatedCart = [...cartProducts];
           updatedCart[existingItemIndex].quantity = Math.min(
             MAX_CART_QTY,
-            updatedCart[existingItemIndex].quantity + cappedQty
+            updatedCart[existingItemIndex].quantity + cappedQty,
           );
           setCartProducts(updatedCart);
           console.log("Increased quantity of existing item");
@@ -162,9 +165,7 @@ export default function Context({ children }) {
     const optsPacks = options.selectedHardwarePacks || [];
     const packsSig = (packs) =>
       Array.isArray(packs)
-        ? JSON.stringify(
-            packs.map((p) => p.ProductID).sort((a, b) => a - b)
-          )
+        ? JSON.stringify(packs.map((p) => p.ProductID).sort((a, b) => a - b))
         : "[]";
     const existingItem = cartProducts.find((item) => {
       return (
@@ -297,11 +298,9 @@ export default function Context({ children }) {
     const items = JSON.parse(localStorage.getItem("cartList"));
     console.log("Loading cart from localStorage:", items);
     if (items?.length) {
-      // Filter out any invalid items, ensure proper structure, and cap quantity at MAX_CART_QTY
+      // Keep items that have ProductID and ProductName (allow missing Price so we can re-hydrate after login)
       const validItems = items
-        .filter(
-          (item) => item && item.ProductID && item.ProductName && item.Price,
-        )
+        .filter((item) => item && item.ProductID && item.ProductName)
         .map((item) => ({
           ...item,
           quantity: Math.min(
@@ -341,6 +340,81 @@ export default function Context({ children }) {
 
     setCartLoading(false);
   }, []);
+
+  // Re-hydrate cart line prices after load (fixes $0 display when cart was saved as guest then user logs in)
+  const hasRehydratedRef = useRef(false);
+  useEffect(() => {
+    if (cartLoading || cartProducts.length === 0) return;
+    if (hasRehydratedRef.current) return;
+
+    const hasMissingPrice = cartProducts.some(
+      (item) =>
+        item.Price == null || item.Price === "" || parseFloat(item.Price) === 0,
+    );
+    if (!hasMissingPrice) {
+      hasRehydratedRef.current = true;
+      return;
+    }
+
+    hasRehydratedRef.current = true;
+    let cancelled = false;
+    const itemsToRehydrate = [...cartProducts];
+    const rehydrate = async () => {
+      const next = [];
+      for (const item of itemsToRehydrate) {
+        if (cancelled) return;
+        try {
+          const res = await fetch(`/api/product-by-id?id=${item.ProductID}`);
+          if (!res.ok) {
+            next.push(item);
+            continue;
+          }
+          const data = await res.json();
+          const product = data?.product;
+          if (!product) {
+            next.push(item);
+            continue;
+          }
+          next.push({
+            ...item,
+            Price: product.Price ?? item.Price,
+            Retail: product.Retail ?? item.Retail,
+            selectedGrease:
+              item.selectedGrease && product.greaseOptions?.length
+                ? product.greaseOptions.find(
+                    (g) =>
+                      String(g.GreaseID) ===
+                      String(item.selectedGrease?.GreaseID),
+                  ) || item.selectedGrease
+                : item.selectedGrease,
+            selectedAnglefinder:
+              item.selectedAnglefinder && product.angleFinderOptions?.length
+                ? product.angleFinderOptions.find(
+                    (a) =>
+                      String(a.AngleID) ===
+                      String(item.selectedAnglefinder?.AngleID),
+                  ) || item.selectedAnglefinder
+                : item.selectedAnglefinder,
+            selectedHardware:
+              item.selectedHardware && product.hardwareOptions?.length
+                ? product.hardwareOptions.find(
+                    (h) =>
+                      String(h.HardwareID) ===
+                      String(item.selectedHardware?.HardwareID),
+                  ) || item.selectedHardware
+                : item.selectedHardware,
+          });
+        } catch {
+          next.push(item);
+        }
+      }
+      if (!cancelled) setCartProducts(next);
+    };
+    rehydrate();
+    return () => {
+      cancelled = true;
+    };
+  }, [cartLoading, cartProducts.length]);
 
   useEffect(() => {
     console.log("Saving cart to localStorage:", cartProducts);

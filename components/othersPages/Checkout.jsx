@@ -2722,10 +2722,6 @@ export default function Checkout() {
                       <span>$—</span>
                     </div>
                     <div className="total-line">
-                      <span>Gift Certificate:</span>
-                      <span>$0.00</span>
-                    </div>
-                    <div className="total-line">
                       <span>Tax:</span>
                       <span>$—</span>
                     </div>
@@ -2771,10 +2767,6 @@ export default function Checkout() {
                         <span>-${couponDiscount.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="total-line">
-                      <span>Gift Certificate:</span>
-                      <span>$0.00</span>
-                    </div>
                     <div className="total-line">
                       <span>Tax:</span>
                       <span>${calculateTax().toFixed(2)}</span>

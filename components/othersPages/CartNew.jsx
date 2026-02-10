@@ -27,22 +27,51 @@ export default function CartNew() {
   const [couponError, setCouponError] = useState("");
   const [showCouponModal, setShowCouponModal] = useState(false);
 
-  const setQuantity = (id, quantity) => {
+  // Match cart line by product + color + options (same part in different colors = different lines)
+  const sameCartLine = (a, b) => {
+    if (!a || !b || a.ProductID !== b.ProductID) return false;
+    const colorMatch =
+      JSON.stringify(a.selectedColor || null) ===
+      JSON.stringify(b.selectedColor || null);
+    const greaseMatch =
+      JSON.stringify(a.selectedGrease || null) ===
+      JSON.stringify(b.selectedGrease || null);
+    const angleMatch =
+      JSON.stringify(a.selectedAnglefinder || null) ===
+      JSON.stringify(b.selectedAnglefinder || null);
+    const hardwareMatch =
+      JSON.stringify(a.selectedHardware || null) ===
+      JSON.stringify(b.selectedHardware || null);
+    const packsSig = (p) =>
+      Array.isArray(p?.selectedHardwarePacks)
+        ? JSON.stringify(
+            p.selectedHardwarePacks
+              .map((x) => x.ProductID)
+              .sort((i, j) => i - j),
+          )
+        : "[]";
+    return (
+      colorMatch &&
+      greaseMatch &&
+      angleMatch &&
+      hardwareMatch &&
+      packsSig(a) === packsSig(b)
+    );
+  };
+
+  const setQuantity = (item, quantity) => {
     const qty = Math.min(MAX_QTY, Math.max(1, parseInt(quantity, 10) || 1));
-    const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
-    if (!item) return;
+    const itemIndex = cartProducts.findIndex((elm) => sameCartLine(elm, item));
+    if (itemIndex === -1) return;
     const items = [...cartProducts];
-    const itemIndex = items.indexOf(item);
-    item.quantity = qty;
-    items[itemIndex] = item;
+    items[itemIndex] = { ...items[itemIndex], quantity: qty };
     setCartProducts(items);
   };
 
-  const removeItem = (id) => {
-    const item = cartProducts.find((elm) => elm.ProductID == id);
-    const productName = item?.ProductName || 'Item';
-    setCartProducts((pre) => [...pre.filter((elm) => elm.ProductID != id)]);
-    showToast(`${productName} removed from cart`, 'info');
+  const removeItem = (item) => {
+    const productName = item?.ProductName || "Item";
+    setCartProducts((pre) => pre.filter((elm) => !sameCartLine(elm, item)));
+    showToast(`${productName} removed from cart`, "info");
   };
 
   const handleApplyCoupon = async () => {
@@ -120,7 +149,7 @@ export default function CartNew() {
                                   // Black Hammertone - show second image if available
                                   imageIndex = Math.min(
                                     1,
-                                    elm.images.length - 1
+                                    elm.images.length - 1,
                                   );
                                 } else if (elm.selectedColor.ColorID === 2) {
                                   // Red - show first image
@@ -146,14 +175,14 @@ export default function CartNew() {
                                 return elm.images[0].imgSrc;
                               }
 
-                                // Fallback to product image
-                                if (
-                                  elm.ImageLarge &&
-                                  elm.ImageLarge.trim() !== "" &&
-                                  elm.ImageLarge !== "0"
-                                ) {
-                                  return getProductImageUrl(elm.ImageLarge);
-                                }
+                              // Fallback to product image
+                              if (
+                                elm.ImageLarge &&
+                                elm.ImageLarge.trim() !== "" &&
+                                elm.ImageLarge !== "0"
+                              ) {
+                                return getProductImageUrl(elm.ImageLarge);
+                              }
 
                               // Final fallback to BMR logo
                               return "/images/logo/bmr_logo_square_small.webp";
@@ -202,15 +231,15 @@ export default function CartNew() {
                                 <>
                                   {elm.selectedColor.ColorName &&
                                   elm.selectedColor.ColorName.toLowerCase().includes(
-                                    "red"
+                                    "red",
                                   )
                                     ? "R"
                                     : elm.selectedColor.ColorName &&
-                                      elm.selectedColor.ColorName.toLowerCase().includes(
-                                        "black"
-                                      )
-                                    ? "H"
-                                    : ""}
+                                        elm.selectedColor.ColorName.toLowerCase().includes(
+                                          "black",
+                                        )
+                                      ? "H"
+                                      : ""}
                                 </>
                               )}
                             </div>
@@ -307,7 +336,7 @@ export default function CartNew() {
                           </div>
                           <span
                             className="remove-cart link remove"
-                            onClick={() => removeItem(elm.ProductID)}
+                            onClick={() => removeItem(elm)}
                             style={{
                               color: "#dc3545",
                               fontSize: "12px",
@@ -329,9 +358,7 @@ export default function CartNew() {
                           <div className="wg-quantity">
                             <span
                               className="btn-quantity minus-btn"
-                              onClick={() =>
-                                setQuantity(elm.ProductID, elm.quantity - 1)
-                              }
+                              onClick={() => setQuantity(elm, elm.quantity - 1)}
                               style={{
                                 cursor: "pointer",
                                 padding: "8px 12px",
@@ -359,9 +386,7 @@ export default function CartNew() {
                               value={elm.quantity}
                               min={1}
                               max={MAX_QTY}
-                              onChange={(e) =>
-                                setQuantity(elm.ProductID, e.target.value)
-                              }
+                              onChange={(e) => setQuantity(elm, e.target.value)}
                               style={{
                                 width: "60px",
                                 textAlign: "center",
@@ -375,9 +400,7 @@ export default function CartNew() {
                             />
                             <span
                               className="btn-quantity plus-btn"
-                              onClick={() =>
-                                setQuantity(elm.ProductID, elm.quantity + 1)
-                              }
+                              onClick={() => setQuantity(elm, elm.quantity + 1)}
                               style={{
                                 cursor: "pointer",
                                 padding: "8px 12px",
@@ -420,13 +443,19 @@ export default function CartNew() {
                             const basePrice = parseFloat(elm.Price) || 0;
                             let addOnPrice = 0;
                             if (elm.selectedGrease?.GreasePrice) {
-                              addOnPrice += parseFloat(elm.selectedGrease.GreasePrice);
+                              addOnPrice += parseFloat(
+                                elm.selectedGrease.GreasePrice,
+                              );
                             }
                             if (elm.selectedAnglefinder?.AnglePrice) {
-                              addOnPrice += parseFloat(elm.selectedAnglefinder.AnglePrice);
+                              addOnPrice += parseFloat(
+                                elm.selectedAnglefinder.AnglePrice,
+                              );
                             }
                             if (elm.selectedHardware?.HardwarePrice) {
-                              addOnPrice += parseFloat(elm.selectedHardware.HardwarePrice);
+                              addOnPrice += parseFloat(
+                                elm.selectedHardware.HardwarePrice,
+                              );
                             }
                             if (
                               elm.selectedHardwarePacks &&
@@ -437,7 +466,8 @@ export default function CartNew() {
                               });
                             }
                             return (
-                              (basePrice + addOnPrice) * elm.quantity
+                              (basePrice + addOnPrice) *
+                              elm.quantity
                             ).toFixed(2);
                           })()}
                           {appliedCoupon?.lineItemDiscounts?.[i] > 0 && (
@@ -446,7 +476,9 @@ export default function CartNew() {
                               style={{ fontSize: "12px", fontWeight: "500" }}
                             >
                               Coupon: -$
-                              {Number(appliedCoupon.lineItemDiscounts[i]).toFixed(2)}
+                              {Number(
+                                appliedCoupon.lineItemDiscounts[i],
+                              ).toFixed(2)}
                             </div>
                           )}
                         </div>

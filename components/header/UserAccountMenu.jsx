@@ -30,7 +30,23 @@ export default function UserAccountMenu() {
     window.location.href = "/api/auth/logout?callbackUrl=/";
   };
 
-  if (status === "loading" || !session) {
+  // While session is loading, link to account page (so logged-in users aren't sent to login)
+  if (status === "loading") {
+    return (
+      <li className="nav-account tf-md-hidden">
+        <Link
+          href="/my-account"
+          className="nav-icon-item align-items-center gap-10 text-decoration-none"
+        >
+          <i className="icon icon-account" />
+          <span className="text" style={{ fontSize: "14px" }}>
+            Account
+          </span>
+        </Link>
+      </li>
+    );
+  }
+  if (!session) {
     return (
       <li className="nav-account tf-md-hidden">
         <Link

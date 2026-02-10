@@ -64,6 +64,8 @@ const vehicles = {
     Mustang: [
       // 2024-mustang
       { year: 2024, platform: "2024-2025-mustang" },
+      { year: 2025, platform: "2024-2025-mustang" },
+      { year: 2026, platform: "2024-2025-mustang" },
 
       // 2015-2023-mustang
       { year: 2023, platform: "2015-2023-mustang" },

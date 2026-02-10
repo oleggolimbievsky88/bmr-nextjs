@@ -11,6 +11,7 @@ export default function AdminNav({ user }) {
   const navLinks = [
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/topbar", label: "Topbar" },
+    { href: "/admin/banner", label: "Banners" },
     { href: "/admin/products", label: "Products" },
     { href: "/admin/categories", label: "Categories" },
     { href: "/admin/orders", label: "Orders" },
@@ -78,11 +79,7 @@ export default function AdminNav({ user }) {
       >
         <div className="container-wide">
           <div className="admin-nav-inner">
-            <ul
-              id="admin-nav-menu"
-              className="admin-nav-links"
-              role="list"
-            >
+            <ul id="admin-nav-menu" className="admin-nav-links" role="list">
               {navLinks.map(({ href, label }) => {
                 const isActive =
                   href === "/admin"

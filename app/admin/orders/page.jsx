@@ -257,7 +257,7 @@ export default function AdminOrdersPage() {
                         {p}
                       </button>
                     </li>
-                  )
+                  ),
                 );
               })()}
               <li
@@ -399,7 +399,7 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (
     orderId,
     newStatus,
-    trackingNumber = null
+    trackingNumber = null,
   ) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
@@ -422,14 +422,14 @@ export default function AdminOrdersPage() {
       if (trackingNumber) {
         showToast(
           "Tracking number added and order marked as shipped.",
-          "success"
+          "success",
         );
       }
 
       fetchOrders();
       if (selectedOrder?.new_order_id === orderId) {
         const fresh = await fetch(`/api/admin/orders?orderId=${orderId}`).then(
-          (r) => r.json()
+          (r) => r.json(),
         );
         if (fresh?.order) {
           setSelectedOrder(fresh.order);
@@ -468,7 +468,7 @@ export default function AdminOrdersPage() {
     const printWindow = window.open(
       `/admin/orders/${orderId}/print`,
       "_blank",
-      "width=800,height=600"
+      "width=800,height=600",
     );
     if (printWindow) {
       printWindow.focus();
@@ -851,8 +851,8 @@ export default function AdminOrdersPage() {
                     {selectedOrder.free_shipping && selectedOrder.coupon_code
                       ? `Free Shipping (Coupon: ${selectedOrder.coupon_code})`
                       : selectedOrder.free_shipping
-                      ? "Free Shipping"
-                      : selectedOrder.shipping_method || "—"}
+                        ? "Free Shipping"
+                        : selectedOrder.shipping_method || "—"}
                   </p>
                   {selectedOrder.free_shipping ? (
                     <p className="mb-1">
@@ -876,23 +876,22 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
-              {selectedOrder.notes &&
-                selectedOrder.notes.trim() && (
-                  <div className="mb-4">
-                    <h3 className="h6 fw-6 mb-2">Order Notes</h3>
-                    <div
-                      className="admin-order-notes p-3 rounded"
-                      style={{
-                        background: "#f8f9fa",
-                        border: "1px solid #dee2e6",
-                        whiteSpace: "pre-wrap",
-                        wordBreak: "break-word",
-                      }}
-                    >
-                      {selectedOrder.notes}
-                    </div>
+              {selectedOrder.notes && selectedOrder.notes.trim() && (
+                <div className="mb-4">
+                  <h3 className="h6 fw-6 mb-2">Order Notes</h3>
+                  <div
+                    className="admin-order-notes p-3 rounded"
+                    style={{
+                      background: "#f8f9fa",
+                      border: "1px solid #dee2e6",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {selectedOrder.notes}
                   </div>
-                )}
+                </div>
+              )}
 
               <div className="mb-4">
                 <h3 className="h6 fw-6 mb-2">Order Items</h3>
@@ -948,7 +947,7 @@ export default function AdminOrdersPage() {
                           selectedOrder.total -
                             (parseFloat(selectedOrder.shipping_cost) || 0) -
                             (parseFloat(selectedOrder.tax) || 0) +
-                            (parseFloat(selectedOrder.discount) || 0)
+                            (parseFloat(selectedOrder.discount) || 0),
                         )}
                       </span>
                     </div>
@@ -1017,12 +1016,12 @@ export default function AdminOrdersPage() {
                           });
                           try {
                             const res = await fetch(
-                              `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`
+                              `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`,
                             );
                             const data = await res.json();
                             if (!res.ok)
                               throw new Error(
-                                data.error || "Failed to decrypt"
+                                data.error || "Failed to decrypt",
                               );
                             setRevealedCc({
                               loading: false,
@@ -1030,7 +1029,7 @@ export default function AdminOrdersPage() {
                               error: null,
                             });
                             const fresh = await fetch(
-                              `/api/admin/orders?orderId=${selectedOrder.new_order_id}`
+                              `/api/admin/orders?orderId=${selectedOrder.new_order_id}`,
                             ).then((r) => r.json());
                             if (fresh?.order) setSelectedOrder(fresh.order);
                           } catch (e) {
@@ -1081,7 +1080,7 @@ export default function AdminOrdersPage() {
 
               <div className="admin-form-group mb-4">
                 <label htmlFor="tracking-number" className="form-label">
-                  Tracking Number
+                  Primary Tracking Number
                 </label>
                 <div className="input-group">
                   <input
@@ -1102,12 +1101,116 @@ export default function AdminOrdersPage() {
                         updateOrderStatus(
                           selectedOrder.new_order_id,
                           "shipped",
-                          trackingNumber
+                          trackingNumber,
                         );
                       }
                     }}
                   >
                     Update
+                  </button>
+                </div>
+              </div>
+
+              <div className="admin-form-group mb-4">
+                <label className="form-label">
+                  Additional Tracking Numbers
+                </label>
+                <ul className="list-group list-group-flush mb-2">
+                  {(selectedOrder.tracking_numbers || []).map((t) => (
+                    <li
+                      key={t.id}
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                    >
+                      <span>
+                        {t.tracking_number}
+                        {t.carrier ? ` (${t.carrier})` : ""}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={async () => {
+                          try {
+                            const res = await fetch(
+                              `/api/admin/orders/${selectedOrder.new_order_id}/tracking/${t.id}`,
+                              { method: "DELETE" },
+                            );
+                            if (res.ok) {
+                              showToast("Tracking number removed", "success");
+                              viewOrderDetails(selectedOrder.new_order_id);
+                            } else {
+                              const d = await res.json();
+                              showToast(d.error || "Failed to remove", "error");
+                            }
+                          } catch (e) {
+                            showToast(
+                              "Failed to remove tracking number",
+                              "error",
+                            );
+                          }
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    id="additional-tracking-number"
+                    className="form-control"
+                    placeholder="Tracking number"
+                  />
+                  <input
+                    type="text"
+                    id="additional-tracking-carrier"
+                    className="form-control"
+                    placeholder="Carrier (optional)"
+                    style={{ maxWidth: "120px" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={async () => {
+                      const num = document
+                        .getElementById("additional-tracking-number")
+                        ?.value?.trim();
+                      if (!num) return;
+                      const carrier =
+                        document
+                          .getElementById("additional-tracking-carrier")
+                          ?.value?.trim() || null;
+                      try {
+                        const res = await fetch(
+                          `/api/admin/orders/${selectedOrder.new_order_id}/tracking`,
+                          {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              tracking_number: num,
+                              carrier,
+                            }),
+                          },
+                        );
+                        if (res.ok) {
+                          document.getElementById(
+                            "additional-tracking-number",
+                          ).value = "";
+                          document.getElementById(
+                            "additional-tracking-carrier",
+                          ).value = "";
+                          showToast("Tracking number added", "success");
+                          viewOrderDetails(selectedOrder.new_order_id);
+                        } else {
+                          const d = await res.json();
+                          showToast(d.error || "Failed to add", "error");
+                        }
+                      } catch (e) {
+                        showToast("Failed to add tracking number", "error");
+                      }
+                    }}
+                  >
+                    Add
                   </button>
                 </div>
               </div>
@@ -1127,18 +1230,18 @@ export default function AdminOrdersPage() {
                     if (newStatus === "shipped") {
                       const tracking = prompt(
                         "Enter tracking number (optional):",
-                        selectedOrder.tracking_number || ""
+                        selectedOrder.tracking_number || "",
                       );
                       updateOrderStatus(
                         selectedOrder.new_order_id,
                         newStatus,
-                        tracking || null
+                        tracking || null,
                       );
                     } else {
                       updateOrderStatus(
                         selectedOrder.new_order_id,
                         newStatus,
-                        null
+                        null,
                       );
                     }
                   }}
@@ -1205,8 +1308,8 @@ export default function AdminOrdersPage() {
                         {order.free_shipping && order.coupon_code
                           ? `Free Shipping (Coupon: ${order.coupon_code})`
                           : order.free_shipping
-                          ? "Free Shipping"
-                          : order.shipping_method || "—"}
+                            ? "Free Shipping"
+                            : order.shipping_method || "—"}
                       </span>
                       {order.coupon_code && !order.free_shipping && (
                         <span className="text-muted d-block small">
@@ -1284,18 +1387,18 @@ export default function AdminOrdersPage() {
                             if (newStatus === "shipped") {
                               const tracking = prompt(
                                 "Enter tracking number (optional):",
-                                order.tracking_number || ""
+                                order.tracking_number || "",
                               );
                               updateOrderStatus(
                                 order.new_order_id,
                                 newStatus,
-                                tracking || null
+                                tracking || null,
                               );
                             } else {
                               updateOrderStatus(
                                 order.new_order_id,
                                 newStatus,
-                                null
+                                null,
                               );
                             }
                           }}

@@ -12,6 +12,13 @@ const BMR_CONTACT = {
   hours: "Mon–Fri 8:30am–5:30pm EST",
 };
 
+const DEPARTMENT_EMAILS = [
+  { label: "GM Tech", email: "GMTech@bmrsuspension.com" },
+  { label: "Ford Tech", email: "FordTech@bmrsuspension.com" },
+  { label: "Ford Sales", email: "FordSales@bmrsuspension.com" },
+  { label: "GM Sales", email: "GMSales@bmrsuspension.com" },
+];
+
 export default function ContactForm() {
   const formRef = useRef();
   const [sending, setSending] = useState(false);
@@ -36,21 +43,21 @@ export default function ContactForm() {
         showToast(
           "Thank you for reaching out! Your message has been sent to our team. We truly value every inquiry—your feedback and questions are very important to us. We'll get back to you as soon as possible.",
           "success",
-          6000
+          6000,
         );
       } else {
         showToast(
           data?.error ||
             "Something went wrong. Please try again or email us directly at sales@bmrsuspension.com.",
           "error",
-          5000
+          5000,
         );
       }
     } catch {
       showToast(
         "We couldn't send your message. Please try again or email us directly at sales@bmrsuspension.com.",
         "error",
-        5000
+        5000,
       );
     } finally {
       setSending(false);
@@ -97,11 +104,28 @@ export default function ContactForm() {
                 <a href={`mailto:${BMR_CONTACT.email}`}>{BMR_CONTACT.email}</a>
               </p>
             </div>
-            <div className="contact-info-item mb_36">
+            <div className="contact-info-item mb_20">
               <p className="mb_15">
                 <strong>Hours</strong>
               </p>
               <p>{BMR_CONTACT.hours}</p>
+            </div>
+            <div className="contact-info-item mb_36">
+              <p className="mb_15">
+                <strong>Departments</strong>
+              </p>
+              <ul
+                className="mb-0"
+                style={{ listStyle: "none", paddingLeft: 0 }}
+              >
+                {DEPARTMENT_EMAILS.map((dept) => (
+                  <li key={dept.email}>
+                    <a href={`mailto:${dept.email}`}>{dept.label}</a>
+                    {" — "}
+                    <a href={`mailto:${dept.email}`}>{dept.email}</a>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div>
               <ul className="tf-social-icon d-flex gap-20 style-default">

@@ -331,10 +331,10 @@ export default function AdminProductsPage() {
             ? 1
             : 0
           : type === "number"
-          ? value === ""
-            ? 0
-            : parseInt(value)
-          : value,
+            ? value === ""
+              ? 0
+              : parseInt(value)
+            : value,
     };
 
     // If BodyID changes, fetch categories for that platform
@@ -548,13 +548,17 @@ export default function AdminProductsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to save product");
+        const msg =
+          data.error && data.details
+            ? `${data.error}: ${data.details}`
+            : data.error || "Failed to save product";
+        throw new Error(msg);
       }
 
       setSuccess(
         editingProduct
           ? "Product updated successfully!"
-          : "Product created successfully!"
+          : "Product created successfully!",
       );
       resetForm();
       fetchProducts();
@@ -726,7 +730,7 @@ export default function AdminProductsPage() {
                 const groups = {};
                 cats.forEach((c) => {
                   const label = filterBodyId
-                    ? (c.MainCatName || "Other")
+                    ? c.MainCatName || "Other"
                     : `${c.MainCatName || "Other"}${c.PlatformName ? ` (${c.PlatformName})` : ""}`;
                   if (!groups[label]) groups[label] = [];
                   groups[label].push(c);
@@ -784,7 +788,10 @@ export default function AdminProductsPage() {
             </select>
           </div>
           <div className="col-auto">
-            <label htmlFor="filter-new-products" className="form-label small mb-0">
+            <label
+              htmlFor="filter-new-products"
+              className="form-label small mb-0"
+            >
               New Products
             </label>
             <select
@@ -1259,7 +1266,7 @@ export default function AdminProductsPage() {
                       onChange={(e) => {
                         const v = Array.from(
                           e.target.selectedOptions,
-                          (o) => o.value
+                          (o) => o.value,
                         )
                           .filter(Boolean)
                           .join(",");
@@ -1825,7 +1832,7 @@ export default function AdminProductsPage() {
                             {p}
                           </button>
                         </li>
-                      )
+                      ),
                     );
                   })()}
                   <li
@@ -1840,7 +1847,7 @@ export default function AdminProductsPage() {
                       className="page-link"
                       onClick={() =>
                         setCurrentPage((p) =>
-                          Math.min(Math.ceil(total / perPage) || 1, p + 1)
+                          Math.min(Math.ceil(total / perPage) || 1, p + 1),
                         )
                       }
                       disabled={currentPage >= Math.ceil(total / perPage)}

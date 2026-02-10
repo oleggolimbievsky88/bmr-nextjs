@@ -29,10 +29,19 @@ export default function TopbarUserMenu() {
     window.location.href = "/api/auth/logout?callbackUrl=/";
   };
 
-  if (status === "loading" || !session) {
+  if (status === "loading") {
     return (
       <li>
-        <Link href={`/login`} className="text-white nav-text">
+        <Link href="/my-account" className="text-white nav-text">
+          Account
+        </Link>
+      </li>
+    );
+  }
+  if (!session) {
+    return (
+      <li>
+        <Link href="/login" className="text-white nav-text">
           My Account
         </Link>
       </li>

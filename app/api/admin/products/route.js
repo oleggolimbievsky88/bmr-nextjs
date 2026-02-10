@@ -32,7 +32,8 @@ export async function GET(request) {
     if (categoryId) filters.categoryId = categoryId;
     const manufacturerId = searchParams.get("manufacturerId");
     if (manufacturerId) filters.manufacturerId = manufacturerId;
-    if (searchParams.get("scratchAndDent") === "1") filters.scratchAndDent = true;
+    if (searchParams.get("scratchAndDent") === "1")
+      filters.scratchAndDent = true;
     const newProductsParam = searchParams.get("newProducts");
     if (newProductsParam === "all" || newProductsParam === "onsite")
       filters.newProducts = newProductsParam;
@@ -42,7 +43,8 @@ export async function GET(request) {
     if (searchParams.get("hardwarePacks") === "1") filters.hardwarePacks = true;
     if (searchParams.get("multipleBoxes") === "1") filters.multipleBoxes = true;
     if (searchParams.get("package") === "1") filters.package = true;
-    if (searchParams.get("noManufacturer") === "1") filters.noManufacturer = true;
+    if (searchParams.get("noManufacturer") === "1")
+      filters.noManufacturer = true;
 
     const [products, total] = await Promise.all([
       getAllProductsAdmin(
@@ -254,8 +256,9 @@ export async function POST(request) {
     return NextResponse.json({ success: true, productId });
   } catch (error) {
     console.error("Error creating product:", error);
+    const message = error?.message || error?.code || "Failed to create product";
     return NextResponse.json(
-      { error: "Failed to create product", details: error.message },
+      { error: message, details: error?.message },
       { status: 500 },
     );
   }

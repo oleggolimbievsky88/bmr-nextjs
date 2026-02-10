@@ -45,21 +45,50 @@ export default function Cart() {
       removeCoupon();
     }
   }, [cartProducts, appliedCoupon, removeCoupon]);
-  const setQuantity = (id, quantity) => {
+  // Match cart line by product + color + options (same part in different colors = different lines)
+  const sameCartLine = (a, b) => {
+    if (!a || !b || a.ProductID !== b.ProductID) return false;
+    const colorMatch =
+      JSON.stringify(a.selectedColor || null) ===
+      JSON.stringify(b.selectedColor || null);
+    const greaseMatch =
+      JSON.stringify(a.selectedGrease || null) ===
+      JSON.stringify(b.selectedGrease || null);
+    const angleMatch =
+      JSON.stringify(a.selectedAnglefinder || null) ===
+      JSON.stringify(b.selectedAnglefinder || null);
+    const hardwareMatch =
+      JSON.stringify(a.selectedHardware || null) ===
+      JSON.stringify(b.selectedHardware || null);
+    const packsSig = (p) =>
+      Array.isArray(p?.selectedHardwarePacks)
+        ? JSON.stringify(
+            p.selectedHardwarePacks
+              .map((x) => x.ProductID)
+              .sort((i, j) => i - j),
+          )
+        : "[]";
+    return (
+      colorMatch &&
+      greaseMatch &&
+      angleMatch &&
+      hardwareMatch &&
+      packsSig(a) === packsSig(b)
+    );
+  };
+
+  const setQuantity = (item, quantity) => {
     const qty = Math.min(MAX_QTY, Math.max(1, parseInt(quantity, 10) || 1));
-    const item = cartProducts.filter((elm) => elm.ProductID == id)[0];
-    if (!item) return;
+    const itemIndex = cartProducts.findIndex((elm) => sameCartLine(elm, item));
+    if (itemIndex === -1) return;
     const items = [...cartProducts];
-    const itemIndex = items.indexOf(item);
-    item.quantity = qty;
-    items[itemIndex] = item;
+    items[itemIndex] = { ...items[itemIndex], quantity: qty };
     setCartProducts(items);
   };
-  const removeItem = (id) => {
-    const item = cartProducts.find((elm) => elm.ProductID == id);
-    const productName = item?.ProductName || 'Item';
-    setCartProducts((pre) => [...pre.filter((elm) => elm.ProductID != id)]);
-    showToast(`${productName} removed from cart`, 'info');
+  const removeItem = (item) => {
+    const productName = item?.ProductName || "Item";
+    setCartProducts((pre) => pre.filter((elm) => !sameCartLine(elm, item)));
+    showToast(`${productName} removed from cart`, "info");
   };
 
   const handleApplyCoupon = async () => {
@@ -173,7 +202,7 @@ export default function Cart() {
                                     // Black Hammertone - show second image if available
                                     imageIndex = Math.min(
                                       1,
-                                      elm.images.length - 1
+                                      elm.images.length - 1,
                                     );
                                   } else if (elm.selectedColor.ColorID === 2) {
                                     // Red - show first image
@@ -248,15 +277,15 @@ export default function Cart() {
                                   <>
                                     {elm.selectedColor.ColorName &&
                                     elm.selectedColor.ColorName.toLowerCase().includes(
-                                      "red"
+                                      "red",
                                     )
                                       ? "R"
                                       : elm.selectedColor.ColorName &&
-                                        elm.selectedColor.ColorName.toLowerCase().includes(
-                                          "black"
-                                        )
-                                      ? "H"
-                                      : ""}
+                                          elm.selectedColor.ColorName.toLowerCase().includes(
+                                            "black",
+                                          )
+                                        ? "H"
+                                        : ""}
                                   </>
                                 )}
                               </div>
@@ -353,7 +382,7 @@ export default function Cart() {
                             </div>
                             <span
                               className="remove-cart link remove"
-                              onClick={() => removeItem(elm.ProductID)}
+                              onClick={() => removeItem(elm)}
                             >
                               Remove
                             </span>
@@ -377,12 +406,9 @@ export default function Cart() {
                                 className="btn-quantity minus-btn"
                                 onClick={() => {
                                   if (elm.quantity === 1) {
-                                    removeItem(elm.ProductID);
+                                    removeItem(elm);
                                   } else {
-                                    setQuantity(
-                                      elm.ProductID,
-                                      elm.quantity - 1
-                                    );
+                                    setQuantity(elm, elm.quantity - 1);
                                   }
                                 }}
                               >
@@ -403,13 +429,13 @@ export default function Cart() {
                                 min={1}
                                 max={MAX_QTY}
                                 onChange={(e) =>
-                                  setQuantity(elm.ProductID, e.target.value)
+                                  setQuantity(elm, e.target.value)
                                 }
                               />
                               <span
                                 className="btn-quantity plus-btn"
                                 onClick={() =>
-                                  setQuantity(elm.ProductID, elm.quantity + 1)
+                                  setQuantity(elm, elm.quantity + 1)
                                 }
                               >
                                 <svg
@@ -444,7 +470,7 @@ export default function Cart() {
                                 elm.selectedGrease.GreasePrice
                               ) {
                                 addOnPrice += parseFloat(
-                                  elm.selectedGrease.GreasePrice || 0
+                                  elm.selectedGrease.GreasePrice || 0,
                                 );
                               }
 
@@ -454,7 +480,7 @@ export default function Cart() {
                                 elm.selectedAnglefinder.AnglePrice
                               ) {
                                 addOnPrice += parseFloat(
-                                  elm.selectedAnglefinder.AnglePrice || 0
+                                  elm.selectedAnglefinder.AnglePrice || 0,
                                 );
                               }
 
@@ -464,7 +490,7 @@ export default function Cart() {
                                 elm.selectedHardware.HardwarePrice
                               ) {
                                 addOnPrice += parseFloat(
-                                  elm.selectedHardware.HardwarePrice || 0
+                                  elm.selectedHardware.HardwarePrice || 0,
                                 );
                               }
                               // Add hardware pack add-ons

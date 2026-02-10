@@ -241,3 +241,9 @@ FACEBOOK_CLIENT_SECRET=your-app-secret-here
 - `http://localhost:3000/api/auth/callback/facebook`
 - `https://dev.bmrsuspension.com/api/auth/callback/facebook`
 - `https://www.bmrsuspension.com/api/auth/callback/facebook`
+
+### If Google or Facebook login doesn't work
+
+1. **Environment variables** – In production (e.g. Vercel → Settings → Environment Variables), ensure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `FACEBOOK_CLIENT_ID`, and `FACEBOOK_CLIENT_SECRET` are set and enabled for the Production environment.
+2. **Callback URLs** – In Google Cloud Console and Facebook App settings, the redirect URIs must use your live domain (e.g. `https://www.bmrsuspension.com/api/auth/callback/google`).
+3. **NextAuth URL** – Set `NEXTAUTH_URL` to your production URL (e.g. `https://www.bmrsuspension.com`) so OAuth redirects back to the correct site.

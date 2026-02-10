@@ -248,7 +248,7 @@ export default function DealersPortalProductsPage() {
     setAddToPOSending(true);
     setAddToPOError(null);
     const color = addToPOColors.find(
-      (c) => String(c.ColorID) === String(addToPOColorId)
+      (c) => String(c.ColorID) === String(addToPOColorId),
     );
     try {
       const res = await fetch("/api/dealer/po/items", {
@@ -273,7 +273,7 @@ export default function DealersPortalProductsPage() {
       showToast(
         `${partNumber} was added to the PO. Go to Purchase Order to view and complete your order.`,
         "success",
-        5000
+        5000,
       );
     } catch (err) {
       setAddToPOError(err.message);
@@ -318,13 +318,13 @@ export default function DealersPortalProductsPage() {
         .map((c) => ({ color: c, qty: getQty(c.ColorID) }));
       if (toAdd.length === 0) return;
       const grease = greaseList.find(
-        (g) => String(g.GreaseID) === String(addons.greaseId)
+        (g) => String(g.GreaseID) === String(addons.greaseId),
       );
       const anglefinder = anglefinderList.find(
-        (a) => String(a.AngleID) === String(addons.anglefinderId)
+        (a) => String(a.AngleID) === String(addons.anglefinderId),
       );
       const hardware = hardwareList.find(
-        (h) => String(h.HardwareID) === String(addons.hardwareId)
+        (h) => String(h.HardwareID) === String(addons.hardwareId),
       );
       setAddRowSending(product.ProductID);
       setAddToPOError(null);
@@ -338,6 +338,13 @@ export default function DealersPortalProductsPage() {
           setDraftPOId(poId);
         }
         if (!poId) throw new Error("No purchase order");
+        const baseUnitPrice = parseFloat(product.dealerPrice) || 0;
+        const addOnPrice =
+          (grease ? parseFloat(grease.GreasePrice) || 0 : 0) +
+          (anglefinder ? parseFloat(anglefinder.AnglePrice) || 0 : 0) +
+          (hardware ? parseFloat(hardware.HardwarePrice) || 0 : 0);
+        const unitPrice = baseUnitPrice + addOnPrice;
+
         for (const { color, qty } of toAdd) {
           const res = await fetch("/api/dealer/po/items", {
             method: "POST",
@@ -350,7 +357,7 @@ export default function DealersPortalProductsPage() {
               quantity: qty,
               colorId: color.ColorID,
               colorName: color.ColorName,
-              unitPrice: product.dealerPrice,
+              unitPrice,
               greaseId: grease ? grease.GreaseID : null,
               greaseName: grease ? grease.GreaseName : null,
               anglefinderId: anglefinder ? anglefinder.AngleID : null,
@@ -379,7 +386,7 @@ export default function DealersPortalProductsPage() {
         showToast(
           `${partNumber} was added to the PO. Go to Purchase Order to view and complete your order.`,
           "success",
-          5000
+          5000,
         );
       } catch (err) {
         setAddToPOError(err.message);
@@ -396,24 +403,24 @@ export default function DealersPortalProductsPage() {
       hardwareList,
       draftPOId,
       refreshDraftPO,
-    ]
+    ],
   );
 
   const mainCategoriesForPlatform =
     platformId && platformId !== ALL
       ? (filterOptions.mainCategories || []).filter(
-          (m) => String(m.bodyId ?? m.BodyID ?? "") === String(platformId)
+          (m) => String(m.bodyId ?? m.BodyID ?? "") === String(platformId),
         )
       : filterOptions.mainCategories || [];
 
   const categoriesFiltered =
     mainCatId && mainCatId !== ALL
       ? (filterOptions.categories || []).filter(
-          (c) => String(c.MainCatID ?? c.mainCatId ?? "") === String(mainCatId)
+          (c) => String(c.MainCatID ?? c.mainCatId ?? "") === String(mainCatId),
         )
       : filterOptions.categories || [];
   const categoriesInMain = categoriesFiltered.filter(
-    (c, i, arr) => arr.findIndex((x) => String(x.id) === String(c.id)) === i
+    (c, i, arr) => arr.findIndex((x) => String(x.id) === String(c.id)) === i,
   );
 
   const handleClearFilters = () => {
@@ -590,17 +597,17 @@ export default function DealersPortalProductsPage() {
                     const usedColorIds = new Set();
                     products.forEach((p) =>
                       parseProductColorIds(p.Color).forEach((id) =>
-                        usedColorIds.add(String(id))
-                      )
+                        usedColorIds.add(String(id)),
+                      ),
                     );
                     const visibleColors = colorList.filter((c) =>
-                      usedColorIds.has(String(c.ColorID))
+                      usedColorIds.has(String(c.ColorID)),
                     );
                     return visibleColors.map((c) => (
                       <th
                         key={c.ColorID}
                         className={`dealer-col-qty ${getColorColumnClass(
-                          c.ColorName
+                          c.ColorName,
                         )}`}
                       >
                         {c.ColorName}
@@ -618,11 +625,11 @@ export default function DealersPortalProductsPage() {
                   const usedColorIds = new Set();
                   products.forEach((p) =>
                     parseProductColorIds(p.Color).forEach((id) =>
-                      usedColorIds.add(String(id))
-                    )
+                      usedColorIds.add(String(id)),
+                    ),
                   );
                   const visibleColors = colorList.filter((c) =>
-                    usedColorIds.has(String(c.ColorID))
+                    usedColorIds.has(String(c.ColorID)),
                   );
                   return products.map((p) => {
                     const poInfo = poItemsIndex[String(p.ProductID)] || null;
@@ -634,7 +641,7 @@ export default function DealersPortalProductsPage() {
                     const hasAnyQty = visibleColors.some(
                       (c) =>
                         productColorIds.includes(String(c.ColorID)) &&
-                        qtyNum(c.ColorID) > 0
+                        qtyNum(c.ColorID) > 0,
                     );
                     const isSending = addRowSending === p.ProductID;
                     return (
@@ -703,14 +710,14 @@ export default function DealersPortalProductsPage() {
                         </td>
                         {visibleColors.map((c) => {
                           const isAvailable = productColorIds.includes(
-                            String(c.ColorID)
+                            String(c.ColorID),
                           );
                           if (!isAvailable) {
                             return (
                               <td
                                 key={c.ColorID}
                                 className={`align-middle text-muted ${getColorColumnClass(
-                                  c.ColorName
+                                  c.ColorName,
                                 )}`}
                               >
                                 —
@@ -728,7 +735,7 @@ export default function DealersPortalProductsPage() {
                             <td
                               key={c.ColorID}
                               className={`align-middle ${getColorColumnClass(
-                                c.ColorName
+                                c.ColorName,
                               )}`}
                             >
                               <input
@@ -742,7 +749,7 @@ export default function DealersPortalProductsPage() {
                                   setRowQty(
                                     p.ProductID,
                                     c.ColorID,
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                               />
@@ -764,7 +771,7 @@ export default function DealersPortalProductsPage() {
                               setRowAddOn(
                                 p.ProductID,
                                 "greaseId",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             disabled={!parseProductAddonIds(p.Grease).length}
@@ -773,8 +780,8 @@ export default function DealersPortalProductsPage() {
                             {greaseList
                               .filter((g) =>
                                 parseProductAddonIds(p.Grease).includes(
-                                  String(g.GreaseID)
-                                )
+                                  String(g.GreaseID),
+                                ),
                               )
                               .map((g) => (
                                 <option key={g.GreaseID} value={g.GreaseID}>
@@ -796,7 +803,7 @@ export default function DealersPortalProductsPage() {
                               setRowAddOn(
                                 p.ProductID,
                                 "anglefinderId",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             disabled={
@@ -807,8 +814,8 @@ export default function DealersPortalProductsPage() {
                             {anglefinderList
                               .filter((a) =>
                                 parseProductAddonIds(p.AngleFinder).includes(
-                                  String(a.AngleID)
-                                )
+                                  String(a.AngleID),
+                                ),
                               )
                               .map((a) => (
                                 <option key={a.AngleID} value={a.AngleID}>
@@ -830,7 +837,7 @@ export default function DealersPortalProductsPage() {
                               setRowAddOn(
                                 p.ProductID,
                                 "hardwareId",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             disabled={!parseProductAddonIds(p.Hardware).length}
@@ -839,8 +846,8 @@ export default function DealersPortalProductsPage() {
                             {hardwareList
                               .filter((h) =>
                                 parseProductAddonIds(p.Hardware).includes(
-                                  String(h.HardwareID)
-                                )
+                                  String(h.HardwareID),
+                                ),
                               )
                               .map((h) => (
                                 <option key={h.HardwareID} value={h.HardwareID}>
@@ -934,7 +941,7 @@ export default function DealersPortalProductsPage() {
                     value={addToPOQty}
                     onChange={(e) =>
                       setAddToPOQty(
-                        Math.max(1, parseInt(e.target.value, 10) || 1)
+                        Math.max(1, parseInt(e.target.value, 10) || 1),
                       )
                     }
                   />
