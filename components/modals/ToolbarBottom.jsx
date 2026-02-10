@@ -1,8 +1,15 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import CartLength from "../common/CartLength";
 //import WishlistLength from "../common/WishlistLength";
 export default function ToolbarBottom() {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status !== "loading" && !!session;
+  const accountHref = session?.user?.role === "admin" ? "/admin" : "/my-account";
+
   return (
     <div className="tf-toolbar-bottom type-1150">
       <div className="toolbar-item active">
@@ -30,12 +37,21 @@ export default function ToolbarBottom() {
         </a>
       </div>
       <div className="toolbar-item">
-        <a href="#login" data-bs-toggle="modal">
-          <div className="toolbar-icon">
-            <i className="icon-account" />
-          </div>
-          <div className="toolbar-label">Account</div>
-        </a>
+        {isLoggedIn ? (
+          <Link href={accountHref}>
+            <div className="toolbar-icon">
+              <i className="icon-account" />
+            </div>
+            <div className="toolbar-label">Account</div>
+          </Link>
+        ) : (
+          <a href="#login" data-bs-toggle="modal">
+            <div className="toolbar-icon">
+              <i className="icon-account" />
+            </div>
+            <div className="toolbar-label">Account</div>
+          </a>
+        )}
       </div>
       {/* <div className="toolbar-item">
         <Link href={`/wishlist`}>

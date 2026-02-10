@@ -1,13 +1,17 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
 import { usePathname } from "next/navigation";
 
 export default function MobileMenu() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const offcanvasRef = useRef(null);
+  const isLoggedIn = status !== "loading" && !!session;
+  const accountHref = session?.user?.role === "admin" ? "/admin" : "/my-account";
   const [menuData, setMenuData] = useState({
     fordLinks: [],
     moparLinks: [],
@@ -358,9 +362,12 @@ export default function MobileMenu() {
           </div>
         </div>
         <div className="mb-bottom">
-          <Link href={`/login`} className="site-nav-icon">
+          <Link
+            href={isLoggedIn ? accountHref : "/login"}
+            className="site-nav-icon"
+          >
             <i className="icon icon-account" />
-            Login/Register
+            {isLoggedIn ? "My Account" : "Login/Register"}
           </Link>
           <div className="bottom-bar-language">
             <div className="tf-currencies">
