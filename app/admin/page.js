@@ -22,20 +22,20 @@ export default function AdminPage() {
 
   const fetchStats = async () => {
     try {
-      const ordersResponse = await fetch("/api/admin/orders");
-      const ordersData = await ordersResponse.json();
-      const couponsResponse = await fetch("/api/admin/coupons");
+      const [orderStatsResponse, couponsResponse] = await Promise.all([
+        fetch("/api/admin/order-stats"),
+        fetch("/api/admin/coupons"),
+      ]);
+      const orderStatsData = await orderStatsResponse.json();
       const couponsData = await couponsResponse.json();
 
-      if (ordersResponse.ok && couponsResponse.ok) {
-        const orders = ordersData.orders || [];
+      if (orderStatsResponse.ok && couponsResponse.ok) {
         const coupons = couponsData.coupons || [];
         setStats({
-          totalOrders: orders.length,
-          pendingOrders: orders.filter((o) => o.status === "pending").length,
-          processedOrders: orders.filter((o) => o.status === "processed")
-            .length,
-          shippedOrders: orders.filter((o) => o.status === "shipped").length,
+          totalOrders: orderStatsData.totalOrders ?? 0,
+          pendingOrders: orderStatsData.pendingOrders ?? 0,
+          processedOrders: orderStatsData.processedOrders ?? 0,
+          shippedOrders: orderStatsData.shippedOrders ?? 0,
           totalCoupons: coupons.length,
           activeCoupons: coupons.filter(
             (c) => c.is_active === 1 || c.is_active === true,
@@ -74,14 +74,14 @@ export default function AdminPage() {
       </div>
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
-          <div className="admin-stat-label">Total Orders</div>
+          <div className="admin-stat-label">Orders (last 7 days)</div>
           <div className="admin-stat-value">{stats.totalOrders}</div>
           <Link href="/admin/orders" className="admin-stat-link">
             View all orders →
           </Link>
         </div>
         <div className="admin-stat-card">
-          <div className="admin-stat-label">Pending Orders</div>
+          <div className="admin-stat-label">Pending (7 days)</div>
           <div className="admin-stat-value text-warning">
             {stats.pendingOrders}
           </div>
@@ -90,7 +90,7 @@ export default function AdminPage() {
           </Link>
         </div>
         <div className="admin-stat-card">
-          <div className="admin-stat-label">Processed Orders</div>
+          <div className="admin-stat-label">Processed (7 days)</div>
           <div className="admin-stat-value text-info">
             {stats.processedOrders}
           </div>
@@ -102,7 +102,7 @@ export default function AdminPage() {
           </Link>
         </div>
         <div className="admin-stat-card">
-          <div className="admin-stat-label">Shipped Orders</div>
+          <div className="admin-stat-label">Shipped (7 days)</div>
           <div className="admin-stat-value text-success">
             {stats.shippedOrders}
           </div>

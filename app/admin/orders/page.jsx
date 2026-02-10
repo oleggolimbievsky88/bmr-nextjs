@@ -925,6 +925,11 @@ export default function AdminOrdersPage() {
                           <td className="text-center">{item.quantity}</td>
                           <td className="text-end">
                             {formatCurrency(item.price)}
+                            {(parseFloat(item.line_discount) || 0) > 0 && (
+                              <div className="text-success small">
+                                Coupon: -{formatCurrency(item.line_discount)}
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}

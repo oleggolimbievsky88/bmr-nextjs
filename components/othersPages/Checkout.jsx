@@ -828,7 +828,9 @@ export default function Checkout() {
 
       // Prepare order items for API (main product lines + hardware pack add-on lines)
       const orderItems = [];
-      for (const product of cartProductsForConfirmation) {
+      for (let i = 0; i < cartProductsForConfirmation.length; i++) {
+        const product = cartProductsForConfirmation[i];
+        const lineDiscount = (appliedCoupon?.lineItemDiscounts?.[i] ?? 0) || 0;
         let productImage = null;
         if (
           product.selectedColor &&
@@ -878,6 +880,7 @@ export default function Checkout() {
           Package: product.Package ?? 0,
           LowMargin: product.LowMargin ?? 0,
           ManufacturerName: product.ManufacturerName ?? "",
+          lineDiscount,
         });
 
         // Add one order line per selected hardware pack (same quantity as main product)
@@ -900,6 +903,7 @@ export default function Checkout() {
               Package: 0,
               LowMargin: 0,
               ManufacturerName: product.ManufacturerName ?? "",
+              lineDiscount: 0,
             });
           }
         }
@@ -1169,6 +1173,7 @@ export default function Checkout() {
           platform: item.platform,
           yearRange: item.yearRange,
           image: item.image,
+          lineDiscount: item.lineDiscount ?? 0,
         })),
         billing: billingData,
         shipping: sameAsBilling ? billingData : shippingData,
@@ -2616,6 +2621,14 @@ export default function Checkout() {
                             item.quantity
                           ).toFixed(2);
                         })()}
+                        {appliedCoupon?.lineItemDiscounts?.[index] > 0 && (
+                          <div className="text-success small mt-1">
+                            Coupon: -$
+                            {Number(
+                              appliedCoupon.lineItemDiscounts[index],
+                            ).toFixed(2)}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))

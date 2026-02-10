@@ -440,6 +440,15 @@ export default function CartNew() {
                               (basePrice + addOnPrice) * elm.quantity
                             ).toFixed(2);
                           })()}
+                          {appliedCoupon?.lineItemDiscounts?.[i] > 0 && (
+                            <div
+                              className="text-success mt-1"
+                              style={{ fontSize: "12px", fontWeight: "500" }}
+                            >
+                              Coupon: -$
+                              {Number(appliedCoupon.lineItemDiscounts[i]).toFixed(2)}
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -18,6 +18,7 @@ export default function AdminCouponsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortColumn, setSortColumn] = useState("created_at");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [deactivatingExpired, setDeactivatingExpired] = useState(false);
   const formCardRef = useRef(null);
   const [formData, setFormData] = useState({
     code: "",
@@ -278,6 +279,31 @@ export default function AdminCouponsPage() {
     }
   };
 
+  const handleDeactivateExpired = async () => {
+    setDeactivatingExpired(true);
+    setError("");
+    try {
+      const response = await fetch("/api/admin/coupons/deactivate-expired", {
+        method: "POST",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to deactivate expired coupons");
+      }
+      await fetchCoupons();
+      showToast(
+        data.message || `${data.count} expired coupon(s) deactivated.`,
+        "success"
+      );
+    } catch (err) {
+      setError(err.message);
+      showToast(err.message, "error");
+      console.error("Error deactivating expired coupons:", err);
+    } finally {
+      setDeactivatingExpired(false);
+    }
+  };
+
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
@@ -445,6 +471,14 @@ export default function AdminCouponsPage() {
     <div>
       <div className="admin-page-header">
         <h1 className="admin-page-title">Coupons Management</h1>
+        <button
+          type="button"
+          onClick={handleDeactivateExpired}
+          disabled={deactivatingExpired}
+          className="admin-btn-secondary me-2"
+        >
+          {deactivatingExpired ? "..." : "Deactivate expired"}
+        </button>
         <button
           type="button"
           onClick={() => {

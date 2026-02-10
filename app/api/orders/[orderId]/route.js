@@ -81,6 +81,7 @@ export async function GET(request, { params }) {
         platform: item.platform,
         yearRange: item.year_range,
         image: item.image,
+        lineDiscount: parseFloat(item.line_discount) || 0,
       })),
     };
 

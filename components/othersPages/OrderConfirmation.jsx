@@ -473,6 +473,12 @@ export default function OrderConfirmation({ orderData }) {
                         </td>
                         <td className="text-end fw-bold">
                           ${(parseFloat(item.price) * item.quantity).toFixed(2)}
+                          {(item.lineDiscount ?? 0) > 0 && (
+                            <div className="text-success small mt-1">
+                              Coupon: -$
+                              {Number(item.lineDiscount).toFixed(2)}
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}

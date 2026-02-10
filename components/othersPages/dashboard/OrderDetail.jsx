@@ -258,6 +258,11 @@ export default function OrderDetail({ orderNumber }) {
                     <td className="text-end">{formatCurrency(item.price)}</td>
                     <td className="text-end">
                       {formatCurrency(item.price * item.quantity)}
+                      {(Number(item.lineDiscount) || Number(item.line_discount) || 0) > 0 && (
+                        <div className="text-success small">
+                          Coupon: -{formatCurrency(item.lineDiscount ?? item.line_discount ?? 0)}
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

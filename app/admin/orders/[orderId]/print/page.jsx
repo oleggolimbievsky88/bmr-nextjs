@@ -388,6 +388,11 @@ export default function PrintOrderReceipt() {
                   <td className="text-end">{formatCurrency(item.price)}</td>
                   <td className="text-end">
                     {formatCurrency(item.price * item.quantity)}
+                    {(parseFloat(item.line_discount) || 0) > 0 && (
+                      <div className="text-success small">
+                        Coupon: -{formatCurrency(item.line_discount)}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
