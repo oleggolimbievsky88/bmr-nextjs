@@ -69,62 +69,74 @@ export default function AdminBannerPage() {
     );
   }
 
-  if (!banner || !images.length) {
-    return (
-      <div className="admin-form-title mb-4">
-        <h1>Banners</h1>
-        <p className="text-muted">No banner or images found in the database.</p>
-      </div>
-    );
-  }
+  const hasBanner = banner != null;
+  const hasImages = images && images.length > 0;
 
   return (
     <div className="admin-form-title mb-4">
       <h1>Banners</h1>
-      <p className="text-muted mb-4">
-        Set the link URL for each banner image (e.g. /products/platform-slug or
-        /product/123). Leave blank for no link.
-      </p>
-      <div className="row g-3">
-        {images.map((img) => (
-          <div key={img.ImageId} className="col-12 col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                {img.ImageSrc && (
-                  <img
-                    src={
-                      img.ImageSrc.startsWith("/")
-                        ? img.ImageSrc
-                        : `/${img.ImageSrc}`
-                    }
-                    alt=""
-                    className="img-fluid mb-2"
-                    style={{ maxHeight: "120px", objectFit: "contain" }}
-                  />
-                )}
-                <label className="form-label small">Link URL</label>
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  placeholder="/products/2024-2025-mustang"
-                  value={urls[img.ImageId] ?? ""}
-                  onChange={(e) => handleUrlChange(img.ImageId, e.target.value)}
-                />
+      {!hasBanner && (
+        <p className="text-muted mb-4">
+          No banner in the database yet. Add a banner row (e.g. in your DB set
+          display = 1 for the banner you want to use), then refresh this page.
+        </p>
+      )}
+      {hasBanner && !hasImages && (
+        <p className="text-muted mb-4">
+          This banner has no images. Add rows to the bannerimages table for
+          bannerid = {banner.bannerid}, then refresh to set link URLs.
+        </p>
+      )}
+      {hasBanner && hasImages && (
+        <>
+          <p className="text-muted mb-4">
+            Set the link URL for each banner image (e.g. /products/platform-slug
+            or /product/123). Leave blank for no link.
+          </p>
+          <div className="row g-3">
+            {images.map((img) => (
+              <div key={img.ImageId} className="col-12 col-md-6 col-lg-4">
+                <div className="card h-100">
+                  <div className="card-body">
+                    {img.ImageSrc && (
+                      <img
+                        src={
+                          img.ImageSrc.startsWith("/")
+                            ? img.ImageSrc
+                            : `/${img.ImageSrc}`
+                        }
+                        alt=""
+                        className="img-fluid mb-2"
+                        style={{ maxHeight: "120px", objectFit: "contain" }}
+                      />
+                    )}
+                    <label className="form-label small">Link URL</label>
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="/products/2024-2025-mustang"
+                      value={urls[img.ImageId] ?? ""}
+                      onChange={(e) =>
+                        handleUrlChange(img.ImageId, e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="mt-4">
-        <button
-          type="button"
-          className="btn btn-primary"
-          disabled={saving}
-          onClick={handleSave}
-        >
-          {saving ? "Saving…" : "Save link URLs"}
-        </button>
-      </div>
+          <div className="mt-4">
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={saving}
+              onClick={handleSave}
+            >
+              {saving ? "Saving…" : "Save link URLs"}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

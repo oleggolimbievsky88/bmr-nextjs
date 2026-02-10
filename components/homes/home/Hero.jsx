@@ -17,6 +17,16 @@ const slideshowSlides = [
 export default function Hero() {
   const [bannerImages, setBannerImages] = useState([]);
 
+  // Resolve banner image src: full URL or path as-is; bare filename -> /images/slider/
+  const resolveBannerSrc = (imageSrc) => {
+    if (!imageSrc || typeof imageSrc !== "string") return "";
+    const s = imageSrc.trim();
+    if (s.startsWith("http")) return s;
+    if (s.startsWith("/")) return s;
+    if (s.includes("/")) return `/${s}`;
+    return `/images/slider/${s}`;
+  };
+
   useEffect(() => {
     fetch("/api/banner")
       .then((res) => (res.ok ? res.json() : null))
@@ -24,9 +34,7 @@ export default function Hero() {
         if (data?.images?.length) {
           setBannerImages(
             data.images.map((img) => ({
-              src: img.ImageSrc?.startsWith("/")
-                ? img.ImageSrc
-                : `/${img.ImageSrc || ""}`,
+              src: resolveBannerSrc(img.ImageSrc),
               link: img.ImageUrl?.trim() || null,
             })),
           );

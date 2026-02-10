@@ -196,6 +196,15 @@ export default function Context({ children }) {
     localStorage.removeItem("freeShipping");
   };
 
+  const replaceCartLine = (index, updates) => {
+    if (index < 0 || index >= cartProducts.length) return;
+    setCartProducts((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], ...updates };
+      return next;
+    });
+  };
+
   const applyCoupon = async (couponCode, shippingAddress = null) => {
     try {
       const response = await fetch("/api/validate-coupon", {
@@ -484,6 +493,7 @@ export default function Context({ children }) {
     cartLoading,
     totalPrice,
     addProductToCart,
+    replaceCartLine,
     isAddedToCartProducts,
     clearCart,
     removeFromWishlist,

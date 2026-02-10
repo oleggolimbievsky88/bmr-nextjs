@@ -4,6 +4,7 @@ import { useInView } from "react-intersection-observer";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
+import { getProductImageUrl } from "@/lib/assets";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
 import "swiper/css";
@@ -137,7 +138,7 @@ function NewProductsLoader({ scratchDent, title, description, onLoaded }) {
       try {
         console.log(`Lazy loading ${title} products...`);
         const response = await fetch(
-          `/api/products/new-products?scrachDent=${scratchDent}&limit=12`
+          `/api/products/new-products?scrachDent=${scratchDent}&limit=12`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -372,16 +373,16 @@ function NewProductsSection({
                     >
                       <Image
                         className="lazyload img-product mb-2"
-                        src={`https://bmrsuspension.com/siteart/products/${
-                          product.ImageLarge || product.ImageSmall
-                        }`}
+                        src={getProductImageUrl(
+                          product.ImageLarge || product.ImageSmall,
+                        )}
                         alt="image-product"
                         width={1200}
                         height={1200}
                       />
                       <Image
                         className="lazyload img-hover"
-                        src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
+                        src={getProductImageUrl(product.ImageSmall)}
                         alt="image-product"
                         width={360}
                         height={360}

@@ -7,6 +7,7 @@ import { getProductImageUrl } from "@/lib/assets";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import CouponSuccessModal from "@/components/modals/CouponSuccessModal";
+import CartEditModal from "@/components/modals/CartEditModal";
 import ShippingEstimate from "@/components/common/ShippingEstimate";
 
 const MAX_QTY = 10;
@@ -22,6 +23,7 @@ export default function Cart() {
     freeShipping,
     applyCoupon,
     removeCoupon,
+    replaceCartLine,
   } = useContextElement();
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [consent, setConsent] = useState(false);
@@ -30,6 +32,8 @@ export default function Cart() {
   const [couponError, setCouponError] = useState("");
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
+  const [editModalItem, setEditModalItem] = useState(null);
+  const [editModalIndex, setEditModalIndex] = useState(null);
 
   // Load order notes from localStorage only on client side
   useEffect(() => {
@@ -45,21 +49,19 @@ export default function Cart() {
       removeCoupon();
     }
   }, [cartProducts, appliedCoupon, removeCoupon]);
-  // Match cart line by product + color + options (same part in different colors = different lines)
+  // Match cart line by product + color + options (same part in different colors = different lines).
+  // Compare by IDs only so different add-ons never match (avoids JSON.stringify key-order issues).
   const sameCartLine = (a, b) => {
     if (!a || !b || a.ProductID !== b.ProductID) return false;
-    const colorMatch =
-      JSON.stringify(a.selectedColor || null) ===
-      JSON.stringify(b.selectedColor || null);
-    const greaseMatch =
-      JSON.stringify(a.selectedGrease || null) ===
-      JSON.stringify(b.selectedGrease || null);
-    const angleMatch =
-      JSON.stringify(a.selectedAnglefinder || null) ===
-      JSON.stringify(b.selectedAnglefinder || null);
-    const hardwareMatch =
-      JSON.stringify(a.selectedHardware || null) ===
-      JSON.stringify(b.selectedHardware || null);
+    const colorId = (c) =>
+      c && (c.ColorID != null || c.id != null) ? (c.ColorID ?? c.id) : null;
+    const greaseId = (g) =>
+      g && (g.GreaseID != null || g.id != null) ? (g.GreaseID ?? g.id) : null;
+    const angleId = (af) => (af && af.AngleID != null ? af.AngleID : null);
+    const hardwareId = (h) =>
+      h && (h.HardwareID != null || h.id != null)
+        ? (h.HardwareID ?? h.id)
+        : null;
     const packsSig = (p) =>
       Array.isArray(p?.selectedHardwarePacks)
         ? JSON.stringify(
@@ -69,10 +71,10 @@ export default function Cart() {
           )
         : "[]";
     return (
-      colorMatch &&
-      greaseMatch &&
-      angleMatch &&
-      hardwareMatch &&
+      colorId(a.selectedColor) === colorId(b.selectedColor) &&
+      greaseId(a.selectedGrease) === greaseId(b.selectedGrease) &&
+      angleId(a.selectedAnglefinder) === angleId(b.selectedAnglefinder) &&
+      hardwareId(a.selectedHardware) === hardwareId(b.selectedHardware) &&
       packsSig(a) === packsSig(b)
     );
   };
@@ -87,7 +89,9 @@ export default function Cart() {
   };
   const removeItem = (item) => {
     const productName = item?.ProductName || "Item";
-    setCartProducts((pre) => pre.filter((elm) => !sameCartLine(elm, item)));
+    const index = cartProducts.findIndex((elm) => sameCartLine(elm, item));
+    if (index === -1) return;
+    setCartProducts((pre) => pre.filter((_, i) => i !== index));
     showToast(`${productName} removed from cart`, "info");
   };
 
@@ -254,7 +258,7 @@ export default function Cart() {
                                 fontWeight: "400",
                               }}
                             >
-                              Mfg: {elm.ManufacturerName || elm.ManID || "N/A"}
+                              Mfg: {elm.ManufacturerName || "N/A"}
                             </div>
                             <Link
                               href={`/product/${elm.ProductID}`}
@@ -381,10 +385,25 @@ export default function Cart() {
                                 )}
                             </div>
                             <span
-                              className="remove-cart link remove"
+                              className="remove-cart link remove me-2"
                               onClick={() => removeItem(elm)}
                             >
                               Remove
+                            </span>
+                            <span
+                              className="link"
+                              style={{ cursor: "pointer", fontSize: "12px" }}
+                              onClick={() => {
+                                const idx = cartProducts.findIndex((e) =>
+                                  sameCartLine(e, elm),
+                                );
+                                if (idx !== -1) {
+                                  setEditModalIndex(idx);
+                                  setEditModalItem(cartProducts[idx]);
+                                }
+                              }}
+                            >
+                              Edit
                             </span>
                           </div>
                         </td>
@@ -910,6 +929,20 @@ export default function Cart() {
         coupon={appliedCoupon}
         show={showCouponModal}
         onClose={() => setShowCouponModal(false)}
+      />
+      <CartEditModal
+        show={editModalItem != null}
+        onClose={() => {
+          setEditModalItem(null);
+          setEditModalIndex(null);
+        }}
+        item={editModalItem}
+        cartIndex={editModalIndex}
+        onSave={(index, updates) => {
+          replaceCartLine(index, updates);
+          setEditModalItem(null);
+          setEditModalIndex(null);
+        }}
       />
     </section>
   );

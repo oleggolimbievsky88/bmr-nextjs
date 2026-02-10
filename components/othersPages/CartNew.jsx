@@ -200,7 +200,7 @@ export default function CartNew() {
                               fontWeight: "400",
                             }}
                           >
-                            Mfg: {elm.ManufacturerName || elm.ManID || "N/A"}
+                            Mfg: {elm.ManufacturerName || "N/A"}
                           </div>
                           <Link
                             href={`/product/${elm.ProductID}`}

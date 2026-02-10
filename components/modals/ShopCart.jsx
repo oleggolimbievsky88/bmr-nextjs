@@ -8,11 +8,19 @@ import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import CartEditModal from "@/components/modals/CartEditModal";
 
 export default function ShopCart() {
-  const { cartProducts, totalPrice, setCartProducts, setQuickViewItem } =
-    useContextElement();
+  const {
+    cartProducts,
+    totalPrice,
+    setCartProducts,
+    setQuickViewItem,
+    replaceCartLine,
+  } = useContextElement();
   const [recommendations, setRecommendations] = useState([]);
+  const [editModalItem, setEditModalItem] = useState(null);
+  const [editModalIndex, setEditModalIndex] = useState(null);
   const router = useRouter();
 
   // Debug logging
@@ -27,9 +35,10 @@ export default function ShopCart() {
       setCartProducts(items);
     }
   };
-  const removeItem = (item) => {
-    const productName = item.ProductName || "Item";
-    setCartProducts((pre) => [...pre.filter((elm) => elm !== item)]);
+  const removeItem = (item, index) => {
+    const productName = item?.ProductName || "Item";
+    if (index == null || index < 0 || index >= cartProducts.length) return;
+    setCartProducts((pre) => pre.filter((_, i) => i !== index));
     showToast(`${productName} removed from cart`, "info");
   };
 
@@ -390,10 +399,20 @@ export default function ShopCart() {
                             <div
                               className="tf-mini-cart-remove"
                               style={{ cursor: "pointer" }}
-                              onClick={() => removeItem(elm)}
+                              onClick={() => removeItem(elm, i)}
                             >
                               Remove
                             </div>
+                            <span
+                              className="link ms-2"
+                              style={{ cursor: "pointer", fontSize: "12px" }}
+                              onClick={() => {
+                                setEditModalIndex(i);
+                                setEditModalItem(elm);
+                              }}
+                            >
+                              Edit
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -889,6 +908,20 @@ export default function ShopCart() {
           </div>
         </div>
       </div>
+      <CartEditModal
+        show={editModalItem != null}
+        onClose={() => {
+          setEditModalItem(null);
+          setEditModalIndex(null);
+        }}
+        item={editModalItem}
+        cartIndex={editModalIndex}
+        onSave={(index, updates) => {
+          replaceCartLine(index, updates);
+          setEditModalItem(null);
+          setEditModalIndex(null);
+        }}
+      />
     </div>
   );
 }

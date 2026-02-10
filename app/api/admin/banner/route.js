@@ -10,10 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const data = await getBannerWithImagesAdmin();
-    if (!data) {
-      return NextResponse.json({ error: "No banner found" }, { status: 404 });
-    }
-    return NextResponse.json(data);
+    return NextResponse.json(data || { banner: null, images: [] });
   } catch (error) {
     console.error("Error fetching banner:", error);
     return NextResponse.json(

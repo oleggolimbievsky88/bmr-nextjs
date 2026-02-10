@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
+import { getProductImageUrl } from "@/lib/assets";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
 import "swiper/css";
@@ -31,7 +32,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `/api/products/new-products?scrachDent=${scrachDent}&limit=35`
+          `/api/products/new-products?scrachDent=${scrachDent}&limit=35`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -122,16 +123,16 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                       >
                         <Image
                           className="lazyload img-product mb-2"
-                          src={`https://bmrsuspension.com/siteart/products/${
-                            product.ImageLarge || product.ImageSmall
-                          }`}
+                          src={getProductImageUrl(
+                            product.ImageLarge || product.ImageSmall,
+                          )}
                           alt="image-product"
                           width={350}
                           height={350}
                         />
                         <Image
                           className="lazyload img-hover"
-                          src={`https://bmrsuspension.com/siteart/products/${product.ImageSmall}`}
+                          src={getProductImageUrl(product.ImageSmall)}
                           alt="image-product"
                           width={360}
                           height={360}
