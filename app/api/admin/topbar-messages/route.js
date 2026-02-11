@@ -5,21 +5,17 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getTopbarMessages, saveTopbarMessages } from "@/lib/queries";
+import sanitizeHtml from "sanitize-html";
 
-// Ensure Node.js runtime (isomorphic-dompurify uses JSDOM)
-export const runtime = "nodejs";
+const SANITIZE_OPTS = {
+  allowedTags: ["a", "br", "strong", "em", "b", "i", "span"],
+  allowedAttributes: { a: ["href", "target", "rel", "title"] },
+  allowedSchemes: ["http", "https", "mailto"],
+};
 
-const ALLOWED_TAGS = ["a", "br", "strong", "em", "b", "i", "span"];
-const ALLOWED_ATTR = ["href", "target", "rel", "title"];
-
-async function sanitizeTopbarHtml(html) {
+function sanitizeTopbarHtml(html) {
   if (typeof html !== "string") return "";
-  const DOMPurify = (await import("isomorphic-dompurify")).default;
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    ALLOW_DATA_ATTR: false,
-  });
+  return sanitizeHtml(html, SANITIZE_OPTS);
 }
 
 export async function GET() {
@@ -59,20 +55,18 @@ export async function PUT(request) {
       );
     }
 
-    const messages = await Promise.all(
-      raw.map(async (m) => {
-        const sec = Number(m.duration);
-        const durationMs =
-          Number.isFinite(sec) && sec >= 1 && sec <= 60
-            ? Math.round(sec * 1000)
-            : 3000;
-        return {
-          content: await sanitizeTopbarHtml(m.content || ""),
-          duration: durationMs,
-          is_active: m.is_active !== false && m.is_active !== 0,
-        };
-      }),
-    );
+    const messages = raw.map((m) => {
+      const sec = Number(m.duration);
+      const durationMs =
+        Number.isFinite(sec) && sec >= 1 && sec <= 60
+          ? Math.round(sec * 1000)
+          : 3000;
+      return {
+        content: sanitizeTopbarHtml(m.content || ""),
+        duration: durationMs,
+        is_active: m.is_active !== false && m.is_active !== 0,
+      };
+    });
 
     await saveTopbarMessages(messages);
     return NextResponse.json({
