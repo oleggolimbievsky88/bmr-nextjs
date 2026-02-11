@@ -15,6 +15,7 @@
     "@modelcontextprotocol/sdk": "^1.25.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@vercel/analytics": "^1.5.0",
+    "@vercel/blob": "^2.2.0",
     "@vercel/og": "^0.8.6",
     "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.2",
