@@ -3,6 +3,65 @@
 import { useState, useEffect, useCallback } from "react";
 import { showToast } from "@/utlis/showToast";
 
+function ConfirmDeleteModal({
+  show,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  itemName,
+}) {
+  if (!show) return null;
+  const handleConfirm = () => {
+    onClose();
+    onConfirm();
+  };
+  return (
+    <div
+      className="modal fade show d-block"
+      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      tabIndex={-1}
+      onClick={onClose}
+    >
+      <div
+        className="modal-dialog modal-dialog-centered"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-content border-0 shadow-lg overflow-hidden rounded-3">
+          <div className="modal-header border-0 bg-danger text-white">
+            <h5 className="modal-title fw-semibold">{title}</h5>
+            <button
+              type="button"
+              className="btn-close btn-close-white"
+              onClick={onClose}
+              aria-label="Close"
+            />
+          </div>
+          <div className="modal-body py-4">
+            <p className="mb-0 text-dark">{message}</p>
+          </div>
+          <div className="modal-footer border-0 bg-light gap-2">
+            <button
+              type="button"
+              className="btn btn-outline-secondary rounded-pill"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger rounded-pill"
+              onClick={handleConfirm}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPlatformsPage() {
   const [groups, setGroups] = useState([]);
   const [bodies, setBodies] = useState([]);
@@ -15,6 +74,11 @@ export default function AdminPlatformsPage() {
   const [editingGroup, setEditingGroup] = useState(null);
   const [editingBody, setEditingBody] = useState(null);
   const [editingVehicle, setEditingVehicle] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    type: null,
+    data: null,
+  });
 
   const fetchGroups = useCallback(async () => {
     const res = await fetch("/api/admin/platform-groups");
@@ -121,8 +185,12 @@ export default function AdminPlatformsPage() {
     }
   };
 
-  const handleDeleteGroup = async (id) => {
-    if (!confirm("Delete this platform group?")) return;
+  const handleDeleteGroupClick = (id, name) => {
+    setConfirmModal({ show: true, type: "group", data: { id, name } });
+  };
+  const handleDeleteGroupConfirm = async () => {
+    const { id } = confirmModal.data || {};
+    if (!id) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/platform-groups/${id}`, {
@@ -130,6 +198,7 @@ export default function AdminPlatformsPage() {
       });
       if (!res.ok) throw new Error("Failed to delete");
       showToast("Deleted.", "success");
+      setConfirmModal({ show: false, type: null, data: null });
       if (String(id) === selectedGroupId) setSelectedGroupId("");
       await fetchGroups();
     } catch (err) {
@@ -197,13 +266,18 @@ export default function AdminPlatformsPage() {
     }
   };
 
-  const handleDeleteBody = async (id) => {
-    if (!confirm("Delete this platform?")) return;
+  const handleDeleteBodyClick = (id, name) => {
+    setConfirmModal({ show: true, type: "body", data: { id, name } });
+  };
+  const handleDeleteBodyConfirm = async () => {
+    const { id } = confirmModal.data || {};
+    if (!id) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/bodies/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
       showToast("Deleted.", "success");
+      setConfirmModal({ show: false, type: null, data: null });
       if (String(id) === selectedBodyId) setSelectedBodyId("");
       await fetchBodies(selectedGroupId);
     } catch (err) {
@@ -272,8 +346,16 @@ export default function AdminPlatformsPage() {
     }
   };
 
-  const handleDeleteVehicle = async (id) => {
-    if (!confirm("Delete this vehicle?")) return;
+  const handleDeleteVehicleClick = (id, make, model) => {
+    setConfirmModal({
+      show: true,
+      type: "vehicle",
+      data: { id, make, model },
+    });
+  };
+  const handleDeleteVehicleConfirm = async () => {
+    const { id } = confirmModal.data || {};
+    if (!id) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/vehicles/${id}`, {
@@ -281,6 +363,7 @@ export default function AdminPlatformsPage() {
       });
       if (!res.ok) throw new Error("Failed to delete");
       showToast("Deleted.", "success");
+      setConfirmModal({ show: false, type: null, data: null });
       await fetchVehicles(selectedBodyId);
     } catch (err) {
       showToast(err.message || "Failed", "error");
@@ -289,370 +372,495 @@ export default function AdminPlatformsPage() {
     }
   };
 
+  const closeConfirmModal = () =>
+    setConfirmModal({ show: false, type: null, data: null });
+
+  const getConfirmModalProps = () => {
+    if (confirmModal.type === "group")
+      return {
+        title: "Delete platform group?",
+        message: `Delete "${confirmModal.data?.name || ""}"? Platforms and vehicles in this group will need to be reassigned.`,
+        onConfirm: handleDeleteGroupConfirm,
+      };
+    if (confirmModal.type === "body")
+      return {
+        title: "Delete platform?",
+        message: `Delete "${confirmModal.data?.name || ""}"? Vehicles in this platform will be removed.`,
+        onConfirm: handleDeleteBodyConfirm,
+      };
+    if (confirmModal.type === "vehicle")
+      return {
+        title: "Delete vehicle?",
+        message: `Delete "${confirmModal.data?.make || ""} ${confirmModal.data?.model || ""}"?`,
+        onConfirm: handleDeleteVehicleConfirm,
+      };
+    return null;
+  };
+
   if (loading && groups.length === 0) {
     return (
-      <div className="admin-form-title mb-4">
-        <h1>Platforms</h1>
-        <p className="text-muted">Loading…</p>
+      <div className="admin-platforms-page">
+        <div className="text-center py-5">
+          <div
+            className="spinner-border text-primary"
+            role="status"
+            style={{ width: "2.5rem", height: "2.5rem" }}
+          >
+            <span className="visually-hidden">Loading…</span>
+          </div>
+          <p className="text-muted mt-2">Loading platforms…</p>
+        </div>
+        {getConfirmModalProps() && confirmModal.show && (
+          <ConfirmDeleteModal
+            show={confirmModal.show}
+            onClose={closeConfirmModal}
+            {...getConfirmModalProps()}
+          />
+        )}
       </div>
     );
   }
 
   return (
-    <div className="admin-form-title mb-4">
-      <h1>Platforms</h1>
-      <p className="text-muted mb-4">
-        Manage platform groups, platforms (bodies), and vehicles for Search by
-        Vehicle.
-      </p>
+    <div className="admin-platforms-page">
+      <div className="mb-4">
+        <h1 className="h3 fw-bold mb-1">Platforms</h1>
+        <p className="text-muted small mb-0">
+          Manage platform groups, platforms (bodies), and vehicles for Search by
+          Vehicle.
+        </p>
+      </div>
 
       <section className="mb-5">
-        <h2 className="h5 mb-3">Platform groups</h2>
-        <form
-          onSubmit={handleCreateGroup}
-          className="d-flex flex-wrap gap-2 align-items-end mb-3"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Group name"
-            className="form-control form-control-sm"
-            style={{ width: "180px" }}
-          />
-          <input
-            type="number"
-            name="position"
-            placeholder="Position"
-            className="form-control form-control-sm"
-            style={{ width: "80px" }}
-          />
-          <button
-            type="submit"
-            className="btn btn-primary btn-sm"
-            disabled={saving}
-          >
-            Add group
-          </button>
-        </form>
-        <div className="table-responsive">
-          <table className="table table-bordered table-sm">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Position</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {groups.map((g) => (
-                <tr key={g.id}>
-                  {editingGroup?.id === g.id ? (
-                    <>
-                      <td>{g.id}</td>
-                      <td>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          value={editingGroup.name}
-                          onChange={(e) =>
-                            setEditingGroup((prev) => ({
-                              ...prev,
-                              name: e.target.value,
-                            }))
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          value={editingGroup.position ?? ""}
-                          onChange={(e) =>
-                            setEditingGroup((prev) => ({
-                              ...prev,
-                              position:
-                                e.target.value === ""
-                                  ? null
-                                  : Number(e.target.value),
-                            }))
-                          }
-                          style={{ width: "70px" }}
-                        />
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-success me-1"
-                          onClick={() =>
-                            handleUpdateGroup(
-                              g.id,
-                              editingGroup.name,
-                              editingGroup.position ?? 0,
-                            )
-                          }
-                        >
-                          Save
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-secondary"
-                          onClick={() => setEditingGroup(null)}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{g.id}</td>
-                      <td>{g.name}</td>
-                      <td>{g.position}</td>
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-primary me-1"
-                          onClick={() => setEditingGroup({ ...g })}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteGroup(g.id)}
-                          disabled={saving}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="mb-5">
-        <h2 className="h5 mb-3">Platforms (bodies)</h2>
-        <div className="mb-2">
-          <label className="me-2">Platform group:</label>
-          <select
-            className="form-select form-select-sm d-inline-block"
-            style={{ width: "220px" }}
-            value={selectedGroupId}
-            onChange={(e) => setSelectedGroupId(e.target.value)}
-          >
-            <option value="">— Select group —</option>
-            {groups.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {selectedGroupId && (
-          <>
+        <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+          <div className="card-body p-4">
+            <h2 className="h5 fw-semibold mb-4">Platform groups</h2>
             <form
-              onSubmit={handleCreateBody}
-              className="d-flex flex-wrap gap-2 align-items-end mb-3"
+              onSubmit={handleCreateGroup}
+              className="d-flex flex-wrap gap-2 align-items-end mb-4"
             >
-              <input
-                type="text"
-                name="bodyName"
-                placeholder="Platform name"
-                className="form-control form-control-sm"
-                style={{ width: "160px" }}
-              />
-              <input
-                type="text"
-                name="startYear"
-                placeholder="Start year"
-                className="form-control form-control-sm"
-                style={{ width: "80px" }}
-              />
-              <input
-                type="text"
-                name="endYear"
-                placeholder="End year"
-                className="form-control form-control-sm"
-                style={{ width: "80px" }}
-              />
-              <input
-                type="text"
-                name="slug"
-                placeholder="Slug"
-                className="form-control form-control-sm"
-                style={{ width: "160px" }}
-              />
+              <div>
+                <label className="form-label small mb-1">Group name</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="e.g. Ford"
+                  className="form-control form-control-sm"
+                  style={{ width: "180px" }}
+                />
+              </div>
+              <div>
+                <label className="form-label small mb-1">Position</label>
+                <input
+                  type="number"
+                  name="position"
+                  placeholder="0"
+                  className="form-control form-control-sm"
+                  style={{ width: "80px" }}
+                />
+              </div>
               <button
                 type="submit"
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary rounded-pill px-4"
                 disabled={saving}
               >
-                Add platform
+                + Add group
               </button>
             </form>
             <div className="table-responsive">
-              <table className="table table-bordered table-sm">
-                <thead>
+              <table className="table table-hover align-middle mb-0">
+                <thead className="table-light">
                   <tr>
-                    <th>BodyID</th>
-                    <th>Name</th>
-                    <th>Years</th>
-                    <th>Slug</th>
-                    <th></th>
+                    <th className="border-0 py-3 ps-4">Name</th>
+                    <th className="border-0 py-3">Position</th>
+                    <th className="border-0 py-3 pe-4 text-end"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {bodies.map((b) => (
-                    <tr key={b.BodyID}>
-                      <td>{b.BodyID}</td>
-                      <td>{b.Name}</td>
-                      <td>
-                        {b.StartYear}-{b.EndYear}
-                      </td>
-                      <td>{b.slug || "—"}</td>
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-primary me-1"
-                          onClick={() => setEditingBody(b)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteBody(b.BodyID)}
-                          disabled={saving}
-                        >
-                          Delete
-                        </button>
-                      </td>
+                  {groups.map((g) => (
+                    <tr key={g.id}>
+                      {editingGroup?.id === g.id ? (
+                        <>
+                          <td className="ps-4">
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              value={editingGroup.name}
+                              onChange={(e) =>
+                                setEditingGroup((prev) => ({
+                                  ...prev,
+                                  name: e.target.value,
+                                }))
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              className="form-control form-control-sm"
+                              value={editingGroup.position ?? ""}
+                              onChange={(e) =>
+                                setEditingGroup((prev) => ({
+                                  ...prev,
+                                  position:
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value),
+                                }))
+                              }
+                              style={{ width: "70px" }}
+                            />
+                          </td>
+                          <td className="pe-4 text-end">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-success me-1 rounded-pill"
+                              onClick={() =>
+                                handleUpdateGroup(
+                                  g.id,
+                                  editingGroup.name,
+                                  editingGroup.position ?? 0,
+                                )
+                              }
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary rounded-pill"
+                              onClick={() => setEditingGroup(null)}
+                            >
+                              Cancel
+                            </button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="ps-4 fw-medium">{g.name}</td>
+                          <td>
+                            <span className="badge bg-light text-dark border">
+                              {g.position}
+                            </span>
+                          </td>
+                          <td className="pe-4 text-end">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary me-1 rounded-pill"
+                              onClick={() => setEditingGroup({ ...g })}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger rounded-pill"
+                              onClick={() =>
+                                handleDeleteGroupClick(g.id, g.name)
+                              }
+                              disabled={saving}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </section>
 
-      <section>
-        <h2 className="h5 mb-3">Vehicles</h2>
-        <div className="mb-2">
-          <label className="me-2">Platform:</label>
-          <select
-            className="form-select form-select-sm d-inline-block"
-            style={{ width: "280px" }}
-            value={selectedBodyId}
-            onChange={(e) => setSelectedBodyId(e.target.value)}
-          >
-            <option value="">— Select platform —</option>
-            {bodies.map((b) => (
-              <option key={b.BodyID} value={b.BodyID}>
-                {b.Name} ({b.slug || b.BodyID})
-              </option>
-            ))}
-          </select>
-        </div>
-        {selectedBodyId && (
-          <>
-            <form
-              onSubmit={handleCreateVehicle}
-              className="d-flex flex-wrap gap-2 align-items-end mb-3"
-            >
-              <input
-                type="text"
-                name="make"
-                placeholder="Make"
-                className="form-control form-control-sm"
-                style={{ width: "100px" }}
-              />
-              <input
-                type="text"
-                name="model"
-                placeholder="Model"
-                className="form-control form-control-sm"
-                style={{ width: "120px" }}
-              />
-              <input
-                type="text"
-                name="startYear"
-                placeholder="Start"
-                className="form-control form-control-sm"
-                style={{ width: "60px" }}
-              />
-              <input
-                type="text"
-                name="endYear"
-                placeholder="End"
-                className="form-control form-control-sm"
-                style={{ width: "60px" }}
-              />
-              <input
-                type="text"
-                name="subModel"
-                placeholder="SubModel"
-                className="form-control form-control-sm"
-                style={{ width: "100px" }}
-              />
-              <button
-                type="submit"
-                className="btn btn-primary btn-sm"
-                disabled={saving}
+      <section className="mb-5">
+        <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+          <div className="card-body p-4">
+            <h2 className="h5 fw-semibold mb-4">Platforms (bodies)</h2>
+            <div className="mb-4">
+              <label className="form-label small mb-1">Platform group</label>
+              <select
+                className="form-select form-select-sm"
+                style={{ maxWidth: "280px" }}
+                value={selectedGroupId}
+                onChange={(e) => setSelectedGroupId(e.target.value)}
               >
-                Add vehicle
-              </button>
-            </form>
-            <div className="table-responsive">
-              <table className="table table-bordered table-sm">
-                <thead>
-                  <tr>
-                    <th>VehicleID</th>
-                    <th>Make</th>
-                    <th>Model</th>
-                    <th>Years</th>
-                    <th>SubModel</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vehicles.map((v) => (
-                    <tr key={v.VehicleID}>
-                      <td>{v.VehicleID}</td>
-                      <td>{v.Make}</td>
-                      <td>{v.Model}</td>
-                      <td>
-                        {v.StartYear}-{v.EndYear}
-                      </td>
-                      <td>{v.SubModel || "—"}</td>
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-primary me-1"
-                          onClick={() => setEditingVehicle(v)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteVehicle(v.VehicleID)}
-                          disabled={saving}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                <option value="">— Select group —</option>
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
             </div>
-          </>
-        )}
+            {selectedGroupId && (
+              <>
+                <form
+                  onSubmit={handleCreateBody}
+                  className="d-flex flex-wrap gap-3 align-items-end mb-4"
+                >
+                  <div>
+                    <label className="form-label small mb-1">
+                      Platform name
+                    </label>
+                    <input
+                      type="text"
+                      name="bodyName"
+                      placeholder="e.g. S650 Mustang"
+                      className="form-control form-control-sm"
+                      style={{ width: "160px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">Start year</label>
+                    <input
+                      type="text"
+                      name="startYear"
+                      placeholder="2015"
+                      className="form-control form-control-sm"
+                      style={{ width: "80px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">End year</label>
+                    <input
+                      type="text"
+                      name="endYear"
+                      placeholder="2025"
+                      className="form-control form-control-sm"
+                      style={{ width: "80px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">Slug</label>
+                    <input
+                      type="text"
+                      name="slug"
+                      placeholder="2015-2025-s650"
+                      className="form-control form-control-sm"
+                      style={{ width: "160px" }}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary rounded-pill px-4"
+                    disabled={saving}
+                  >
+                    + Add platform
+                  </button>
+                </form>
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle mb-0">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="border-0 py-3 ps-4">Name</th>
+                        <th className="border-0 py-3">Years</th>
+                        <th className="border-0 py-3">Slug</th>
+                        <th className="border-0 py-3 pe-4 text-end"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bodies.map((b) => (
+                        <tr key={b.BodyID}>
+                          <td className="ps-4 fw-medium">{b.Name}</td>
+                          <td>
+                            <span className="badge bg-light text-dark border">
+                              {b.StartYear}-{b.EndYear}
+                            </span>
+                          </td>
+                          <td className="text-muted small">{b.slug || "—"}</td>
+                          <td className="pe-4 text-end">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary me-1 rounded-pill"
+                              onClick={() => setEditingBody(b)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger rounded-pill"
+                              onClick={() =>
+                                handleDeleteBodyClick(b.BodyID, b.Name)
+                              }
+                              disabled={saving}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-5">
+        <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+          <div className="card-body p-4">
+            <h2 className="h5 fw-semibold mb-4">Vehicles</h2>
+            <div className="mb-4">
+              <label className="form-label small mb-1">Platform</label>
+              <select
+                className="form-select form-select-sm"
+                style={{ maxWidth: "320px" }}
+                value={selectedBodyId}
+                onChange={(e) => setSelectedBodyId(e.target.value)}
+              >
+                <option value="">— Select platform —</option>
+                {bodies.map((b) => (
+                  <option key={b.BodyID} value={b.BodyID}>
+                    {b.Name} ({b.slug || b.BodyID})
+                  </option>
+                ))}
+              </select>
+              {bodies.length === 0 && selectedGroupId && (
+                <small className="text-muted d-block mt-1">
+                  No platforms in this group yet. Add one above first.
+                </small>
+              )}
+              {bodies.length === 0 && !selectedGroupId && (
+                <small className="text-muted d-block mt-1">
+                  Select a platform group above to see available platforms.
+                </small>
+              )}
+            </div>
+            {selectedBodyId && (
+              <>
+                <form
+                  onSubmit={handleCreateVehicle}
+                  className="d-flex flex-wrap gap-3 align-items-end mb-4"
+                >
+                  <div>
+                    <label className="form-label small mb-1">Make</label>
+                    <input
+                      type="text"
+                      name="make"
+                      placeholder="e.g. Ford"
+                      className="form-control form-control-sm"
+                      style={{ width: "100px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">Model</label>
+                    <input
+                      type="text"
+                      name="model"
+                      placeholder="e.g. Mustang"
+                      className="form-control form-control-sm"
+                      style={{ width: "120px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">Start year</label>
+                    <input
+                      type="text"
+                      name="startYear"
+                      placeholder="2015"
+                      className="form-control form-control-sm"
+                      style={{ width: "80px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">End year</label>
+                    <input
+                      type="text"
+                      name="endYear"
+                      placeholder="2025"
+                      className="form-control form-control-sm"
+                      style={{ width: "80px" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">
+                      SubModel (optional)
+                    </label>
+                    <input
+                      type="text"
+                      name="subModel"
+                      placeholder="e.g. GT"
+                      className="form-control form-control-sm"
+                      style={{ width: "100px" }}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary rounded-pill px-4"
+                    disabled={saving}
+                  >
+                    + Add vehicle
+                  </button>
+                </form>
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle mb-0">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="border-0 py-3 ps-4">Make</th>
+                        <th className="border-0 py-3">Model</th>
+                        <th className="border-0 py-3">Years</th>
+                        <th className="border-0 py-3">SubModel</th>
+                        <th className="border-0 py-3 pe-4 text-end"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {vehicles.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="text-center text-muted py-4"
+                          >
+                            No vehicles yet. Add one with the form above.
+                          </td>
+                        </tr>
+                      ) : (
+                        vehicles.map((v) => (
+                          <tr key={v.VehicleID}>
+                            <td className="ps-4 fw-medium">{v.Make}</td>
+                            <td>{v.Model}</td>
+                            <td>
+                              <span className="badge bg-light text-dark border">
+                                {v.StartYear}-{v.EndYear}
+                              </span>
+                            </td>
+                            <td className="text-muted small">
+                              {v.SubModel || "—"}
+                            </td>
+                            <td className="pe-4 text-end">
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary me-1 rounded-pill"
+                                onClick={() => setEditingVehicle(v)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger rounded-pill"
+                                onClick={() =>
+                                  handleDeleteVehicleClick(
+                                    v.VehicleID,
+                                    v.Make,
+                                    v.Model,
+                                  )
+                                }
+                                disabled={saving}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </section>
 
       {editingBody && (
@@ -849,6 +1057,14 @@ export default function AdminPlatformsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {getConfirmModalProps() && confirmModal.show && (
+        <ConfirmDeleteModal
+          show={confirmModal.show}
+          onClose={closeConfirmModal}
+          {...getConfirmModalProps()}
+        />
       )}
     </div>
   );

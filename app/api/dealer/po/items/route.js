@@ -40,11 +40,21 @@ export async function POST(request) {
       anglefinderName = null,
       hardwareId = null,
       hardwareName = null,
+      hardwarePackIds = null,
     } = body;
 
-    if (!poId || !productId || partNumber == null || !productName || unitPrice == null) {
+    if (
+      !poId ||
+      !productId ||
+      partNumber == null ||
+      !productName ||
+      unitPrice == null
+    ) {
       return NextResponse.json(
-        { error: "Missing poId, productId, partNumber, productName, or unitPrice" },
+        {
+          error:
+            "Missing poId, productId, partNumber, productName, or unitPrice",
+        },
         { status: 400 },
       );
     }
@@ -72,14 +82,12 @@ export async function POST(request) {
       anglefinderName: anglefinderName || null,
       hardwareId: hardwareId || null,
       hardwareName: hardwareName || null,
+      hardwarePackIds: Array.isArray(hardwarePackIds) ? hardwarePackIds : null,
     });
 
     return NextResponse.json({ success: true, itemId });
   } catch (error) {
     console.error("Error adding PO item:", error);
-    return NextResponse.json(
-      { error: "Failed to add item" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to add item" }, { status: 500 });
   }
 }

@@ -222,7 +222,7 @@ export default function AdminDealerPOsPage() {
   const handleSort = useCallback((column) => {
     setSortColumn((prev) => {
       setSortDirection((d) =>
-        prev === column ? (d === "asc" ? "desc" : "asc") : "asc"
+        prev === column ? (d === "asc" ? "desc" : "asc") : "asc",
       );
       return column;
     });
@@ -363,7 +363,7 @@ export default function AdminDealerPOsPage() {
               <option value="processing">Processing</option>
               <option value="completed">Completed</option>
             </select>
-        </div>
+          </div>
           <div className="col-auto d-flex gap-2">
             <button
               type="button"
@@ -571,7 +571,7 @@ export default function AdminDealerPOsPage() {
                               {p}
                             </button>
                           </li>
-                        )
+                        ),
                       );
                     })()}
                     <li
@@ -636,12 +636,12 @@ export default function AdminDealerPOsPage() {
                             po.status === "sent"
                               ? "dealer-po-status-sent"
                               : po.status === "completed"
-                              ? "dealer-po-status-completed"
-                              : po.status === "cancelled"
-                              ? "dealer-po-status-cancelled"
-                              : po.status === "processing"
-                              ? "dealer-po-status-processing"
-                              : "dealer-po-status-default"
+                                ? "dealer-po-status-completed"
+                                : po.status === "cancelled"
+                                  ? "dealer-po-status-cancelled"
+                                  : po.status === "processing"
+                                    ? "dealer-po-status-processing"
+                                    : "dealer-po-status-default"
                           }`}
                         >
                           {po.status}
@@ -856,8 +856,8 @@ export default function AdminDealerPOsPage() {
                                         o.status === "delivered"
                                           ? "bg-success"
                                           : o.status === "cancelled"
-                                          ? "bg-danger"
-                                          : "bg-secondary"
+                                            ? "bg-danger"
+                                            : "bg-secondary"
                                       }`}
                                     >
                                       {o.status}
@@ -917,6 +917,10 @@ export default function AdminDealerPOsPage() {
                                 i.grease_name,
                                 i.anglefinder_name,
                                 i.hardware_name,
+                                ...(Array.isArray(i.hardware_pack_names) &&
+                                i.hardware_pack_names.length > 0
+                                  ? i.hardware_pack_names
+                                  : []),
                               ].filter(Boolean);
                               return (
                                 <tr key={i.id}>
@@ -933,7 +937,7 @@ export default function AdminDealerPOsPage() {
                                   <td className="text-end">
                                     {formatPrice(
                                       (parseFloat(i.unit_price) || 0) *
-                                        (i.quantity || 1)
+                                        (i.quantity || 1),
                                     )}
                                   </td>
                                 </tr>
@@ -950,8 +954,8 @@ export default function AdminDealerPOsPage() {
                               s +
                               (parseFloat(i.unit_price) || 0) *
                                 (i.quantity || 1),
-                            0
-                          )
+                            0,
+                          ),
                         )}
                       </div>
                     </div>

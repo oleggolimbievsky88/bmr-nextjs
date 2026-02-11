@@ -8,6 +8,7 @@ import {
   getProductsForDealer,
   getProductsForDealerCount,
   getEffectiveDealerDiscount,
+  getHardwarePackProducts,
 } from "@/lib/queries";
 
 function parsePrice(val) {
@@ -34,7 +35,7 @@ export async function GET(request) {
     if (role !== "dealer" && role !== "admin") {
       return NextResponse.json(
         { error: "Dealer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -42,12 +43,12 @@ export async function GET(request) {
     const customerDiscount = session.user.dealerDiscount ?? 0;
     const discountPercent = await getEffectiveDealerDiscount(
       dealerTier,
-      customerDiscount
+      customerDiscount,
     );
     const { searchParams } = new URL(request.url);
     const limit = Math.min(
       100,
-      Math.max(1, parseInt(searchParams.get("limit") || "24", 10))
+      Math.max(1, parseInt(searchParams.get("limit") || "24", 10)),
     );
     const offset = Math.max(0, parseInt(searchParams.get("offset") || "0", 10));
     const search = searchParams.get("search") || null;
@@ -69,9 +70,41 @@ export async function GET(request) {
       getProductsForDealerCount(filters),
     ]);
 
+    const packIdsSet = new Set();
+    (rows || []).forEach((p) => {
+      const raw = p.hardwarepacks;
+      if (raw && typeof raw === "string" && raw.trim() !== "" && raw !== "0") {
+        raw.split(",").forEach((id) => {
+          const tid = id.trim();
+          if (tid !== "" && tid !== "0") packIdsSet.add(tid);
+        });
+      }
+    });
+    const packIds = [...packIdsSet];
+    const packsById = {};
+    if (packIds.length > 0) {
+      const packs = await getHardwarePackProducts(packIds);
+      (packs || []).forEach((pack) => {
+        packsById[String(pack.ProductID)] = {
+          ...pack,
+          dealerPrice: applyDealerDiscount(pack.Price, discountPercent),
+        };
+      });
+    }
+
     const products = (rows || []).map((p) => {
       const price = parsePrice(p.Price);
       const dealerPrice = applyDealerDiscount(p.Price, discountPercent);
+      const hardwarePackProducts = [];
+      const raw = p.hardwarepacks;
+      if (raw && typeof raw === "string" && raw.trim() !== "" && raw !== "0") {
+        raw.split(",").forEach((id) => {
+          const tid = id.trim();
+          if (tid && tid !== "0" && packsById[tid]) {
+            hardwarePackProducts.push(packsById[tid]);
+          }
+        });
+      }
       return {
         ProductID: p.ProductID,
         PartNumber: p.PartNumber,
@@ -87,6 +120,7 @@ export async function GET(request) {
         Grease: p.Grease ?? null,
         AngleFinder: p.AngleFinder ?? null,
         Hardware: p.Hardware ?? null,
+        hardwarePackProducts,
       };
     });
 
@@ -101,7 +135,7 @@ export async function GET(request) {
     console.error("Error fetching dealer products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

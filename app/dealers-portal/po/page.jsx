@@ -115,7 +115,7 @@ export default function DealersPortalPOPage() {
     });
     if (!res.ok) return;
     setItems((prev) =>
-      prev.map((i) => (i.id === itemId ? { ...i, quantity: qty } : i))
+      prev.map((i) => (i.id === itemId ? { ...i, quantity: qty } : i)),
     );
   };
 
@@ -131,8 +131,10 @@ export default function DealersPortalPOPage() {
     if (!res.ok) return;
     setItems((prev) =>
       prev.map((i) =>
-        i.id === itemId ? { ...i, color_id: colorId, color_name: colorName } : i
-      )
+        i.id === itemId
+          ? { ...i, color_id: colorId, color_name: colorName }
+          : i,
+      ),
     );
   };
 
@@ -173,7 +175,7 @@ export default function DealersPortalPOPage() {
 
   const subtotal = items.reduce(
     (sum, i) => sum + (parseFloat(i.unit_price) || 0) * (i.quantity || 1),
-    0
+    0,
   );
   const discountPercent = dealerDiscountPercent;
   const listSubtotal =
@@ -272,6 +274,10 @@ export default function DealersPortalPOPage() {
                         i.grease_name,
                         i.anglefinder_name,
                         i.hardware_name,
+                        ...(Array.isArray(i.hardware_pack_names) &&
+                        i.hardware_pack_names.length > 0
+                          ? i.hardware_pack_names
+                          : []),
                       ].filter(Boolean);
                       return (
                         <tr key={i.id}>
@@ -310,7 +316,7 @@ export default function DealersPortalPOPage() {
                           <td className="text-end">
                             {formatPrice(
                               (parseFloat(i.unit_price) || 0) *
-                                (i.quantity || 1)
+                                (i.quantity || 1),
                             )}
                           </td>
                           <td>

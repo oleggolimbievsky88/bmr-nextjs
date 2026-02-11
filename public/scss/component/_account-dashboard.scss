@@ -396,10 +396,10 @@
 	/* Dealer products list table: subtle color column hints (Red / Black / Black Hammertone etc.) */
 	.dealer-products-table-wrap {
 		.dealer-products-table {
-			th {
-				background-color: #f8f9fa;
-				border-bottom: 1px solid #000000;
-
+			thead.table-light th {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+				font-weight: 600;
+				font-size: 0.8125rem;
 			}
 			th.dealer-col-qty,
 			td.dealer-col-qty {
@@ -410,6 +410,7 @@
 				width: 100%;
 				max-width: 4.5rem;
 				text-align: center;
+				border-radius: 0.5rem;
 			}
 			/* Light tint only – easy to scan without popping */
 			.dealer-col-red {
@@ -444,13 +445,13 @@
 			.dealer-col-platform {
 				white-space: nowrap;
 			}
-			.dealer-col-addon {
-				min-width: 6rem;
-				max-width: 10rem;
-			}
-			.dealer-addon-select {
-				width: 100%;
-			}
+		.dealer-col-addon {
+			min-width: 6rem;
+			max-width: 12rem;
+		}
+		.dealer-addon-select {
+			width: 100%;
+		}
 			tr.dealer-row-added {
 				background-color: #f2fbf2;
 				transition: background-color 0.2s ease;
