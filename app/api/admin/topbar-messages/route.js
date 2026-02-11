@@ -5,13 +5,16 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getTopbarMessages, saveTopbarMessages } from "@/lib/queries";
-import DOMPurify from "isomorphic-dompurify";
+
+// Ensure Node.js runtime (isomorphic-dompurify uses JSDOM)
+export const runtime = "nodejs";
 
 const ALLOWED_TAGS = ["a", "br", "strong", "em", "b", "i", "span"];
 const ALLOWED_ATTR = ["href", "target", "rel", "title"];
 
-function sanitizeTopbarHtml(html) {
+async function sanitizeTopbarHtml(html) {
   if (typeof html !== "string") return "";
+  const DOMPurify = (await import("isomorphic-dompurify")).default;
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS,
     ALLOWED_ATTR,
@@ -28,9 +31,13 @@ export async function GET() {
     const messages = await getTopbarMessages({ activeOnly: false });
     return NextResponse.json({ success: true, messages });
   } catch (error) {
-    console.error("Error fetching topbar messages:", error);
+    console.error("Error fetching topbar messages:", error?.message || error);
     return NextResponse.json(
-      { error: "Failed to fetch topbar messages" },
+      {
+        error: "Failed to fetch topbar messages",
+        detail:
+          process.env.NODE_ENV === "development" ? error?.message : undefined,
+      },
       { status: 500 },
     );
   }
@@ -52,18 +59,20 @@ export async function PUT(request) {
       );
     }
 
-    const messages = raw.map((m) => {
-      const sec = Number(m.duration);
-      const durationMs =
-        Number.isFinite(sec) && sec >= 1 && sec <= 60
-          ? Math.round(sec * 1000)
-          : 3000;
-      return {
-        content: sanitizeTopbarHtml(m.content || ""),
-        duration: durationMs,
-        is_active: m.is_active !== false && m.is_active !== 0,
-      };
-    });
+    const messages = await Promise.all(
+      raw.map(async (m) => {
+        const sec = Number(m.duration);
+        const durationMs =
+          Number.isFinite(sec) && sec >= 1 && sec <= 60
+            ? Math.round(sec * 1000)
+            : 3000;
+        return {
+          content: await sanitizeTopbarHtml(m.content || ""),
+          duration: durationMs,
+          is_active: m.is_active !== false && m.is_active !== 0,
+        };
+      }),
+    );
 
     await saveTopbarMessages(messages);
     return NextResponse.json({

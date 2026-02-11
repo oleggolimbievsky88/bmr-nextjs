@@ -106,10 +106,10 @@ export default function Hero() {
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={1}
           slidesPerView={1}
+          loop={true}
           navigation
           pagination={{ clickable: true }}
-          autoplay={{ delay: 5000 }}
-          // Loop through slides
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
           speed={3000}
           style={{
             backgroundColor: "black",

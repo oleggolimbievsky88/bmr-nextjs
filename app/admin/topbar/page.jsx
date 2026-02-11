@@ -22,11 +22,24 @@ export default function AdminTopbarPage() {
     fetchMessages();
   }, []);
 
+  const parseJsonOrThrow = async (res) => {
+    const text = await res.text();
+    const ct = res.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+      throw new Error(
+        res.ok
+          ? "Invalid response format"
+          : "Server error. Please try again or check that the topbar_messages table exists.",
+      );
+    }
+    return text ? JSON.parse(text) : {};
+  };
+
   const fetchMessages = async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/admin/topbar-messages");
-      const data = await res.json();
+      const data = await parseJsonOrThrow(res);
       if (!res.ok) throw new Error(data.error || "Failed to load");
       const list =
         data.messages && data.messages.length > 0
@@ -91,7 +104,7 @@ export default function AdminTopbarPage() {
           })),
         }),
       });
-      const data = await res.json();
+      const data = await parseJsonOrThrow(res);
       if (!res.ok) throw new Error(data.error || "Failed to save");
       setSuccess(
         "Topbar saved. The scrolling strip will update across the site.",
