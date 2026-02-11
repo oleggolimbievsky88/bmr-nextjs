@@ -12,6 +12,7 @@ export default function AdminNav({ user }) {
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/topbar", label: "Topbar" },
     { href: "/admin/banner", label: "Banners" },
+    { href: "/admin/platforms", label: "Platforms" },
     { href: "/admin/products", label: "Products" },
     { href: "/admin/categories", label: "Categories" },
     { href: "/admin/orders", label: "Orders" },

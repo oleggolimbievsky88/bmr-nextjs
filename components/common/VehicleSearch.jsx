@@ -1,55 +1,56 @@
 // VehicleSearch.js
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./VehicleSearch.module.scss";
-import vehicles from "../../data/vehicles";
 
 export default function VehicleSearch() {
-  // State for form inputs
   const [year, setYear] = useState("");
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [subModel, setSubModel] = useState("");
 
-  // State for dropdown options
   const [years, setYears] = useState([]);
   const [makes, setMakes] = useState([]);
   const [models, setModels] = useState([]);
   const [subModels, setSubModels] = useState([]);
 
-  // Populate years on component mount
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const uniqueYears = Array.from(
-      new Set(
-        Object.values(vehicles).flatMap((make) =>
-          Object.values(make).flatMap((model) =>
-            model.map((vehicle) => vehicle.year),
-          ),
-        ),
-      ),
-    ).sort((a, b) => b - a);
-    setYears(uniqueYears);
+    fetch("/api/vehicles-for-search")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        setList(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setList([]))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Handle year input change
+  useEffect(() => {
+    if (list.length === 0) return;
+    const uniqueYears = [...new Set(list.map((v) => v.year))].sort(
+      (a, b) => b - a,
+    );
+    setYears(uniqueYears);
+  }, [list]);
+
   const handleYearChange = (e) => {
     const yearValue = e.target.value;
     setYear(yearValue);
 
     if (yearValue) {
-      const yearNum = parseInt(yearValue);
-      // Filter makes based on the selected year
-      const filteredMakes = Object.keys(vehicles).filter((make) =>
-        Object.keys(vehicles[make]).some((model) =>
-          vehicles[make][model].some((vehicle) => vehicle.year === yearNum),
+      const yearNum = parseInt(yearValue, 10);
+      const filteredMakes = [
+        ...new Set(
+          list
+            .filter((v) => v.year === yearNum)
+            .map((v) => v.make)
+            .filter(Boolean),
         ),
-      );
+      ].sort();
       setMakes(filteredMakes);
-      if (filteredMakes.length === 1) {
-        setMake(filteredMakes[0]);
-      } else {
-        setMake("");
-      }
+      setMake(filteredMakes.length === 1 ? filteredMakes[0] : "");
       setModel("");
       setModels([]);
       setSubModel("");
@@ -57,79 +58,65 @@ export default function VehicleSearch() {
     }
   };
 
-  // Handle make input change
   const handleMakeChange = (e) => {
     const makeValue = e.target.value;
     setMake(makeValue);
 
     if (makeValue && year) {
-      const yearNum = parseInt(year);
-      // Filter models based on selected year and make
-      const filteredModels = Object.keys(vehicles[makeValue]).filter((model) =>
-        vehicles[makeValue][model].some((vehicle) => vehicle.year === yearNum),
-      );
+      const yearNum = parseInt(year, 10);
+      const filteredModels = [
+        ...new Set(
+          list
+            .filter((v) => v.year === yearNum && v.make === makeValue)
+            .map((v) => v.model)
+            .filter(Boolean),
+        ),
+      ].sort();
       setModels(filteredModels);
-      if (filteredModels.length === 1) {
-        setModel(filteredModels[0]);
-      } else {
-        setModel("");
-      }
+      setModel(filteredModels.length === 1 ? filteredModels[0] : "");
       setSubModel("");
       setSubModels([]);
     }
   };
 
-  // Handle model input change
   const handleModelChange = (e) => {
     const modelValue = e.target.value;
     setModel(modelValue);
 
     if (modelValue && year && make) {
-      const yearNum = parseInt(year);
-      // Filter sub models based on selected year, make, and model
-      const filteredSubModels = vehicles[make][modelValue]
-        .filter((vehicle) => vehicle.year === yearNum && vehicle.subModel)
-        .map((vehicle) => vehicle.subModel)
-        .filter(
-          (subModel, idx, arr) => subModel && arr.indexOf(subModel) === idx,
-        );
+      const yearNum = parseInt(year, 10);
+      const matches = list.filter(
+        (v) => v.year === yearNum && v.make === make && v.model === modelValue,
+      );
+      const filteredSubModels = [
+        ...new Set(matches.map((v) => v.subModel).filter(Boolean)),
+      ].sort();
       setSubModels(filteredSubModels);
-      if (filteredSubModels.length === 1) {
-        setSubModel(filteredSubModels[0]);
-      } else {
-        setSubModel("");
-      }
+      setSubModel(filteredSubModels.length === 1 ? filteredSubModels[0] : "");
     }
   };
 
-  // Handle sub model input change
   const handleSubModelChange = (e) => {
     setSubModel(e.target.value);
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (year && make && model) {
-      const yearNum = parseInt(year);
-      let selectedVehicle;
-      if (subModel) {
-        selectedVehicle = vehicles[make][model].find(
-          (vehicle) =>
-            vehicle.year === yearNum && vehicle.subModel === subModel,
-        );
-      } else {
-        selectedVehicle = vehicles[make][model].find(
-          (vehicle) => vehicle.year === yearNum,
-        );
-      }
-      if (selectedVehicle && selectedVehicle.platform) {
-        window.location.href = `/products/${selectedVehicle.platform}`;
-      }
+    if (!year || !make || !model) return;
+
+    const yearNum = parseInt(year, 10);
+    const match = list.find(
+      (v) =>
+        v.year === yearNum &&
+        v.make === make &&
+        v.model === model &&
+        (subModel ? v.subModel === subModel : true),
+    );
+    if (match?.platformSlug) {
+      window.location.href = `/products/${match.platformSlug}`;
     }
   };
 
-  // useEffect to auto-select make/model/subModel if only one option after options update
   useEffect(() => {
     if (years.length && year && makes.length === 1) {
       setMake(makes[0]);
@@ -137,13 +124,13 @@ export default function VehicleSearch() {
   }, [years, year, makes]);
 
   useEffect(() => {
-    if (models.length && model === "" && models.length === 1) {
+    if (models.length === 1 && model === "") {
       setModel(models[0]);
     }
   }, [models]);
 
   useEffect(() => {
-    if (subModels.length && subModel === "" && subModels.length === 1) {
+    if (subModels.length === 1 && subModel === "") {
       setSubModel(subModels[0]);
     }
   }, [subModels]);
@@ -161,6 +148,7 @@ export default function VehicleSearch() {
             className={styles["search-input"]}
             suppressHydrationWarning
             name="year"
+            disabled={loading}
           >
             <option value="">Year</option>
             {years.map((y) => (
@@ -212,7 +200,7 @@ export default function VehicleSearch() {
             value={subModel}
             onChange={handleSubModelChange}
             className={styles["search-input"]}
-            disabled={!model} //Add later: || subModels.length === 0
+            disabled={!model}
             suppressHydrationWarning
             name="subModel"
           >

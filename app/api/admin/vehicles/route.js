@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import {
-  getAllBodiesAdmin,
-  getBodiesByPlatformGroupAdmin,
-  createBodyAdmin,
-} from "@/lib/queries";
+import { getVehiclesByBodyId, createVehicleAdmin } from "@/lib/queries";
 
 function requireAdmin(session) {
   if (!session || session.user?.role !== "admin") {
@@ -21,15 +17,16 @@ export async function GET(request) {
     if (auth) return auth;
 
     const { searchParams } = new URL(request.url);
-    const platformGroupId = searchParams.get("platformGroupId");
-    const bodies = platformGroupId
-      ? await getBodiesByPlatformGroupAdmin(Number(platformGroupId))
-      : await getAllBodiesAdmin();
-    return NextResponse.json({ bodies });
+    const bodyId = searchParams.get("bodyId");
+    if (!bodyId) {
+      return NextResponse.json({ error: "Missing bodyId" }, { status: 400 });
+    }
+    const vehicles = await getVehiclesByBodyId(bodyId);
+    return NextResponse.json({ vehicles });
   } catch (error) {
-    console.error("Error fetching bodies:", error);
+    console.error("Error fetching vehicles:", error);
     return NextResponse.json(
-      { error: "Failed to fetch bodies" },
+      { error: "Failed to fetch vehicles" },
       { status: 500 },
     );
   }
@@ -41,10 +38,10 @@ export async function POST(request) {
     const auth = requireAdmin(session);
     if (auth) return auth;
     const body = await request.json().catch(() => ({}));
-    const id = await createBodyAdmin(body);
+    const id = await createVehicleAdmin(body);
     return NextResponse.json({ success: true, id });
   } catch (error) {
-    console.error("Error creating body:", error);
+    console.error("Error creating vehicle:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create" },
       { status: 500 },
