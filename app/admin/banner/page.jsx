@@ -117,6 +117,9 @@ export default function AdminBannerPage() {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const [editingImageId, setEditingImageId] = useState(null);
+  const [editImageSrc, setEditImageSrc] = useState("");
+  const editFileInputRef = useRef(null);
   const [confirmModal, setConfirmModal] = useState({
     show: false,
     type: null,
@@ -348,6 +351,65 @@ export default function AdminBannerPage() {
       showToast(e.message || "Failed to delete", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const startEditImage = (img) => {
+    setEditingImageId(img.ImageId);
+    setEditImageSrc("");
+    if (editFileInputRef.current) editFileInputRef.current.value = "";
+  };
+
+  const cancelEditImage = () => {
+    setEditingImageId(null);
+    setEditImageSrc("");
+    if (editFileInputRef.current) editFileInputRef.current.value = "";
+  };
+
+  const handleReplaceImage = async (imageId, imageSrc) => {
+    if (!imageSrc?.trim()) {
+      showToast("Upload an image or enter a filename.", "error");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin/banner/image", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageId, imageSrc: imageSrc.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to update image");
+      showToast("Image updated.", "success");
+      cancelEditImage();
+      await fetchBanner(editId);
+      await fetchList();
+    } catch (e) {
+      showToast(e.message || "Failed to update image", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEditFileSelect = async (e, imageId) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/admin/banner/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to upload");
+      await handleReplaceImage(imageId, data.filename);
+    } catch (err) {
+      showToast(err.message || "Upload failed", "error");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -796,6 +858,59 @@ export default function AdminBannerPage() {
                         handleUrlChange(img.ImageId, e.target.value)
                       }
                     />
+                    {editingImageId === img.ImageId ? (
+                      <div className="border rounded p-2 mb-2 bg-light">
+                        <span className="small fw-medium d-block mb-2">
+                          Replace image (keep link)
+                        </span>
+                        <input
+                          ref={editFileInputRef}
+                          type="file"
+                          className="form-control form-control-sm mb-2"
+                          accept="image/jpeg,image/png,image/gif,image/webp"
+                          onChange={(e) => handleEditFileSelect(e, img.ImageId)}
+                          disabled={saving || uploading}
+                        />
+                        <div className="d-flex gap-1 mb-2">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm flex-grow-1"
+                            placeholder="Or filename (e.g. AAK322_Banner.jpg)"
+                            value={editImageSrc}
+                            onChange={(e) => setEditImageSrc(e.target.value)}
+                            disabled={saving || uploading}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-primary rounded-pill"
+                            disabled={
+                              saving || uploading || !editImageSrc.trim()
+                            }
+                            onClick={() =>
+                              handleReplaceImage(img.ImageId, editImageSrc)
+                            }
+                          >
+                            Replace
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary rounded-pill"
+                          onClick={cancelEditImage}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary rounded-pill me-1"
+                        onClick={() => startEditImage(img)}
+                        disabled={saving}
+                      >
+                        Edit image
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-danger rounded-pill"

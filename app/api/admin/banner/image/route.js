@@ -68,10 +68,14 @@ export async function PUT(request) {
     if (imageId == null) {
       return NextResponse.json({ error: "Missing imageId" }, { status: 400 });
     }
-    await updateBannerImageAdmin(Number(imageId), {
-      imageUrl: body.imageUrl ?? body.ImageUrl,
-      imagePosition: body.imagePosition ?? body.ImagePosition,
-    });
+    const updates = {};
+    if (body.imageSrc !== undefined)
+      updates.imageSrc = body.imageSrc ?? body.ImageSrc ?? "";
+    if (body.imageUrl !== undefined)
+      updates.imageUrl = body.imageUrl ?? body.ImageUrl;
+    if (body.imagePosition !== undefined)
+      updates.imagePosition = body.imagePosition ?? body.ImagePosition;
+    await updateBannerImageAdmin(Number(imageId), updates);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating banner image:", error);
