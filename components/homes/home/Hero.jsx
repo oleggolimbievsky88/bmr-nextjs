@@ -14,8 +14,12 @@ const slideshowSlides = [
   "/images/slider/CB763_Banner (S650).jpg",
 ];
 
+// Fallback slide when API image fails to load (e.g. missing file in production)
+const FALLBACK_SRC = "/images/slider/SP086-88_Banner_S650.webp";
+
 export default function Hero() {
   const [bannerImages, setBannerImages] = useState([]);
+  const [failedSrcs, setFailedSrcs] = useState(new Set());
 
   // Resolve banner image src: full URL or path as-is; bare filename -> /images/slider/
   const resolveBannerSrc = (imageSrc) => {
@@ -119,13 +123,19 @@ export default function Hero() {
             const src = typeof slide === "string" ? slide : slide.src;
             const link =
               typeof slide === "object" && slide.link ? slide.link : null;
+            const effectiveSrc = failedSrcs.has(src) ? FALLBACK_SRC : src;
             const content = (
               <Image
-                src={src}
+                src={effectiveSrc}
                 alt={`Slide ${index + 1}`}
                 width={1920}
                 height={550}
                 priority={index === 0}
+                unoptimized
+                onError={() => {
+                  if (effectiveSrc === src)
+                    setFailedSrcs((s) => new Set([...s, src]));
+                }}
               />
             );
             return (
