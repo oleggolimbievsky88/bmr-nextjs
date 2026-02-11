@@ -1,4 +1,5 @@
 import React from "react";
+import { getPlatformBannerUrl } from "@/lib/assets";
 
 export default function PlatformHeader({
   platformData,
@@ -8,17 +9,19 @@ export default function PlatformHeader({
   mainCategoryName = null,
 }) {
   if (!platformData) return null;
-  console.log("Platform Header Data:", platformData);
   // Format the year display
   const yearDisplay =
     platformData.StartYear === platformData.EndYear
       ? platformData.StartYear
       : `${platformData.StartYear}-${platformData.EndYear}`;
 
-  // Use local platform header images with the naming convention: platform-slug_Banner.jpg
-  const imageUrl = platformData.slug
-    ? `/images/platformHeaders/${platformData.slug}_Banner.jpg`
-    : null;
+  // Prefer HeaderImage from DB, fall back to slug-based naming: platform-slug_Banner.jpg
+  const imageUrl =
+    platformData.HeaderImage && platformData.HeaderImage !== "0"
+      ? getPlatformBannerUrl(platformData.HeaderImage)
+      : platformData.slug
+        ? `/images/platformHeaders/${platformData.slug}_Banner.jpg`
+        : null;
   const encodedImageUrl = imageUrl ? encodeURI(imageUrl) : null;
 
   // Use mainCategoryName prop if provided, otherwise fall back to platformData.mainCategory

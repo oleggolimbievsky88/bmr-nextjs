@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { showToast } from "@/utlis/showToast";
+import { getPlatformImageUrl, getPlatformBannerUrl } from "@/lib/assets";
 
 function ConfirmDeleteModal({
   show,
@@ -74,6 +75,9 @@ export default function AdminPlatformsPage() {
   const [editingGroup, setEditingGroup] = useState(null);
   const [editingBody, setEditingBody] = useState(null);
   const [editingVehicle, setEditingVehicle] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const thumbnailInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
   const [confirmModal, setConfirmModal] = useState({
     show: false,
     type: null,
@@ -241,6 +245,34 @@ export default function AdminPlatformsPage() {
       showToast(err.message || "Failed", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePlatformImageUpload = async (e, type) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("type", type);
+      const res = await fetch("/api/admin/platform-images/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      if (type === "thumbnail") {
+        setEditingBody((prev) => ({ ...prev, Image: data.filename }));
+      } else {
+        setEditingBody((prev) => ({ ...prev, HeaderImage: data.filename }));
+      }
+      showToast("Image uploaded.", "success");
+    } catch (err) {
+      showToast(err.message || "Upload failed", "error");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
     }
   };
 
@@ -655,6 +687,8 @@ export default function AdminPlatformsPage() {
                         <th className="border-0 py-3 ps-4">Name</th>
                         <th className="border-0 py-3">Years</th>
                         <th className="border-0 py-3">Slug</th>
+                        <th className="border-0 py-3">Thumbnail</th>
+                        <th className="border-0 py-3">Banner</th>
                         <th className="border-0 py-3 pe-4 text-end"></th>
                       </tr>
                     </thead>
@@ -668,6 +702,46 @@ export default function AdminPlatformsPage() {
                             </span>
                           </td>
                           <td className="text-muted small">{b.slug || "—"}</td>
+                          <td>
+                            {b.Image && b.Image !== "0" ? (
+                              <img
+                                src={getPlatformImageUrl(b.Image)}
+                                alt=""
+                                className="rounded"
+                                style={{
+                                  width: 36,
+                                  height: 36,
+                                  objectFit: "contain",
+                                  backgroundColor: "#f5f5f5",
+                                }}
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <span className="text-muted small">—</span>
+                            )}
+                          </td>
+                          <td>
+                            {b.HeaderImage && b.HeaderImage !== "0" ? (
+                              <img
+                                src={getPlatformBannerUrl(b.HeaderImage)}
+                                alt=""
+                                className="rounded"
+                                style={{
+                                  width: 48,
+                                  height: 28,
+                                  objectFit: "cover",
+                                  backgroundColor: "#f5f5f5",
+                                }}
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <span className="text-muted small">—</span>
+                            )}
+                          </td>
                           <td className="pe-4 text-end">
                             <button
                               type="button"
@@ -890,6 +964,8 @@ export default function AdminPlatformsPage() {
                       endYear: f.endYear?.value,
                       slug: f.slug?.value || null,
                       platformGroupId: Number(selectedGroupId),
+                      image: f.image?.value?.trim() || "0",
+                      headerImage: f.headerImage?.value?.trim() || "0",
                     });
                   }}
                 >
@@ -930,6 +1006,150 @@ export default function AdminPlatformsPage() {
                       className="form-control form-control-sm"
                       defaultValue={editingBody.slug || ""}
                     />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label small">
+                      Platform image (megamenu thumbnail)
+                    </label>
+                    <div className="d-flex align-items-start gap-2 flex-wrap">
+                      {editingBody.Image && editingBody.Image !== "0" && (
+                        <div
+                          className="border rounded overflow-hidden flex-shrink-0"
+                          style={{ width: 80, height: 60 }}
+                        >
+                          <img
+                            src={getPlatformImageUrl(editingBody.Image)}
+                            alt="Thumbnail"
+                            className="w-100 h-100 object-fit-contain bg-light"
+                            style={{ objectFit: "contain" }}
+                          />
+                        </div>
+                      )}
+                      <div className="flex-grow-1 min-w-0">
+                        <input
+                          type="text"
+                          name="image"
+                          className="form-control form-control-sm mb-1"
+                          placeholder="Filename or path (e.g. 2024-mustang.png)"
+                          value={
+                            editingBody.Image && editingBody.Image !== "0"
+                              ? editingBody.Image
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setEditingBody((prev) => ({
+                              ...prev,
+                              Image: e.target.value || "0",
+                            }))
+                          }
+                        />
+                        <div className="d-flex gap-1 flex-wrap">
+                          <input
+                            ref={thumbnailInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="d-none"
+                            onChange={(e) =>
+                              handlePlatformImageUpload(e, "thumbnail")
+                            }
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => thumbnailInputRef.current?.click()}
+                            disabled={uploadingImage}
+                          >
+                            {uploadingImage ? "Uploading…" : "Upload"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() =>
+                              setEditingBody((prev) => ({
+                                ...prev,
+                                Image: "0",
+                              }))
+                            }
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label small">
+                      Platform banner (hero image)
+                    </label>
+                    <div className="d-flex align-items-start gap-2 flex-wrap">
+                      {editingBody.HeaderImage &&
+                        editingBody.HeaderImage !== "0" && (
+                          <div
+                            className="border rounded overflow-hidden flex-shrink-0"
+                            style={{ width: 120, height: 60 }}
+                          >
+                            <img
+                              src={getPlatformBannerUrl(
+                                editingBody.HeaderImage,
+                              )}
+                              alt="Banner"
+                              className="w-100 h-100 object-fit-cover bg-light"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </div>
+                        )}
+                      <div className="flex-grow-1 min-w-0">
+                        <input
+                          type="text"
+                          name="headerImage"
+                          className="form-control form-control-sm mb-1"
+                          placeholder="Filename (e.g. 2024-mustang_Banner.jpg)"
+                          value={
+                            editingBody.HeaderImage &&
+                            editingBody.HeaderImage !== "0"
+                              ? editingBody.HeaderImage
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setEditingBody((prev) => ({
+                              ...prev,
+                              HeaderImage: e.target.value || "0",
+                            }))
+                          }
+                        />
+                        <div className="d-flex gap-1 flex-wrap">
+                          <input
+                            ref={bannerInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="d-none"
+                            onChange={(e) =>
+                              handlePlatformImageUpload(e, "banner")
+                            }
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => bannerInputRef.current?.click()}
+                            disabled={uploadingImage}
+                          >
+                            {uploadingImage ? "Uploading…" : "Upload"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() =>
+                              setEditingBody((prev) => ({
+                                ...prev,
+                                HeaderImage: "0",
+                              }))
+                            }
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </form>
               </div>
