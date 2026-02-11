@@ -237,7 +237,7 @@ export default function NewProductsPage({ scrachDent = "0" }) {
           padding: 20px 0;
         }
         :global(.swiper-nav-button) {
-          background-color: #dc3545;
+          background-color: var(--primary);
           width: 40px;
           height: 40px;
           border-radius: 50%;
@@ -250,6 +250,13 @@ export default function NewProductsPage({ scrachDent = "0" }) {
           display: flex;
           align-items: center;
           justify-content: center;
+          transition:
+            width 0.2s ease,
+            height 0.2s ease;
+          &:hover {
+            width: 45px;
+            height: 45px;
+          }
         }
         :global(.new-products-prev),
         :global(.scratch-dent-prev) {

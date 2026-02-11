@@ -6,6 +6,7 @@ import {
   getAllGreaseOptions,
   getAllAnglefinderOptions,
   getAllHardwareOptions,
+  getHardwarePackProductsForAdmin,
 } from "@/lib/queries";
 
 export async function GET() {
@@ -15,18 +16,21 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const [colors, grease, anglefinder, hardware] = await Promise.all([
-      getAllColors(),
-      getAllGreaseOptions(),
-      getAllAnglefinderOptions(),
-      getAllHardwareOptions(),
-    ]);
+    const [colors, grease, anglefinder, hardware, hardwarePacks] =
+      await Promise.all([
+        getAllColors(),
+        getAllGreaseOptions(),
+        getAllAnglefinderOptions(),
+        getAllHardwareOptions(),
+        getHardwarePackProductsForAdmin(),
+      ]);
 
     return NextResponse.json({
       colors: colors || [],
       grease: grease || [],
       anglefinder: anglefinder || [],
       hardware: hardware || [],
+      hardwarePacks: hardwarePacks || [],
     });
   } catch (error) {
     console.error("Error fetching product options:", error);

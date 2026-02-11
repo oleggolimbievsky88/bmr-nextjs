@@ -975,7 +975,30 @@
 /* Admin Products & Categories Pages */
 .admin-products-page,
 .admin-categories-page {
-	/* BMR red for filter buttons */
+	/* BMR red for all primary and outline-primary buttons */
+	.btn-primary {
+		background-color: var(--primary);
+		border-color: var(--primary);
+
+		&:hover {
+			background-color: #b80e11;
+			border-color: #b80e11;
+			color: #fff;
+		}
+	}
+
+	.btn-outline-primary {
+		color: var(--primary);
+		border-color: var(--primary);
+
+		&:hover {
+			background-color: var(--primary);
+			border-color: var(--primary);
+			color: #fff;
+		}
+	}
+
+	/* Legacy: admin-card inner buttons */
 	.admin-card .btn-primary {
 		background-color: var(--primary);
 		border-color: var(--primary);
@@ -1533,12 +1556,18 @@
 	background: var(--bg-2);
 	border: 1px solid var(--line);
 	height: 40px !important;
+	padding: 0.35rem 0.5rem !important;
 	@include transition3;
 
 	&:focus {
 		border-color: var(--primary);
 		box-shadow: 0 0 0 1px rgba(192, 192, 192, 0.986);
 	}
+}
+
+/* Part # search: minimal left padding so placeholder starts close to edge */
+#filter-part.admin-filter-input {
+	padding-left: 0.4rem !important;
 }
 
 .admin-filter-button {

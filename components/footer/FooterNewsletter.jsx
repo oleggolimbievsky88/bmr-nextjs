@@ -73,11 +73,11 @@ export default function FooterNewsletter() {
         showToast(
           "You're subscribed! Check your inbox for a confirmation email.",
           "success",
-          5000
+          5000,
         );
         showInlineMessage(
           "You're subscribed! Check your inbox for a confirmation email.",
-          "success"
+          "success",
         );
         event.target.reset();
       } else {
@@ -97,16 +97,16 @@ export default function FooterNewsletter() {
     messageType === "success"
       ? "rgb(52, 168, 83)"
       : messageType === "info"
-      ? "rgb(13, 202, 240)"
-      : "red";
+        ? "rgb(13, 202, 240)"
+        : "red";
 
   return (
     <div className="footer-newsletter footer-col-block">
       <div className="footer-heading footer-heading-desktop">
-        <h6>Sign Up for Email</h6>
+        <h6 style={{ color: "red" }}>Get the Latest Performance Updates</h6>
       </div>
       <div className="footer-heading footer-heading-moblie">
-        <h6>Sign Up for Email</h6>
+        <h6 style={{ color: "red" }}>Get the Latest Performance Updates</h6>
       </div>
       <div className="tf-collapse-content">
         <div className="footer-menu_item">
