@@ -54,8 +54,22 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Use Vercel Blob when deployed (BLOB_READ_WRITE_TOKEN is set) - required for serverless read-only filesystem
     const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const cwd = process.cwd();
+    const isReadOnlyFs =
+      cwd.includes("/var/task") || process.env.VERCEL === "1";
+
+    // Serverless (Vercel, Lambda, etc.) has read-only filesystem - must use Blob
+    if (isReadOnlyFs && !blobToken) {
+      return NextResponse.json(
+        {
+          error:
+            "Banner uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN in environment variables.",
+        },
+        { status: 503 },
+      );
+    }
+
     if (blobToken) {
       const blob = await put(`images/slider/${filename}`, buffer, {
         access: "public",
@@ -67,13 +81,28 @@ export async function POST(request) {
       });
     }
 
-    // Fallback to local filesystem for development
-    const uploadDir = join(process.cwd(), "public", "images", "slider");
-    await mkdir(uploadDir, { recursive: true });
-    const filepath = join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    return NextResponse.json({ success: true, filename });
+    // Local development: use filesystem
+    try {
+      const uploadDir = join(process.cwd(), "public", "images", "slider");
+      await mkdir(uploadDir, { recursive: true });
+      const filepath = join(uploadDir, filename);
+      await writeFile(filepath, buffer);
+      return NextResponse.json({ success: true, filename });
+    } catch (fsError) {
+      if (
+        fsError?.code === "EROFS" ||
+        fsError?.message?.includes("read-only")
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Banner uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN in environment variables.",
+          },
+          { status: 503 },
+        );
+      }
+      throw fsError;
+    }
   } catch (error) {
     console.error("Banner image upload error:", error);
     return NextResponse.json(
