@@ -190,10 +190,11 @@ export async function POST(request) {
         await mkdir(uploadDir, { recursive: true });
         const filepath = join(uploadDir, filename);
         await writeFile(filepath, buffer);
-        productData.ImageLarge = `images/products/${filename}`;
-        productData.ImageSmall = `images/products/${filename}`;
+        productData.ImageLarge = `/images/products/${filename}`;
+        productData.ImageSmall = `/images/products/${filename}`;
       } catch (error) {
-        console.error("Error saving image:", error);
+        console.error("Error saving main image:", error);
+        throw new Error(`Failed to save main image: ${error.message}`);
       }
     }
 
@@ -212,9 +213,12 @@ export async function POST(request) {
             await mkdir(uploadDir, { recursive: true });
             const filepath = join(uploadDir, filename);
             await writeFile(filepath, buffer);
-            imagePaths.push(`images/products/${filename}`);
+            imagePaths.push(`/images/products/${filename}`);
           } catch (error) {
             console.error("Error saving additional image:", error);
+            throw new Error(
+              `Failed to save image ${imgFile.name}: ${error.message}`,
+            );
           }
         }
       }

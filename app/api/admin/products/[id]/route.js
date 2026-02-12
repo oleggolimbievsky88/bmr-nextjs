@@ -160,8 +160,8 @@ export async function PUT(request, context) {
         await mkdir(uploadDir, { recursive: true });
         const filepath = join(uploadDir, filename);
         await writeFile(filepath, buffer);
-        productData.ImageLarge = `images/products/${filename}`;
-        productData.ImageSmall = `images/products/${filename}`;
+        productData.ImageLarge = `/images/products/${filename}`;
+        productData.ImageSmall = `/images/products/${filename}`;
       } catch (error) {
         console.error("Error saving image:", error);
       }
@@ -182,7 +182,7 @@ export async function PUT(request, context) {
             await mkdir(uploadDir, { recursive: true });
             const filepath = join(uploadDir, filename);
             await writeFile(filepath, buffer);
-            imagePaths.push(`images/products/${filename}`);
+            imagePaths.push(`/images/products/${filename}`);
           } catch (error) {
             console.error("Error saving additional image:", error);
           }
