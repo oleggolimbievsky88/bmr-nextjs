@@ -1046,6 +1046,17 @@
 		}
 	}
 
+	/* Shorter form fields on admin products page */
+	.admin-product-form .admin-form-group {
+		.form-control:not(textarea),
+		.form-select {
+			padding: 0.25rem 0.5rem;
+			min-height: 32px;
+			line-height: 1.4;
+			font-size: 0.875rem;
+		}
+	}
+
 	.form-check {
 		margin-bottom: 0.5rem;
 

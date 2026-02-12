@@ -21,6 +21,32 @@ export default function DeliveryReturnPage() {
         <div className="container">
           <div className="delivery-return-page__grid">
             <div className="delivery-return-page__card">
+              <h2 className="delivery-return-page__title">Returns</h2>
+              <ul className="delivery-return-page__list">
+                <p>
+                  All non-warranty returns must be made within 90 days from the
+                  date of shipment and are subject to a 15% restocking fee,
+                  excluding all shipping cost. BMR Suspension will not accept
+                  returns on items that have been installed, used, modified or
+                  damaged. All items must be received in the original packing
+                  material and in the original condition as it was shipped. All
+                  items damaged from shipping will be refused.
+                  <br /> <br /> BMR will issue a Returned Material Authorization
+                  number for every return. Returned goods will not be accepted
+                  without an RMA Number. There are no refunds on shipping and
+                  handling charges and all items must be sent prepaid. All
+                  returned goods sent freight collect will be refused. If item
+                  is returned scratched, nicked or damaged in any way, the cost
+                  to repair or re-powder coat the item will be deducted from the
+                  amount of the refund. If item is missing any components, the
+                  cost to replace these components will be deducted from the
+                  amount of the refund. Special order items cannot be returned.
+                </p>
+              </ul>
+            </div>
+
+
+            <div className="delivery-return-page__card">
               <h2 className="delivery-return-page__title">
                 Shipping &amp; Delivery
               </h2>
@@ -38,26 +64,6 @@ export default function DeliveryReturnPage() {
                   All orders ship with tracking. You’ll receive tracking
                   information once your order ships.
                 </li>
-              </ul>
-            </div>
-
-            <div className="delivery-return-page__card">
-              <h2 className="delivery-return-page__title">Returns</h2>
-              <ul className="delivery-return-page__list">
-                <li>
-                  Items returned within 14 days of the original shipment date in
-                  same-as-new condition are eligible for a full refund or store
-                  credit.
-                </li>
-                <li>
-                  Refunds are issued to the original form of payment used for
-                  purchase.
-                </li>
-                <li>
-                  The customer is responsible for return shipping costs.
-                  Original shipping and handling fees are non-refundable.
-                </li>
-                <li>All sale items are final sale.</li>
               </ul>
             </div>
 

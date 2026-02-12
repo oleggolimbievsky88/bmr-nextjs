@@ -1640,16 +1640,22 @@ export default function AdminProductsPage() {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-md-12">
+                  <div className="col-md-4 col-lg-3">
                     <div className="admin-form-group">
                       <label>Domestic Handling</label>
                       <input
                         type="text"
                         name="domhandling"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         value={formData.domhandling}
                         onChange={handleInputChange}
+                        style={{ maxWidth: "120px" }}
                       />
+                      <p className="text-muted small mt-1 mb-0">
+                        Extra shipping charge for lower 48 states. Most products
+                        ship free; a few large/heavy items charge shipping—this
+                        field is for those.
+                      </p>
                     </div>
                   </div>
                 </div>
