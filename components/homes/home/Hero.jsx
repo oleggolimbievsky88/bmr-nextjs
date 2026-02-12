@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
@@ -17,39 +17,13 @@ const slideshowSlides = [
 // Fallback slide when API image fails to load (e.g. missing file in production)
 const FALLBACK_SRC = "/images/slider/SP086-88_Banner_S650.webp";
 
-export default function Hero() {
-  const [bannerImages, setBannerImages] = useState([]);
+export default function Hero({ initialBannerImages = null }) {
   const [failedSrcs, setFailedSrcs] = useState(new Set());
 
-  // Resolve banner image src: full URL or path as-is; bare filename -> /images/slider/
-  const resolveBannerSrc = (imageSrc) => {
-    if (!imageSrc || typeof imageSrc !== "string") return "";
-    const s = imageSrc.trim();
-    if (s.startsWith("http")) return s;
-    if (s.startsWith("/")) return s;
-    if (s.includes("/")) return `/${s}`;
-    return `/images/slider/${s}`;
-  };
-
-  useEffect(() => {
-    fetch("/api/banner")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.images?.length) {
-          setBannerImages(
-            data.images.map((img) => ({
-              src: resolveBannerSrc(img.ImageSrc),
-              link: img.ImageUrl?.trim() || null,
-            })),
-          );
-        }
-      })
-      .catch(() => {});
-  }, []);
-
+  // Use server-provided images, or fallback to static slides only when DB has none
   const slides =
-    bannerImages.length > 0
-      ? bannerImages
+    initialBannerImages && initialBannerImages.length > 0
+      ? initialBannerImages
       : slideshowSlides.map((src) => ({ src, link: null }));
 
   return (

@@ -25,13 +25,33 @@ import ShopCategories from "@/components/homes/home/ShopCategories";
 import SocialMedia from "@/components/homes/home/SocialMedia";
 import Topbar2 from "@/components/header/Topbar2";
 import VehicleSearch from "@/components/common/VehicleSearch";
+import { getBannerImagesForPublic } from "@/lib/queries";
 
 export const metadata = {
   title: "BMR Suspension | Performance Suspension & Chassis Parts",
   description:
     "BMR Suspension - High Performance Suspension & Chassis racing parts for Mustang, Camaro, F Body, A Body, B Body, G Body, GM W Body, X Body, Firebird, Nova, Trailblazer SS, SSR, Monte Carlo, Intrigue, Grand Prix, Regal, Cutlass, Grand Sport, El Camino, LeMans, Chevelle, Malibu, GTO, G8, Grand National, CTS-V, Caprice, Skylark, Buick 442, Shelby GT500, Mustang GT and more.",
 };
-export default function page() {
+
+function resolveBannerSrc(imageSrc) {
+  if (!imageSrc || typeof imageSrc !== "string") return "";
+  const s = imageSrc.trim();
+  if (s.startsWith("http")) return s;
+  if (s.startsWith("/")) return s;
+  if (s.includes("/")) return `/${s}`;
+  return `/images/slider/${s}`;
+}
+
+export default async function page() {
+  const imageRows = await getBannerImagesForPublic();
+  const initialBannerImages =
+    imageRows?.length > 0
+      ? imageRows.map((img) => ({
+          src: resolveBannerSrc(img.ImageSrc),
+          link: img.ImageUrl?.trim() || null,
+        }))
+      : null;
+
   return (
     <>
       <Topbar2 />
@@ -41,7 +61,7 @@ export default function page() {
           <VehicleSearch />
         </div>
       </div>
-      <Hero />
+      <Hero initialBannerImages={initialBannerImages} />
       <div className="container vehicle-search-mobile">
         <VehicleSearch />
       </div>
