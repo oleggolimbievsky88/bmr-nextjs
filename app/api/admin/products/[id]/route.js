@@ -6,6 +6,8 @@ import {
   updateProductAdmin,
   deleteProductAdmin,
 } from "@/lib/queries";
+import { uploadProductImage } from "@/lib/upload-product-images";
+import { put } from "@vercel/blob";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
@@ -153,7 +155,7 @@ export async function PUT(request, context) {
       return `p_${Date.now()}_${r}.${ext}`;
     };
 
-    // Handle main image upload
+    // Handle main image upload (uses Vercel Blob on serverless)
     const mainImageFile = formData.get("mainImage");
     if (
       mainImageFile &&
@@ -163,16 +165,21 @@ export async function PUT(request, context) {
       const bytes = await mainImageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const filename = shortImageName(mainImageFile.name);
-      const uploadDir = join(process.cwd(), "public", "images", "products");
-
       try {
-        await mkdir(uploadDir, { recursive: true });
-        const filepath = join(uploadDir, filename);
-        await writeFile(filepath, buffer);
-        productData.ImageLarge = filename;
-        productData.ImageSmall = filename;
+        const stored = await uploadProductImage(buffer, filename);
+        productData.ImageLarge = stored;
+        productData.ImageSmall = stored;
       } catch (error) {
         console.error("Error saving image:", error);
+        if (error?.code === "EROFS" || error?.message?.includes("read-only")) {
+          return NextResponse.json(
+            {
+              error:
+                "Product image uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN.",
+            },
+            { status: 503 },
+          );
+        }
       }
     }
 
@@ -185,15 +192,23 @@ export async function PUT(request, context) {
           const bytes = await imgFile.arrayBuffer();
           const buffer = Buffer.from(bytes);
           const filename = shortImageName(imgFile.name);
-          const uploadDir = join(process.cwd(), "public", "images", "products");
-
           try {
-            await mkdir(uploadDir, { recursive: true });
-            const filepath = join(uploadDir, filename);
-            await writeFile(filepath, buffer);
-            imagePaths.push(filename);
+            const stored = await uploadProductImage(buffer, filename);
+            imagePaths.push(stored);
           } catch (error) {
             console.error("Error saving additional image:", error);
+            if (
+              error?.code === "EROFS" ||
+              error?.message?.includes("read-only")
+            ) {
+              return NextResponse.json(
+                {
+                  error:
+                    "Product image uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN.",
+                },
+                { status: 503 },
+              );
+            }
           }
         }
       }
@@ -235,14 +250,37 @@ export async function PUT(request, context) {
         const buffer = Buffer.from(bytes);
         const safe = instructionsPdf.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const filename = `inst_${Date.now()}_${safe}`;
-        try {
-          await mkdir(instructionsDir, { recursive: true });
-          await writeFile(join(instructionsDir, filename), buffer);
-          productData.Instructions = filename;
-          if (existing && existing.Instructions)
-            tryDeleteOld(existing.Instructions);
-        } catch (err) {
-          console.error("Error saving instructions PDF:", err);
+        const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+        const cwd = process.cwd();
+        const isReadOnlyFs =
+          cwd.includes("/var/task") || process.env.VERCEL === "1";
+
+        if (isReadOnlyFs && !blobToken) {
+          console.warn(
+            "Skipping instructions PDF upload: Blob storage required",
+          );
+        } else if (blobToken) {
+          try {
+            const blob = await put(`instructions/${filename}`, buffer, {
+              access: "public",
+              token: blobToken,
+            });
+            productData.Instructions = blob.url;
+            if (existing && existing.Instructions)
+              tryDeleteOld(existing.Instructions);
+          } catch (err) {
+            console.error("Error saving instructions PDF:", err);
+          }
+        } else {
+          try {
+            await mkdir(instructionsDir, { recursive: true });
+            await writeFile(join(instructionsDir, filename), buffer);
+            productData.Instructions = filename;
+            if (existing && existing.Instructions)
+              tryDeleteOld(existing.Instructions);
+          } catch (err) {
+            console.error("Error saving instructions PDF:", err);
+          }
         }
       }
     }
