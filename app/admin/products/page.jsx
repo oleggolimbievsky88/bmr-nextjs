@@ -95,6 +95,11 @@ export default function AdminProductsPage() {
   });
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
+  const [imageSizeWarning, setImageSizeWarning] = useState(null);
+
+  // Image size limits (to avoid "payload too large" errors)
+  const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB per image
+  const MAX_TOTAL_IMAGES_SIZE = 8 * 1024 * 1024; // 8MB total
 
   // Helper function to get correct image URL (env-configured)
   const getImageUrl = (imagePath) => getProductImageUrl(imagePath);
@@ -335,6 +340,37 @@ export default function AdminProductsPage() {
     }
   }, [filterBodyId, categories]);
 
+  // Warn when image/file sizes exceed limits
+  useEffect(() => {
+    const files = [
+      ...(mainImage ? [mainImage] : []),
+      ...additionalImages,
+      ...(instructionsPdfFile && instructionsPdfFile.size > 0
+        ? [instructionsPdfFile]
+        : []),
+    ];
+    if (files.length === 0) {
+      setImageSizeWarning(null);
+      return;
+    }
+    const imageFiles = [...(mainImage ? [mainImage] : []), ...additionalImages];
+    const total = files.reduce((sum, f) => sum + (f?.size || 0), 0);
+    const oversized = imageFiles.filter((f) => f?.size > MAX_IMAGE_SIZE);
+    const parts = [];
+    if (oversized.length > 0) {
+      const names = oversized.map((f) => f.name).join(", ");
+      parts.push(
+        `${oversized.length} image(s) exceed 2MB each: ${names}. Consider compressing them.`,
+      );
+    }
+    if (total > MAX_TOTAL_IMAGES_SIZE) {
+      parts.push(
+        `Total size ${(total / 1024 / 1024).toFixed(1)}MB exceeds 8MB limit. Upload may fail.`,
+      );
+    }
+    setImageSizeWarning(parts.length > 0 ? parts.join(" ") : null);
+  }, [mainImage, additionalImages, instructionsPdfFile]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newFormData = {
@@ -434,6 +470,7 @@ export default function AdminProductsPage() {
     });
     setMainImage(null);
     setAdditionalImages([]);
+    setImageSizeWarning(null);
     setInstructionsPdfFile(null);
     setInstructionsDelete(false);
     setEditingProduct(null);
@@ -535,6 +572,27 @@ export default function AdminProductsPage() {
     setError("");
     setSuccess("");
 
+    if (imageSizeWarning) {
+      const files = [
+        ...(mainImage ? [mainImage] : []),
+        ...additionalImages,
+        ...(instructionsPdfFile && instructionsPdfFile.size > 0
+          ? [instructionsPdfFile]
+          : []),
+      ];
+      const total = files.reduce((sum, f) => sum + (f?.size || 0), 0);
+      if (total > MAX_TOTAL_IMAGES_SIZE) {
+        setError(
+          `Total upload size ${(total / 1024 / 1024).toFixed(1)}MB exceeds 8MB limit. Compress images or reduce file sizes before saving.`,
+        );
+        showToast(
+          "Files too large. Compress or reduce before saving.",
+          "error",
+        );
+        return;
+      }
+    }
+
     try {
       const submitFormData = new FormData();
 
@@ -570,7 +628,20 @@ export default function AdminProductsPage() {
         body: submitFormData,
       });
 
-      const data = await response.json();
+      let data;
+      const responseText = await response.text();
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseErr) {
+        console.error("Product save: response is not valid JSON", {
+          status: response.status,
+          statusText: response.statusText,
+          preview: responseText.substring(0, 200),
+        });
+        throw new Error(
+          `Server returned invalid response (${response.status}). This often means a server error, timeout, or payload limit. Check the browser console and server logs for details.`,
+        );
+      }
 
       if (!response.ok) {
         const msg =
@@ -1092,6 +1163,17 @@ export default function AdminProductsPage() {
                   once or add more in separate selections. Images save when you
                   create or update the product.
                 </p>
+                {imageSizeWarning && (
+                  <div
+                    className="alert alert-warning mb-3 py-2 px-3 d-flex align-items-start gap-2"
+                    role="alert"
+                  >
+                    <span className="flex-shrink-0" aria-hidden="true">
+                      ⚠
+                    </span>
+                    <span className="small">{imageSizeWarning}</span>
+                  </div>
+                )}
                 <div className="row g-3">
                   <div className="col-12 col-md-6">
                     <div className="card border-0 shadow-sm rounded-3 h-100">

@@ -6,6 +6,8 @@ const nextConfig = {
   // Suppress proxy deprecation warning (Next.js 16)
   experimental: {
     proxyPrefetch: "strict",
+    // Allow larger form uploads for admin product creation (images, PDFs)
+    serverActions: { bodySizeLimit: "10mb" },
   },
 
   // Image configuration for external domains

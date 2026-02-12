@@ -10,11 +10,12 @@ function requireAdmin(session) {
   return null;
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
   try {
     const session = await getServerSession(authOptions);
     const auth = requireAdmin(session);
     if (auth) return auth;
+    const params = await context.params;
     const id = Number(params.id);
     if (!id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     const body = await request.json().catch(() => ({}));
@@ -29,11 +30,12 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
   try {
     const session = await getServerSession(authOptions);
     const auth = requireAdmin(session);
     if (auth) return auth;
+    const params = await context.params;
     const id = Number(params.id);
     if (!id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     await deleteVehicleAdmin(id);

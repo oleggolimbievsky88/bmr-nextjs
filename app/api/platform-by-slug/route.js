@@ -21,7 +21,7 @@ export async function GET(request) {
     if (!platform) {
       return NextResponse.json(
         { error: "Platform slug or bodyid is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,15 +51,12 @@ export async function GET(request) {
     if (!platformInfo) {
       let similarPlatforms = [];
       try {
-        const [rows] = await pool.query(
-          "SELECT PlatformID AS BodyID, Name, StartYear, EndYear FROM platforms LIMIT 5"
+        const [platformRows] = await pool.query(
+          "SELECT PlatformID AS BodyID, Name, StartYear, EndYear FROM platforms LIMIT 5",
         );
-        similarPlatforms = rows;
+        similarPlatforms = platformRows || [];
       } catch {
-        const [rows] = await pool.query(
-          "SELECT BodyID, Name, StartYear, EndYear FROM bodies LIMIT 5"
-        );
-        similarPlatforms = rows;
+        similarPlatforms = [];
       }
 
       return NextResponse.json(
@@ -68,7 +65,7 @@ export async function GET(request) {
           message: `Platform with slug '${platform}' not found.`,
           availablePlatforms: similarPlatforms,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -81,7 +78,7 @@ export async function GET(request) {
     console.error("Error fetching platform data:", error);
     return NextResponse.json(
       { error: "Failed to fetch platform data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

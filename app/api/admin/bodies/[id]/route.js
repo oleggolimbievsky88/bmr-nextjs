@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { updateBodyAdmin, deleteBodyAdmin } from "@/lib/queries";
+import { updatePlatformAdmin, deletePlatformAdmin } from "@/lib/queries";
 
 function requireAdmin(session) {
   if (!session || session.user?.role !== "admin") {
@@ -19,7 +19,7 @@ export async function PUT(request, context) {
     const id = Number(params.id);
     if (!id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     const body = await request.json().catch(() => ({}));
-    await updateBodyAdmin(id, body);
+    await updatePlatformAdmin(id, body);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating body:", error);
@@ -38,7 +38,7 @@ export async function DELETE(request, context) {
     const params = await context.params;
     const id = Number(params.id);
     if (!id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-    await deleteBodyAdmin(id);
+    await deletePlatformAdmin(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting body:", error);

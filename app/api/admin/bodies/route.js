@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
-  getAllBodiesAdmin,
-  getBodiesByPlatformGroupAdmin,
-  createBodyAdmin,
+  getAllPlatformsAdmin,
+  getPlatformsByPlatformGroupAdmin,
+  createPlatformAdmin,
 } from "@/lib/queries";
 
 function requireAdmin(session) {
@@ -23,8 +23,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const platformGroupId = searchParams.get("platformGroupId");
     const bodies = platformGroupId
-      ? await getBodiesByPlatformGroupAdmin(Number(platformGroupId))
-      : await getAllBodiesAdmin();
+      ? await getPlatformsByPlatformGroupAdmin(Number(platformGroupId))
+      : await getAllPlatformsAdmin();
     return NextResponse.json({ bodies });
   } catch (error) {
     console.error("Error fetching bodies:", error);
@@ -41,7 +41,7 @@ export async function POST(request) {
     const auth = requireAdmin(session);
     if (auth) return auth;
     const body = await request.json().catch(() => ({}));
-    const id = await createBodyAdmin(body);
+    const id = await createPlatformAdmin(body);
     return NextResponse.json({ success: true, id });
   } catch (error) {
     console.error("Error creating body:", error);

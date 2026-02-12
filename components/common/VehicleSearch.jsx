@@ -18,7 +18,7 @@ export default function VehicleSearch() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/vehicles-for-search")
+    fetch("/api/vehicles-for-search", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         setList(Array.isArray(data) ? data : []);

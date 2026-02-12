@@ -18,9 +18,9 @@ export async function GET(request) {
 
     // Get platform info
     const platformQuery = `
-			SELECT BodyID, Name, StartYear, EndYear
-			FROM bodies
-			WHERE BodyID = ?
+			SELECT PlatformID AS BodyID, Name, StartYear, EndYear
+			FROM platforms
+			WHERE PlatformID = ?
 		`;
     const [platformRows] = await pool.query(platformQuery, [platform]);
     const platformInfo = platformRows[0] || null;
