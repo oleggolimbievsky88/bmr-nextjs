@@ -178,20 +178,29 @@ export async function POST(request) {
       productData.NewPartDate = "0";
     }
 
+    // Short filename for DB (ImageSmall/ImageLarge are varchar(45))
+    const shortImageName = (originalName) => {
+      const match =
+        originalName && /\.(jpe?g|png|gif|webp)$/i.exec(originalName);
+      const ext = match ? match[1].toLowerCase() : "jpg";
+      const r = Math.random().toString(36).slice(2, 8);
+      return `p_${Date.now()}_${r}.${ext}`;
+    };
+
     // Handle image uploads
     const mainImageFile = formData.get("mainImage");
     if (mainImageFile && mainImageFile instanceof File) {
       const bytes = await mainImageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const filename = `product_${Date.now()}_${mainImageFile.name}`;
+      const filename = shortImageName(mainImageFile.name);
       const uploadDir = join(process.cwd(), "public", "images", "products");
 
       try {
         await mkdir(uploadDir, { recursive: true });
         const filepath = join(uploadDir, filename);
         await writeFile(filepath, buffer);
-        productData.ImageLarge = `/images/products/${filename}`;
-        productData.ImageSmall = `/images/products/${filename}`;
+        productData.ImageLarge = filename;
+        productData.ImageSmall = filename;
       } catch (error) {
         console.error("Error saving main image:", error);
         throw new Error(`Failed to save main image: ${error.message}`);
@@ -206,14 +215,14 @@ export async function POST(request) {
         if (imgFile instanceof File) {
           const bytes = await imgFile.arrayBuffer();
           const buffer = Buffer.from(bytes);
-          const filename = `product_${Date.now()}_${Math.random().toString(36).substring(7)}_${imgFile.name}`;
+          const filename = shortImageName(imgFile.name);
           const uploadDir = join(process.cwd(), "public", "images", "products");
 
           try {
             await mkdir(uploadDir, { recursive: true });
             const filepath = join(uploadDir, filename);
             await writeFile(filepath, buffer);
-            imagePaths.push(`/images/products/${filename}`);
+            imagePaths.push(filename);
           } catch (error) {
             console.error("Error saving additional image:", error);
             throw new Error(
