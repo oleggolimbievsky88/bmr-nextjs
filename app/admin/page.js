@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { handleAdmin401 } from "@/lib/adminAuth";
 
 export default function AdminPage() {
   const { data: session } = useSession();
@@ -26,6 +27,12 @@ export default function AdminPage() {
         fetch("/api/admin/order-stats"),
         fetch("/api/admin/coupons"),
       ]);
+      if (
+        handleAdmin401(orderStatsResponse) ||
+        handleAdmin401(couponsResponse)
+      ) {
+        return;
+      }
       const orderStatsData = await orderStatsResponse.json();
       const couponsData = await couponsResponse.json();
 

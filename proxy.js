@@ -35,13 +35,16 @@ export default withAuth(
       return NextResponse.redirect(cleanUrl);
     }
 
-    // /admin/login is allowed without auth (handled in authorized callback)
-    if (pathname === "/admin/login") {
-      return NextResponse.next();
-    }
-    // Redirect unauthenticated /admin requests to admin login
+    // Redirect unauthenticated /admin requests to unified login
     if (pathname.startsWith("/admin") && req.nextauth.token?.role !== "admin") {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+      const loginUrl = new URL("/login", req.url);
+      // /admin/login is legacy - send to /admin; otherwise preserve requested path
+      const callback =
+        pathname === "/admin/login"
+          ? "/admin"
+          : pathname + (nextUrl.search || "");
+      loginUrl.searchParams.set("callbackUrl", callback);
+      return NextResponse.redirect(loginUrl);
     }
 
     // Legacy ColdFusion URLs: ?page=products&vehicleid=&maincatid=&catid= or &productid=
@@ -57,14 +60,16 @@ export default withAuth(
       const catid = url.searchParams.get("catid");
 
       if (productid) {
-        return NextResponse.redirect(new URL(`/product/${productid}`, url.origin));
+        return NextResponse.redirect(
+          new URL(`/product/${productid}`, url.origin),
+        );
       }
       if (vehicleid && maincatid) {
         const legacyQuery = new URLSearchParams({ vehicleid, maincatid });
         if (catid) legacyQuery.set("catid", catid);
         const legacyUrl = new URL(
           `/api/legacy-redirect?${legacyQuery}`,
-          url.origin
+          url.origin,
         );
         return NextResponse.redirect(legacyUrl);
       }
@@ -76,10 +81,6 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Allow /admin/login without auth so users can reach the login page
-        if (req.nextUrl.pathname === "/admin/login") {
-          return true;
-        }
         // Other admin routes require admin role
         if (req.nextUrl.pathname.startsWith("/admin")) {
           return token?.role === "admin";
@@ -99,7 +100,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

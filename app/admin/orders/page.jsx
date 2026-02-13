@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { getColorBadgeStyle } from "@/lib/colorBadge";
 import { showToast } from "@/utlis/showToast";
+import { handleAdmin401 } from "@/lib/adminAuth";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -72,6 +73,7 @@ export default function AdminOrdersPage() {
       if (filterDateTo) params.set("dateTo", filterDateTo);
 
       const response = await fetch(`/api/admin/orders?${params}`);
+      if (handleAdmin401(response)) return;
       const data = await response.json();
 
       if (!response.ok) {
@@ -116,9 +118,12 @@ export default function AdminOrdersPage() {
     const orderId = searchParams.get("orderId");
     if (orderId) {
       fetch(`/api/admin/orders?orderId=${orderId}`)
-        .then((r) => r.json())
+        .then((r) => {
+          if (handleAdmin401(r)) return null;
+          return r.json();
+        })
         .then((data) => {
-          if (data.success && data.order) {
+          if (data?.success && data?.order) {
             setRevealedCc(null);
             setSelectedOrder(data.order);
           }
@@ -412,7 +417,7 @@ export default function AdminOrdersPage() {
           tracking_number: trackingNumber || undefined,
         }),
       });
-
+      if (handleAdmin401(response)) return;
       const data = await response.json();
 
       if (!response.ok) {
@@ -428,9 +433,9 @@ export default function AdminOrdersPage() {
 
       fetchOrders();
       if (selectedOrder?.new_order_id === orderId) {
-        const fresh = await fetch(`/api/admin/orders?orderId=${orderId}`).then(
-          (r) => r.json(),
-        );
+        const freshRes = await fetch(`/api/admin/orders?orderId=${orderId}`);
+        if (handleAdmin401(freshRes)) return;
+        const fresh = await freshRes.json();
         if (fresh?.order) {
           setSelectedOrder(fresh.order);
         } else {
@@ -450,6 +455,7 @@ export default function AdminOrdersPage() {
   const viewOrderDetails = async (orderId) => {
     try {
       const response = await fetch(`/api/admin/orders?orderId=${orderId}`);
+      if (handleAdmin401(response)) return;
       const data = await response.json();
 
       if (!response.ok) {
@@ -1018,6 +1024,7 @@ export default function AdminOrdersPage() {
                             const res = await fetch(
                               `/api/admin/orders/${selectedOrder.new_order_id}/decrypt-cc`,
                             );
+                            if (handleAdmin401(res)) return;
                             const data = await res.json();
                             if (!res.ok)
                               throw new Error(
@@ -1028,9 +1035,11 @@ export default function AdminOrdersPage() {
                               value: data.ccNumber || null,
                               error: null,
                             });
-                            const fresh = await fetch(
+                            const freshRes = await fetch(
                               `/api/admin/orders?orderId=${selectedOrder.new_order_id}`,
-                            ).then((r) => r.json());
+                            );
+                            if (handleAdmin401(freshRes)) return;
+                            const fresh = await freshRes.json();
                             if (fresh?.order) setSelectedOrder(fresh.order);
                           } catch (e) {
                             setRevealedCc({
@@ -1134,6 +1143,7 @@ export default function AdminOrdersPage() {
                               `/api/admin/orders/${selectedOrder.new_order_id}/tracking/${t.id}`,
                               { method: "DELETE" },
                             );
+                            if (handleAdmin401(res)) return;
                             if (res.ok) {
                               showToast("Tracking number removed", "success");
                               viewOrderDetails(selectedOrder.new_order_id);
@@ -1205,6 +1215,7 @@ export default function AdminOrdersPage() {
                               }),
                             },
                           );
+                          if (handleAdmin401(res)) return;
                           if (res.ok) {
                             added++;
                           } else {

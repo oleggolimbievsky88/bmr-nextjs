@@ -34,10 +34,18 @@ export default function Login() {
   useEffect(() => {
     if (status !== "authenticated" || !session) return;
     if (session.user?.role === "admin") {
-      router.replace("/admin");
+      router.replace(
+        callbackUrl && callbackUrl.startsWith("/admin")
+          ? callbackUrl
+          : "/admin",
+      );
       return;
     }
-    if (callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
+    if (
+      callbackUrl &&
+      callbackUrl.startsWith("/") &&
+      !callbackUrl.startsWith("//")
+    ) {
       router.replace(callbackUrl);
       return;
     }
@@ -113,7 +121,10 @@ export default function Login() {
 
       // Use window.location for a full page navigation
       if (session?.user?.role === "admin") {
-        window.location.href = "/admin";
+        window.location.href =
+          callbackUrl && callbackUrl.startsWith("/admin")
+            ? callbackUrl
+            : "/admin";
       } else if (callbackUrl && callbackUrl.startsWith("/")) {
         window.location.href = callbackUrl;
       } else {
@@ -237,7 +248,11 @@ export default function Login() {
       <section className="flat-spacing-10">
         <div className="container">
           <div className="text-center py-5">
-            <div className="spinner-border text-danger" role="status" aria-hidden="true" />
+            <div
+              className="spinner-border text-danger"
+              role="status"
+              aria-hidden="true"
+            />
             <p className="mt-2 mb-0">Loading...</p>
           </div>
         </div>

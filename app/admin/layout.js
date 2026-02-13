@@ -9,11 +9,19 @@ import AdminNav from "@/components/admin/AdminNav";
 import Footer1 from "@/components/footer/Footer";
 
 export default function AdminLayout({ children }) {
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const isLoginPage = pathname === "/admin/login";
   const isPrintPage = pathname?.includes("/print");
+
+  // Refetch session when admin tab regains focus (e.g. after overnight)
+  useEffect(() => {
+    if (isLoginPage) return;
+    const onFocus = () => updateSession?.();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [isLoginPage, updateSession]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -26,9 +34,11 @@ export default function AdminLayout({ children }) {
 
     if (isLoginPage) return;
 
-    // Session expired or not admin -> leave sensitive admin pages
+    // Session expired or not admin -> redirect to unified login
     if (!session) {
-      router.replace("/admin/login");
+      const cb =
+        pathname && pathname.startsWith("/admin") ? pathname : "/admin";
+      router.replace(`/login?callbackUrl=${encodeURIComponent(cb)}`);
       return;
     }
 
