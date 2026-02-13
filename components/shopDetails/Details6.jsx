@@ -30,7 +30,16 @@ export default function ou({ product, initialColor, searchParams }) {
   const [currentColor, setCurrentColor] = useState(null);
   const [currentGrease, setCurrentGrease] = useState(undefined);
   const [currentAnglefinder, setCurrentAnglefinder] = useState(undefined);
+  const maxQty = (product?.Qty || 0) > 0 ? parseInt(product.Qty, 10) : null;
   const [quantity, setQuantity] = useState(1);
+
+  // Clamp quantity when product has limited stock (maxQty)
+  useEffect(() => {
+    if (maxQty != null && quantity > maxQty) {
+      setQuantity(maxQty);
+    }
+  }, [maxQty, product?.ProductID, quantity]);
+
   const [colorOptions, setColorOptions] = useState([]);
   const [greaseOptions, setGreaseOptions] = useState([]);
   const [anglefinderOptions, setAnglefinderOptions] = useState([]);
@@ -354,8 +363,13 @@ export default function ou({ product, initialColor, searchParams }) {
     }
   };
 
+  const qtyAvailable = parseInt(product?.Qty, 10) || 0;
+  const isBlemOutOfStock = product?.BlemProduct && qtyAvailable <= 0;
+
   const handleAddToCart = (e) => {
     e.preventDefault();
+
+    if (isBlemOutOfStock) return;
 
     if (!validateForm()) {
       return;
@@ -856,7 +870,11 @@ export default function ou({ product, initialColor, searchParams }) {
                     style={{ borderRadius: "20px" }}
                   >
                     <div className="quantity-title fw-6">Quantity</div>
-                    <Quantity value={quantity} onChange={setQuantity} />
+                    <Quantity
+                      value={quantity}
+                      onChange={setQuantity}
+                      max={maxQty ?? undefined}
+                    />
                   </div>
 
                   <div className="tf-product-info-buy-button">
@@ -865,31 +883,36 @@ export default function ou({ product, initialColor, searchParams }) {
                         type="submit"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
                         style={{ borderRadius: "20px" }}
+                        disabled={isBlemOutOfStock}
                       >
-                        <span>Add to cart -</span>
-                        <span className="tf-qty-price">
-                          $
-                          {(
-                            (Number(product.Price) || 0) * (quantity || 1) +
-                            (currentGrease
-                              ? (parseFloat(currentGrease.GreasePrice) || 0) *
-                                (quantity || 1)
-                              : 0) +
-                            (currentAnglefinder
-                              ? (parseFloat(currentAnglefinder.AnglePrice) ||
-                                  0) * (quantity || 1)
-                              : 0) +
-                            (selectedHardwarePacks.length > 0
-                              ? selectedHardwarePacks.reduce(
-                                  (sum, p) =>
-                                    sum +
-                                    (parseFloat(p.Price) || 0) *
-                                      (quantity || 1),
-                                  0,
-                                )
-                              : 0)
-                          ).toFixed(2)}
+                        <span>
+                          {isBlemOutOfStock ? "Out of Stock" : "Add to cart -"}
                         </span>
+                        {!isBlemOutOfStock && (
+                          <span className="tf-qty-price">
+                            $
+                            {(
+                              (Number(product.Price) || 0) * (quantity || 1) +
+                              (currentGrease
+                                ? (parseFloat(currentGrease.GreasePrice) || 0) *
+                                  (quantity || 1)
+                                : 0) +
+                              (currentAnglefinder
+                                ? (parseFloat(currentAnglefinder.AnglePrice) ||
+                                    0) * (quantity || 1)
+                                : 0) +
+                              (selectedHardwarePacks.length > 0
+                                ? selectedHardwarePacks.reduce(
+                                    (sum, p) =>
+                                      sum +
+                                      (parseFloat(p.Price) || 0) *
+                                        (quantity || 1),
+                                    0,
+                                  )
+                                : 0)
+                            ).toFixed(2)}
+                          </span>
+                        )}
                       </button>
                     </form>
                     {/* Temporary debug buttons - remove after testing */}

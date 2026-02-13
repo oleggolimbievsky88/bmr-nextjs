@@ -9,6 +9,7 @@ import {
   ensureOrderTablesExist,
   createOrder,
   createOrderItems,
+  decrementBlemProductInventory,
   recordCouponUsage,
   insertOrderStatusHistory,
   getCouponByIdIfActive,
@@ -23,7 +24,7 @@ export async function POST(request) {
     if (!process.env.MYSQL_HOST) {
       return NextResponse.json(
         { success: false, message: "Database configuration missing" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -44,7 +45,7 @@ export async function POST(request) {
           message: "Invalid request data",
           error: "Failed to parse request body",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +68,7 @@ export async function POST(request) {
           message: "Missing required order data",
           error: "Billing, shipping, and items are required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,7 +89,7 @@ export async function POST(request) {
           message: "Missing required billing information",
           error: "All billing fields are required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -103,7 +104,7 @@ export async function POST(request) {
               "The coupon is no longer valid. Please remove it and try again.",
             error: "Coupon is inactive or invalid",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -177,18 +178,21 @@ export async function POST(request) {
         `${orderData.billing.firstName} ${orderData.billing.lastName}`,
         null,
         "pending",
-        null
+        null,
       );
     } catch (e) {
       // Do not block checkout if audit logging fails
       console.error(
         "Failed to insert initial order status history:",
-        e.message
+        e.message,
       );
     }
 
     // Create order items
     await createOrderItems(orderId, orderData.items);
+
+    // Decrement scratch & dent inventory
+    await decrementBlemProductInventory(orderData.items);
 
     console.log("Order items created successfully");
 
@@ -200,7 +204,7 @@ export async function POST(request) {
           orderData.customerId || null,
           orderId, // Using new_order_id as the order_id for coupon_usage
           orderData.discount,
-          orderData.subtotal
+          orderData.subtotal,
         );
         console.log("Coupon usage recorded successfully:", {
           couponId: orderData.couponId,
@@ -236,7 +240,7 @@ export async function POST(request) {
       await sendOrderConfirmationEmail(
         orderData.billing.email,
         orderNumber,
-        emailOrderData
+        emailOrderData,
       );
     } catch (emailError) {
       console.error("Error sending confirmation email:", emailError);
@@ -280,7 +284,7 @@ export async function POST(request) {
             stack: error.stack,
           }),
         },
-        { status: 500 }
+        { status: 500 },
       );
     } catch (jsonError) {
       // Fallback if JSON serialization fails
@@ -294,7 +298,7 @@ export async function POST(request) {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
   }

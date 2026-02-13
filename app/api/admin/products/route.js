@@ -304,9 +304,23 @@ export async function POST(request) {
     return NextResponse.json({ success: true, productId });
   } catch (error) {
     console.error("Error creating product:", error);
-    const message = error?.message || error?.code || "Failed to create product";
+    const message =
+      error?.sqlMessage ||
+      error?.message ||
+      error?.code ||
+      "Failed to create product";
+    const hint =
+      error?.code === "ER_DATA_TOO_LONG" ||
+      (error?.sqlMessage && String(error.sqlMessage).includes("Data too long"))
+        ? "Run database/products_expand_image_columns.sql if image URLs are long."
+        : null;
     return NextResponse.json(
-      { error: message, details: error?.message },
+      {
+        error: message,
+        details: error?.message,
+        sqlMessage: error?.sqlMessage,
+        hint,
+      },
       { status: 500 },
     );
   }

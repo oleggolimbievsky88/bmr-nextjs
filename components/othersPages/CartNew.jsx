@@ -648,13 +648,6 @@ export default function CartNew() {
                   className="d-flex justify-content-between mb-2"
                   style={{ fontSize: "14px" }}
                 >
-                  <span>Gift Certificate:</span>
-                  <span>$0.00</span>
-                </div>
-                <div
-                  className="d-flex justify-content-between mb-2"
-                  style={{ fontSize: "14px" }}
-                >
                   <span>Tax:</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>

@@ -644,10 +644,11 @@ export default function AdminProductsPage() {
       }
 
       if (!response.ok) {
-        const msg =
+        let msg =
           data.error && data.details
             ? `${data.error}: ${data.details}`
             : data.error || "Failed to save product";
+        if (data.hint) msg += ` ${data.hint}`;
         throw new Error(msg);
       }
 
@@ -1142,10 +1143,18 @@ export default function AdminProductsPage() {
                   </div>
                   <div className="col-md-4">
                     <div className="admin-form-group">
-                      <label>Quantity</label>
+                      <label>
+                        Quantity
+                        {formData.BlemProduct === 1 && (
+                          <span className="text-muted ms-1 small">
+                            (Scratch &amp; Dent: limits availability)
+                          </span>
+                        )}
+                      </label>
                       <input
                         type="number"
                         name="Qty"
+                        min="0"
                         className="form-control"
                         value={formData.Qty}
                         onChange={handleInputChange}

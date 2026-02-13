@@ -41,12 +41,21 @@ function LoginFallback() {
   );
 }
 
-export default function page() {
+export default async function page({ searchParams }) {
+  const params =
+    typeof searchParams?.then === "function"
+      ? await searchParams
+      : searchParams || {};
+  const callbackUrl = params?.callbackUrl || "";
+  const isDealerPortal =
+    typeof callbackUrl === "string" && callbackUrl.includes("/dealers-portal");
+  const pageTitle = isDealerPortal ? "DEALER PORTAL" : "LOGIN";
+
   return (
     <>
       <Topbar4 />
       <Header18 showVehicleSearch={false} />
-      <PageHeader title="LOGIN" />
+      <PageHeader title={pageTitle} />
       <Suspense fallback={<LoginFallback />}>
         <Login />
       </Suspense>

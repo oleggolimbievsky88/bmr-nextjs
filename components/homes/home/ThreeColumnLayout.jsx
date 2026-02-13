@@ -1,8 +1,5 @@
-// components/ThreeColumnLayout.js
-
 import Link from "next/link";
 
-// components/ThreeColumnLayout.js
 export default function ThreeColumnLayout() {
   return (
     <div className="container three-column-layout">
@@ -28,7 +25,7 @@ export default function ThreeColumnLayout() {
             key={index}
             className="col-lg-4 col-md-6 col-sm-12 three-column-card"
           >
-            <Link key={index} href={`/${item.link}`}>
+            <Link href={`/${item.link}`}>
               <div className="card text-white border-0 custom-card mb-15">
                 <img
                   src={item.img}

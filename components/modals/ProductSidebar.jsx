@@ -1,10 +1,48 @@
-import React from "react";
+"use client";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { featuredProducts2 } from "@/data/products";
+
+function closeOffcanvas() {
+  const el = document.getElementById("sidebarmobile");
+  if (!el) return;
+  const closeBtn = el.querySelector('[data-bs-dismiss="offcanvas"]');
+  if (closeBtn) {
+    closeBtn.click();
+    return;
+  }
+  try {
+    const bootstrap = require("bootstrap");
+    const instance = bootstrap.Offcanvas.getInstance(el);
+    if (instance) instance.hide();
+    else new bootstrap.Offcanvas(el).hide();
+  } catch (_) {
+    el.classList.remove("show");
+    const backdrop = document.querySelector(".offcanvas-backdrop");
+    if (backdrop) backdrop.remove();
+  }
+}
+
 export default function ProductSidebar() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handleClick = (e) => {
+      const link = e.target.closest("a[href]");
+      if (!link) return;
+      const href = (link.getAttribute("href") || "").trim();
+      if (href.startsWith("/")) closeOffcanvas();
+    };
+    el.addEventListener("click", handleClick, true);
+    return () => el.removeEventListener("click", handleClick, true);
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       className="offcanvas offcanvas-start canvas-filter canvas-sidebar"
       id="sidebarmobile"
     >

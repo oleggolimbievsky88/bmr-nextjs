@@ -1154,12 +1154,16 @@ export default function AdminOrdersPage() {
                     </li>
                   ))}
                 </ul>
+                <p className="text-muted small mb-2">
+                  Paste multiple tracking numbers (one per line or
+                  comma-separated) and click Add to add all.
+                </p>
                 <div className="input-group">
                   <input
                     type="text"
                     id="additional-tracking-number"
                     className="form-control"
-                    placeholder="Tracking number"
+                    placeholder="Tracking number (or paste multiple)"
                   />
                   <input
                     type="text"
@@ -1172,41 +1176,62 @@ export default function AdminOrdersPage() {
                     type="button"
                     className="btn btn-outline-primary"
                     onClick={async () => {
-                      const num = document
-                        .getElementById("additional-tracking-number")
-                        ?.value?.trim();
-                      if (!num) return;
+                      const raw =
+                        document
+                          .getElementById("additional-tracking-number")
+                          ?.value?.trim() || "";
                       const carrier =
                         document
                           .getElementById("additional-tracking-carrier")
                           ?.value?.trim() || null;
-                      try {
-                        const res = await fetch(
-                          `/api/admin/orders/${selectedOrder.new_order_id}/tracking`,
-                          {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              tracking_number: num,
-                              carrier,
-                            }),
-                          },
-                        );
-                        if (res.ok) {
-                          document.getElementById(
-                            "additional-tracking-number",
-                          ).value = "";
-                          document.getElementById(
-                            "additional-tracking-carrier",
-                          ).value = "";
-                          showToast("Tracking number added", "success");
-                          viewOrderDetails(selectedOrder.new_order_id);
-                        } else {
-                          const d = await res.json();
-                          showToast(d.error || "Failed to add", "error");
+                      const numbers = raw
+                        .split(/[\n,;]+/)
+                        .map((n) => n.trim())
+                        .filter(Boolean);
+                      if (numbers.length === 0) return;
+                      let added = 0;
+                      for (const num of numbers) {
+                        try {
+                          const res = await fetch(
+                            `/api/admin/orders/${selectedOrder.new_order_id}/tracking`,
+                            {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                tracking_number: num,
+                                carrier,
+                              }),
+                            },
+                          );
+                          if (res.ok) {
+                            added++;
+                          } else {
+                            const d = await res.json();
+                            showToast(
+                              d.error || `Failed to add ${num}`,
+                              "error",
+                            );
+                          }
+                        } catch (e) {
+                          showToast(`Failed to add ${num}`, "error");
                         }
-                      } catch (e) {
-                        showToast("Failed to add tracking number", "error");
+                      }
+                      if (added > 0) {
+                        document.getElementById(
+                          "additional-tracking-number",
+                        ).value = "";
+                        document.getElementById(
+                          "additional-tracking-carrier",
+                        ).value = "";
+                        showToast(
+                          added === 1
+                            ? "Tracking number added"
+                            : `${added} tracking numbers added`,
+                          "success",
+                        );
+                        viewOrderDetails(selectedOrder.new_order_id);
                       }
                     }}
                   >

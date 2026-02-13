@@ -2,26 +2,29 @@
 
 import { useState } from "react";
 
-const MAX_QTY = 10;
+const DEFAULT_MAX_QTY = 10;
 
 /**
  * Quantity selector. Use controlled mode by passing value + onChange to sync
  * with parent (e.g. for add-to-cart quantity). Omit both for uncontrolled.
- * @param {number} [value] - Controlled value (min 1, max 10)
+ * @param {number} [value] - Controlled value (min 1, max = max prop or 10)
  * @param {function(number): void} [onChange] - Called when quantity changes
+ * @param {number} [max] - Max allowed quantity (e.g. product.Qty). When > 0, caps quantity to this.
  */
-export default function Quantity({ value, onChange }) {
+export default function Quantity({ value, onChange, max }) {
+  const effectiveMax =
+    max != null && Number(max) > 0 ? Math.floor(Number(max)) : DEFAULT_MAX_QTY;
   const isControlled = value !== undefined && typeof onChange === "function";
   const [internalCount, setInternalCount] = useState(1);
 
   const count = isControlled
-    ? Math.min(MAX_QTY, Math.max(1, Number(value) || 1))
-    : internalCount;
+    ? Math.min(effectiveMax, Math.max(1, Number(value) || 1))
+    : Math.min(effectiveMax, internalCount);
 
   const updateCount = (next) => {
     const num = Math.min(
-      MAX_QTY,
-      Math.max(1, Math.floor(Number(next)) || 1)
+      effectiveMax,
+      Math.max(1, Math.floor(Number(next)) || 1),
     );
     if (isControlled) {
       onChange(num);
@@ -40,7 +43,7 @@ export default function Quantity({ value, onChange }) {
       </span>
       <input
         min={1}
-        max={MAX_QTY}
+        max={effectiveMax}
         type="number"
         onChange={(e) => updateCount(e.target.value)}
         name="number"
@@ -48,7 +51,7 @@ export default function Quantity({ value, onChange }) {
       />
       <span
         className="btn-quantity plus-btn"
-        onClick={() => updateCount(Math.min(MAX_QTY, count + 1))}
+        onClick={() => updateCount(Math.min(effectiveMax, count + 1))}
       >
         +
       </span>

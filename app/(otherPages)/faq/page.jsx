@@ -3,6 +3,7 @@ import Header18 from "@/components/header/Header18";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
 import FaqSection from "@/components/othersPages/faq/FaqSectionBootstrap";
+import Link from "next/link";
 import {
   faqsShopping,
   faqsPayment,
@@ -105,14 +106,13 @@ export default function FaqPage() {
                   with a helpful BMR tech or a BMR customer service
                   representative.
                 </p>
-                <button
-                  type="button"
+                <Link
+                  href="/contact"
                   className="faq-page__contact-btn"
-                  data-bs-toggle="modal"
-                  data-bs-target="#contactModal"
+                  style={{ display: "inline-block", textDecoration: "none" }}
                 >
                   Contact us
-                </button>
+                </Link>
               </div>
             </aside>
           </div>

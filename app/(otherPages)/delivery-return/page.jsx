@@ -22,6 +22,20 @@ export default function DeliveryReturnPage() {
           <div className="delivery-return-page__grid">
             <div className="delivery-return-page__card">
               <h2 className="delivery-return-page__title">Returns</h2>
+              <div
+                className="delivery-return-page__callout"
+                style={{
+                  background: "#fff5f5",
+                  border: "1px solid #dc3545",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "16px",
+                  fontWeight: 600,
+                  color: "#1a1a1a",
+                }}
+              >
+                90-day return policy, subject to 15% restocking fee.
+              </div>
               <ul className="delivery-return-page__list">
                 <p>
                   All non-warranty returns must be made within 90 days from the
@@ -44,7 +58,6 @@ export default function DeliveryReturnPage() {
                 </p>
               </ul>
             </div>
-
 
             <div className="delivery-return-page__card">
               <h2 className="delivery-return-page__title">

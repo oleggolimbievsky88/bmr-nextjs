@@ -687,10 +687,6 @@ export default function Cart() {
                     </div>
                   )}
                   <div className="d-flex justify-content-between mb-2">
-                    <span>Gift Certificate:</span>
-                    <span>$0.00</span>
-                  </div>
-                  <div className="d-flex justify-content-between mb-2">
                     <span>Tax:</span>
                     <span>${tax.toFixed(2)}</span>
                   </div>
