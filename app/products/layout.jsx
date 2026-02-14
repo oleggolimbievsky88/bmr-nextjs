@@ -14,7 +14,7 @@ export default function ProductsLayout({ children }) {
   return (
     <div>
       <Topbar4 />
-      <Header18 showVehicleSearch={false} />
+      <Header18 showVehicleSearch={true} />
       <main className="product-page">{children}</main>
       <Footer1 />
     </div>

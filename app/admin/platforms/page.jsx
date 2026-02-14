@@ -1060,11 +1060,11 @@ export default function AdminPlatformsPage() {
                           />
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-secondary"
+                            className="btn btn-sm btn-outline-primary"
                             onClick={() => thumbnailInputRef.current?.click()}
                             disabled={uploadingImage}
                           >
-                            {uploadingImage ? "Uploading…" : "Upload"}
+                            {uploadingImage ? "Uploading…" : "Browse"}
                           </button>
                           <button
                             type="button"
@@ -1134,11 +1134,11 @@ export default function AdminPlatformsPage() {
                           />
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-secondary"
+                            className="btn btn-sm btn-outline-primary"
                             onClick={() => bannerInputRef.current?.click()}
                             disabled={uploadingImage}
                           >
-                            {uploadingImage ? "Uploading…" : "Upload"}
+                            {uploadingImage ? "Uploading…" : "Browse"}
                           </button>
                           <button
                             type="button"

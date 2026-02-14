@@ -17,7 +17,6 @@ export default function ShopSidebarleft({
   // Determine what to show in the sidebar and main content
   const sidebarMainCategories = mainCategories;
   const sidebarCategories = isMainCategory ? [] : categories;
-  console.log("selectedCatId", selectedCatId);
   return (
     <>
       <section className="flat-spacing-1">

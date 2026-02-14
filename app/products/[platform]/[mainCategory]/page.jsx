@@ -36,7 +36,7 @@ export default function MainCategoryPage({ params }) {
       try {
         // Fetch main categories for the platform
         const mainCatRes = await fetch(
-          `/api/platform-by-slug?platform=${platform}`
+          `/api/platform-by-slug?platform=${platform}`,
         );
         const mainCatData = await mainCatRes.json();
         const mainCats = mainCatData.mainCategories || [];
@@ -56,13 +56,17 @@ export default function MainCategoryPage({ params }) {
 
         // Fetch subcategories and products for the selected main category
         const res = await fetch(
-          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`
+          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`,
         );
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
         const { categories, products, platformInfo } = await res.json();
-        setCategories(categories);
+        // Only show top-level categories (ParentID 0 or null) - sub-categories appear when you drill into a parent
+        const topLevelCategories = (categories || []).filter(
+          (c) => !c.ParentID || c.ParentID === 0,
+        );
+        setCategories(topLevelCategories);
         setProducts(products);
         setPlatformInfo(platformInfo);
       } catch (err) {
@@ -129,6 +133,7 @@ export default function MainCategoryPage({ params }) {
             platform={platform}
             isMainCategory={false}
             isSubCategory={true}
+            hideEmpty={false}
           />
         </section>
 

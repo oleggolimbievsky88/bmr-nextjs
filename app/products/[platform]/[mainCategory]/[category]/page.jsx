@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import Link from "next/link";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
+import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 import Header2 from "@/components/header/Header";
 import PlatformHeader from "@/components/header/PlatformHeader";
@@ -23,18 +25,13 @@ const sanitizeSlug = (slug) => {
 
 export default function CategoryPage({ params }) {
   const { platform, mainCategory, category } = use(params);
-  console.log(
-    "DEBUG: URL params - category slug:",
-    category,
-    "type:",
-    typeof category
-  );
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [platformInfo, setPlatformInfo] = useState(null);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [currentMainCategory, setCurrentMainCategory] = useState(null);
+  const [parentCategory, setParentCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,12 +43,12 @@ export default function CategoryPage({ params }) {
       try {
         // 1. Fetch platform info and main categories
         const platformRes = await fetch(
-          `/api/platform-by-slug?platform=${platform}`
+          `/api/platform-by-slug?platform=${platform}`,
         );
         if (!platformRes.ok) {
           const errorData = await platformRes.json();
           throw new Error(
-            `Platform '${platform}' not found. Please check the URL or try a different platform.`
+            `Platform '${platform}' not found. Please check the URL or try a different platform.`,
           );
         }
         const platformData = await platformRes.json();
@@ -73,17 +70,17 @@ export default function CategoryPage({ params }) {
 
         // 2. Fetch subcategories for the selected main category
         const subcatRes = await fetch(
-          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`
+          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`,
         );
         if (!subcatRes.ok) throw new Error("Failed to fetch subcategories");
         const subcatData = await subcatRes.json();
-        setCategories(subcatData.categories || []);
+        const allCategories = subcatData.categories || [];
 
         // 3. Find the current category by slug (sanitize both sides for comparison)
         // Decode URL-encoded characters first (e.g., %22 becomes ")
         const decodedCategory = decodeURIComponent(category);
         const sanitizedCategorySlug = sanitizeSlug(decodedCategory);
-        const currentCat = subcatData.categories?.find((cat) => {
+        const currentCat = allCategories.find((cat) => {
           const dbSlug = cat.CatSlug ?? cat.slug ?? cat.CatNameSlug ?? "";
           const nameSlug = (cat.CatName ?? cat.name ?? "")
             .toString()
@@ -98,17 +95,36 @@ export default function CategoryPage({ params }) {
         });
         if (!currentCat)
           throw new Error(
-            `Category not found for slug "${decodedCategory}". Check the URL or try the main category.`
+            `Category not found for slug "${decodedCategory}". Check the URL or try the main category.`,
           );
         setCurrentCategory(currentCat);
 
-        // 4. Fetch products for this category by slug (API resolves all category IDs with this slug, so duplicates show combined products)
+        // Find parent category for breadcrumbs (e.g. Shocks when viewing Koni)
+        const parentCategory = currentCat.ParentID
+          ? allCategories.find(
+              (c) => Number(c.CatID) === Number(currentCat.ParentID),
+            )
+          : null;
+        setParentCategory(parentCategory);
+
+        // Show only sub-categories of the current category that have products (e.g., Viking Stocks under Shocks)
+        const subCategoriesOfCurrent = allCategories.filter(
+          (c) =>
+            c.ParentID &&
+            Number(c.ParentID) === Number(currentCat.CatID) &&
+            (c.productCount ?? 0) > 0,
+        );
+        setCategories(subCategoriesOfCurrent);
+
+        // 4. Fetch products - include descendants when viewing a parent (e.g. Shocks) so we show all products under it
+        const includeDescendants = subCategoriesOfCurrent.length > 0;
         const query = new URLSearchParams({
           platform,
           mainCategory,
-          category: decodedCategory, // slug so API returns products from all categories with this slug
+          category: decodedCategory,
           page: 1,
           limit: 12,
+          ...(includeDescendants && { includeDescendants: "true" }),
         }).toString();
 
         const prodRes = await fetch(`/api/products?${query}`);
@@ -117,7 +133,6 @@ export default function CategoryPage({ params }) {
         // console.log("API Response:", products);
         // console.log("Products array:", products.products);
         setFeaturedProducts(products.products || []);
-        console.log("Setting featuredProducts to:", products.products || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error.message);
@@ -175,6 +190,21 @@ export default function CategoryPage({ params }) {
                 mainCategory,
               href: `/products/${platform}/${mainCategory}`,
             },
+            ...(parentCategory
+              ? [
+                  {
+                    label:
+                      parentCategory.CatName || parentCategory.name || "Shocks",
+                    href: `/products/${platform}/${mainCategory}/${
+                      parentCategory.CatSlug ||
+                      parentCategory.slug ||
+                      (parentCategory.CatName || "")
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")
+                    }`,
+                  },
+                ]
+              : []),
             {
               label:
                 currentCategory?.CatName || currentCategory?.name || category,
@@ -182,6 +212,57 @@ export default function CategoryPage({ params }) {
             },
           ]}
         />
+
+        {/* Sub-categories grid (e.g., Viking Stocks under Shocks) */}
+        {categories && categories.length > 0 && (
+          <section className="mb-5">
+            <CategoryGrid
+              mainCategory={mainCategory}
+              mainCategories={mainCategories}
+              categories={categories}
+              platform={platform}
+              isMainCategory={false}
+              isSubCategory={true}
+            />
+          </section>
+        )}
+
+        {/* No products message - when category has no products and no sub-categories */}
+        {(!featuredProducts || featuredProducts.length === 0) &&
+          (!categories || categories.length === 0) && (
+            <section className="mb-5 py-5">
+              <div
+                className="text-center py-5 px-3"
+                style={{
+                  backgroundColor: "#f8f9fa",
+                  borderRadius: "10px",
+                  border: "1px solid #dee2e6",
+                }}
+              >
+                <p className="text-muted mb-3">
+                  No products in this category yet.
+                </p>
+                <Link
+                  href={
+                    parentCategory
+                      ? `/products/${platform}/${mainCategory}/${
+                          parentCategory.CatSlug ||
+                          (parentCategory.CatName || "")
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")
+                        }`
+                      : `/products/${platform}/${mainCategory}`
+                  }
+                  className="btn btn-primary"
+                >
+                  Browse{" "}
+                  {parentCategory
+                    ? parentCategory.CatName || "parent"
+                    : "categories"}
+                </Link>
+              </div>
+            </section>
+          )}
 
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (

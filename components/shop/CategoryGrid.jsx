@@ -135,9 +135,12 @@ export default function CategoryGrid({
   platform,
   isSubCategory = false,
   mainCategory,
+  hideEmpty = true,
 }) {
-  console.log("Categories:", categories); // Debug log
-  const safeCategories = Array.isArray(categories) ? categories : [];
+  // Only show categories that have products (unless hideEmpty is false)
+  const safeCategories = (Array.isArray(categories) ? categories : []).filter(
+    (c) => !hideEmpty || (c.productCount ?? 0) > 0,
+  );
   return (
     <div className="container m-0 p-0">
       <div className="row m-0 p-0">
@@ -147,7 +150,11 @@ export default function CategoryGrid({
           const categoryName = category.name || category.CatName;
           const categoryId = category.id || category.CatID;
           const categoryImage = category.image || category.CatImage;
-          const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+          const categorySlug =
+            category.slug ||
+            category.CatSlug ||
+            category.CatNameSlug ||
+            categoryName.toLowerCase().replace(/\s+/g, "-");
           const href = isSubCategory
             ? `/products/${platform}/${mainCategory}/${categorySlug}`
             : mainCategory

@@ -45,7 +45,7 @@ export default function VehicleSearch() {
         ...new Set(
           list
             .filter((v) => v.year === yearNum)
-            .map((v) => v.make)
+            .map((v) => (v.make || "").trim())
             .filter(Boolean),
         ),
       ].sort();
@@ -64,10 +64,15 @@ export default function VehicleSearch() {
 
     if (makeValue && year) {
       const yearNum = parseInt(year, 10);
+      const makeLower = makeValue.toLowerCase();
       const filteredModels = [
         ...new Set(
           list
-            .filter((v) => v.year === yearNum && v.make === makeValue)
+            .filter(
+              (v) =>
+                v.year === yearNum &&
+                (v.make || "").toLowerCase() === makeLower,
+            )
             .map((v) => v.model)
             .filter(Boolean),
         ),
@@ -105,12 +110,14 @@ export default function VehicleSearch() {
     if (!year || !make || !model) return;
 
     const yearNum = parseInt(year, 10);
+    const makeLower = (make || "").toLowerCase();
+    const modelLower = (model || "").toLowerCase();
     const match = list.find(
       (v) =>
         v.year === yearNum &&
-        v.make === make &&
-        v.model === model &&
-        (subModel ? v.subModel === subModel : true),
+        (v.make || "").toLowerCase() === makeLower &&
+        (v.model || "").toLowerCase() === modelLower &&
+        (subModel ? (v.subModel || "") === subModel : true),
     );
     if (match?.platformSlug) {
       window.location.href = `/products/${match.platformSlug}`;

@@ -62,10 +62,19 @@ export default async function ProductDetails({ params, searchParams }) {
     ? await getPlatformById(product.BodyID)
     : null;
 
-  // Fetch category info based on product's CatID
-  const currentCategory = product?.CatID
-    ? (await getCategoryById(product.CatID))[0] // getCategoryById returns an array
+  // Fetch category info based on product's CatID (use first if comma-separated)
+  const productCatId = product?.CatID
+    ? String(product.CatID).split(",")[0].trim()
     : null;
+  const currentCategory = productCatId
+    ? (await getCategoryById(productCatId))[0]
+    : null;
+
+  // Fetch parent category for breadcrumbs when product is in a sub-category (e.g. Koni under Shocks)
+  const parentCategory =
+    currentCategory?.ParentID > 0
+      ? (await getCategoryById(currentCategory.ParentID))[0]
+      : null;
 
   // Fetch main category info
   const mainCategory = currentCategory?.MainCatID
@@ -131,6 +140,15 @@ export default async function ProductDetails({ params, searchParams }) {
       : "Platform";
 
   const category = currentCategory?.CatName || "Category";
+  const mainCatSlug =
+    mainCategory?.MainCatName?.toLowerCase().replace(/\s+/g, "-") || "category";
+  const parentCatSlug = parentCategory
+    ? parentCategory.CatSlug ||
+      parentCategory.CatName?.toLowerCase().replace(/\s+/g, "-") ||
+      ""
+    : null;
+  const currentCatSlug =
+    currentCategory?.CatName?.toLowerCase().replace(/\s+/g, "-") || "category";
 
   // Breadcrumb items - simplified for gift certificates
   const breadcrumbItems = isGiftCertificate
@@ -150,20 +168,19 @@ export default async function ProductDetails({ params, searchParams }) {
         },
         {
           label: mainCategory?.MainCatName || "Category",
-          href: `/products/${platformSlug}/${
-            mainCategory?.MainCatName?.toLowerCase().replace(/\s+/g, "-") ||
-            "category"
-          }`,
+          href: `/products/${platformSlug}/${mainCatSlug}`,
         },
+        ...(parentCategory
+          ? [
+              {
+                label: parentCategory.CatName || "Category",
+                href: `/products/${platformSlug}/${mainCatSlug}/${parentCatSlug}`,
+              },
+            ]
+          : []),
         {
           label: currentCategory?.CatName || category,
-          href: `/products/${platformSlug}/${
-            mainCategory?.MainCatName?.toLowerCase().replace(/\s+/g, "-") ||
-            "category"
-          }/${
-            currentCategory?.CatName?.toLowerCase().replace(/\s+/g, "-") ||
-            "category"
-          }`,
+          href: `/products/${platformSlug}/${mainCatSlug}/${currentCatSlug}`,
         },
         {
           label: product?.PartNumber || "Product",

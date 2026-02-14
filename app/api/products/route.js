@@ -8,6 +8,7 @@ import {
   getPlatformById,
   getMainCategoryIdBySlugAndPlatform,
   getCategoryIdsBySlugAndMainCat,
+  getCategoryIdsWithDescendants,
 } from "@/lib/queries";
 
 export async function GET(request) {
@@ -19,7 +20,7 @@ export async function GET(request) {
   if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
     return NextResponse.json(
       { error: "Invalid page or limit" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -63,7 +64,7 @@ export async function GET(request) {
   if (!mainCategoryId && mainCategory && platformId && platformSlug) {
     mainCategoryId = await getMainCategoryIdBySlugAndPlatform(
       platformSlug,
-      mainCategory
+      mainCategory,
     );
   }
 
@@ -75,17 +76,20 @@ export async function GET(request) {
   console.log("platform", platform);
 
   // Get categoryId(s) if category slug is provided (can be multiple when slug is duplicated)
+  // includeDescendants=true returns products from the category AND its sub-categories (e.g. Shocks + Koni + Viking)
+  const includeDescendants =
+    searchParams.get("includeDescendants") === "true" ||
+    searchParams.get("includeDescendants") === "1";
   if (!categoryId && category && mainCategoryId) {
-    const categoryIds = await getCategoryIdsBySlugAndMainCat(
-      mainCategoryId,
-      category
-    );
+    const categoryIds = includeDescendants
+      ? await getCategoryIdsWithDescendants(mainCategoryId, category)
+      : await getCategoryIdsBySlugAndMainCat(mainCategoryId, category);
     categoryId =
       categoryIds.length === 1
         ? categoryIds[0]
         : categoryIds.length > 1
-        ? categoryIds
-        : null;
+          ? categoryIds
+          : null;
   }
 
   // If we have a specific category (either by ID or slug), don't use mainCategoryId

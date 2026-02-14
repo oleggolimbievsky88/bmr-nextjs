@@ -54,44 +54,47 @@ export default function ({
         </div>
       </div>
       {/* Only show Product Types if categories are provided and not empty */}
-      {categories && categories.length > 0 && (
-        <div className="widget-facet wd-categories">
-          <div
-            className="facet-title"
-            data-bs-target="#product-types"
-            data-bs-toggle="collapse"
-            aria-expanded="true"
-            aria-controls="product-types"
-          >
-            <h5 className="sidebar-section-title">Product Types</h5>
-            <span className="icon icon-arrow-up" />
+      {categories &&
+        categories.filter((c) => (c.productCount ?? 0) > 0).length > 0 && (
+          <div className="widget-facet wd-categories">
+            <div
+              className="facet-title"
+              data-bs-target="#product-types"
+              data-bs-toggle="collapse"
+              aria-expanded="true"
+              aria-controls="product-types"
+            >
+              <h5 className="sidebar-section-title">Product Types</h5>
+              <span className="icon icon-arrow-up" />
+            </div>
+            <div id="product-types" className="collapse show">
+              <ul className="list-categoris mb_36">
+                {categories
+                  .filter((c) => (c.productCount ?? 0) > 0)
+                  .map((category, index) => {
+                    const catId = category.id || category.CatID;
+                    const catSlug = category.CatSlug || category.slug;
+                    return (
+                      <li
+                        key={catId || index}
+                        className={`cate-item${
+                          selectedCatId === catId ? " active" : ""
+                        }`}
+                        onClick={() => onCategorySelect(catId)}
+                      >
+                        <Link
+                          href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
+                        >
+                          <span>{category.name || category.CatName}</span>&nbsp;
+                          <span>({category.productCount || 0})</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
           </div>
-          <div id="product-types" className="collapse show">
-            <ul className="list-categoris mb_36">
-              {categories.map((category, index) => {
-                const catId = category.id || category.CatID;
-                const catSlug = category.CatSlug || category.slug;
-                return (
-                  <li
-                    key={catId || index}
-                    className={`cate-item${
-                      selectedCatId === catId ? " active" : ""
-                    }`}
-                    onClick={() => onCategorySelect(catId)}
-                  >
-                    <Link
-                      href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
-                    >
-                      <span>{category.name || category.CatName}</span>&nbsp;
-                      <span>({category.productCount || 0})</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-      )}
+        )}
       {/* <div className="widget-facet">
         <div
           className="facet-title"
@@ -205,7 +208,11 @@ export default function ({
               </div>
               <div className="iconbox-content">
                 <h4 className="iconbox-title">90 Days Return</h4>
-                <p className="iconbox-desc">You have 90 days to return.<br />Subject to a 15% restocking fee.</p>
+                <p className="iconbox-desc">
+                  You have 90 days to return.
+                  <br />
+                  Subject to a 15% restocking fee.
+                </p>
               </div>
             </li>
           </ul>

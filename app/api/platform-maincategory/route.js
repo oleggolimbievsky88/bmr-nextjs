@@ -17,7 +17,7 @@ export async function GET(request) {
     if (!platform || !mainCategory) {
       return NextResponse.json(
         { error: "Platform and mainCategory are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,19 +26,19 @@ export async function GET(request) {
     if (!platformInfo) {
       return NextResponse.json(
         { error: "Platform not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Get main category ID using the correct function
     const mainCategoryId = await getMainCategoryIdBySlugAndPlatform(
       platform,
-      mainCategory
+      mainCategory,
     );
     if (!mainCategoryId) {
       return NextResponse.json(
         { error: "Main category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -62,6 +62,7 @@ export async function GET(request) {
         CatSlug: cat.CatSlug ?? cat.CatNameSlug,
         CatImage: cat.CatImage,
         MainCatID: cat.MainCatID,
+        ParentID: cat.ParentID ?? 0,
         productCount: cat.productCount ?? 0,
         id: cat.CatID,
         name: cat.CatName,
@@ -75,7 +76,7 @@ export async function GET(request) {
     console.error("API Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
