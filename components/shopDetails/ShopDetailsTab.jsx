@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { getInstallUrl } from "@/lib/assets";
 
 export default function ShopDetailsTab({ product, vehicles = [] }) {
@@ -138,7 +137,7 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                 {currentTab === "installation" && hasInstallation && (
                   <div className="widget-content-inner active">
                     <div>
-                      <Link
+                      <a
                         href={getInstallUrl(product.Instructions)}
                         className="btn btn-danger install-btn"
                         style={{
@@ -150,7 +149,7 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                       >
                         View / Download {product?.PartNumber} Installation
                         Instructions
-                      </Link>
+                      </a>
                     </div>
                   </div>
                 )}

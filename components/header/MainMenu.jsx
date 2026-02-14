@@ -156,6 +156,7 @@ export default function MainMenu({ initialMenuData }) {
                             src={platformItem.image}
                             alt={platformItem.heading}
                             className="img-fluid"
+                            referrerPolicy="no-referrer"
                             style={{
                               objectFit: "contain",
                               maxHeight: "50px",

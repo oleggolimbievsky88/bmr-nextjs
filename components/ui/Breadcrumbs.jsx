@@ -25,6 +25,22 @@ export default function Breadcrumbs({ items, params }) {
                       <span className="text breadcrumb-item active">
                         {item.label}
                       </span>
+                    ) : /^\/siteart\//.test(item.href) ||
+                      (typeof item.href === "string" &&
+                        item.href.startsWith("http")) ? (
+                      <a
+                        href={item.href}
+                        className="text breadcrumb-item"
+                        {...(typeof item.href === "string" &&
+                        item.href.startsWith("http")
+                          ? {
+                              target: "_blank",
+                              rel: "noopener noreferrer",
+                            }
+                          : {})}
+                      >
+                        {item.label}
+                      </a>
                     ) : (
                       <Link href={item.href} className="text breadcrumb-item">
                         {item.label}
