@@ -1,6 +1,10 @@
 import React from "react";
 
-export default function PageHeader({ title, subtitle = null }) {
+export default function PageHeader({
+  title,
+  subtitle = null,
+  subtitleAsSecondary = false,
+}) {
   if (!title) return null;
   if (title === "ABOUT BMR") return null;
 
@@ -17,12 +21,15 @@ export default function PageHeader({ title, subtitle = null }) {
           <div className="container">
             <h1 className="installation-hero-title">
               {title}
-              {subtitle && (
-                <>
-                  <br />
-                  {subtitle}
-                </>
-              )}
+              {subtitle &&
+                (subtitleAsSecondary ? (
+                  <span className="installation-hero-subtitle">{subtitle}</span>
+                ) : (
+                  <>
+                    <br />
+                    {subtitle}
+                  </>
+                ))}
             </h1>
           </div>
         </div>

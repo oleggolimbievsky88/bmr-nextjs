@@ -10,6 +10,7 @@
     "mcp:server": "node --no-warnings mcp-server.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.990.0",
     "@emailjs/browser": "^4.4.1",
     "@google/model-viewer": "^3.5.0",
     "@modelcontextprotocol/sdk": "^1.25.0",

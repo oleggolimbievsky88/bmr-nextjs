@@ -939,10 +939,15 @@ export default function AdminPlatformsPage() {
 
       {editingBody && (
         <div
-          className="modal show d-block"
+          className="modal show d-block admin-edit-modal"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
         >
-          <div className="modal-dialog">
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Edit platform</h5>
@@ -1177,10 +1182,15 @@ export default function AdminPlatformsPage() {
 
       {editingVehicle && (
         <div
-          className="modal show d-block"
+          className="modal show d-block admin-edit-modal"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
         >
-          <div className="modal-dialog">
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Edit vehicle</h5>

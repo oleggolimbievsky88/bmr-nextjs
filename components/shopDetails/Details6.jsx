@@ -17,17 +17,24 @@ import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 
-export default function ou({ product, initialColor, searchParams }) {
+export default function ou({
+  product,
+  initialColor,
+  searchParams,
+  sizeVariants = [],
+}) {
   const router = useRouter();
   const { addProductToCart, isAddedToCartProducts, clearCart } =
     useContextElement();
 
-  console.log("Details6 component rendered with product:", product);
-  console.log("Product Color field:", product?.Color);
-  console.log("Initial color from query param:", initialColor);
-  console.log("Current searchParams:", searchParams);
-
   const [currentColor, setCurrentColor] = useState(null);
+  const [selectedSizeVariant, setSelectedSizeVariant] = useState(null);
+
+  const effectiveProduct =
+    selectedSizeVariant && sizeVariants.length > 1
+      ? selectedSizeVariant
+      : product;
+  const displayProduct = effectiveProduct || product;
   const [currentGrease, setCurrentGrease] = useState(undefined);
   const [currentAnglefinder, setCurrentAnglefinder] = useState(undefined);
   const maxQty = (product?.Qty || 0) > 0 ? parseInt(product.Qty, 10) : null;
@@ -40,10 +47,22 @@ export default function ou({ product, initialColor, searchParams }) {
     }
   }, [maxQty, product?.ProductID, quantity]);
 
+  // Set default size variant when sizeVariants loads (match current product)
+  useEffect(() => {
+    if (sizeVariants.length > 1) {
+      const match =
+        sizeVariants.find((v) => v.ProductID === product?.ProductID) ||
+        sizeVariants[0];
+      setSelectedSizeVariant(match);
+    } else {
+      setSelectedSizeVariant(null);
+    }
+  }, [sizeVariants, product?.ProductID]);
+
   const [colorOptions, setColorOptions] = useState([]);
   const [greaseOptions, setGreaseOptions] = useState([]);
   const [anglefinderOptions, setAnglefinderOptions] = useState([]);
-  const [selectedHardwarePacks, setSelectedHardwarePacks] = useState([]);
+  const [selectedHardwarePacks, setSelectedHardwarePacks] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
 
@@ -348,6 +367,15 @@ export default function ou({ product, initialColor, searchParams }) {
       newErrors.anglefinder = "Please select an angle finder option";
     }
 
+    // Require hardware selection if product has hardware pack options
+    if (
+      product.hardwarePackProducts &&
+      product.hardwarePackProducts.length > 0 &&
+      selectedHardwarePacks === undefined
+    ) {
+      newErrors.hardware = "Please select a hardware option";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -382,12 +410,17 @@ export default function ou({ product, initialColor, searchParams }) {
       selectedHardwarePacks: selectedHardwarePacks,
     });
 
-    addProductToCart(product.ProductID, quantity, {
+    const productToAdd = displayProduct || product;
+    addProductToCart(productToAdd.ProductID, quantity, {
       selectedColor: currentColor,
       selectedGrease: currentGrease,
       selectedAnglefinder: currentAnglefinder,
       selectedHardware: null,
-      selectedHardwarePacks: selectedHardwarePacks,
+      selectedHardwarePacks: selectedHardwarePacks ?? [],
+      selectedSize:
+        sizeVariants.length > 1 && productToAdd?.sizeLabel
+          ? productToAdd.sizeLabel
+          : undefined,
     });
   };
 
@@ -454,7 +487,7 @@ export default function ou({ product, initialColor, searchParams }) {
               <div className="tf-product-media-wrap thumbs-bottom sticky-top tf-product-media-wrap-zoom">
                 <div className="thumbs-slider">
                   <Slider3BottomThumbs
-                    productId={product.ProductID}
+                    productId={displayProduct?.ProductID || product?.ProductID}
                     selectedColor={currentColor}
                   />
                 </div>
@@ -468,7 +501,9 @@ export default function ou({ product, initialColor, searchParams }) {
               >
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
-                    <h5>{product?.ProductName}</h5>
+                    <h5>
+                      {displayProduct?.ProductName || product?.ProductName}
+                    </h5>
                   </div>
                   <div className="tf-breadcrumb-list">
                     <span>
@@ -481,207 +516,221 @@ export default function ou({ product, initialColor, searchParams }) {
                           paddingBottom: 0,
                         }}
                       >
-                        Part Number: {product.PartNumber}
+                        Part Number:{" "}
+                        {displayProduct?.PartNumber || product?.PartNumber}
                       </h6>
                     </span>
                   </div>
 
                   <div className="tf-product-info-price">
                     <div className="price-on-sale">
-                      {product.Price ? `$${product.Price}` : "Price"}
+                      {displayProduct?.Price
+                        ? `$${displayProduct.Price}`
+                        : "Price"}
                     </div>
                   </div>
 
-                  <div
-                    className="tf-product-info-variant-picker"
-                    style={{ borderRadius: "20px", padding: "16px" }}
-                  >
-                    {/* Show message if no options are available */}
-                    {colorOptions.length === 0 &&
-                      greaseOptions.length === 0 &&
-                      anglefinderOptions.length === 0 &&
-                      (!product.hardwarePackProducts ||
-                        product.hardwarePackProducts.length === 0) && (
-                        <div className="text-center py-3">
-                          <p className="text-muted">
-                            No product options available at this time.
-                          </p>
-                        </div>
-                      )}
-
-                    {/* Color Selection */}
-                    {colorOptions.length > 0 && (
-                      <div
-                        className="variant-picker-item"
-                        style={{ borderRadius: "20px" }}
-                      >
-                        <div className="variant-picker-label">
-                          Color:{" "}
-                          <span className="fw-6 variant-picker-label-value">
-                            {currentColor
-                              ? currentColor.ColorName || currentColor.value
-                              : "Please select"}
-                          </span>
-                          {errors.color && (
-                            <span className="text-danger ms-2">
-                              {errors.color}
+                  {(sizeVariants.length > 1 ||
+                    colorOptions.length > 0 ||
+                    greaseOptions.length > 0 ||
+                    anglefinderOptions.length > 0 ||
+                    (product.hardwarePackProducts &&
+                      product.hardwarePackProducts.length > 0)) && (
+                    <div
+                      className="tf-product-info-variant-picker"
+                      style={{ borderRadius: "20px", padding: "16px" }}
+                    >
+                      {/* Size Selection (merchandise) */}
+                      {sizeVariants.length > 1 && (
+                        <div
+                          className="variant-picker-item"
+                          style={{ borderRadius: "20px", marginBottom: "1rem" }}
+                        >
+                          <div className="variant-picker-label">
+                            Size:{" "}
+                            <span className="fw-6 variant-picker-label-value">
+                              {selectedSizeVariant?.sizeLabel || "Select size"}
                             </span>
-                          )}
-                        </div>
-                        <form className="variant-picker-values">
-                          {/* Hidden radio button for when no color is selected */}
-                          <input
-                            type="radio"
-                            name="color"
-                            id="color-none"
-                            checked={!currentColor}
-                            onChange={() => {}}
-                            style={{ display: "none" }}
-                          />
-                          {colorOptions.map((color) => {
-                            console.log("Rendering color option:", color);
-                            console.log("Current color state:", currentColor);
-                            const isSelected =
-                              currentColor &&
-                              (currentColor.ColorID === color.ColorID ||
-                                currentColor.id === color.id);
-                            console.log("Is this color selected?", isSelected);
-                            return (
-                              <React.Fragment key={color.ColorID || color.id}>
-                                {color.ColorName}
+                          </div>
+                          <form className="variant-picker-values">
+                            {sizeVariants.map((v) => (
+                              <React.Fragment key={v.ProductID}>
                                 <input
                                   type="radio"
-                                  name="color"
-                                  id={`color-${color.ColorID || color.id}`}
-                                  checked={isSelected || false}
-                                  onChange={() => {
-                                    console.log(
-                                      "=== COLOR SELECTION DEBUG ===",
-                                    );
-                                    console.log("Color selected:", color);
-                                    console.log("Color ID:", color.ColorID);
-                                    console.log("Color Name:", color.ColorName);
-
-                                    // Set the current color
-                                    setCurrentColor(color);
-
-                                    // Clear any color-related errors
-                                    clearError("color");
-
-                                    // Update the URL with the selected color
-                                    updateColorInURL(color);
-
-                                    console.log(
-                                      "=== END COLOR SELECTION DEBUG ===",
-                                    );
-                                  }}
+                                  name="product-size"
+                                  id={`size-${v.ProductID}`}
+                                  checked={
+                                    selectedSizeVariant?.ProductID ===
+                                    v.ProductID
+                                  }
+                                  onChange={() => setSelectedSizeVariant(v)}
                                 />
                                 <label
-                                  className={`hover-tooltip radius-60 ${
-                                    errors.color ? "error" : ""
-                                  } ${isSelected ? "selected" : ""}`}
-                                  htmlFor={`color-${color.ColorID || color.id}`}
-                                  data-value={color.ColorName || color.value}
-                                  onClick={() => {
-                                    console.log(
-                                      "Label clicked for color:",
-                                      color.ColorName,
-                                    );
-                                    // Force the radio button to be selected
-                                    const radioButton = document.getElementById(
-                                      `color-${color.ColorID || color.id}`,
-                                    );
-                                    if (radioButton) {
-                                      radioButton.checked = true;
-                                      // Set the current color to the full color object
-                                      setCurrentColor(color);
-                                      console.log(
-                                        "Radio button checked:",
-                                        radioButton,
-                                      );
-                                    }
-                                  }}
+                                  htmlFor={`size-${v.ProductID}`}
+                                  className="style-text"
                                 >
-                                  <span
-                                    className={`btn-checkbox ${
-                                      color.cssClass ||
-                                      (color.ColorName || color.value)
-                                        .toLowerCase()
-                                        .replace(/\s+/g, "-")
-                                    }`}
-                                  />
-                                  <span className="tooltip">
-                                    {color.ColorName || color.value}
-                                  </span>
+                                  <p>{v.sizeLabel}</p>
                                 </label>
                               </React.Fragment>
-                            );
-                          })}
-                        </form>
-                      </div>
-                    )}
-
-                    {/* Grease Selection */}
-                    {greaseOptions.length > 0 && (
-                      <div
-                        className="variant-picker-item"
-                        style={{ borderRadius: "20px" }}
-                      >
-                        <div className="d-flex justify-content-between align-items-center">
+                            ))}
+                          </form>
+                        </div>
+                      )}
+                      {/* Color Selection */}
+                      {colorOptions.length > 0 && (
+                        <div
+                          className="variant-picker-item"
+                          style={{ borderRadius: "20px" }}
+                        >
                           <div className="variant-picker-label">
-                            Grease:{" "}
+                            Color:{" "}
                             <span className="fw-6 variant-picker-label-value">
-                              {currentGrease === undefined
-                                ? "Please select"
-                                : currentGrease === null
-                                  ? "No Thanks"
-                                  : currentGrease
-                                    ? currentGrease.GreaseName ||
-                                      currentGrease.value
-                                    : "Please select"}
+                              {currentColor
+                                ? currentColor.ColorName || currentColor.value
+                                : "Please select"}
                             </span>
-                            {errors.grease && (
+                            {errors.color && (
                               <span className="text-danger ms-2">
-                                {errors.grease}
+                                {errors.color}
                               </span>
                             )}
                           </div>
-                        </div>
-                        <form className="variant-picker-values">
-                          {/* No Thanks option */}
-                          <React.Fragment key="grease-none">
+                          <form className="variant-picker-values">
+                            {/* Hidden radio button for when no color is selected */}
                             <input
                               type="radio"
-                              name="grease"
-                              id="grease-none"
-                              checked={currentGrease === null}
-                              onChange={() => {
-                                setCurrentGrease(null);
-                                clearError("grease");
-                              }}
+                              name="color"
+                              id="color-none"
+                              checked={!currentColor}
+                              onChange={() => {}}
+                              style={{ display: "none" }}
                             />
-                            <label
-                              className={`style-text ${
-                                errors.grease ? "error" : ""
-                              }`}
-                              htmlFor="grease-none"
-                              data-value="No Thanks"
-                            >
-                              <p>No Thanks</p>
-                            </label>
-                          </React.Fragment>
-                          {greaseOptions.map((grease) => (
-                            <React.Fragment key={grease.GreaseID || grease.id}>
+                            {colorOptions.map((color) => {
+                              console.log("Rendering color option:", color);
+                              console.log("Current color state:", currentColor);
+                              const isSelected =
+                                currentColor &&
+                                (currentColor.ColorID === color.ColorID ||
+                                  currentColor.id === color.id);
+                              console.log(
+                                "Is this color selected?",
+                                isSelected,
+                              );
+                              return (
+                                <React.Fragment key={color.ColorID || color.id}>
+                                  {color.ColorName}
+                                  <input
+                                    type="radio"
+                                    name="color"
+                                    id={`color-${color.ColorID || color.id}`}
+                                    checked={isSelected || false}
+                                    onChange={() => {
+                                      console.log(
+                                        "=== COLOR SELECTION DEBUG ===",
+                                      );
+                                      console.log("Color selected:", color);
+                                      console.log("Color ID:", color.ColorID);
+                                      console.log(
+                                        "Color Name:",
+                                        color.ColorName,
+                                      );
+
+                                      // Set the current color
+                                      setCurrentColor(color);
+
+                                      // Clear any color-related errors
+                                      clearError("color");
+
+                                      // Update the URL with the selected color
+                                      updateColorInURL(color);
+
+                                      console.log(
+                                        "=== END COLOR SELECTION DEBUG ===",
+                                      );
+                                    }}
+                                  />
+                                  <label
+                                    className={`hover-tooltip radius-60 ${
+                                      errors.color ? "error" : ""
+                                    } ${isSelected ? "selected" : ""}`}
+                                    htmlFor={`color-${color.ColorID || color.id}`}
+                                    data-value={color.ColorName || color.value}
+                                    onClick={() => {
+                                      console.log(
+                                        "Label clicked for color:",
+                                        color.ColorName,
+                                      );
+                                      // Force the radio button to be selected
+                                      const radioButton =
+                                        document.getElementById(
+                                          `color-${color.ColorID || color.id}`,
+                                        );
+                                      if (radioButton) {
+                                        radioButton.checked = true;
+                                        // Set the current color to the full color object
+                                        setCurrentColor(color);
+                                        console.log(
+                                          "Radio button checked:",
+                                          radioButton,
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    <span
+                                      className={`btn-checkbox ${
+                                        color.cssClass ||
+                                        (color.ColorName || color.value)
+                                          .toLowerCase()
+                                          .replace(/\s+/g, "-")
+                                      }`}
+                                    />
+                                    <span className="tooltip">
+                                      {color.ColorName || color.value}
+                                    </span>
+                                  </label>
+                                </React.Fragment>
+                              );
+                            })}
+                          </form>
+                        </div>
+                      )}
+
+                      {/* Grease Selection */}
+                      {greaseOptions.length > 0 && (
+                        <div
+                          className="variant-picker-item"
+                          style={{ borderRadius: "20px" }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="variant-picker-label">
+                              Grease:{" "}
+                              <span className="fw-6 variant-picker-label-value">
+                                {currentGrease === undefined
+                                  ? "Please select"
+                                  : currentGrease === null
+                                    ? "No Thanks"
+                                    : currentGrease
+                                      ? currentGrease.GreaseName ||
+                                        currentGrease.value
+                                      : "Please select"}
+                              </span>
+                              {errors.grease && (
+                                <span className="text-danger ms-2">
+                                  {errors.grease}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <form className="variant-picker-values">
+                            {/* No Thanks option */}
+                            <React.Fragment key="grease-none">
                               <input
                                 type="radio"
                                 name="grease"
-                                id={`grease-${grease.GreaseID || grease.id}`}
-                                checked={
-                                  currentGrease?.GreaseID === grease.GreaseID ||
-                                  false
-                                }
+                                id="grease-none"
+                                checked={currentGrease === null}
                                 onChange={() => {
-                                  setCurrentGrease(grease);
+                                  setCurrentGrease(null);
                                   clearError("grease");
                                 }}
                               />
@@ -689,84 +738,87 @@ export default function ou({ product, initialColor, searchParams }) {
                                 className={`style-text ${
                                   errors.grease ? "error" : ""
                                 }`}
-                                htmlFor={`grease-${
-                                  grease.GreaseID || grease.id
-                                }`}
-                                data-value={grease.GreaseName || grease.value}
+                                htmlFor="grease-none"
+                                data-value="No Thanks"
                               >
-                                <p>
-                                  {grease.GreaseName || grease.value}{" "}
-                                  {(grease.GreasePrice || grease.price) !== "0"
-                                    ? `(+$${
-                                        grease.GreasePrice || grease.price
-                                      })`
-                                    : ""}
-                                </p>
+                                <p>No Thanks</p>
                               </label>
                             </React.Fragment>
-                          ))}
-                        </form>
-                      </div>
-                    )}
-
-                    {/* Angle Finder Selection */}
-                    {anglefinderOptions.length > 0 && (
-                      <div
-                        className="variant-picker-item"
-                        style={{ borderRadius: "20px" }}
-                      >
-                        <div className="variant-picker-label">
-                          Angle Finder:{" "}
-                          <span className="fw-6 variant-picker-label-value">
-                            {currentAnglefinder === undefined
-                              ? "Please select"
-                              : currentAnglefinder === null
-                                ? "No Thanks"
-                                : currentAnglefinder
-                                  ? currentAnglefinder.AngleName
-                                  : "Please select"}
-                          </span>
-                          {errors.anglefinder && (
-                            <span className="text-danger ms-2">
-                              {errors.anglefinder}
-                            </span>
-                          )}
+                            {greaseOptions.map((grease) => (
+                              <React.Fragment
+                                key={grease.GreaseID || grease.id}
+                              >
+                                <input
+                                  type="radio"
+                                  name="grease"
+                                  id={`grease-${grease.GreaseID || grease.id}`}
+                                  checked={
+                                    currentGrease?.GreaseID ===
+                                      grease.GreaseID || false
+                                  }
+                                  onChange={() => {
+                                    setCurrentGrease(grease);
+                                    clearError("grease");
+                                  }}
+                                />
+                                <label
+                                  className={`style-text ${
+                                    errors.grease ? "error" : ""
+                                  }`}
+                                  htmlFor={`grease-${
+                                    grease.GreaseID || grease.id
+                                  }`}
+                                  data-value={grease.GreaseName || grease.value}
+                                >
+                                  <p>
+                                    {grease.GreaseName || grease.value}{" "}
+                                    {(grease.GreasePrice || grease.price) !==
+                                    "0"
+                                      ? `(+$${
+                                          grease.GreasePrice || grease.price
+                                        })`
+                                      : ""}
+                                  </p>
+                                </label>
+                              </React.Fragment>
+                            ))}
+                          </form>
                         </div>
-                        <form className="variant-picker-values">
-                          {/* No Thanks option */}
-                          <React.Fragment key="anglefinder-none">
-                            <input
-                              type="radio"
-                              name="anglefinder"
-                              id="anglefinder-none"
-                              checked={currentAnglefinder === null}
-                              onChange={() => {
-                                setCurrentAnglefinder(null);
-                                clearError("anglefinder");
-                              }}
-                            />
-                            <label
-                              className={`style-text ${
-                                errors.anglefinder ? "error" : ""
-                              }`}
-                              htmlFor="anglefinder-none"
-                              data-value="No Thanks"
-                            >
-                              <p>No Thanks</p>
-                            </label>
-                          </React.Fragment>
-                          {anglefinderOptions.map((anglefinder) => (
-                            <React.Fragment key={anglefinder.AngleID}>
+                      )}
+
+                      {/* Angle Finder Selection */}
+                      {anglefinderOptions.length > 0 && (
+                        <div
+                          className="variant-picker-item"
+                          style={{ borderRadius: "20px" }}
+                        >
+                          <div className="variant-picker-label">
+                            Angle Finder:{" "}
+                            <span className="fw-6 variant-picker-label-value">
+                              {currentAnglefinder === undefined
+                                ? "Please select"
+                                : currentAnglefinder === null
+                                  ? "No Thanks"
+                                  : currentAnglefinder
+                                    ? currentAnglefinder.AngleName
+                                    : "Please select"}
+                            </span>
+                            {errors.anglefinder && (
+                              <span className="text-danger ms-2">
+                                {errors.anglefinder}
+                              </span>
+                            )}
+                          </div>
+                          <form className="variant-picker-values">
+                            {/* No Thanks option */}
+                            <React.Fragment key="anglefinder-none">
                               <input
                                 type="radio"
                                 name="anglefinder"
-                                id={`anglefinder-${anglefinder.AngleID}`}
-                                checked={
-                                  currentAnglefinder?.AngleID ===
-                                    anglefinder.AngleID || false
-                                }
+                                id="anglefinder-none"
+                                checked={currentAnglefinder === null}
                                 onChange={() => {
-                                  setCurrentAnglefinder(anglefinder);
+                                  setCurrentAnglefinder(null);
                                   clearError("anglefinder");
                                 }}
                               />
@@ -774,96 +826,145 @@ export default function ou({ product, initialColor, searchParams }) {
                                 className={`style-text ${
                                   errors.anglefinder ? "error" : ""
                                 }`}
-                                htmlFor={`anglefinder-${anglefinder.AngleID}`}
-                                data-value={anglefinder.AngleName}
+                                htmlFor="anglefinder-none"
+                                data-value="No Thanks"
                               >
-                                <p>
-                                  {anglefinder.AngleName}{" "}
-                                  {anglefinder.AnglePrice !== "0"
-                                    ? `(+$${anglefinder.AnglePrice})`
-                                    : ""}
-                                </p>
+                                <p>No Thanks</p>
                               </label>
                             </React.Fragment>
-                          ))}
-                        </form>
-                      </div>
-                    )}
-
-                    {/* Hardware: No Thanks + hardware packs from product.hardwarePackProducts */}
-                    {product.hardwarePackProducts &&
-                      product.hardwarePackProducts.length > 0 && (
-                        <div
-                          className="variant-picker-item"
-                          style={{ borderRadius: "20px" }}
-                        >
-                          <div className="variant-picker-label">
-                            Hardware:{" "}
-                            <span className="fw-6 variant-picker-label-value">
-                              {selectedHardwarePacks.length === 0
-                                ? "No Thanks"
-                                : selectedHardwarePacks.length === 1
-                                  ? `${selectedHardwarePacks[0].ProductName}${selectedHardwarePacks[0].Price && parseFloat(selectedHardwarePacks[0].Price) > 0 ? ` (+$${parseFloat(selectedHardwarePacks[0].Price).toFixed(2)})` : ""}`
-                                  : `${selectedHardwarePacks.length} pack(s) selected`}
-                            </span>
-                          </div>
-                          <form className="variant-picker-values">
-                            <label
-                              className="style-text"
-                              style={{
-                                cursor: "pointer",
-                                borderRadius: "20px",
-                              }}
-                              onClick={() => setSelectedHardwarePacks([])}
-                            >
-                              <input
-                                type="radio"
-                                name="hardware"
-                                readOnly
-                                checked={selectedHardwarePacks.length === 0}
-                              />
-                              <p>No Thanks</p>
-                            </label>
-                            {product.hardwarePackProducts.map((pack) => {
-                              const isSelected = selectedHardwarePacks.some(
-                                (p) => p.ProductID === pack.ProductID,
-                              );
-                              return (
-                                <label
-                                  key={pack.ProductID}
-                                  className="style-text d-flex align-items-center gap-2"
-                                  style={{
-                                    cursor: "pointer",
-                                    borderRadius: "20px",
+                            {anglefinderOptions.map((anglefinder) => (
+                              <React.Fragment key={anglefinder.AngleID}>
+                                <input
+                                  type="radio"
+                                  name="anglefinder"
+                                  id={`anglefinder-${anglefinder.AngleID}`}
+                                  checked={
+                                    currentAnglefinder?.AngleID ===
+                                      anglefinder.AngleID || false
+                                  }
+                                  onChange={() => {
+                                    setCurrentAnglefinder(anglefinder);
+                                    clearError("anglefinder");
                                   }}
+                                />
+                                <label
+                                  className={`style-text ${
+                                    errors.anglefinder ? "error" : ""
+                                  }`}
+                                  htmlFor={`anglefinder-${anglefinder.AngleID}`}
+                                  data-value={anglefinder.AngleName}
                                 >
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                    onChange={() => {
-                                      setSelectedHardwarePacks((prev) =>
-                                        isSelected
-                                          ? prev.filter(
-                                              (p) =>
-                                                p.ProductID !== pack.ProductID,
-                                            )
-                                          : [...prev, pack],
-                                      );
-                                    }}
-                                  />
-                                  <span>
-                                    {pack.ProductName}{" "}
-                                    {pack.Price && parseFloat(pack.Price) > 0
-                                      ? `(+$${parseFloat(pack.Price).toFixed(2)})`
+                                  <p>
+                                    {anglefinder.AngleName}{" "}
+                                    {anglefinder.AnglePrice !== "0"
+                                      ? `(+$${anglefinder.AnglePrice})`
                                       : ""}
-                                  </span>
+                                  </p>
                                 </label>
-                              );
-                            })}
+                              </React.Fragment>
+                            ))}
                           </form>
                         </div>
                       )}
-                  </div>
+
+                      {/* Hardware: No Thanks + hardware packs from product.hardwarePackProducts */}
+                      {product.hardwarePackProducts &&
+                        product.hardwarePackProducts.length > 0 && (
+                          <div
+                            className="variant-picker-item"
+                            style={{ borderRadius: "20px" }}
+                          >
+                            <div className="variant-picker-label">
+                              Hardware:{" "}
+                              <span className="fw-6 variant-picker-label-value">
+                                {selectedHardwarePacks === undefined
+                                  ? "Please select"
+                                  : selectedHardwarePacks.length === 0
+                                    ? "No Thanks"
+                                    : selectedHardwarePacks.length === 1
+                                      ? `${selectedHardwarePacks[0].ProductName}${selectedHardwarePacks[0].Price && parseFloat(selectedHardwarePacks[0].Price) > 0 ? ` (+$${parseFloat(selectedHardwarePacks[0].Price).toFixed(2)})` : ""}`
+                                      : `${selectedHardwarePacks.length} pack(s) selected`}
+                              </span>
+                              {errors.hardware && (
+                                <span className="text-danger ms-2">
+                                  {errors.hardware}
+                                </span>
+                              )}
+                            </div>
+                            <form className="variant-picker-values">
+                              <label
+                                className={`style-text ${
+                                  errors.hardware ? "error" : ""
+                                }`}
+                                style={{
+                                  cursor: "pointer",
+                                  borderRadius: "20px",
+                                }}
+                                onClick={() => {
+                                  setSelectedHardwarePacks([]);
+                                  clearError("hardware");
+                                }}
+                              >
+                                <input
+                                  type="radio"
+                                  name="hardware"
+                                  readOnly
+                                  checked={
+                                    selectedHardwarePacks !== undefined &&
+                                    selectedHardwarePacks.length === 0
+                                  }
+                                />
+                                <p>No Thanks</p>
+                              </label>
+                              {product.hardwarePackProducts.map((pack) => {
+                                const isSelected =
+                                  Array.isArray(selectedHardwarePacks) &&
+                                  selectedHardwarePacks.some(
+                                    (p) => p.ProductID === pack.ProductID,
+                                  );
+                                return (
+                                  <label
+                                    key={pack.ProductID}
+                                    className={`style-text d-flex align-items-center gap-2 ${
+                                      errors.hardware ? "error" : ""
+                                    }`}
+                                    style={{
+                                      cursor: "pointer",
+                                      borderRadius: "20px",
+                                    }}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={() => {
+                                        setSelectedHardwarePacks((prev) => {
+                                          const current =
+                                            prev === undefined ? [] : prev;
+                                          return isSelected
+                                            ? current.filter(
+                                                (p) =>
+                                                  p.ProductID !==
+                                                  pack.ProductID,
+                                              )
+                                            : [...current, pack];
+                                        });
+                                        clearError("hardware");
+                                      }}
+                                    />
+                                    <span>
+                                      {pack.ProductName}{" "}
+                                      {pack.Price && parseFloat(pack.Price) > 0
+                                        ? `(+$${parseFloat(pack.Price).toFixed(2)})`
+                                        : ""}
+                                    </span>
+                                  </label>
+                                );
+                              })}
+                            </form>
+                          </div>
+                        )}
+                    </div>
+                  )}
 
                   <div
                     className="tf-product-info-quantity"
@@ -901,8 +1002,8 @@ export default function ou({ product, initialColor, searchParams }) {
                                 ? (parseFloat(currentAnglefinder.AnglePrice) ||
                                     0) * (quantity || 1)
                                 : 0) +
-                              (selectedHardwarePacks.length > 0
-                                ? selectedHardwarePacks.reduce(
+                              ((selectedHardwarePacks ?? []).length > 0
+                                ? (selectedHardwarePacks ?? []).reduce(
                                     (sum, p) =>
                                       sum +
                                       (parseFloat(p.Price) || 0) *

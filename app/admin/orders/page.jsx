@@ -925,6 +925,18 @@ export default function AdminOrdersPage() {
                                   {item.color}
                                 </span>
                               )}
+                            {item.size != null &&
+                              String(item.size).trim() !== "" && (
+                                <span
+                                  className="admin-color-badge ms-1"
+                                  style={{
+                                    background: "#64748b",
+                                    color: "#fff",
+                                  }}
+                                >
+                                  Size: {item.size}
+                                </span>
+                              )}
                           </td>
                           <td>{item.part_number}</td>
                           <td className="text-center">{item.quantity}</td>

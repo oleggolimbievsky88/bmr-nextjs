@@ -270,6 +270,19 @@ export default function CartNew() {
                                 ? elm.selectedColor.ColorName
                                 : "Default"}
                             </div>
+                            {/* Size (apparel) */}
+                            {elm.selectedSize && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666666",
+                                  fontWeight: "400",
+                                }}
+                              >
+                                Size: {elm.selectedSize}
+                              </div>
+                            )}
                             {/* Add-ons (Grease, Hardware, etc.) */}
                             {elm.selectedGrease &&
                               elm.selectedGrease.GreaseName && (

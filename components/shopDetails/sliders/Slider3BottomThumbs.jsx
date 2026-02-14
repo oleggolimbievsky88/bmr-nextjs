@@ -23,22 +23,37 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
     product: !!product,
   });
 
+  // Reset swiper refs when product changes (e.g. size variant) to avoid using destroyed instances
+  useEffect(() => {
+    setThumbsSwiper(null);
+    setMainSwiper(null);
+  }, [productId]);
+
   // Fetch product data from the API
   useEffect(() => {
+    let cancelled = false;
+    setProduct(null); // Clear to avoid using destroyed Swiper refs during remount
     const fetchProduct = async () => {
       try {
         const response = await fetch(`/api/product-by-id?id=${productId}`);
         if (!response.ok) throw new Error("Failed to fetch product");
 
         const data = await response.json();
-        console.log("Product data fetched:", data.product);
-        setProduct(data.product);
+        if (!cancelled) {
+          console.log("Product data fetched:", data.product);
+          setProduct(data.product);
+        }
       } catch (error) {
-        console.error("Error fetching product:", error);
+        if (!cancelled) {
+          console.error("Error fetching product:", error);
+        }
       }
     };
 
     fetchProduct();
+    return () => {
+      cancelled = true;
+    };
   }, [productId]);
 
   // Effect to handle image switching when color changes
@@ -217,6 +232,9 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
     );
   }
 
+  // Force Swiper to remount when product changes (e.g. size variant) so images update
+  const sliderKey = product?.ProductID ?? `loading-${productId}`;
+
   return (
     <>
       <Gallery
@@ -246,6 +264,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
         }}
       >
         <Swiper
+          key={sliderKey}
           spaceBetween={10}
           slidesPerView={1}
           autoHeight={true}
@@ -254,7 +273,10 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
             prevEl: ".swiper-button-prev",
           }}
           className="tf-product-media-main"
-          thumbs={{ swiper: thumbsSwiper }}
+          thumbs={{
+            swiper:
+              thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+          }}
           modules={[Thumbs, Navigation]}
           onSwiper={(swiper) => {
             console.log("Main swiper initialized:", swiper);
@@ -318,6 +340,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
       </Gallery>
 
       <Swiper
+        key={`thumbs-${sliderKey}`}
         direction="horizontal"
         spaceBetween={10}
         slidesPerView={5}

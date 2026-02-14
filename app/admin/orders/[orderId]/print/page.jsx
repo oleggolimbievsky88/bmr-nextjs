@@ -31,7 +31,7 @@ export default function PrintOrderReceipt() {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/admin/orders?orderId=${params.orderId}`
+        `/api/admin/orders?orderId=${params.orderId}`,
       );
       const data = await response.json();
 
@@ -273,8 +273,8 @@ export default function PrintOrderReceipt() {
               {order.free_shipping && order.coupon_code
                 ? `Free Shipping (Coupon: ${order.coupon_code})`
                 : order.free_shipping
-                ? "Free Shipping"
-                : order.shipping_method || "—"}
+                  ? "Free Shipping"
+                  : order.shipping_method || "—"}
             </p>
             {order.free_shipping ? (
               <p className="mb-0">
@@ -376,10 +376,18 @@ export default function PrintOrderReceipt() {
                     {item.color != null && String(item.color).trim() !== "" && (
                       <span
                         className={`admin-color-badge admin-color-badge--${getColorBadgeClass(
-                          item.color
+                          item.color,
                         ).replace("color-", "")}`}
                       >
                         {item.color}
+                      </span>
+                    )}
+                    {item.size != null && String(item.size).trim() !== "" && (
+                      <span
+                        className="admin-color-badge ms-1"
+                        style={{ background: "#64748b", color: "#fff" }}
+                      >
+                        Size: {item.size}
                       </span>
                     )}
                   </td>
@@ -411,7 +419,7 @@ export default function PrintOrderReceipt() {
                       order.total -
                         (parseFloat(order.shipping_cost) || 0) -
                         (parseFloat(order.tax) || 0) +
-                        (parseFloat(order.discount) || 0)
+                        (parseFloat(order.discount) || 0),
                     )}
                   </span>
                 </div>
@@ -429,8 +437,8 @@ export default function PrintOrderReceipt() {
                     {order.free_shipping && order.coupon_code
                       ? `Free Shipping (Coupon: ${order.coupon_code})`
                       : order.free_shipping
-                      ? "Free Shipping"
-                      : order.shipping_method || "—"}
+                        ? "Free Shipping"
+                        : order.shipping_method || "—"}
                     {order.free_shipping ? ", Free" : ""}):
                   </span>
                   <span>

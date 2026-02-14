@@ -620,6 +620,7 @@ export default function Checkout() {
             product.selectedColor?.ColorName ||
             product.defaultColorName ||
             "Default",
+          size: product.selectedSize || "",
           platform: product.PlatformName,
           yearRange: product.YearRange,
           image: product.images?.[0]?.imgSrc || product.ImageLarge || "",
@@ -874,6 +875,7 @@ export default function Checkout() {
             product.selectedColor?.ColorName ||
             product.defaultColorName ||
             "Default",
+          size: product.selectedSize || "",
           platform: product.PlatformName,
           yearRange: product.YearRange,
           image: productImage,
@@ -897,6 +899,7 @@ export default function Checkout() {
               quantity: product.quantity,
               price: pack.Price || "0",
               color: "",
+              size: "",
               platform: product.PlatformName || "",
               yearRange: product.YearRange || "",
               image: null,
@@ -1170,6 +1173,7 @@ export default function Checkout() {
           quantity: item.quantity,
           price: item.price,
           color: item.color,
+          size: item.size || "",
           platform: item.platform,
           yearRange: item.yearRange,
           image: item.image,
@@ -2544,6 +2548,9 @@ export default function Checkout() {
                             ? item.selectedColor.ColorName
                             : item.defaultColorName || "Default"}
                         </p>
+                        {item.selectedSize && (
+                          <p className="item-size">Size: {item.selectedSize}</p>
+                        )}
                         <div className="quantity-controls">
                           <button
                             type="button"

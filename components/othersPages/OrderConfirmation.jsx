@@ -389,14 +389,14 @@ export default function OrderConfirmation({ orderData }) {
                         order.couponCode
                           ? `Standard Free Shipping (from coupon: ${order.couponCode})`
                           : order.freeShipping ||
-                            parseFloat(order.shippingCost || 0) === 0
-                          ? "Standard Free Shipping"
-                          : order.shippingMethod}
+                              parseFloat(order.shippingCost || 0) === 0
+                            ? "Standard Free Shipping"
+                            : order.shippingMethod}
                         {order.freeShipping ||
                         parseFloat(order.shippingCost || 0) === 0
                           ? ""
                           : ` — $${parseFloat(order.shippingCost || 0).toFixed(
-                              2
+                              2,
                             )}`}
                       </span>
                     </div>
@@ -425,6 +425,7 @@ export default function OrderConfirmation({ orderData }) {
                       <th>Product</th>
                       <th>Part Number</th>
                       <th>Color</th>
+                      <th>Size</th>
                       <th>Quantity</th>
                       <th className="text-end">Price</th>
                       <th className="text-end">Total</th>
@@ -458,7 +459,7 @@ export default function OrderConfirmation({ orderData }) {
                         <td>
                           <span
                             className={`color-badge ${getColorBadgeClass(
-                              item.color
+                              item.color,
                             )}`}
                           >
                             {item.color != null &&
@@ -466,6 +467,11 @@ export default function OrderConfirmation({ orderData }) {
                               ? item.color
                               : "—"}
                           </span>
+                        </td>
+                        <td>
+                          {item.size != null && String(item.size).trim() !== ""
+                            ? item.size
+                            : "—"}
                         </td>
                         <td>{item.quantity}</td>
                         <td className="text-end">
@@ -516,9 +522,9 @@ export default function OrderConfirmation({ orderData }) {
                         order.couponCode
                           ? `Standard Free Shipping (from coupon: ${order.couponCode})`
                           : order.freeShipping ||
-                            parseFloat(order.shippingCost || 0) === 0
-                          ? "Standard Free Shipping"
-                          : order.shippingMethod || "—"}
+                              parseFloat(order.shippingCost || 0) === 0
+                            ? "Standard Free Shipping"
+                            : order.shippingMethod || "—"}
                         {order.freeShipping ||
                         parseFloat(order.shippingCost || 0) === 0
                           ? ", Free"
@@ -530,7 +536,7 @@ export default function OrderConfirmation({ orderData }) {
                         parseFloat(order.shippingCost || 0) === 0
                           ? "$0.00"
                           : `$${parseFloat(order.shippingCost || 0).toFixed(
-                              2
+                              2,
                             )}`}
                       </span>
                     </div>
@@ -601,7 +607,7 @@ export default function OrderConfirmation({ orderData }) {
                     className="btn btn-outline-primary btn-sm me-2"
                     onClick={() => {
                       const emailForm = document.querySelector(
-                        ".email-receipt-form"
+                        ".email-receipt-form",
                       );
                       if (emailForm) {
                         emailForm.style.display =

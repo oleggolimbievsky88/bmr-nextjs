@@ -514,10 +514,19 @@
         height: 38px;
         width: max-content;
         border: 1px solid rgba(134, 134, 134, 0.12);
-        border-radius: 3px;
+        border-radius: 20px;
         padding: 7px 15px;
         &:hover {
           border-color: var(--main);
+        }
+        /* Hardware options: input inside label - selected state */
+        &:has(input:checked) {
+          background-color: var(--main);
+          border-color: var(--main);
+          box-shadow: 0 0.4rem 0.4rem #0000001a;
+          p, span {
+            color: var(--white);
+          }
         }
       }
       &.style-image {

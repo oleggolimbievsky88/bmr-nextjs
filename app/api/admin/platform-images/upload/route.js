@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { put } from "@vercel/blob";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 
@@ -24,6 +24,29 @@ const UPLOAD_DIRS = {
   thumbnail: "cars",
   banner: "platformHeaders",
 };
+
+function getR2Client() {
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+  const bucketName = process.env.R2_BUCKET_NAME;
+  if (!accountId || !accessKeyId || !secretAccessKey || !bucketName) {
+    return null;
+  }
+  const endpoint =
+    process.env.R2_ENDPOINT || `https://${accountId}.r2.cloudflarestorage.com`;
+  return {
+    client: new S3Client({
+      region: "auto",
+      endpoint,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+    }),
+    bucketName,
+  };
+}
 
 export async function POST(request) {
   try {
@@ -70,34 +93,24 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-    const cwd = process.cwd();
-    const isReadOnlyFs =
-      cwd.includes("/var/task") || process.env.VERCEL === "1";
-
-    if (isReadOnlyFs && !blobToken) {
-      return NextResponse.json(
-        {
-          error:
-            "Platform image uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN in environment variables.",
-        },
-        { status: 503 },
+    // 1. Cloudflare R2 (siteart/* paths for bmrsuspension.com redirect)
+    const r2 = getR2Client();
+    if (r2) {
+      const key = `siteart/${subdir}/${filename}`;
+      await r2.client.send(
+        new PutObjectCommand({
+          Bucket: r2.bucketName,
+          Key: key,
+          Body: buffer,
+          ContentType: file.type,
+        }),
       );
+      return NextResponse.json({ success: true, filename });
     }
 
-    if (blobToken) {
-      const blob = await put(`images/${subdir}/${filename}`, buffer, {
-        access: "public",
-        token: blobToken,
-      });
-      return NextResponse.json({
-        success: true,
-        filename: blob.url,
-      });
-    }
-
+    // 2. Local filesystem (dev fallback)
     try {
-      const uploadDir = join(process.cwd(), "public", "images", subdir);
+      const uploadDir = join(process.cwd(), "public", "siteart", subdir);
       await mkdir(uploadDir, { recursive: true });
       const filepath = join(uploadDir, filename);
       await writeFile(filepath, buffer);
@@ -110,7 +123,7 @@ export async function POST(request) {
         return NextResponse.json(
           {
             error:
-              "Platform image uploads require Blob storage on this server.",
+              "Platform image uploads require Cloudflare R2 (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME).",
           },
           { status: 503 },
         );

@@ -29,7 +29,7 @@ const ProductCategories = () => {
 
         {/* Card for BMR Merchandise */}
         <div className="col-md-4 mb-4">
-          <Link href="/bmr-merchandise" className={styles.cardLink}>
+          <Link href="/products/bmr-merchandise" className={styles.cardLink}>
             <div className={`card ${styles.cardHover}`}>
               <div className={styles.overlay}></div>
               <Image
@@ -50,7 +50,7 @@ const ProductCategories = () => {
 
         {/* Card for BMR Gift Cards */}
         <div className="col-md-4 mb-4">
-          <Link href="/gift-cards" className={styles.cardLink}>
+          <Link href="/products/gift-cards" className={styles.cardLink}>
             <div className={`card ${styles.cardHover}`}>
               <div className={styles.overlay}></div>
               <Image

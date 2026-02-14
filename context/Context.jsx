@@ -97,6 +97,7 @@ export default function Context({ children }) {
             : null);
 
         const selectedHardwarePacks = options.selectedHardwarePacks || [];
+        const selectedSize = options.selectedSize || null;
         const newItem = {
           ...productData.product,
           quantity: cappedQty,
@@ -105,6 +106,7 @@ export default function Context({ children }) {
           selectedAnglefinder: options.selectedAnglefinder || null,
           selectedHardware: options.selectedHardware || null,
           selectedHardwarePacks,
+          selectedSize,
         };
 
         // Stable comparison for hardware packs (same ProductIDs in same order)
@@ -127,6 +129,8 @@ export default function Context({ children }) {
               JSON.stringify(newItem.selectedAnglefinder) &&
             JSON.stringify(item.selectedHardware) ===
               JSON.stringify(newItem.selectedHardware) &&
+            String(item.selectedSize || "") ===
+              String(newItem.selectedSize || "") &&
             hardwarePacksSignature(item.selectedHardwarePacks) ===
               hardwarePacksSignature(newItem.selectedHardwarePacks)
           );
@@ -178,6 +182,8 @@ export default function Context({ children }) {
           JSON.stringify(options.selectedAnglefinder || null) &&
         JSON.stringify(item.selectedHardware) ===
           JSON.stringify(options.selectedHardware || null) &&
+        String(item.selectedSize || "") ===
+          String(options.selectedSize || "") &&
         packsSig(item.selectedHardwarePacks) === packsSig(optsPacks)
       );
     });

@@ -6,6 +6,8 @@
   background-color: #f3f3f3;
   overflow-x: hidden;
   overflow-y: visible;
+  position: relative;
+  z-index: 0;
 
   /* Ensure mega menu can show on product pages */
   #header,
@@ -135,6 +137,8 @@
 /* Force header background to always be black (all pages) */
 header,
 #header {
+	position: relative;
+	z-index: 1000;
 	background-color: #000 !important;
 	margin-bottom: 0 !important;
 }
@@ -3718,6 +3722,17 @@ header[style*="transform:translateY(-"] {
 	line-height: 1.2;
 }
 
+.installation-hero-subtitle {
+	display: block;
+	font-size: 0.95rem;
+	font-weight: 400;
+	color: rgba(255, 255, 255, 0.75);
+	text-transform: none;
+	letter-spacing: 0.5px;
+	margin-top: 0.5rem;
+	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
 @media (max-width: 768px) {
 	.installation-hero-content .container {
 		padding-left: 1rem;
@@ -3726,6 +3741,672 @@ header[style*="transform:translateY(-"] {
 	.installation-hero-title {
 		font-size: 2rem;
 		padding: 20px 20px;
+	}
+
+	.installation-hero-subtitle {
+		font-size: 0.85rem;
+		margin-top: 0.35rem;
+	}
+}
+
+/* Gift cards page - modern redesign */
+.gift-cards-page {
+	background: #fafafa;
+	min-height: 60vh;
+}
+
+.gift-cards-hero {
+	position: relative;
+	z-index: 0;
+	background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #262626 100%);
+	padding: 3.5rem 1.5rem;
+	text-align: center;
+	border-bottom: 3px solid var(--primary, #cc0000);
+}
+
+.gift-cards-hero-inner {
+	max-width: 560px;
+	margin: 0 auto;
+}
+
+.gift-cards-hero-badge {
+	display: inline-block;
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.6);
+	margin-bottom: 0.75rem;
+}
+
+.gift-cards-hero-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	color: #fff;
+	letter-spacing: 0.03em;
+	margin: 0 0 0.5rem;
+	line-height: 1.15;
+}
+
+.gift-cards-hero-tagline {
+	font-size: 0.95rem;
+	color: rgba(255, 255, 255, 0.7);
+	font-weight: 400;
+	margin: 0;
+	line-height: 1.5;
+}
+
+.gift-cards-content {
+	padding: 3rem 1.5rem 4rem;
+}
+
+.gift-cards-container {
+	max-width: 1100px;
+	margin: 0 auto;
+}
+
+.gift-cards-loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	padding: 4rem 2rem;
+	color: #6b7280;
+	font-size: 0.95rem;
+}
+
+.gift-cards-spinner {
+	width: 36px;
+	height: 36px;
+	border: 3px solid #e5e7eb;
+	border-top-color: var(--primary, #cc0000);
+	border-radius: 50%;
+	animation: gift-cards-spin 0.8s linear infinite;
+}
+
+@keyframes gift-cards-spin {
+	to { transform: rotate(360deg); }
+}
+
+.gift-cards-empty {
+	text-align: center;
+	padding: 4rem 2rem;
+}
+
+.gift-cards-empty h3 {
+	font-size: 1.25rem;
+	color: #1f2937;
+	margin: 0 0 0.5rem;
+}
+
+.gift-cards-empty p {
+	color: #6b7280;
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+.gift-cards-intro {
+	text-align: center;
+	margin-bottom: 2.5rem;
+}
+
+.gift-cards-intro-title {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #111827;
+	letter-spacing: -0.02em;
+	margin: 0 0 0.5rem;
+}
+
+.gift-cards-intro-desc {
+	font-size: 0.95rem;
+	color: #6b7280;
+	line-height: 1.6;
+	margin: 0;
+	max-width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.gift-cards-grid {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+	.gift-cards-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.gift-card-item {
+	display: flex;
+	flex-direction: column;
+	background: #fff;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	transition: box-shadow 0.25s ease, transform 0.25s ease;
+	text-decoration: none;
+	color: inherit;
+	border: 1px solid #f3f4f6;
+}
+
+.gift-card-item:hover {
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+	transform: translateY(-2px);
+	border-color: #e5e7eb;
+}
+
+.gift-card-image-wrap {
+	position: relative;
+	aspect-ratio: 1;
+	background: #f9fafb;
+	overflow: hidden;
+}
+
+.gift-card-image {
+	object-fit: contain;
+	padding: 1rem;
+}
+
+.gift-card-body {
+	display: flex;
+	flex-direction: column;
+	padding: 1.25rem 1.25rem 1.5rem;
+	gap: 0.35rem;
+}
+
+.gift-card-title {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #111827;
+	margin: 0;
+	line-height: 1.35;
+}
+
+.gift-card-part {
+	font-size: 0.8rem;
+	color: #9ca3af;
+}
+
+.gift-card-price {
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--primary, #cc0000);
+	margin-top: 0.5rem;
+}
+
+.gift-card-cta {
+	font-size: 0.85rem;
+	font-weight: 500;
+	color: var(--primary, #cc0000);
+	margin-top: auto;
+	padding-top: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.gift-card-item:hover .gift-card-cta {
+	text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+	.gift-cards-hero {
+		padding: 2.5rem 1rem;
+	}
+
+	.gift-cards-hero-title {
+		font-size: 1.875rem;
+	}
+
+	.gift-cards-hero-tagline {
+		font-size: 0.9rem;
+	}
+
+	.gift-cards-content {
+		padding: 2rem 1rem 3rem;
+	}
+
+	.gift-cards-intro {
+		margin-bottom: 1.75rem;
+	}
+
+	.gift-cards-intro-title {
+		font-size: 1.25rem;
+	}
+
+	.gift-cards-grid {
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+	}
+}
+
+/* BMR Merchandise page - modern, mobile-friendly */
+.bmr-merch-page {
+	background: #f8fafc;
+	min-height: 60vh;
+}
+
+.bmr-merch-hero {
+	position: relative;
+	z-index: 0;
+	padding: 4rem 1.5rem;
+	text-align: center;
+	overflow: hidden;
+	min-height: 280px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-bottom: 3px solid var(--primary, #cc0000);
+}
+
+.bmr-merch-hero-bg {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	background-color: #0f172a;
+}
+
+.bmr-merch-hero-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(13, 13, 13, 0.9) 0%,
+		rgba(26, 26, 26, 0.85) 50%,
+		rgba(15, 23, 42, 0.92) 100%
+	);
+}
+
+.bmr-merch-hero-inner {
+	position: relative;
+	z-index: 1;
+	max-width: 560px;
+	margin: 0 auto;
+}
+
+.bmr-merch-hero-badge {
+	display: inline-block;
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.65);
+	margin-bottom: 0.75rem;
+}
+
+.bmr-merch-hero-title {
+	font-size: 2.75rem;
+	font-weight: 700;
+	color: #fff;
+	letter-spacing: 0.02em;
+	margin: 0 0 0.5rem;
+	line-height: 1.15;
+}
+
+.bmr-merch-hero-tagline {
+	font-size: 0.95rem;
+	color: rgba(255, 255, 255, 0.8);
+	font-weight: 400;
+	margin: 0;
+	line-height: 1.55;
+}
+
+.bmr-merch-content {
+	padding: 3rem 1.5rem 4rem;
+}
+
+.bmr-merch-container {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.bmr-merch-loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	padding: 4rem 2rem;
+	color: #64748b;
+	font-size: 0.95rem;
+}
+
+.bmr-merch-spinner {
+	width: 36px;
+	height: 36px;
+	border: 3px solid #e2e8f0;
+	border-top-color: var(--primary, #cc0000);
+	border-radius: 50%;
+	animation: gift-cards-spin 0.8s linear infinite;
+}
+
+.bmr-merch-empty {
+	text-align: center;
+	padding: 4rem 2rem;
+	background: #fff;
+	border-radius: 16px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	border: 1px solid #e2e8f0;
+}
+
+.bmr-merch-empty-icon {
+	color: #94a3b8;
+	margin-bottom: 1.25rem;
+}
+
+.bmr-merch-empty-icon svg {
+	display: inline-block;
+	opacity: 0.7;
+}
+
+.bmr-merch-empty-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #0f172a;
+	margin: 0 0 0.75rem;
+	letter-spacing: -0.02em;
+}
+
+.bmr-merch-empty-desc {
+	color: #64748b;
+	margin: 0 0 1.5rem;
+	font-size: 0.95rem;
+	line-height: 1.6;
+	max-width: 360px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1.5rem;
+}
+
+.bmr-merch-empty-cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem 1.5rem;
+	background: var(--primary, #cc0000);
+	color: #fff;
+	font-size: 0.9rem;
+	font-weight: 600;
+	border-radius: 8px;
+	text-decoration: none;
+	transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.bmr-merch-empty-cta:hover {
+	background: #b30000;
+	color: #fff;
+	transform: translateY(-1px);
+}
+
+.bmr-merch-intro {
+	text-align: center;
+	margin-bottom: 2.5rem;
+}
+
+.bmr-merch-intro-title {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #0f172a;
+	letter-spacing: -0.02em;
+	margin: 0 0 0.5rem;
+}
+
+.bmr-merch-intro-desc {
+	font-size: 0.95rem;
+	color: #64748b;
+	line-height: 1.6;
+	margin: 0;
+	max-width: 420px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.bmr-merch-grid {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.bmr-merch-card {
+	display: flex;
+	flex-direction: column;
+	background: #fff;
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	transition: box-shadow 0.25s ease, transform 0.25s ease;
+	text-decoration: none;
+	color: inherit;
+	border: 1px solid #e2e8f0;
+}
+
+.bmr-merch-card:hover {
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+	transform: translateY(-4px);
+	border-color: #cbd5e1;
+}
+
+.bmr-merch-card-image-wrap {
+	position: relative;
+	aspect-ratio: 1;
+	background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+	overflow: hidden;
+}
+
+.bmr-merch-card-image {
+	object-fit: contain;
+	padding: 1rem;
+}
+
+.bmr-merch-card-badge {
+	position: absolute;
+	top: 0.75rem;
+	left: 0.75rem;
+	font-size: 0.65rem;
+	font-weight: 700;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	background: var(--primary, #cc0000);
+	color: #fff;
+	padding: 0.25rem 0.5rem;
+	border-radius: 4px;
+}
+
+.bmr-merch-card-variants {
+	position: absolute;
+	bottom: 0.75rem;
+	right: 0.75rem;
+	font-size: 0.7rem;
+	font-weight: 600;
+	background: rgba(15, 23, 42, 0.85);
+	color: #fff;
+	padding: 0.25rem 0.5rem;
+	border-radius: 4px;
+	letter-spacing: 0.02em;
+}
+
+.bmr-merch-card-size-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin-top: 0.25rem;
+}
+
+.bmr-merch-card-size-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.75rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: #475569;
+	background: #f1f5f9;
+	border: 1px solid #e2e8f0;
+	padding: 0.2rem 0.45rem;
+	border-radius: 6px;
+	line-height: 1;
+}
+
+.bmr-merch-card-static {
+	display: flex;
+	flex-direction: column;
+}
+
+.bmr-merch-card-image-link {
+	display: block;
+	flex: 0 0 auto;
+}
+
+.bmr-merch-card-image-link:hover + .bmr-merch-card-body .bmr-merch-card-cta,
+.bmr-merch-card-body:hover .bmr-merch-card-cta {
+	text-decoration: underline;
+}
+
+.bmr-merch-card-sizes {
+	margin-top: 0.5rem;
+	padding-top: 0.5rem;
+	border-top: 1px solid #e2e8f0;
+}
+
+.bmr-merch-card-sizes-label {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #475569;
+	margin-bottom: 0.4rem;
+}
+
+.bmr-merch-card-sizes-radios {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.bmr-merch-card-size-option {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.8rem;
+	cursor: pointer;
+	user-select: none;
+}
+
+.bmr-merch-card-size-option input[type="radio"] {
+	width: 1rem;
+	height: 1rem;
+	accent-color: var(--primary, #cc0000);
+	cursor: pointer;
+}
+
+.bmr-merch-card-size-option span {
+	padding: 0.15rem 0.4rem;
+	border-radius: 4px;
+	border: 1px solid #cbd5e1;
+	transition: border-color 0.15s, background 0.15s;
+}
+
+.bmr-merch-card-size-option input:checked + span {
+	border-color: var(--primary, #cc0000);
+	background: rgba(204, 0, 0, 0.08);
+	color: var(--primary, #cc0000);
+}
+
+.bmr-merch-card-body {
+	display: flex;
+	flex-direction: column;
+	padding: 1.25rem 1.25rem 1.5rem;
+	gap: 0.35rem;
+}
+
+.bmr-merch-card-title {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #0f172a;
+	margin: 0;
+	line-height: 1.35;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.bmr-merch-card-part {
+	font-size: 0.8rem;
+	color: #94a3b8;
+}
+
+.bmr-merch-card-price {
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--primary, #cc0000);
+	margin-top: 0.5rem;
+}
+
+.bmr-merch-card-cta {
+	font-size: 0.85rem;
+	font-weight: 500;
+	color: var(--primary, #cc0000);
+	margin-top: auto;
+	padding-top: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	text-decoration: none;
+}
+
+.bmr-merch-card-cta:hover {
+	color: var(--primary, #cc0000);
+}
+
+.bmr-merch-card:hover .bmr-merch-card-cta {
+	text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+	.bmr-merch-hero {
+		padding: 3rem 1rem;
+		min-height: 240px;
+	}
+
+	.bmr-merch-hero-title {
+		font-size: 2rem;
+	}
+
+	.bmr-merch-hero-tagline {
+		font-size: 0.9rem;
+	}
+
+	.bmr-merch-content {
+		padding: 2rem 1rem 3rem;
+	}
+
+	.bmr-merch-intro {
+		margin-bottom: 1.75rem;
+	}
+
+	.bmr-merch-intro-title {
+		font-size: 1.25rem;
+	}
+
+	.bmr-merch-grid {
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+	}
+
+	.bmr-merch-empty {
+		padding: 2.5rem 1.5rem;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.bmr-merch-grid {
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
 

@@ -7,7 +7,7 @@ export async function GET(request, { params }) {
     if (!process.env.MYSQL_HOST) {
       return NextResponse.json(
         { success: false, message: "Database configuration missing" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
     if (!order) {
       return NextResponse.json(
         { success: false, message: "Order not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -78,6 +78,7 @@ export async function GET(request, { params }) {
         quantity: item.quantity,
         price: parseFloat(item.price) || 0,
         color: item.color,
+        size: item.size || "",
         platform: item.platform,
         yearRange: item.year_range,
         image: item.image,
@@ -93,7 +94,7 @@ export async function GET(request, { params }) {
     console.error("Error fetching order details:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch order details" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

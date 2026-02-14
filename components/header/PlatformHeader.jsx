@@ -9,18 +9,26 @@ export default function PlatformHeader({
   mainCategoryName = null,
 }) {
   if (!platformData) return null;
-  // Format the year display
-  const yearDisplay =
-    platformData.StartYear === platformData.EndYear
-      ? platformData.StartYear
-      : `${platformData.StartYear}-${platformData.EndYear}`;
+  // Format the year display - omit when StartYear is 0 or "0" to avoid "0-" prefix
+  const startYear = platformData.StartYear;
+  const endYear = platformData.EndYear;
+  const hasValidYear =
+    startYear &&
+    startYear !== "0" &&
+    String(startYear).trim() !== "" &&
+    parseInt(startYear, 10) > 0;
+  const yearDisplay = hasValidYear
+    ? startYear === endYear
+      ? startYear
+      : `${startYear}-${endYear || ""}`
+    : "";
 
   // Prefer HeaderImage from DB, fall back to slug-based naming: platform-slug_Banner.jpg
   const imageUrl =
     platformData.HeaderImage && platformData.HeaderImage !== "0"
       ? getPlatformBannerUrl(platformData.HeaderImage)
       : platformData.slug
-        ? `/images/platformHeaders/${platformData.slug}_Banner.jpg`
+        ? getPlatformBannerUrl(`${platformData.slug}_Banner.jpg`)
         : null;
   const encodedImageUrl = imageUrl ? encodeURI(imageUrl) : null;
 
@@ -47,8 +55,12 @@ export default function PlatformHeader({
           <div className="platform-header-content">
             <div className="container">
               <h1 className="platform-header-title">
-                {yearDisplay}
-                <br />
+                {yearDisplay && (
+                  <>
+                    {yearDisplay}
+                    <br />
+                  </>
+                )}
                 {platformData.Name} {displayMainCategory && displayMainCategory}
               </h1>
             </div>

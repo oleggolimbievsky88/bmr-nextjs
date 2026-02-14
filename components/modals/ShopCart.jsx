@@ -304,10 +304,34 @@ export default function ShopCart() {
                                     ` (+$${parseFloat(pack.Price).toFixed(2)})`}
                                 </div>
                               ))}
+                            {elm.selectedSize && (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  marginBottom: "2px",
+                                  color: "#666",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "#333",
+                                    minWidth: "fit-content",
+                                  }}
+                                >
+                                  Size:
+                                </span>{" "}
+                                {elm.selectedSize}
+                              </div>
+                            )}
                             {!elm.selectedColor &&
                               !elm.selectedGrease &&
                               !elm.selectedAnglefinder &&
                               !elm.selectedHardware &&
+                              !elm.selectedSize &&
                               (!elm.selectedHardwarePacks ||
                                 elm.selectedHardwarePacks.length === 0) && (
                                 <div

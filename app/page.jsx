@@ -1,7 +1,4 @@
 import Features from "@/components/common/Features";
-import Categories from "@/components/homes/home/Categories";
-import Collections from "@/components/homes/home/Collections";
-import Collections2 from "@/components/homes/home/Collections2";
 import Hero from "@/components/homes/home/Hero";
 import Marquee from "@/components/homes/home/Marquee";
 import Products from "@/components/homes/home/Products";
@@ -65,16 +62,16 @@ export default async function page() {
       <div className="container vehicle-search-mobile">
         <VehicleSearch />
       </div>
-      {/* <ShopCategories /> <br /> <br /> */}
+
       <ThreeColumnLayout />
-      {/* <Categories /> */}
+      <ShopCategories />
+      {/* <Categories /> - uses homepage-collections API */}
       {/* <Products /> */}
       <LazyNewProducts scratchDent="0" />
       {/* <ShopCategories /> */}
       <LazyNewProducts scratchDent="1" />
       {/* <ProductsPage /> */}
       {/* <CollectionBanner /> */}
-      {/* <Collections /> */}
       {/* <Blogs /> */}
       <VideoPage />
       {/* <Marquee /> */}
