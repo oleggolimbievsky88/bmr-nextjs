@@ -14,6 +14,10 @@ import {
   insertOrderStatusHistory,
   getCouponByIdIfActive,
 } from "@/lib/queries";
+import {
+  generateGiftCardsForOrder,
+  getGiftCardsForOrder,
+} from "@/lib/giftCards";
 import { getTaxAmount } from "@/lib/tax";
 
 export async function POST(request) {
@@ -189,10 +193,26 @@ export async function POST(request) {
     }
 
     // Create order items
-    await createOrderItems(orderId, orderData.items);
+    const orderItemIds = await createOrderItems(orderId, orderData.items);
 
     // Decrement scratch & dent inventory
     await decrementBlemProductInventory(orderData.items);
+
+    // Generate gift card codes for gift certificate products
+    let giftCards = [];
+    try {
+      giftCards = await generateGiftCardsForOrder(
+        orderId,
+        orderData.items,
+        orderItemIds,
+      );
+      if (giftCards.length > 0) {
+        console.log("Gift cards generated:", giftCards.length, giftCards);
+      }
+    } catch (gcError) {
+      console.error("Error generating gift cards:", gcError);
+      // Don't fail the order - gift cards can be created manually if needed
+    }
 
     console.log("Order items created successfully");
 
@@ -216,6 +236,16 @@ export async function POST(request) {
       }
     }
 
+    // Fetch gift cards for email (if any were generated)
+    let orderGiftCards = [];
+    if (giftCards.length > 0) {
+      try {
+        orderGiftCards = await getGiftCardsForOrder(orderId);
+      } catch (e) {
+        console.error("Error fetching gift cards for email:", e);
+      }
+    }
+
     // Send single order confirmation email (matches order confirmation page design)
     try {
       const emailOrderData = {
@@ -236,6 +266,7 @@ export async function POST(request) {
         cardType: orderData.cardType || orderData.ccType || null,
         cardLastFour: orderData.cardLastFour || orderData.ccLastFour || null,
         isDealer: !!orderData.isDealer,
+        giftCards: orderGiftCards,
       };
       await sendOrderConfirmationEmail(
         orderData.billing.email,
@@ -251,6 +282,7 @@ export async function POST(request) {
       orderId,
       orderNumber,
       message: "Order processed successfully",
+      giftCards: giftCards.length > 0 ? orderGiftCards : undefined,
     });
   } catch (error) {
     const errorDetails = {

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { getColorBadgeClass } from "@/lib/colorBadge";
+import { isGiftCertificateProduct } from "@/lib/giftCardUtils";
 
 // Email Receipt Form Component
 function EmailReceiptForm({ order }) {
@@ -447,9 +448,19 @@ export default function OrderConfirmation({ orderData }) {
                             )}
                             <div className="product-details">
                               <h6 className="mb-1">{item.name}</h6>
-                              <small className="text-muted">
-                                {item.platform} ({item.yearRange})
-                              </small>
+                              {(() => {
+                                const yr = String(item.yearRange || "").trim();
+                                const showYear =
+                                  yr && yr !== "-" && yr !== "0-" && yr !== "0";
+                                const platform = item.platform || "";
+                                if (!platform && !showYear) return null;
+                                return (
+                                  <small className="text-muted">
+                                    {platform}
+                                    {showYear ? ` (${item.yearRange})` : ""}
+                                  </small>
+                                );
+                              })()}
                             </div>
                           </div>
                         </td>
@@ -457,16 +468,20 @@ export default function OrderConfirmation({ orderData }) {
                           <code className="part-number">{item.partNumber}</code>
                         </td>
                         <td>
-                          <span
-                            className={`color-badge ${getColorBadgeClass(
-                              item.color,
-                            )}`}
-                          >
-                            {item.color != null &&
-                            String(item.color).trim() !== ""
-                              ? item.color
-                              : "—"}
-                          </span>
+                          {!(
+                            isGiftCertificateProduct(item) ||
+                            item.color == null ||
+                            String(item.color).trim() === "" ||
+                            item.color === "Default"
+                          ) ? (
+                            <span
+                              className={`color-badge ${getColorBadgeClass(
+                                item.color,
+                              )}`}
+                            >
+                              {item.color}
+                            </span>
+                          ) : null}
                         </td>
                         <td>
                           {item.size != null && String(item.size).trim() !== ""
@@ -493,6 +508,52 @@ export default function OrderConfirmation({ orderData }) {
               </div>
             </div>
           </div>
+
+          {/* Gift Card Codes */}
+          {order.giftCards && order.giftCards.length > 0 && (
+            <div className="card shadow-sm mb-4 border-danger">
+              <div className="card-header bg-danger bg-opacity-10">
+                <h4 className="mb-0">
+                  <i className="fas fa-gift me-2"></i>Gift Card Code(s)
+                </h4>
+                <small className="text-muted">
+                  Save these codes — they can be used at checkout until the
+                  balance is used.
+                </small>
+              </div>
+              <div className="card-body p-0">
+                <table className="table table-hover mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Code</th>
+                      <th className="text-end">Initial Value</th>
+                      <th className="text-end">Balance Remaining</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.giftCards.map((gc) => (
+                      <tr key={gc.id}>
+                        <td>
+                          <code className="bg-light px-2 py-1 rounded">
+                            {gc.code}
+                          </code>
+                        </td>
+                        <td className="text-end">
+                          ${parseFloat(gc.initial_amount || 0).toFixed(2)}
+                        </td>
+                        <td className="text-end">
+                          $
+                          {parseFloat(
+                            gc.remaining_balance ?? (gc.initial_amount || 0),
+                          ).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Order Totals */}
           <div className="card shadow-sm mb-4">

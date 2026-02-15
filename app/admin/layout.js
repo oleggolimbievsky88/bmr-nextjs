@@ -9,27 +9,11 @@ import AdminNav from "@/components/admin/AdminNav";
 import Footer1 from "@/components/footer/Footer";
 
 export default function AdminLayout({ children }) {
-  const { data: session, status, update: updateSession } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const isLoginPage = pathname === "/admin/login";
   const isPrintPage = pathname?.includes("/print");
-
-  // Refetch session when admin tab regains focus (e.g. after overnight)
-  // Debounce to avoid firing on file-picker close (which triggers focus)
-  useEffect(() => {
-    if (isLoginPage) return;
-    let t;
-    const onFocus = () => {
-      clearTimeout(t);
-      t = setTimeout(() => updateSession?.(), 600);
-    };
-    window.addEventListener("focus", onFocus);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("focus", onFocus);
-    };
-  }, [isLoginPage, updateSession]);
 
   useEffect(() => {
     if (status === "loading") return;

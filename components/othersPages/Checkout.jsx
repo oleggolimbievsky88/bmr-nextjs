@@ -18,6 +18,7 @@ import CheckoutAuthStep from "@/components/othersPages/CheckoutAuthStep";
 import { getTaxAmount } from "@/lib/tax";
 import { countries, canadianProvinces } from "@/lib/countryCodes";
 import { mustUsePayPal, canUseCreditCard } from "@/lib/paymentRules";
+import { isGiftCertificateProduct } from "@/lib/giftCardUtils";
 
 export default function Checkout() {
   const router = useRouter();
@@ -610,24 +611,31 @@ export default function Checkout() {
       setIsSubmitting(true);
       setSubmitError("");
       try {
-        const orderItems = effectiveCartProducts.map((product) => ({
-          productId: product.ProductID,
-          name: product.ProductName,
-          partNumber: product.PartNumber,
-          quantity: product.quantity,
-          price: product.Price,
-          color:
-            product.selectedColor?.ColorName ||
-            product.defaultColorName ||
-            "Default",
-          size: product.selectedSize || "",
-          platform: product.PlatformName,
-          yearRange: product.YearRange,
-          image: product.images?.[0]?.imgSrc || product.ImageLarge || "",
-          Package: product.Package ?? 0,
-          LowMargin: product.LowMargin ?? 0,
-          ManufacturerName: product.ManufacturerName ?? "",
-        }));
+        const orderItems = effectiveCartProducts.map((product) => {
+          const isGiftCert = isGiftCertificateProduct({
+            partNumber: product.PartNumber,
+            name: product.ProductName,
+          });
+          return {
+            productId: product.ProductID,
+            name: product.ProductName,
+            partNumber: product.PartNumber,
+            quantity: product.quantity,
+            price: product.Price,
+            color: isGiftCert
+              ? ""
+              : product.selectedColor?.ColorName ||
+                product.defaultColorName ||
+                "Default",
+            size: product.selectedSize || "",
+            platform: product.PlatformName,
+            yearRange: product.YearRange,
+            image: product.images?.[0]?.imgSrc || product.ImageLarge || "",
+            Package: product.Package ?? 0,
+            LowMargin: product.LowMargin ?? 0,
+            ManufacturerName: product.ManufacturerName ?? "",
+          };
+        });
         const subtotal = orderItems.reduce(
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
           0,
@@ -865,16 +873,21 @@ export default function Checkout() {
           productImage = product.ImageLarge;
         }
 
+        const isGiftCert = isGiftCertificateProduct({
+          partNumber: product.PartNumber,
+          name: product.ProductName,
+        });
         orderItems.push({
           productId: product.ProductID,
           name: product.ProductName,
           partNumber: product.PartNumber,
           quantity: product.quantity,
           price: product.Price,
-          color:
-            product.selectedColor?.ColorName ||
-            product.defaultColorName ||
-            "Default",
+          color: isGiftCert
+            ? ""
+            : product.selectedColor?.ColorName ||
+              product.defaultColorName ||
+              "Default",
           size: product.selectedSize || "",
           platform: product.PlatformName,
           yearRange: product.YearRange,
@@ -914,6 +927,7 @@ export default function Checkout() {
 
       // Create order in database first
       let orderId = null;
+      let giftCardsFromOrder = [];
       try {
         // cleanShipping is already defined above
 
@@ -1086,6 +1100,7 @@ export default function Checkout() {
         }
 
         orderId = orderResult.orderNumber || orderResult.orderId;
+        giftCardsFromOrder = orderResult.giftCards || [];
 
         // Save address and phone to customer profile if logged in
         const hasSession = session && session.user && session.user.email;
@@ -1167,6 +1182,7 @@ export default function Checkout() {
         total: calculateGrandTotal(),
         tax: calculateTax(),
         notes: orderNotes,
+        giftCards: giftCardsFromOrder,
         items: orderItems.map((item) => ({
           name: item.name,
           partNumber: item.partNumber,
@@ -2699,7 +2715,12 @@ export default function Checkout() {
                         color: "#333",
                       }}
                     >
-                      <strong>Coupon:</strong> {appliedCoupon.code}
+                      <strong>
+                        {appliedCoupon.discountType === "gift_card"
+                          ? "Gift Card:"
+                          : "Coupon:"}
+                      </strong>{" "}
+                      {appliedCoupon.code}
                     </p>
                     {appliedCoupon.name && (
                       <p
@@ -2712,6 +2733,23 @@ export default function Checkout() {
                         {appliedCoupon.name}
                       </p>
                     )}
+                    {appliedCoupon.discountType === "gift_card" &&
+                      appliedCoupon.remainingBalance != null &&
+                      appliedCoupon.remainingBalance > 0 && (
+                        <p
+                          style={{
+                            fontSize: "13px",
+                            color: "#198754",
+                            marginBottom: "0",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Balance remaining: $
+                          {parseFloat(appliedCoupon.remainingBalance).toFixed(
+                            2,
+                          )}
+                        </p>
+                      )}
                   </div>
                 )}
               </div>

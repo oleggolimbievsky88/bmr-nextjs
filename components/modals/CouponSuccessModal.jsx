@@ -34,10 +34,14 @@ export default function CouponSuccessModal({ coupon, show, onClose }) {
   if (!shouldRender || !coupon) return null;
 
   // Handle both old and new coupon field names
-  const discountType = coupon.discountType || coupon.valueType || coupon.discount_type;
-  const discountValue = coupon.discountValue !== undefined
-    ? coupon.discountValue
-    : (coupon.value !== undefined ? coupon.value : coupon.discount_value || 0);
+  const discountType =
+    coupon.discountType || coupon.valueType || coupon.discount_type;
+  const discountValue =
+    coupon.discountValue !== undefined
+      ? coupon.discountValue
+      : coupon.value !== undefined
+        ? coupon.value
+        : coupon.discount_value || 0;
 
   // Only show discount badge if there's an actual discount value
   const discountText =
@@ -47,10 +51,10 @@ export default function CouponSuccessModal({ coupon, show, onClose }) {
         discountType === "0"
         ? `${discountValue}% OFF`
         : discountType === "fixed_amount" ||
-          discountType === "fixed" ||
-          discountType === "$"
-        ? `$${discountValue} OFF`
-        : `$${discountValue} OFF`
+            discountType === "fixed" ||
+            discountType === "$"
+          ? `$${discountValue} OFF`
+          : `$${discountValue} OFF`
       : null;
 
   return (
@@ -131,6 +135,14 @@ export default function CouponSuccessModal({ coupon, show, onClose }) {
             {(coupon.freeShipping || coupon.free_shipping) && (
               <span className="shipping-badge">FREE SHIPPING</span>
             )}
+            {coupon.discountType === "gift_card" &&
+              coupon.remainingBalance != null &&
+              coupon.remainingBalance > 0 && (
+                <span className="balance-badge">
+                  Balance remaining: $
+                  {parseFloat(coupon.remainingBalance).toFixed(2)}
+                </span>
+              )}
           </div>
         </div>
       </div>
@@ -283,6 +295,16 @@ export default function CouponSuccessModal({ coupon, show, onClose }) {
 
         .shipping-badge {
           background-color: #28a745;
+          color: white;
+        }
+
+        .balance-badge {
+          display: inline-block;
+          padding: 0.5rem 1.25rem;
+          border-radius: 25px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          background-color: #198754;
           color: white;
         }
 

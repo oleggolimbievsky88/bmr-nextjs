@@ -3758,13 +3758,40 @@ header[style*="transform:translateY(-"] {
 .gift-cards-hero {
 	position: relative;
 	z-index: 0;
-	background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #262626 100%);
+	background-color: #0d0d0d;
 	padding: 3.5rem 1.5rem;
 	text-align: center;
 	border-bottom: 3px solid var(--primary, #cc0000);
+	overflow: hidden;
+	min-height: 240px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.gift-cards-hero-bg {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	background-color: #0f172a;
+	opacity: 0.25;
+}
+
+.gift-cards-hero-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(13, 13, 13, 0.65) 0%,
+		rgba(26, 26, 26, 0.6) 50%,
+		rgba(15, 23, 42, 0.7) 100%
+	);
 }
 
 .gift-cards-hero-inner {
+	position: relative;
+	z-index: 1;
 	max-width: 560px;
 	margin: 0 auto;
 }

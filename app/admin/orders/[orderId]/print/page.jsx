@@ -340,6 +340,42 @@ export default function PrintOrderReceipt() {
           </div>
         </div>
 
+        {order.gift_cards && order.gift_cards.length > 0 && (
+          <div
+            className="mb-4 p-3 rounded border"
+            style={{ borderColor: "#dc3545", background: "#fff5f5" }}
+          >
+            <h5 className="mb-2">🎁 Gift Card Code(s)</h5>
+            <table className="table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th className="text-end">Initial Value</th>
+                  <th className="text-end">Balance Remaining</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.gift_cards.map((gc) => (
+                  <tr key={gc.id}>
+                    <td>
+                      <code>{gc.code}</code>
+                    </td>
+                    <td className="text-end">
+                      {formatCurrency(parseFloat(gc.initial_amount) || 0)}
+                    </td>
+                    <td className="text-end">
+                      {formatCurrency(
+                        parseFloat(gc.remaining_balance ?? gc.initial_amount) ||
+                          0,
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
         {order.notes && order.notes.trim() && (
           <div className="mb-4">
             <h5 className="mb-2">Order Notes</h5>

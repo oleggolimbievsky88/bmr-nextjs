@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getOrderById, getOrderItems, getCustomerRole } from "@/lib/queries";
+import { getGiftCardsForOrder } from "@/lib/giftCards";
 
 export async function GET(request, { params }) {
   try {
@@ -28,8 +29,11 @@ export async function GET(request, { params }) {
       : null;
     const isDealer = customerRole === "dealer" || customerRole === "admin";
 
-    // Fetch order items using the actual database ID
-    const itemsResult = await getOrderItems(order.new_order_id);
+    // Fetch order items and gift cards using the actual database ID
+    const [itemsResult, giftCards] = await Promise.all([
+      getOrderItems(order.new_order_id),
+      getGiftCardsForOrder(order.new_order_id).catch(() => []),
+    ]);
 
     // Format the order data
     const orderData = {
@@ -84,6 +88,7 @@ export async function GET(request, { params }) {
         image: item.image,
         lineDiscount: parseFloat(item.line_discount) || 0,
       })),
+      giftCards: giftCards || [],
     };
 
     return NextResponse.json({

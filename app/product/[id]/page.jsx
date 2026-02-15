@@ -22,6 +22,7 @@ import {
 } from "@/lib/queries";
 import pool from "@/lib/db";
 import PlatformHeader from "@/components/header/PlatformHeader";
+import GiftCertificateHero from "@/components/header/GiftCertificateHero";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 // Force dynamic rendering to prevent build-time database access
@@ -193,32 +194,24 @@ export default async function ProductDetails({ params, searchParams }) {
       className="p-0 m-0 container-fluid"
       style={{ backgroundColor: "#ffffff" }}
     >
-      <PlatformHeader
-        platformData={
-          isGiftCertificate
-            ? {
-                HeaderImage: "",
-                Name: "Gift Certificates",
-                StartYear: "",
-                EndYear: "",
-                Image: "",
-                slug: "gift-cards",
-                mainCategory: null,
-              }
-            : {
-                HeaderImage: platformInfo?.headerImage || "",
-                Name: platformInfo?.name || "",
-                StartYear: platformInfo?.startYear || "",
-                EndYear: platformInfo?.endYear || "",
-                Image: platformInfo?.platformImage || "",
-                slug:
-                  platformInfo?.slug ||
-                  platformInfo?.name?.toLowerCase().replace(/\s+/g, "-") ||
-                  "",
-                mainCategory: mainCategory?.MainCatName || null,
-              }
-        }
-      />
+      {isGiftCertificate ? (
+        <GiftCertificateHero product={product} />
+      ) : (
+        <PlatformHeader
+          platformData={{
+            HeaderImage: platformInfo?.headerImage || "",
+            Name: platformInfo?.name || "",
+            StartYear: platformInfo?.startYear || "",
+            EndYear: platformInfo?.endYear || "",
+            Image: platformInfo?.platformImage || "",
+            slug:
+              platformInfo?.slug ||
+              platformInfo?.name?.toLowerCase().replace(/\s+/g, "-") ||
+              "",
+            mainCategory: mainCategory?.MainCatName || null,
+          }}
+        />
+      )}
 
       <div className="container" style={{ paddingTop: "10px" }}>
         <Breadcrumbs items={breadcrumbItems} />

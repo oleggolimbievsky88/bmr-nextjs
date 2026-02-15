@@ -882,6 +882,46 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
+              {selectedOrder.gift_cards &&
+                selectedOrder.gift_cards.length > 0 && (
+                  <div
+                    className="mb-4 p-3 rounded border"
+                    style={{ borderColor: "#dc3545", background: "#fff5f5" }}
+                  >
+                    <h3 className="h6 fw-6 mb-2">🎁 Gift Card Code(s)</h3>
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th className="text-end">Initial Value</th>
+                          <th className="text-end">Balance Remaining</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedOrder.gift_cards.map((gc) => (
+                          <tr key={gc.id}>
+                            <td>
+                              <code>{gc.code}</code>
+                            </td>
+                            <td className="text-end">
+                              {formatCurrency(
+                                parseFloat(gc.initial_amount) || 0,
+                              )}
+                            </td>
+                            <td className="text-end">
+                              {formatCurrency(
+                                parseFloat(
+                                  gc.remaining_balance ?? gc.initial_amount,
+                                ) || 0,
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
               {selectedOrder.notes && selectedOrder.notes.trim() && (
                 <div className="mb-4">
                   <h3 className="h6 fw-6 mb-2">Order Notes</h3>

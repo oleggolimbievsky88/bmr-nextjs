@@ -8,6 +8,12 @@ import { getProductImageUrl } from "@/lib/assets";
 export default function GiftCardsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const heroImageUrl =
+    products.length > 0
+      ? getProductImageUrl(
+          products[0].ImageLarge || products[0].ImageSmall || "noimage.jpg",
+        )
+      : null;
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +37,14 @@ export default function GiftCardsPage() {
   return (
     <div className="gift-cards-page">
       <header className="gift-cards-hero">
+        {heroImageUrl && (
+          <div
+            className="gift-cards-hero-bg"
+            style={{ backgroundImage: `url(${heroImageUrl})` }}
+            aria-hidden="true"
+          />
+        )}
+        <div className="gift-cards-hero-overlay" />
         <div className="gift-cards-hero-inner">
           <span className="gift-cards-hero-badge">BMR Gift Certificates</span>
           <h1 className="gift-cards-hero-title">Gift Cards</h1>

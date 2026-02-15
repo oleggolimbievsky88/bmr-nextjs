@@ -13,6 +13,7 @@ import {
   getOrderCcRevealLog,
   getOrderTrackingNumbers,
 } from "@/lib/queries";
+import { getGiftCardsForOrder } from "@/lib/giftCards";
 import { redactOrderCcToken } from "@/lib/ccEncryption";
 
 export async function GET(request, { params }) {
@@ -30,11 +31,13 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    const [statusHistory, ccRevealLog, tracking_numbers] = await Promise.all([
-      getOrderStatusHistory(order.new_order_id),
-      getOrderCcRevealLog(order.new_order_id),
-      getOrderTrackingNumbers(order.new_order_id),
-    ]);
+    const [statusHistory, ccRevealLog, tracking_numbers, giftCards] =
+      await Promise.all([
+        getOrderStatusHistory(order.new_order_id),
+        getOrderCcRevealLog(order.new_order_id),
+        getOrderTrackingNumbers(order.new_order_id),
+        getGiftCardsForOrder(order.new_order_id).catch(() => []),
+      ]);
     redactOrderCcToken(order, { forAdmin: true });
     return NextResponse.json({
       success: true,
@@ -43,6 +46,7 @@ export async function GET(request, { params }) {
         status_history: statusHistory,
         cc_reveal_log: ccRevealLog,
         tracking_numbers: tracking_numbers || [],
+        gift_cards: giftCards || [],
       },
     });
   } catch (error) {
