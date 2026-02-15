@@ -36,7 +36,7 @@ export default function Subcollections() {
                 <div className="card category-card h-100">
                   {category.image && (
                     <img
-                      src={`http://legacy.bmrsuspension.com/siteart/categories/${category.image}`}
+                      src={`/siteart/categories/${category.image}`}
                       alt={category.name}
                       className="card-img-top"
                     />

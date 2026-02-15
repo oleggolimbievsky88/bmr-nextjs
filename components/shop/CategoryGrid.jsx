@@ -178,7 +178,7 @@ export default function CategoryGrid({
                 >
                   {categoryImage && (
                     <Image
-                      src={`http://legacy.bmrsuspension.com/siteart/categories/${categoryImage}`}
+                      src={`/siteart/categories/${categoryImage}`}
                       alt={categoryName}
                       width={100}
                       height={90}
