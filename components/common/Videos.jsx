@@ -1,25 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import SectionHeader from "@/components/common/SectionHeader";
 
 export default function VideoPage() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const {
-    setQuickViewItem,
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = useContextElement();
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -40,253 +31,103 @@ export default function VideoPage() {
     fetchVideos();
   }, []);
 
-  if (loading) {
-    return (
-      <section className="pt_0">
-        <div className="container">
-          <div className="flat-title">
-            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-              Loading Videos...
-            </span>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="pt_0">
-        <div className="container">
-          <div className="flat-title">
-            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-              {error}
-            </span>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="pt_0">
+    <section className="homepage-section videosSection">
       <div className="container">
-        <div className="flat-title">
-          <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            Videos
-          </span>
-          <h6 className="home-title-description text-center text-muted">
-            Explore our collection of videos showcasing our products and
-            features.
-          </h6>
+        <div className="videosSection__header">
+          <SectionHeader
+            title={loading ? "Loading Videos..." : error ? error : "Videos"}
+            subtitle={
+              !loading && !error
+                ? "Explore our collection of videos showcasing our products and features."
+                : undefined
+            }
+          />
+
+          {!loading && !error && (
+            <Link
+              href="https://www.youtube.com/@BMRSuspension"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="videosSection__cta"
+            >
+              Visit YouTube
+              <span className="videosSection__ctaIcon" aria-hidden="true">
+                ↗
+              </span>
+            </Link>
+          )}
         </div>
 
-        <div className="video-slider-wrapper hover-sw-nav">
-          <Swiper
-            spaceBetween={24}
-            slidesPerView={4}
-            navigation={{
-              nextEl: ".swiper-button-next",
-              prevEl: ".swiper-button-prev",
-            }}
-            modules={[Navigation]}
-            className="video-slider"
-            breakpoints={{
-              0: {
-                slidesPerView: 1,
-                spaceBetween: 16,
-              },
-              576: {
-                slidesPerView: 2,
-                spaceBetween: 16,
-              },
-              768: {
-                slidesPerView: 3,
-                spaceBetween: 20,
-              },
-              1200: {
-                slidesPerView: 4,
-                spaceBetween: 24,
-              },
-            }}
-          >
-            {videos.map((video) => (
-              <SwiperSlide key={video.id}>
-                <div className="card-product bg_white radius-20 h-100">
-                  <div className="card-product-wrapper border-line h-100 d-flex flex-column">
+        {!loading && !error && (
+          <div className="videosSection__slider hover-sw-nav">
+            <Swiper
+              spaceBetween={18}
+              slidesPerView={4}
+              navigation={{
+                nextEl: ".videosNext",
+                prevEl: ".videosPrev",
+              }}
+              modules={[Navigation]}
+              className="videosSwiper"
+              breakpoints={{
+                0: { slidesPerView: 1, spaceBetween: 14 },
+                576: { slidesPerView: 2, spaceBetween: 14 },
+                768: { slidesPerView: 3, spaceBetween: 16 },
+                1200: { slidesPerView: 4, spaceBetween: 18 },
+              }}
+            >
+              {videos.map((video) => (
+                <SwiperSlide key={video.id}>
+                  <article className="videoCard">
                     <Link
                       href={`https://www.youtube.com/watch?v=${video.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="video-thumbnail-link"
+                      className="videoCard__link"
                     >
-                      <div className="video-thumbnail-wrapper">
+                      <div className="videoCard__media">
                         <Image
                           src={video.thumbnail.url}
                           alt={video.title}
-                          width={320}
-                          height={180}
-                          className="video-thumbnail"
+                          width={640}
+                          height={360}
+                          className="videoCard__img"
                           priority
                         />
-                        <div className="play-button">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="white"
-                          >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
+
+                        <div className="videoCard__overlay" />
+
+                        <div className="videoCard__play" aria-hidden="true">
+                          <span className="videoCard__playBtn">
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </span>
                         </div>
                       </div>
+
+                      <div className="videoCard__body">
+                        <h3 className="videoCard__title">{video.title}</h3>
+                        {video.description ? (
+                          <p className="videoCard__desc">{video.description}</p>
+                        ) : null}
+                      </div>
                     </Link>
-                    <div className="card-product-info mt-2">
-                      <div className="NewProductPartNumber">{video.title}</div>
-                      <span
-                        className="NewProductPlatformName"
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          margin: "0px",
-                          padding: "0px",
-                          lineHeight: "1.2",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "2",
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          height: "auto",
-                          maxHeight: "2.4em",
-                        }}
-                      >
-                        {video.description}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-            ))}
-            <div className="swiper-button-next button-style-arrow thumbs-next"></div>
-            <div className="swiper-button-prev button-style-arrow thumbs-prev"></div>
-          </Swiper>
-        </div>
+                  </article>
+                </SwiperSlide>
+              ))}
 
-        <div className="row mt-4">
-          <div className="col-md-12 text-center custom-youtube-button">
-            <Link
-              href="https://www.youtube.com/@BMRSuspension"
-
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Visit Our YouTube Channel
-            </Link>
+              <div className="swiper-button-next button-style-arrow thumbs-next videosNext" />
+              <div className="swiper-button-prev button-style-arrow thumbs-prev videosPrev" />
+            </Swiper>
           </div>
-        </div>
-
-        <style jsx>{`
-          .video-slider-wrapper {
-            position: relative;
-            margin: 0 -12px;
-            padding: 0 12px;
-          }
-
-          .video-thumbnail-link {
-            display: block;
-            position: relative;
-            width: 100%;
-            border-radius: 10px;
-            overflow: hidden;
-          }
-
-          .video-thumbnail-wrapper {
-            position: relative;
-            width: 100%;
-            background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-          }
-
-          .video-thumbnail {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
-          }
-
-          .video-thumbnail-link:hover .video-thumbnail {
-            transform: scale(1.05);
-          }
-
-          .play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 48px;
-            height: 48px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
-            transition: background-color 0.3s ease;
-          }
-
-          .video-thumbnail-link:hover .play-button {
-            background-color: rgba(0, 0, 0, 0.9);
-          }
-
-          .NewProductPartNumber {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-
-          .NewProductPlatformName {
-            font-size: 14px;
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            color: #666;
-          }
-
-          .custom-youtube-button {
-            background-color: var(--primary);
-            color: white;
-            padding: 15px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            border: 2px solid var(--primary);
-            text-transform: uppercase;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-          }
-
-          .custom-youtube-button:hover {
-            background-color: transparent;
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-          }
-
-          .custom-youtube-button:active {
-            transform: translateY(0);
-          }
-        `}</style>
+        )}
       </div>
     </section>
   );

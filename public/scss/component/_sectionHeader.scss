@@ -1,0 +1,93 @@
+/* Section Header - Reusable pattern for homepage and section headings */
+
+.sectionHeader {
+  margin-bottom: 32px;
+}
+
+.sectionHeader__bar {
+  width: 60px;
+  height: 3px;
+  background: var(--primary);
+  margin-bottom: 14px;
+  border-radius: 2px;
+}
+
+
+.sectionHeader__title {
+  margin: 0;
+  font-weight: 900; /* stronger */
+  font-size: 36px; /* slightly larger */
+  line-height: 1.1;
+  text-transform: uppercase;
+  font-size: 34px;
+  letter-spacing: 0.08em;
+}
+
+.sectionHeader__title {
+  position: relative;
+  display: inline-block;
+}
+
+.sectionHeader__title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 30%;
+  height: 2px;
+  background: rgba(0,0,0,0.15);
+}
+
+.sectionHeader__subtitle {
+  margin: 8px 0 0;
+  max-width: 680px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 15px;
+}
+
+.sectionHeader--dark .sectionHeader__title {
+  color: #fff;
+}
+
+.sectionHeader--dark .sectionHeader__subtitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+@media (max-width: 991px) {
+  .sectionHeader__title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 575px) {
+  .sectionHeader__title {
+    font-size: 24px;
+  }
+  /* Center section header on small mobile */
+  .sectionHeader {
+    text-align: center;
+  }
+  .sectionHeader__bar {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .sectionHeader__subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Homepage section wrapper - consistent padding */
+.homepage-section {
+  padding: 90px 0 60px;
+}
+
+/* Alternating background - sections must be direct siblings of .homepage-sections */
+.homepage-sections > .homepage-section:nth-of-type(odd) {
+  background: transparent;
+}
+.homepage-sections > .homepage-section:nth-of-type(even) {
+  background: #fafafa;
+}
+

@@ -63,17 +63,19 @@ export default async function page() {
         <VehicleSearch />
       </div>
 
-      <ThreeColumnLayout />
-      <ShopCategories />
-      {/* <Categories /> - uses homepage-collections API */}
-      {/* <Products /> */}
-      <LazyNewProducts scratchDent="0" />
-      {/* <ShopCategories /> */}
-      <LazyNewProducts scratchDent="1" />
-      {/* <ProductsPage /> */}
-      {/* <CollectionBanner /> */}
-      {/* <Blogs /> */}
-      <VideoPage />
+      <div className="homepage-sections">
+        <ThreeColumnLayout />
+        <ShopCategories />
+        {/* <Categories /> - uses homepage-collections API */}
+        {/* <Products /> */}
+        <LazyNewProducts scratchDent="0" />
+        {/* <ShopCategories /> */}
+        <LazyNewProducts scratchDent="1" />
+        {/* <ProductsPage /> */}
+        {/* <CollectionBanner /> */}
+        {/* <Blogs /> */}
+        <VideoPage />
+      </div>
       {/* <Marquee /> */}
       {/* <Testimonials /> */}
       {/* <Brands /> */}

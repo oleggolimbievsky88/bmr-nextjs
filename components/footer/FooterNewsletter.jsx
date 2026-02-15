@@ -5,7 +5,7 @@ import { showToast } from "@/utlis/showToast";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function FooterNewsletter() {
+export default function FooterNewsletter({ formOnly = false }) {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [showMessage, setShowMessage] = useState(false);
@@ -100,6 +100,53 @@ export default function FooterNewsletter() {
         ? "rgb(13, 202, 240)"
         : "red";
 
+  const formContent = (
+    <>
+      <div className={messageClassName}>
+        {message ? <p style={{ color: messageColor }}>{message}</p> : null}
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="form-newsletter subscribe-form"
+        action="#"
+        method="post"
+        acceptCharset="utf-8"
+        data-mailchimp="true"
+      >
+        <div className="subscribe-content">
+          <fieldset className="email">
+            <input
+              required
+              type="email"
+              name="email"
+              className="subscribe-email radius-10"
+              placeholder="Enter your email...."
+              tabIndex={0}
+              aria-required="true"
+              autoComplete="email"
+              suppressHydrationWarning
+            />
+          </fieldset>
+          <div className="button-submit">
+            <button
+              className={`${subscribeButtonClass} radius-10`}
+              type="submit"
+              disabled={isSubmitting}
+            >
+              Subscribe
+              <i className="icon icon-arrow1-top-left" />
+            </button>
+          </div>
+        </div>
+        <div className="subscribe-msg" />
+      </form>
+    </>
+  );
+
+  if (formOnly) {
+    return <div className="siteFooter__newsletterForm">{formContent}</div>;
+  }
+
   return (
     <div className="footer-newsletter footer-col-block">
       <div className="footer-heading footer-heading-desktop">
@@ -113,44 +160,7 @@ export default function FooterNewsletter() {
           Sign up to get first dibs on new arrivals, sales, exclusive content,
           events and more!
         </div>
-        <div className={messageClassName}>
-          {message ? <p style={{ color: messageColor }}>{message}</p> : null}
-        </div>
-        <form
-          onSubmit={handleSubmit}
-          className="form-newsletter subscribe-form"
-          action="#"
-          method="post"
-          acceptCharset="utf-8"
-          data-mailchimp="true"
-        >
-          <div className="subscribe-content">
-            <fieldset className="email">
-              <input
-                required
-                type="email"
-                name="email"
-                className="subscribe-email radius-10"
-                placeholder="Enter your email...."
-                tabIndex={0}
-                aria-required="true"
-                autoComplete="email"
-                suppressHydrationWarning
-              />
-            </fieldset>
-            <div className="button-submit">
-              <button
-                className={`${subscribeButtonClass} radius-10`}
-                type="submit"
-                disabled={isSubmitting}
-              >
-                Subscribe
-                <i className="icon icon-arrow1-top-left" />
-              </button>
-            </div>
-          </div>
-          <div className="subscribe-msg" />
-        </form>
+        {formContent}
       </div>
     </div>
   );

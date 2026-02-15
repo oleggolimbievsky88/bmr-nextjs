@@ -7,6 +7,7 @@ import Image from "next/image";
 import { getProductImageUrl } from "@/lib/assets";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
+import SectionHeader from "@/components/common/SectionHeader";
 import "swiper/css";
 import "swiper/css/grid";
 import "swiper/css/navigation";
@@ -16,7 +17,7 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
-  const { ref, inView } = useInView({
+  const { ref: inViewRef, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
     rootMargin: "100px 0px", // Start loading 100px before the element is visible
@@ -41,56 +42,59 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
       ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price."
       : "Check out the latest for your vehicle from BMR Suspension!";
 
+  const sectionRef = inViewRef;
+
   if (!isClient) {
-    return <PlaceholderSection title={title} description={description} />;
+    return (
+      <PlaceholderSection
+        title={title}
+        description={description}
+        sectionRef={sectionRef}
+      />
+    );
   }
 
-  return (
-    <div ref={ref}>
-      {inView && !hasLoaded ? (
-        <NewProductsLoader
-          scratchDent={scratchDent}
-          title={title}
-          description={description}
-          onLoaded={(loadedProducts) => {
-            setProducts(loadedProducts);
-            setHasLoaded(true);
-          }}
-        />
-      ) : hasLoaded ? (
-        <NewProductsSection
-          products={products}
-          title={title}
-          description={description}
-          contextFunctions={{
-            setQuickViewItem,
-            setQuickAddItem,
-            addToWishlist,
-            isAddedtoWishlist,
-            addToCompareItem,
-            isAddedtoCompareItem,
-          }}
-        />
-      ) : (
-        <PlaceholderSection title={title} description={description} />
-      )}
-    </div>
+  return inView && !hasLoaded ? (
+    <NewProductsLoader
+      scratchDent={scratchDent}
+      title={title}
+      description={description}
+      onLoaded={(loadedProducts) => {
+        setProducts(loadedProducts);
+        setHasLoaded(true);
+      }}
+      sectionRef={sectionRef}
+    />
+  ) : hasLoaded ? (
+    <NewProductsSection
+      products={products}
+      title={title}
+      description={description}
+      contextFunctions={{
+        setQuickViewItem,
+        setQuickAddItem,
+        addToWishlist,
+        isAddedtoWishlist,
+        addToCompareItem,
+        isAddedtoCompareItem,
+      }}
+      sectionRef={sectionRef}
+    />
+  ) : (
+    <PlaceholderSection
+      title={title}
+      description={description}
+      sectionRef={sectionRef}
+    />
   );
 }
 
 // Placeholder section shown before component comes into view
-function PlaceholderSection({ title, description }) {
+function PlaceholderSection({ title, description, sectionRef }) {
   return (
-    <section className="flat-spacing-1">
+    <section className="homepage-section" ref={sectionRef}>
       <div className="container">
-        <div className="flat-title">
-          <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            {title}
-          </span>
-          <h6 className="home-title-description text-center text-muted">
-            {description}
-          </h6>
-        </div>
+        <SectionHeader title={title} subtitle={description} />
         <div
           className="text-center p-5"
           style={{
@@ -118,7 +122,13 @@ function PlaceholderSection({ title, description }) {
 }
 
 // Loader component to fetch and show products
-function NewProductsLoader({ scratchDent, title, description, onLoaded }) {
+function NewProductsLoader({
+  scratchDent,
+  title,
+  description,
+  onLoaded,
+  sectionRef,
+}) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -176,16 +186,9 @@ function NewProductsLoader({ scratchDent, title, description, onLoaded }) {
 
   if (loading) {
     return (
-      <section className="flat-spacing-1">
+      <section className="homepage-section" ref={sectionRef}>
         <div className="container">
-          <div className="flat-title">
-            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-              {title}
-            </span>
-            <h6 className="home-title-description text-center text-muted">
-              {description}
-            </h6>
-          </div>
+          <SectionHeader title={title} subtitle={description} />
           <div
             className="text-center p-5"
             style={{
@@ -209,16 +212,9 @@ function NewProductsLoader({ scratchDent, title, description, onLoaded }) {
 
   if (error) {
     return (
-      <section className="flat-spacing-1">
+      <section className="homepage-section" ref={sectionRef}>
         <div className="container">
-          <div className="flat-title">
-            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-              {title}
-            </span>
-            <h6 className="home-title-description text-center text-muted">
-              {description}
-            </h6>
-          </div>
+          <SectionHeader title={title} subtitle={description} />
           <div
             className="text-center p-5 text-danger"
             style={{
@@ -258,6 +254,7 @@ function NewProductsLoader({ scratchDent, title, description, onLoaded }) {
         addToCompareItem,
         isAddedtoCompareItem,
       }}
+      sectionRef={sectionRef}
     />
   );
 }
@@ -268,6 +265,7 @@ function NewProductsSection({
   title,
   description,
   contextFunctions,
+  sectionRef,
 }) {
   const {
     setQuickViewItem,
@@ -284,16 +282,9 @@ function NewProductsSection({
 
   if (!products.length) {
     return (
-      <section className="flat-spacing-1">
+      <section className="homepage-section" ref={sectionRef}>
         <div className="container">
-          <div className="flat-title">
-            <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-              {title}
-            </span>
-            <h6 className="home-title-description text-center text-muted">
-              {description}
-            </h6>
-          </div>
+          <SectionHeader title={title} subtitle={description} />
           <div
             className="text-center p-5"
             style={{
@@ -321,16 +312,9 @@ function NewProductsSection({
   }
 
   return (
-    <section className="flat-spacing-1">
+    <section className="homepage-section" ref={sectionRef}>
       <div className="container">
-        <div className="flat-title">
-          <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            {title}
-          </span>
-          <h6 className="home-title-description text-center text-muted">
-            {description}
-          </h6>
-        </div>
+        <SectionHeader title={title} subtitle={description} />
 
         <div
           className={`position-relative slider-container ${navigationClass}-slider`}

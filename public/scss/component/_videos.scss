@@ -1,0 +1,157 @@
+/* ===== Videos Section ===== */
+.videosSection {
+  padding: 70px 0 40px;
+}
+
+.videosSection__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+/* If your SectionHeader is centered by default, this helps keep it feeling aligned */
+.videosSection .sectionHeader {
+  margin-bottom: 0;
+}
+
+.videosSection__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 25px;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 150ms ease, filter 150ms ease;
+  white-space: nowrap;
+}
+
+.videosSection__cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.videosSection__ctaIcon {
+  opacity: 0.9;
+}
+
+.videosSection__slider {
+  position: relative;
+}
+
+.videoCard {
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.videoCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.10);
+}
+
+.videoCard__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+}
+
+.videoCard__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #0b0b0c;
+}
+
+.videoCard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.001);
+  transition: transform 200ms ease, filter 200ms ease;
+}
+
+.videoCard:hover .videoCard__img {
+  transform: scale(1.05);
+  filter: brightness(0.92);
+}
+
+.videoCard__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 60% 40%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.55));
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.videoCard__play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.videoCard__playBtn {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.videoCard:hover .videoCard__playBtn {
+  transform: scale(1.03);
+  background: rgba(0, 0, 0, 0.68);
+}
+
+.videoCard__body {
+  padding: 14px 14px 16px;
+}
+
+.videoCard__title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.videoCard__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(0, 0, 0, 0.62);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 575px) {
+  .videosSection__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .videosSection__cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
