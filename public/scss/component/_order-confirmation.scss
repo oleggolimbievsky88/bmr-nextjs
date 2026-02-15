@@ -329,6 +329,45 @@
     font-size: 0.95rem;
   }
 
+  // Gift Cards card - ensure complete, consistent border on all sides
+  .gift-cards-card {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 10px;
+    overflow: visible;
+
+    .card-header {
+      border-top-left-radius: 9px;
+      border-top-right-radius: 9px;
+    }
+
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+
+      tbody td:first-child {
+        overflow: visible;
+        padding: 0.75rem 1rem;
+      }
+    }
+  }
+
+  // Gift card code display - clean rectangular border with all corners rounded
+  .gift-card-code {
+    display: inline-block;
+    background: #f8f9fa;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #212529;
+    font-family: var(--bs-font-monospace);
+    overflow: visible;
+    isolation: isolate;
+  }
+
   .payment-info {
     .d-flex {
       margin-bottom: 0.75rem;

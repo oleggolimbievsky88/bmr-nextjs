@@ -8,7 +8,7 @@ import Header18 from "@/components/header/Header18";
 import AdminNav from "@/components/admin/AdminNav";
 import Footer1 from "@/components/footer/Footer";
 
-export default function AdminLayout({ children }) {
+export default function AdminLayoutClient({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();

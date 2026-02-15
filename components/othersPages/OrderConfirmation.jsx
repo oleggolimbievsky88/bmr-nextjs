@@ -511,7 +511,7 @@ export default function OrderConfirmation({ orderData }) {
 
           {/* Gift Card Codes */}
           {order.giftCards && order.giftCards.length > 0 && (
-            <div className="card shadow-sm mb-4 border-danger">
+            <div className="card gift-cards-card shadow-sm mb-4">
               <div className="card-header bg-danger bg-opacity-10">
                 <h4 className="mb-0">
                   <i className="fas fa-gift me-2"></i>Gift Card Code(s)
@@ -534,9 +534,7 @@ export default function OrderConfirmation({ orderData }) {
                     {order.giftCards.map((gc) => (
                       <tr key={gc.id}>
                         <td>
-                          <code className="bg-light px-2 py-1 rounded">
-                            {gc.code}
-                          </code>
+                          <code className="gift-card-code">{gc.code}</code>
                         </td>
                         <td className="text-end">
                           ${parseFloat(gc.initial_amount || 0).toFixed(2)}

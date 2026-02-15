@@ -83,6 +83,8 @@ export default function AdminPlatformsPage() {
     type: null,
     data: null,
   });
+  const [failedThumbnailIds, setFailedThumbnailIds] = useState(new Set());
+  const [failedBannerIds, setFailedBannerIds] = useState(new Set());
 
   const fetchGroups = useCallback(async () => {
     const res = await fetch("/api/admin/platform-groups");
@@ -95,8 +97,12 @@ export default function AdminPlatformsPage() {
   const fetchBodies = useCallback(async (platformGroupId) => {
     if (!platformGroupId) {
       setBodies([]);
+      setFailedThumbnailIds(new Set());
+      setFailedBannerIds(new Set());
       return;
     }
+    setFailedThumbnailIds(new Set());
+    setFailedBannerIds(new Set());
     const res = await fetch(
       `/api/admin/bodies?platformGroupId=${platformGroupId}`,
     );
@@ -703,7 +709,9 @@ export default function AdminPlatformsPage() {
                           </td>
                           <td className="text-muted small">{b.slug || "—"}</td>
                           <td>
-                            {b.Image && b.Image !== "0" ? (
+                            {b.Image &&
+                            b.Image !== "0" &&
+                            !failedThumbnailIds.has(b.BodyID) ? (
                               <img
                                 src={getPlatformImageUrl(b.Image)}
                                 alt=""
@@ -714,16 +722,20 @@ export default function AdminPlatformsPage() {
                                   objectFit: "contain",
                                   backgroundColor: "#f5f5f5",
                                 }}
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
+                                onError={() =>
+                                  setFailedThumbnailIds((prev) =>
+                                    new Set(prev).add(b.BodyID),
+                                  )
+                                }
                               />
                             ) : (
                               <span className="text-muted small">—</span>
                             )}
                           </td>
                           <td>
-                            {b.HeaderImage && b.HeaderImage !== "0" ? (
+                            {b.HeaderImage &&
+                            b.HeaderImage !== "0" &&
+                            !failedBannerIds.has(b.BodyID) ? (
                               <img
                                 src={getPlatformBannerUrl(b.HeaderImage)}
                                 alt=""
@@ -734,9 +746,11 @@ export default function AdminPlatformsPage() {
                                   objectFit: "cover",
                                   backgroundColor: "#f5f5f5",
                                 }}
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
+                                onError={() =>
+                                  setFailedBannerIds((prev) =>
+                                    new Set(prev).add(b.BodyID),
+                                  )
+                                }
                               />
                             ) : (
                               <span className="text-muted small">—</span>

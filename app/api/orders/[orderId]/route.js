@@ -30,9 +30,11 @@ export async function GET(request, { params }) {
     const isDealer = customerRole === "dealer" || customerRole === "admin";
 
     // Fetch order items and gift cards using the actual database ID
+    // Handle both new_order_id (snake_case) and newOrderId (camelCase) from MySQL
+    const orderIdNum = order.new_order_id ?? order.newOrderId;
     const [itemsResult, giftCards] = await Promise.all([
-      getOrderItems(order.new_order_id),
-      getGiftCardsForOrder(order.new_order_id).catch(() => []),
+      getOrderItems(orderIdNum),
+      getGiftCardsForOrder(orderIdNum).catch(() => []),
     ]);
 
     // Format the order data

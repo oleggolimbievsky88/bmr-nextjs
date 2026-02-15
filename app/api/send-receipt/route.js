@@ -4,16 +4,44 @@ import {
   generateOrderConfirmationHTML,
   ORDER_CONFIRMATION_SUBJECT,
 } from "@/lib/order-confirmation-email";
+import { getOrderById } from "@/lib/queries";
+import { getGiftCardsForOrder } from "@/lib/giftCards";
 
 export async function POST(request) {
   try {
-    const { email, orderId, orderData } = await request.json();
+    let { email, orderId, orderData } = await request.json();
 
     if (!email || !orderId || !orderData) {
       return NextResponse.json(
         { message: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
+    }
+
+    // Re-fetch gift cards from DB when missing - client state may be stale after refresh
+    const hasGiftCertItems =
+      orderData.items?.some(
+        (i) =>
+          /gift\s*certificate/i.test(i.name || "") ||
+          /^gc\d+/i.test(i.partNumber || ""),
+      ) ?? false;
+    const hasGiftCards =
+      Array.isArray(orderData.giftCards) && orderData.giftCards.length > 0;
+    if (hasGiftCertItems && !hasGiftCards && process.env.MYSQL_HOST) {
+      try {
+        const order = await getOrderById(orderId);
+        if (order) {
+          const orderIdNum = order.new_order_id ?? order.newOrderId;
+          const giftCards = await getGiftCardsForOrder(orderIdNum).catch(
+            () => [],
+          );
+          if (giftCards && giftCards.length > 0) {
+            orderData = { ...orderData, giftCards };
+          }
+        }
+      } catch (e) {
+        console.warn("Could not re-fetch gift cards:", e?.message);
+      }
     }
 
     // Validate SMTP configuration
@@ -33,7 +61,7 @@ export async function POST(request) {
             "Email service not configured. Please set SMTP environment variables.",
           error: "SMTP configuration missing",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -59,7 +87,7 @@ export async function POST(request) {
             "Email service configuration error. Please check your SMTP settings.",
           error: verifyError.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -97,7 +125,7 @@ export async function POST(request) {
         message: "Failed to send receipt",
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
