@@ -16,11 +16,19 @@ export default function AdminLayout({ children }) {
   const isPrintPage = pathname?.includes("/print");
 
   // Refetch session when admin tab regains focus (e.g. after overnight)
+  // Debounce to avoid firing on file-picker close (which triggers focus)
   useEffect(() => {
     if (isLoginPage) return;
-    const onFocus = () => updateSession?.();
+    let t;
+    const onFocus = () => {
+      clearTimeout(t);
+      t = setTimeout(() => updateSession?.(), 600);
+    };
     window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [isLoginPage, updateSession]);
 
   useEffect(() => {
@@ -35,18 +43,22 @@ export default function AdminLayout({ children }) {
     if (isLoginPage) return;
 
     // Session expired or not admin -> redirect to unified login
+    // Defer redirect to avoid React removeChild errors during unmount
     if (!session) {
       const cb =
         pathname && pathname.startsWith("/admin") ? pathname : "/admin";
-      router.replace(`/login?callbackUrl=${encodeURIComponent(cb)}`);
-      return;
+      const id = setTimeout(
+        () => router.replace(`/login?callbackUrl=${encodeURIComponent(cb)}`),
+        0,
+      );
+      return () => clearTimeout(id);
     }
 
     if (session.user?.role !== "admin") {
-      router.replace("/");
-      return;
+      const id = setTimeout(() => router.replace("/"), 0);
+      return () => clearTimeout(id);
     }
-  }, [session, status, router, isLoginPage]);
+  }, [session, status, router, isLoginPage, pathname]);
 
   if (isLoginPage) {
     // Already logged in as admin: show loading while redirecting to dashboard

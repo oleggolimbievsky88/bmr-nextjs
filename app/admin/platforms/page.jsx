@@ -267,7 +267,7 @@ export default function AdminPlatformsPage() {
       } else {
         setEditingBody((prev) => ({ ...prev, HeaderImage: data.filename }));
       }
-      showToast("Image uploaded.", "success");
+      showToast("Image ready. Click Save to apply.", "success");
     } catch (err) {
       showToast(err.message || "Upload failed", "error");
     } finally {
