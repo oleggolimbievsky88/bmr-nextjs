@@ -108,7 +108,18 @@ export async function POST(request) {
       return NextResponse.json({ success: true, filename });
     }
 
-    // 2. Local filesystem (dev fallback)
+    // 2. Vercel/serverless: no writable filesystem — R2 required
+    if (process.env.VERCEL === "1") {
+      return NextResponse.json(
+        {
+          error:
+            "Platform image uploads require Cloudflare R2. Add R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME to Vercel env vars.",
+        },
+        { status: 503 },
+      );
+    }
+
+    // 3. Local filesystem (dev fallback only)
     try {
       const uploadDir = join(process.cwd(), "public", "siteart", subdir);
       await mkdir(uploadDir, { recursive: true });
