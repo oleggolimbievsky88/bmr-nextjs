@@ -77,7 +77,10 @@ export const ProductCard = ({
           borderRadius: "8px",
         }}
       >
-        <span style={{ fontWeight: "bold", color: "#222", fontSize: "1rem" }}>
+        <span
+          className="product-title"
+          style={{ fontWeight: "bold", color: "#222", fontSize: "1rem" }}
+        >
           {product.ProductName}
         </span>
         <div

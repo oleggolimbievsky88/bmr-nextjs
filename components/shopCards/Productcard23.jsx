@@ -88,6 +88,13 @@ export default function Productcard23({ product, colorsMap = {} }) {
             ))}
           </div>
         )}
+        <Link
+          href={`/product/${product.ProductID}`}
+          className="btn btn-outline-danger btn-view-more-details mt-2"
+          style={{ alignSelf: "flex-start" }}
+        >
+          View details
+        </Link>
       </div>
     </div>
   );

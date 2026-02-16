@@ -4,6 +4,7 @@ import ProductGrid from "./ProductGrid";
 import ShopFilter from "./ShopFilter";
 import Sorting from "./Sorting";
 import { layouts } from "@/data/shop";
+import { useShopGridItems } from "@/hooks/useShopGridItems";
 
 const PAGE_SIZE = 8;
 
@@ -17,7 +18,7 @@ export default function ShopLoadmoreOnScroll({
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [gridItems, setGridItems] = useState(4);
+  const [gridItems, setGridItems] = useShopGridItems(4);
   const [finalSorted, setFinalSorted] = useState([]);
   const sentinelRef = useRef(null);
 
@@ -43,7 +44,7 @@ export default function ShopLoadmoreOnScroll({
         setAllproducts((prev) => [
           ...prev,
           ...products.filter(
-            (p) => !prev.some((existing) => existing.ProductID === p.ProductID)
+            (p) => !prev.some((existing) => existing.ProductID === p.ProductID),
           ),
         ]);
       }
@@ -94,7 +95,7 @@ export default function ShopLoadmoreOnScroll({
           setPage((prev) => prev + 1);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     if (sentinelRef.current) observer.observe(sentinelRef.current);
     return () => {
