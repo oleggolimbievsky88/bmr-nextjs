@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "mcp:server": "node --no-warnings mcp-server.mjs"
+    "mcp:server": "node --no-warnings mcp-server.mjs",
+    "knip": "knip"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.990.0",
@@ -44,13 +45,16 @@
   },
   "devDependencies": {
     "@prisma/client": "^6.1.0",
+    "@types/node": "^25.2.3",
+    "knip": "^5.83.1",
     "prisma": "^6.1.0",
     "sass": "^1.85.1",
+    "typescript": "^5.9.3",
     "vercel": "^48.10.4"
   },
   "engines": {
     "node": "22.x",
     "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@10.29.2+sha512.bef43fa759d91fd2da4b319a5a0d13ef7a45bb985a3d7342058470f9d2051a3ba8674e629672654686ef9443ad13a82da2beb9eeb3e0221c87b8154fff9d74b8"
+  "packageManager": "pnpm@10.29.3"
 }

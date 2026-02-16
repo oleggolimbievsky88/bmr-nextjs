@@ -24,8 +24,6 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.bmrsuspension.com",
       },
-
-      // ✅ ADD THIS ONE
       {
         protocol: "https",
         hostname: "legacy.bmrsuspension.com",
