@@ -2932,6 +2932,10 @@ header[style*="transform:translateY(-"] {
 .main-header{
 	padding: 6px 0;
 
+	.search-input-container {
+		margin-top: 10px;
+	}
+
   @media (max-width: 770px) {
     border-bottom: 1px solid var(--primary);
   }
