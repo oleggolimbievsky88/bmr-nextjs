@@ -1,655 +1,282 @@
-// VehicleSearch.module.scss
+/* VehicleSearch.module.scss */
+
+/* =========
+   THE CARD
+   ========= */
 .vehicle-search-form {
-	background-color: #000000;
-	border: 1px solid rgb(66, 66, 66) !important;
-	border-radius: 10px;
-	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5) !important;
-	padding: 10px 15px !important;
-	margin: 10px;
-	max-width: 1400px;
-	width: 100%;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0;
+  padding: 10px 12px;
 
-	@media (min-width: 768px) {
-		padding-top: 3px;
-		padding-bottom: 3px;
-		padding-left: 16px;
-		padding-right: 16px;
-		margin-top: 0;
-		margin-bottom: 0;
-		max-width: 1400px;
-		width: 100%;
-		border-left: none;
-		border-right: none;
-	}
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
 
-	.search-form {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 10px;
-		width: 100%;
-		align-items: center;
-		justify-content: center;
+  /* grey bar look */
+  background: #3a3a3a;
 
-		@media (min-width: 768px) {
-			gap: 8px;
-			align-items: center;
-		}
+  /* remove glass effect */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 
-		@media (max-width: 767px) {
-			flex-direction: column;
-			gap: 12px;
-			flex-wrap: wrap;
-		}
-	}
-
-	.vehicle-search-header {
-		display: flex;
-		align-items: center;
-		margin-right: 10px;
-
-		@media (min-width: 768px) {
-			margin-right: 0;
-			margin-bottom: 0;
-		}
-
-		@media (max-width: 767px) {
-			width: 100%;
-			margin-bottom: 6px;
-			margin-right: 0;
-			text-align: center;
-		}
-
-		.vehicle-search-title {
-			font-size: 24px;
-			font-weight: 600;
-			color: #ffffff;
-			margin: 0;
-			margin-right:10px;
-			letter-spacing: 0.5px;
-			text-transform: uppercase;
-			white-space: nowrap;
-
-		@media (max-width: 767px) {
-			font-size: 24px !important;
-			color: #ffffff;
-			font-weight: 700;
-			padding-top: 5px;
-		}
-
-			@media (min-width: 768px) {
-				font-size: 18px;
-				margin-bottom: 0;
-			}
-		}
-	}
-
-	.form-row {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-		flex: 1 1 0;
-		min-width: 0;
-
-		@media (min-width: 768px) {
-			gap: 0;
-			flex: 1 1 0;
-			min-width: 0;
-		}
-
-		@media (max-width: 767px) {
-			width: 100%;
-			max-width: 100%;
-			gap: 0;
-			margin-bottom: 8px;
-		}
-
-		&:last-child {
-			@media (max-width: 767px) {
-				flex-direction: column;
-				gap: 0;
-				margin-top: 0;
-			}
-
-			@media (min-width: 768px) {
-				flex-direction: row;
-				gap: 0;
-				margin-top: 0;
-				flex: 0 0 auto;
-				max-width: none;
-				justify-content: flex-start;
-				min-width: auto;
-			}
-		}
-
-		&.button-row {
-			@media (min-width: 768px) {
-				flex: 0 0 auto;
-				min-width: auto;
-				max-width: none;
-			}
-		}
-
-		&.sub-model-row {
-			/* Hide sub model on lg and smaller screens (max-width: 991px) */
-			@media (max-width: 991px) {
-				display: none !important;
-			}
-		}
-	}
-
-	/* Hide button row when search form is hidden */
-	&[style*="display: none"],
-	&[style*="display:none"] {
-		.button-row,
-		.form-row.button-row {
-			display: none !important;
-			visibility: hidden !important;
-			opacity: 0 !important;
-		}
-	}
-
-	.form-label {
-		font-size: 14px;
-		font-weight: 600;
-		color: #333;
-		margin-bottom: 5px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		font-family: Arial, sans-serif;
-
-		@media (min-width: 768px) {
-			font-size: 12px;
-			margin-bottom: 3px;
-		}
-	}
-
-	.search-input {
-		width: 100%;
-		padding: 0px 15px;
-		font-size: 16px;
-		border: 1px solid #ccc;
-		border-radius: 20px;
-		background-color: #f4f4f4;
-		color: #333;
-		font-family: Arial, sans-serif;
-		transition: border-color 0.3s ease, box-shadow 0.3s ease;
-		appearance: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-		background-repeat: no-repeat;
-		background-position: right 15px center;
-		background-size: 12px;
-		padding-right: 40px;
-
-		@media (min-width: 768px) {
-			padding: 6px 12px;
-			font-size: 14px;
-			padding-right: 35px;
-		}
-
-		&:focus {
-			outline: none;
-			border-color: var(--primary);
-			box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
-			background-color: #ffffff;
-		}
-
-		&:disabled {
-			background-color: #e3e3e3;
-			cursor: not-allowed;
-			opacity: 0.7;
-		}
-
-		option {
-			padding: 10px;
-		}
-	}
-
-	.search-button {
-		padding: 12px 30px;
-		background-color: var(--primary);
-		color: white;
-		border: none;
-		border-radius: 15px;
-		font-size: 16px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background-color 0.3s ease, transform 0.2s ease;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		font-family: Arial, sans-serif;
-		min-width: 100px;
-
-		@media (min-width: 768px) {
-			padding: 6px 20px;
-			font-size: 14px;
-			border-radius: 15px;
-		}
-
-		@media (max-width: 767px) {
-			width: 100%;
-			max-width: 100%;
-		}
-
-		&:hover {
-			background-color: #c82333;
-			transform: translateY(-1px);
-		}
-
-		&:active {
-			transform: translateY(0);
-		}
-	}
-
-
-	@media (max-width: 767px) {
-		padding: 2px 15px !important;
-		margin-top: 5px !important;
-		margin-bottom: 0px !important;
-		border-radius: 8px;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
-
-		.vehicle-search-header {
-			margin-bottom: 8px;
-			padding-top: 0 !important;
-			margin-top: 0 !important;
-			width: 100%;
-			text-align: center;
-		}
-
-		.vehicle-search-title {
-			font-size: 18px !important;
-			display: block !important;
-			text-align: center;
-			width: 100%;
-			margin-bottom: 8px !important;
-
-			@media (max-width: 480px) {
-				font-size: 20px !important;
-			}
-		}
-
-		.search-form {
-			gap: 8px;
-		}
-
-		.form-row {
-			&:last-child {
-				flex-direction: column;
-				gap: 8px;
-			}
-		}
-
-		.search-input {
-			padding: 8px 12px;
-			font-size: 14px;
-			padding-right: 35px;
-		}
-
-		.search-button {
-			padding: 10px 20px;
-			font-size: 14px;
-			width: 100%;
-			min-width: 100px;
-		}
-	}
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
 }
 
-// Header wrapper/layout styles for VehicleSearch
-// Keep these here (co-located) but scoped via :global() since the wrapper lives outside this module.
-:global(.header-vehicle-row) {
-	background-image: linear-gradient(to top, rgb(63, 63, 63), rgb(0, 0, 0));
-	padding: 6px 0 8px;
-	overflow: visible !important;
-	// border-top:1px solid rgb(39, 39, 39);
-
-	.container {
-		display: flex;
-		align-items: center;
-		gap: 3px;
-		flex-wrap: wrap;
-		overflow: visible !important;
-	}
-
-	.vehicle-search-form {
-		flex: 1 1 auto;
-		min-width: 320px;
-		margin-bottom: 0;
-	}
-
-	.vehicle-search-form .search-form {
-		flex-wrap: nowrap;
-		gap: 12px;
-	}
-
-	.vehicle-search-form .form-row {
-		min-width: 0;
-	}
-
-	/* Ensure search button is hidden when parent is hidden */
-	&[style*="display: none"],
-	&[style*="display:none"],
-	&:not(:has(.vehicle-search-form)) {
-		.search-button,
-		.vehicle-search-form .search-button {
-			display: none !important;
-			visibility: hidden !important;
-			opacity: 0 !important;
-		}
-	}
+/* =========
+   FORM LAYOUT
+   ========= */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
-/* Hide search button when header-vehicle-row is hidden via CSS */
-:global(.header-vehicle-row[style*="display: none"]),
-:global(.header-vehicle-row[style*="display:none"]),
-:global(.header-vehicle-row[style*="visibility: hidden"]),
-:global(.header-vehicle-row[style*="visibility:hidden"]),
-:global(.header-vehicle-row[style*="opacity: 0"]),
-:global(.header-vehicle-row[style*="opacity:0"]),
-:global(header[style*="display: none"]) .header-vehicle-row,
-:global(header[style*="display:none"]) .header-vehicle-row,
-:global(header[style*="visibility: hidden"]) .header-vehicle-row,
-:global(header[style*="visibility:hidden"]) .header-vehicle-row {
-	.vehicle-search-form .search-button,
-	.search-button {
-		display: none !important;
-		visibility: hidden !important;
-		opacity: 0 !important;
-		pointer-events: none !important;
-	}
-}
-
-/* Hide search button when header is scrolled/hidden (via transform or position) */
-:global(header[style*="top: -"]),
-:global(header[style*="transform: translateY(-"]),
-:global(header[style*="transform:translateY(-"]) {
-	.header-vehicle-row .vehicle-search-form .search-button,
-	.header-vehicle-row .search-button {
-		display: none !important;
-		visibility: hidden !important;
-		opacity: 0 !important;
-		pointer-events: none !important;
-	}
-}
-
-/* Ensure search button inherits parent visibility */
-.vehicle-search-form {
-	&[style*="display: none"],
-	&[style*="display:none"] {
-		.search-button {
-			display: none !important;
-			visibility: hidden !important;
-			opacity: 0 !important;
-			pointer-events: none !important;
-		}
-	}
-}
-
-.banner-container {
-	width: 100%;
-	background: #111;
-	display: flex;
-	justify-content: center;
-}
-
-.banner-inner {
-	position: relative;
-	width: 100%;
-	max-width: 1500px;
-	margin: 0 auto;
-	min-height: 340px;
-	display: flex;
-	align-items: stretch;
-}
-
-.banner-img {
-	width: 100%;
-	height: 340px;
-	object-fit: cover;
-	display: block;
-	border-radius: 12px;
-}
-
-.banner-text {
-	position: absolute;
-	top: 0;
-	left: 0;
-	padding: 2rem 2.5rem;
-	color: #fff;
-	text-align: left;
-	max-width: 90%;
-	width: 700px;
-	z-index: 1;
-	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-}
-
-@media (max-width: 1550px) {
-	.banner-inner {
-		max-width: 100vw;
-	}
-}
-
-@media (max-width: 900px) {
-	.banner-text {
-		padding: 1rem;
-		font-size: 1.2rem;
-		width: 98vw;
-		max-width: 98vw;
-	}
-	.banner-img {
-		height: 220px;
-	}
-}
-
-// Consolidated styles from custom.scss - using :global() for parent container selectors
-// Note: .vehicle-search-form is module-scoped, so we reference it directly without :global()
-
-/* VehicleSearch container styling */
-:global(.container) .vehicle-search-form {
-	max-width: 1200px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-/* Add spacing around vehicle search */
-:global(.vehicle-search-desktop),
-:global(.vehicle-search-mobile) {
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-	padding-top: 5px !important;
-	padding-bottom: 5px !important;
-
-	.vehicle-search-form {
-		margin-top: 0 !important;
-		margin-bottom: 0 !important;
-		padding-top: 5px !important;
-		padding-bottom: 5px !important;
-
-		@media (min-width: 768px) {
-			padding-top: 5px !important;
-			padding-bottom: 5px !important;
-		}
-	}
-}
-
-:global(.container.vehicle-search-desktop),
-:global(.container.vehicle-search-mobile) {
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-	padding-top: 5px !important;
-	padding-bottom: 5px !important;
-}
-
-/* Ensure no spacing before/after vehicle search containers */
-:global(.header-bottom) + :global(.container.vehicle-search-desktop),
-:global(#header) + :global(.container.vehicle-search-desktop),
-:global(header) + :global(.container.vehicle-search-desktop) {
-	margin-top: 0 !important;
-	padding-top: 0 !important;
-}
-
-:global(.tf-slideshow) + :global(.container.vehicle-search-mobile),
-:global(section.tf-slideshow) + :global(.container.vehicle-search-mobile) {
-	margin-top: 0 !important;
-	padding-top: 5px !important;
-}
-
-/* Desktop: Hide VehicleSearch wrapper since it's now in sticky header */
-:global(.vehicle-search-desktop-wrapper) {
-	width: 100%;
-	background-color: #e9e9e9;
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-	padding-top: 0px !important;
-	padding-bottom: 0px !important;
-	border: none !important;
-	position: relative;
-	z-index: 100 !important;
-
-	@media (min-width: 768px) {
-		display: none !important; /* Hide on desktop since it's in sticky header */
-	}
-
-	@media (max-width: 767px) {
-		display: none !important;
-	}
-}
-
-:global(.vehicle-search-desktop) {
-	@media (min-width: 768px) {
-		display: none !important; /* Hide on desktop since it's in sticky header */
-	}
-
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-}
-
-:global(.vehicle-search-mobile) {
-	display: none;
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-}
-
-/* Mobile: Hide VehicleSearch above banner, show below */
-@media (max-width: 767px) {
-	:global(.vehicle-search-desktop) {
-		display: none !important;
-	}
-
-	:global(.vehicle-search-mobile) {
-		display: block !important;
-		margin-top: 0 !important;
-		padding-top: 0 !important;
-		margin-bottom: 0 !important;
-		padding-bottom: 0 !important;
-	}
-}
-
-/* Styles for vehicle search after slideshow - Mobile only */
-@media (max-width: 767px) {
-	:global(section.tf-slideshow) + .vehicle-search-form,
-	:global(.tf-slideshow) + .vehicle-search-form,
-	:global(section.tf-slideshow) ~ .vehicle-search-form,
-	:global(.tf-slideshow) ~ .vehicle-search-form {
-		margin-top: 0 !important;
-		padding-top: 15px !important;
-	}
-
-	:global(section.tf-slideshow) + * .vehicle-search-form,
-	:global(.tf-slideshow) + * .vehicle-search-form {
-		margin-top: 0 !important;
-		padding-top: 15px !important;
-	}
-
-	:global(section.tf-slideshow.slider-collection.hover-sw-nav.pb_0) + :global(div) .vehicle-search-form,
-	:global(section.tf-slideshow.slider-collection.hover-sw-nav.pb_0) + .vehicle-search-form,
-	:global(section.tf-slideshow) + :global(div) .vehicle-search-form,
-	:global(section.tf-slideshow) + .vehicle-search-form,
-	:global(.tf-slideshow) + :global(div) .vehicle-search-form,
-	:global(.tf-slideshow) + .vehicle-search-form {
-		margin-top: 0 !important;
-		padding-top: 5px !important;
-	}
-
-	:global(section.tf-slideshow) + :global(div) .vehicle-search-form {
-		margin-top: -60px !important;
-		padding-top: 25px !important;
-	}
-
-	:global(section.tf-slideshow) + :global(div) {
-		margin-top: -60px !important;
-		padding-top: 0 !important;
-
-		.vehicle-search-form {
-			margin-top: 0 !important;
-			padding-top: 25px !important;
-		}
-	}
-
-	.vehicle-search-form .vehicle-search-header {
-		padding-top: 5px !important;
-		margin-top: 0 !important;
-		overflow: visible !important;
-	}
-
-	:global(.tf-slideshow) + .vehicle-search-form,
-	:global(section.tf-slideshow) + .vehicle-search-form {
-		margin-top: 0 !important;
-		padding-top: 0 !important;
-
-		:global(.tf-section) {
-			margin-top: 0 !important;
-
-			&:first-of-type {
-				margin-top: 0 !important;
-				padding-top: 20px !important;
-			}
-		}
-	}
-}
-
-/* Desktop: No padding/margin on top/bottom */
+/* Desktop: keep everything on one line */
 @media (min-width: 768px) {
-	:global(section.tf-slideshow) + .vehicle-search-form,
-	:global(.tf-slideshow) + .vehicle-search-form,
-	:global(section.tf-slideshow) ~ .vehicle-search-form,
-	:global(.tf-slideshow) ~ .vehicle-search-form,
-	:global(section.tf-slideshow) + * .vehicle-search-form,
-	:global(.tf-slideshow) + * .vehicle-search-form,
-	:global(section.tf-slideshow.slider-collection.hover-sw-nav.pb_0) + :global(div) .vehicle-search-form,
-	:global(section.tf-slideshow.slider-collection.hover-sw-nav.pb_0) + .vehicle-search-form,
-	:global(section.tf-slideshow) + :global(div) .vehicle-search-form,
-	:global(section.tf-slideshow) + .vehicle-search-form,
-	:global(.tf-slideshow) + :global(div) .vehicle-search-form,
-	:global(.tf-slideshow) + .vehicle-search-form {
-		margin-top: 0 !important;
-		margin-bottom: 0 !important;
-		padding-top: 0 !important;
-		padding-bottom: 0 !important;
-	}
+  .search-form {
+    flex-wrap: nowrap;
+  }
+}
 
-	:global(section.tf-slideshow) + :global(div) .vehicle-search-form,
-	:global(section.tf-slideshow) + :global(div) {
-		margin-top: 0 !important;
-		margin-bottom: 0 !important;
-		padding-top: 0 !important;
-		padding-bottom: 0 !important;
+/* Mobile: stack */
+@media (max-width: 767px) {
+  .vehicle-search-form {
+    padding: 12px 12px 20px 12px;
+    border-radius: 16px;
+  }
 
-		.vehicle-search-form {
-			margin-top: 0 !important;
-			margin-bottom: 0 !important;
-			padding-top: 0 !important;
-			padding-bottom: 0 !important;
-		}
-	}
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-	.vehicle-search-form .vehicle-search-header {
-		padding-top: 0 !important;
-		margin-top: 0 !important;
-		overflow: visible !important;
-	}
+  .form-row.button-row {
+    width: 100%;
+    justify-content: stretch;
+  }
+}
+
+/* ==================
+   TITLE / HEADER AREA
+   ================== */
+.vehicle-search-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.vehicle-search-title {
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  position: relative;
+}
+
+/* subtle red underline accent */
+.vehicle-search-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 48px;
+  height: 2px;
+  background: var(--primary);
+}
+
+/* Mobile title: centered with accent */
+@media (max-width: 767px) {
+  .vehicle-search-header {
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .vehicle-search-title {
+    font-size: 14px;
+  }
+
+  .vehicle-search-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* =========
+   ROW ITEMS
+   ========= */
+.form-row {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* make button row not stretch and push to end */
+.form-row.button-row {
+  flex: 0 0 auto;
+  min-width: 140px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Keep sub-model on desktop; hide on smaller if you want */
+.sub-model-row {
+  /* If you want it hidden on mobile only, use 767 instead of 991 */
+  @media (max-width: 991px) {
+    display: none;
+  }
+}
+
+/* =========
+   SELECTS
+   ========= */
+.search-input {
+  width: 100%;
+  height: 44px;
+
+  padding: 0 44px 0 14px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.25);
+
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  font-weight: 600;
+
+  outline: none;
+  appearance: none;
+
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+  /* cleaner chevron */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' fill-opacity='0.85' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+
+/* Desktop slightly tighter */
+@media (min-width: 768px) {
+  .search-input {
+    height: 40px;
+    border-radius: 12px;
+  }
+}
+
+.search-input:focus {
+  border-color: rgba(220, 53, 69, 0.65);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.18);
+}
+
+.search-input:hover {
+  border-color: rgba(255, 255, 255, 0.20);
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.search-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Options are browser-controlled, but ensure readability where supported */
+.search-input option {
+  color: #111;
+}
+
+/* =========
+   BUTTON
+   ========= */
+.search-button {
+  height: 35px;
+  padding: 0 18px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(220, 53, 69, 0.35);
+  background: linear-gradient(180deg, rgba(220, 53, 69, 1), rgba(175, 35, 48, 1));
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  box-shadow: 0 10px 20px rgba(220, 53, 69, 0.18);
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.search-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+  box-shadow: 0 14px 28px rgba(220, 53, 69, 0.22);
+}
+
+.search-button:active {
+  transform: translateY(0);
+}
+
+/* Mobile: button full width */
+@media (max-width: 767px) {
+  .search-button {
+    width: 100%;
+    height: 35px;
+  }
+}
+
+/* ==========================
+   HEADER ROW WRAPPER (GLOBAL)
+   ========================== */
+:global(.header-vehicle-row) {
+  /* let the form be the "bar", keep the row subtle */
+  background: #111;
+  border-top: 1px solid rgba(255, 0, 0, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 0;
+}
+
+:global(.header-vehicle-row .container) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Make it slightly "premium" by widening on big screens */
+@media (min-width: 1200px) {
+  :global(.header-vehicle-row .container) {
+    justify-content: center;
+  }
+  .vehicle-search-form {
+    padding: 10px 14px;
+  }
+}
+
+/* Mobile: VehicleSearch below hero — show only on small screens */
+:global(.vehicle-search-mobile) {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  :global(.vehicle-search-mobile) {
+    display: block;
+    margin-top: 40px !important; /* override custom.scss which forces margin-top: 0 */
+  }
+
+  /* More specific: gap between hero and vehicle search (overrides custom.scss) */
+  :global(section.tf-slideshow) + :global(.container.vehicle-search-mobile),
+  :global(section.tf-slideshow) + :global(.vehicle-search-mobile) {
+    margin-top: 40px !important;
+    padding-top: 0 !important;
+  }
 }

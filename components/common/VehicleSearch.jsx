@@ -144,7 +144,11 @@ export default function VehicleSearch() {
 
   return (
     <div className={styles["vehicle-search-form"]}>
-      <form onSubmit={handleSubmit} className={styles["search-form"]}>
+      <form
+        onSubmit={handleSubmit}
+        className={styles["search-form"]}
+        data-has-title="true"
+      >
         <div className={styles["vehicle-search-header"]}>
           <h5 className={styles["vehicle-search-title"]}>SEARCH BY VEHICLE</h5>
         </div>

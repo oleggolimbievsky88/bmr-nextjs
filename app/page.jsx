@@ -52,11 +52,12 @@ export default async function page() {
     <>
       <Topbar2 />
       <Header />
-      <div className="vehicle-search-desktop-wrapper">
+      {/* Duplicate VehicleSearch - keeping header version only for now */}
+      {/* <div className="vehicle-search-desktop-wrapper">
         <div className="container vehicle-search-desktop">
           <VehicleSearch />
         </div>
-      </div>
+      </div> */}
       <Hero initialBannerImages={initialBannerImages} />
       <div className="container vehicle-search-mobile">
         <VehicleSearch />

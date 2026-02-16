@@ -20,8 +20,8 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
         const list = Array.isArray(data.messages) ? data.messages : [];
         setMessages(
           list.filter(
-            (m) => m && m.content != null && String(m.content).trim() !== ""
-          )
+            (m) => m && m.content != null && String(m.content).trim() !== "",
+          ),
         );
       })
       .catch(() => setMessages([]));
@@ -83,7 +83,7 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
             <ul className="d-flex gap-20">
               <li>
                 <Link href={`/contact`} className="text-white nav-text">
-                  Contact Us
+                  Contact Support
                 </Link>
               </li>
               <li>

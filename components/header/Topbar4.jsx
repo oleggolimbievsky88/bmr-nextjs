@@ -103,12 +103,12 @@ export default function Topbar4() {
               <ul className="d-flex gap-20">
                 <li>
                   <Link href={`/contact`} className="text-white nav-text">
-                    Contact Us
+                    Contact Support
                   </Link>
                 </li>
                 <li>
                   <Link href={`/about-us`} className="text-white nav-text">
-                    About Us
+                    About BMR
                   </Link>
                 </li>
                 <TopbarUserMenu />
