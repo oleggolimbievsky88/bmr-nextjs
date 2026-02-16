@@ -15,7 +15,6 @@ import ProductsPage from "./products/page";
 import NewProductsPage from "./products/new/page";
 import LazyNewProducts from "@/components/homes/home/LazyNewProducts";
 import Topbar4 from "@/components/header/Topbar4";
-import Header18 from "@/components/header/Header18";
 import VideoPage from "@/components/common/Videos";
 import Blogs from "@/components/homes/home/Blogs";
 import ShopCategories from "@/components/homes/home/ShopCategories";
@@ -52,7 +51,7 @@ export default async function page() {
   return (
     <>
       <Topbar2 />
-      <Header18 />
+      <Header />
       <div className="vehicle-search-desktop-wrapper">
         <div className="container vehicle-search-desktop">
           <VehicleSearch />

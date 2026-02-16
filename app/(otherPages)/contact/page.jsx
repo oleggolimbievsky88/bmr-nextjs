@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footer/Footer";
-import Header18 from "@/components/header/Header18";
+import Header from "@/components/header/Header";
 import Topbar4 from "@/components/header/Topbar4";
 import VehicleSearch from "@/components/common/VehicleSearch";
 import ContactForm from "@/components/othersPages/contact/ContactForm";
@@ -29,7 +29,7 @@ export default function ContactPage() {
   return (
     <>
       <Topbar4 />
-      <Header18 />
+      <Header />
       <div className="vehicle-search-desktop-wrapper">
         <div className="container vehicle-search-desktop">
           <VehicleSearch />

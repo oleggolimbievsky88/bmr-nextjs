@@ -1,6 +1,7 @@
 "use client";
 import { openCartModal } from "@/utlis/openCartModal";
 import { showToast } from "@/utlis/showToast";
+import { useSession } from "next-auth/react";
 //import { openCart } from "@/utlis/toggleCart";
 import React, { useEffect, useRef } from "react";
 import { useContext, useState } from "react";
@@ -10,6 +11,7 @@ export const useContextElement = () => {
 };
 
 export default function Context({ children }) {
+  const { data: session, status: sessionStatus } = useSession();
   const [cartProducts, setCartProducts] = useState([]);
   const [cartLoading, setCartLoading] = useState(true);
   const [wishList, setWishList] = useState([]);
@@ -275,11 +277,44 @@ export default function Context({ children }) {
     localStorage.removeItem("freeShipping");
   };
 
-  const addToWishlist = (id) => {
-    if (!wishList.includes(id)) {
-      setWishList((pre) => [...pre, id]);
+  const addToWishlist = async (id) => {
+    const pid = typeof id === "number" ? id : parseInt(id, 10);
+    if (isNaN(pid)) return;
+    const isAdded = wishList.some((x) => Number(x) === pid);
+    if (isAdded) {
+      setWishList((pre) => pre.filter((x) => Number(x) !== pid));
+      showToast("Removed from your wishlist", "info");
+      if (session?.user?.id) {
+        try {
+          const res = await fetch(`/api/wishlist?productId=${pid}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.wishlist) setWishList(data.wishlist);
+          }
+        } catch (e) {
+          console.warn("Wishlist API error:", e);
+        }
+      }
     } else {
-      setWishList((pre) => [...pre].filter((elm) => elm != id));
+      setWishList((pre) => [...pre, pid]);
+      showToast("Product added to your wishlist", "success");
+      if (session?.user?.id) {
+        try {
+          const res = await fetch("/api/wishlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId: pid }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.wishlist) setWishList(data.wishlist);
+          }
+        } catch (e) {
+          console.warn("Wishlist API error:", e);
+        }
+      }
     }
   };
   const removeFromWishlist = (id) => {
@@ -298,10 +333,8 @@ export default function Context({ children }) {
     }
   };
   const isAddedtoWishlist = (id) => {
-    if (wishList.includes(id)) {
-      return true;
-    }
-    return false;
+    const pid = typeof id === "number" ? id : parseInt(id, 10);
+    return wishList.some((x) => Number(x) === pid);
   };
   const isAddedtoCompareItem = (id) => {
     if (compareItem.includes(id)) {
@@ -445,16 +478,36 @@ export default function Context({ children }) {
       console.error("Error saving cart to cookies:", error);
     }
   }, [cartProducts]);
+  // Load wishlist: from API when logged in, from localStorage when guest
   useEffect(() => {
-    const items = JSON.parse(localStorage.getItem("wishlist"));
-    if (items?.length) {
-      setWishList(items);
+    if (sessionStatus === "loading") return;
+    if (session?.user?.id) {
+      fetch("/api/wishlist")
+        .then((res) => (res.ok ? res.json() : { wishlist: [] }))
+        .then((data) => {
+          const list = data?.wishlist ?? [];
+          if (Array.isArray(list) && list.length) {
+            setWishList(
+              list.map((x) => (typeof x === "number" ? x : parseInt(x, 10))),
+            );
+          }
+        })
+        .catch(() => {});
+    } else {
+      const items = JSON.parse(localStorage.getItem("wishlist"));
+      if (items?.length) {
+        setWishList(
+          items.map((x) => (typeof x === "number" ? x : parseInt(x, 10))),
+        );
+      }
     }
-  }, []);
+  }, [session?.user?.id, sessionStatus]);
 
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishList));
-  }, [wishList]);
+    if (!session?.user?.id) {
+      localStorage.setItem("wishlist", JSON.stringify(wishList));
+    }
+  }, [wishList, session?.user?.id]);
 
   // Re-validate coupon when cart products change (but not on initial load)
   useEffect(() => {

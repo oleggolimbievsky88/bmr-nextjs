@@ -17,7 +17,7 @@ export default function MainMenu({ initialMenuData }) {
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
   const [megaMenuTop, setMegaMenuTop] = useState(null);
 
-  // Update menuData when initialMenuData changes (from Header18)
+  // Update menuData when initialMenuData changes (from Header)
   useEffect(() => {
     if (initialMenuData && Object.keys(initialMenuData).length > 0) {
       setMenuData(initialMenuData);

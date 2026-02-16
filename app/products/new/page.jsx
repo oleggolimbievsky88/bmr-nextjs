@@ -12,27 +12,20 @@ import "swiper/css";
 import "swiper/css/grid";
 import "swiper/css/navigation";
 
-export default function NewProductsPage({ scrachDent = "0" }) {
+export default function NewProductsPage({ scratchDent = "0" }) {
   const [newProducts, setNewProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigationClass = scrachDent === "1" ? "scratch-dent" : "new-products";
+  const navigationClass = scratchDent === "1" ? "scratch-dent" : "new-products";
 
-  const {
-    setQuickViewItem,
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = useContextElement();
+  const { addToWishlist, isAddedtoWishlist } = useContextElement();
 
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `/api/products/new-products?scrachDent=${scrachDent}&limit=35`,
+          `/api/products/new-products?scratchDent=${scratchDent}&limit=35`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -50,17 +43,17 @@ export default function NewProductsPage({ scrachDent = "0" }) {
     };
 
     fetchProducts();
-  }, [scrachDent]);
+  }, [scratchDent]);
 
   return (
     <section className="flat-spacing-1">
       <div className="container">
         <div className="flat-title">
           <span className="title wow fadeInUp home-title" data-wow-delay="0s">
-            {scrachDent === "1" ? "Scratch & Dent" : "New Products"}
+            {scratchDent === "1" ? "Scratch & Dent" : "New Products"}
           </span>
           <h6 className="home-title-description text-center text-muted">
-            {scrachDent === "1"
+            {scratchDent === "1"
               ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price."
               : "Check out the latest for your vehicle from BMR Suspension!"}
           </h6>
@@ -140,15 +133,6 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                       </Link>
                       <div className="list-product-btn mt-auto">
                         <a
-                          href="#quick_add"
-                          onClick={() => setQuickAddItem(product.ProductID)}
-                          data-bs-toggle="modal"
-                          className="box-icon bg_white quick-add tf-btn-loading"
-                        >
-                          <span className="icon icon-bag" />
-                          <span className="tooltip">Quick Add</span>
-                        </a>
-                        <a
                           onClick={() => addToWishlist(product.ProductID)}
                           className="box-icon bg_white wishlist btn-icon-action"
                         >
@@ -164,34 +148,6 @@ export default function NewProductsPage({ scrachDent = "0" }) {
                               ? "Already Wishlisted"
                               : "Add to Wishlist"}
                           </span>
-                        </a>
-                        <a
-                          href="#compare"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => addToCompareItem(product.ProductID)}
-                          className="box-icon bg_white compare btn-icon-action"
-                        >
-                          <span
-                            className={`icon icon-compare ${
-                              isAddedtoCompareItem(product.ProductID)
-                                ? "added"
-                                : ""
-                            }`}
-                          />
-                          <span className="tooltip">
-                            {isAddedtoCompareItem(product.ProductID)
-                              ? "Already Compared"
-                              : "Add to Compare"}
-                          </span>
-                        </a>
-                        <a
-                          href="#quick_view"
-                          onClick={() => setQuickViewItem(product)}
-                          data-bs-toggle="modal"
-                          className="box-icon bg_white quickview tf-btn-loading"
-                        >
-                          <span className="icon icon-view" />
-                          <span className="tooltip">Quick View</span>
                         </a>
                       </div>
                       <div className="card-product-info mt-2">

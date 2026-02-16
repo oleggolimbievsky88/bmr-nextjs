@@ -1,7 +1,7 @@
 /* Section Header - Reusable pattern for homepage and section headings */
 
 .sectionHeader {
-  margin-bottom: 32px;
+  margin-bottom: 34px;
 }
 
 .sectionHeader__bar {
@@ -20,8 +20,9 @@
   line-height: 1.1;
   text-transform: uppercase;
   font-size: 34px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
+
 
 .sectionHeader__title {
   position: relative;
@@ -88,6 +89,106 @@
   background: transparent;
 }
 .homepage-sections > .homepage-section:nth-of-type(even) {
-  background: #fafafa;
+  background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+  border-top: 1px solid rgba(0,0,0,0.04);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
 }
 
+.homepage-section .swiper-wrapper {
+  padding-bottom: 8px;
+}
+
+.homepage-section .swiper-slide {
+  height: auto;
+}
+
+/* ===== New Products: fallback layout when < 4 items ===== */
+
+.newProductsGrid {
+  display: grid;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+/* 2 items */
+.newProductsGrid--2 {
+  grid-template-columns: repeat(2, minmax(260px, 360px));
+  justify-content: center;
+}
+
+/* 3 items */
+.newProductsGrid--3 {
+  grid-template-columns: repeat(3, minmax(240px, 320px));
+  justify-content: center;
+}
+
+@media (max-width: 991px) {
+  .newProductsGrid--3 {
+    grid-template-columns: repeat(2, minmax(260px, 360px));
+  }
+}
+
+@media (max-width: 575px) {
+  .newProductsGrid--2,
+  .newProductsGrid--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Featured single product ===== */
+.newProductsFeatured {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.newProductsFeatured__inner {
+  width: min(520px, 100%);
+}
+
+/* Make the single card feel more premium */
+.newProductsFeatured__inner .card-product {
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
+}
+
+/* Give the image more presence for the featured card */
+.newProductsFeatured__inner .product-img {
+  padding: 18px;
+}
+
+.newProductsFeatured__inner .img-product {
+  border-radius: 16px;
+}
+
+/* Tighten the text block spacing a bit */
+.newProductsFeatured__inner .card-product-info {
+  padding: 6px 18px 18px;
+}
+
+/* Reduce empty-feel when New Products has few items */
+.homepage-section--newProducts {
+  padding-bottom: 50px;
+}
+
+/* Prevent huge empty area in New Products */
+.new-products,
+.newProducts,
+.new-products-wrapper,
+.new-products-content,
+.new-products-slider,
+.newProductsGrid,
+.scratch-dent,
+.scratch-dent-content,
+.scratch-dent-slider {
+  min-height: unset !important;
+  height: auto !important;
+}
+
+/* Extra bottom padding so drop shadow on bottom row isn't clipped */
+.new-products .swiper,
+.newProducts .swiper,
+.scratch-dent .swiper {
+  padding-bottom: 36px;
+}

@@ -200,10 +200,10 @@
   }
 }
 
-// Header divider lines (homepage uses `Header18` with `.line` on black backgrounds).
+// Header divider lines (homepage uses `Header` with `.line` on black backgrounds).
 // Keep these dividers subtle (dark grey) and 1px, without changing `.line` globally.
 #header {
-	// Reduce height of the main menu row (Header18/MainMenu uses Bootstrap `.nav-link`).
+	// Reduce height of the main menu row (Header/MainMenu uses Bootstrap `.nav-link`).
 	.header-bottom {
 		.navbar-nav {
 			.nav-link {

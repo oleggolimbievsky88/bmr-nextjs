@@ -295,7 +295,7 @@
 	}
 }
 
-// Header18 wrapper/layout styles for VehicleSearch
+// Header wrapper/layout styles for VehicleSearch
 // Keep these here (co-located) but scoped via :global() since the wrapper lives outside this module.
 :global(.header-vehicle-row) {
 	background-image: linear-gradient(to top, rgb(63, 63, 63), rgb(0, 0, 0));

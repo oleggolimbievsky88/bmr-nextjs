@@ -1,7 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import PlatformHeader from "@/components/header/PlatformHeader";
-import Header18 from "@/components/header/Header18";
+import Header from "@/components/header/Header";
 import Topbar4 from "@/components/header/Topbar4";
 
 export default function ProductsLayout({ children }) {
@@ -14,7 +14,7 @@ export default function ProductsLayout({ children }) {
   return (
     <div>
       <Topbar4 />
-      <Header18 showVehicleSearch={true} />
+      <Header showVehicleSearch={true} />
       <main className="product-page">{children}</main>
       <Footer1 />
     </div>

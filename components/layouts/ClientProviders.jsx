@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import Context from "@/context/Context";
 import ProductSidebar from "@/components/modals/ProductSidebar";
 import ShopCart from "@/components/modals/ShopCart";
+import QuickAdd from "@/components/modals/QuickAdd";
+import QuickView from "@/components/modals/QuickView";
 import AskQuestion from "@/components/modals/AskQuestion";
 import BlogSidebar from "@/components/modals/BlogSidebar";
 import ColorCompare from "@/components/modals/ColorCompare";
@@ -126,6 +128,8 @@ export default function ClientProviders({ children }) {
           <div id="wrapper">{children}</div>
           <ProductSidebar />
           <ShopCart />
+          <QuickAdd />
+          <QuickView />
           <AskQuestion />
           <BlogSidebar />
           <ColorCompare />

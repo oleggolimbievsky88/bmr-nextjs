@@ -1,5 +1,4 @@
 "use client";
-import { allProducts } from "@/data/products";
 import { useContextElement } from "@/context/Context";
 import { useEffect, useState } from "react";
 import { ProductCardWishlist } from "../shopCards/ProductCardWishlist";
@@ -8,41 +7,70 @@ import Link from "next/link";
 export default function Wishlist() {
   const { wishList } = useContextElement();
   const [wishListItems, setWishListItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (wishList) {
-      console.log(wishList);
-      setWishListItems(
-        [...allProducts].filter((el) => wishList.includes(el.id))
-      );
+    if (!wishList?.length) {
+      setWishListItems([]);
+      setLoading(false);
+      return;
     }
+    setLoading(true);
+    const ids = [
+      ...new Set(wishList.map((x) => Number(x)).filter((n) => !isNaN(n))),
+    ];
+    Promise.all(
+      ids.map((id) =>
+        fetch(`/api/product-by-id?id=${id}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((data) => (data?.product ? { ...data.product } : null)),
+      ),
+    )
+      .then((results) => {
+        setWishListItems(results.filter(Boolean));
+      })
+      .finally(() => setLoading(false));
   }, [wishList]);
 
   return (
     <section className="flat-spacing-2">
       <div className="container">
-        <div className="grid-layout wrapper-shop" data-grid="grid-4">
-          {wishListItems.map((elm, i) => (
-            <ProductCardWishlist key={i} product={elm} />
-          ))}
-        </div>
-        {!wishListItems.length && (
-          <>
-            <div
-              className="row align-items-center w-100"
-              style={{ rowGap: "20px" }}
-            >
-              <div className="col-lg-3 col-md-6 fs-18">
-                Your wishlist is empty
-              </div>
-              <div className="col-lg-3  col-md-6">
-                <Link
-                  href={`/products`}
-                  className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
-                >
-                  Explore Products!
-                </Link>
-              </div>
+        {loading ? (
+          <div className="text-center p-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
             </div>
+          </div>
+        ) : (
+          <>
+            <div className="grid-layout wrapper-shop" data-grid="grid-4">
+              {wishListItems.map((elm) => (
+                <ProductCardWishlist
+                  key={elm.ProductID || elm.id}
+                  product={elm}
+                />
+              ))}
+            </div>
+            {!wishListItems.length && (
+              <>
+                <div
+                  className="row align-items-center w-100"
+                  style={{ rowGap: "20px" }}
+                >
+                  <div className="col-lg-3 col-md-6 fs-18">
+                    Your wishlist is empty
+                  </div>
+                  <div className="col-lg-3  col-md-6">
+                    <Link
+                      href={`/products`}
+                      className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
+                    >
+                      Explore Products!
+                    </Link>
+                  </div>
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

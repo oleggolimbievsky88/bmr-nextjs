@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 const PORTAL_TITLE = "Dealer Portal | BMR Suspension";
 import Topbar4 from "@/components/header/Topbar4";
-import Header18 from "@/components/header/Header18";
+import Header from "@/components/header/Header";
 import PageHeader from "@/components/header/PageHeader";
 import Footer1 from "@/components/footer/Footer";
 import DealerNav from "@/components/dealer/DealerNav";
@@ -61,7 +61,7 @@ export default function DealersPortalLayout({ children }) {
   return (
     <div className="dealers-portal-page">
       <Topbar4 />
-      <Header18 showVehicleSearch={false} />
+      <Header showVehicleSearch={false} />
       <PageHeader title="Dealer Portal" />
       <nav className="dealer-nav-top">
         <div className="container-wide">
@@ -69,9 +69,7 @@ export default function DealersPortalLayout({ children }) {
         </div>
       </nav>
       <section className="flat-spacing-11 account-dashboard">
-        <div className="container-wide">
-          {children}
-        </div>
+        <div className="container-wide">{children}</div>
       </section>
       <Footer1 />
     </div>

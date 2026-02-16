@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Topbar4 from "@/components/header/Topbar4";
-import Header18 from "@/components/header/Header18";
+import Header from "@/components/header/Header";
 import AdminNav from "@/components/admin/AdminNav";
 import Footer1 from "@/components/footer/Footer";
 
@@ -61,7 +61,7 @@ export default function AdminLayoutClient({ children }) {
     return (
       <>
         <Topbar4 />
-        <Header18 showVehicleSearch={false} />
+        <Header showVehicleSearch={false} />
         <main className="admin-page">
           <div className="container-wide">{children}</div>
         </main>
@@ -95,7 +95,7 @@ export default function AdminLayoutClient({ children }) {
   return (
     <>
       <Topbar4 />
-      <Header18 showVehicleSearch={false} />
+      <Header showVehicleSearch={false} />
       <AdminNav user={session.user} />
       <main className="admin-page">
         <div className="container-wide">{children}</div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Topbar4 from "@/components/header/Topbar4";
-import Header18 from "@/components/header/Header18";
+import Header from "@/components/header/Header";
 import { getInstallUrl } from "@/lib/assets";
 
 export default function InstallationPage() {
@@ -162,7 +162,7 @@ export default function InstallationPage() {
   return (
     <div>
       <Topbar4 />
-      <Header18 showVehicleSearch={false} />
+      <Header showVehicleSearch={false} />
 
       {/* Hero Section */}
       <section className="installation-hero">

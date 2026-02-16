@@ -46,8 +46,10 @@ export default function Quantity({ value, onChange, max }) {
         max={effectiveMax}
         type="number"
         onChange={(e) => updateCount(e.target.value)}
-        name="number"
+        name="quantity"
         value={count}
+        autoComplete="off"
+        suppressHydrationWarning
       />
       <span
         className="btn-quantity plus-btn"

@@ -43,7 +43,7 @@ export default function SearchModal() {
     const fetchNewProducts = async () => {
       try {
         const response = await fetch(
-          "/api/products/new-products?scrachDent=0&limit=8"
+          "/api/products/new-products?scratchDent=0&limit=8",
         );
         if (!response.ok) throw new Error("Failed to fetch new products");
         const data = await response.json();
@@ -104,7 +104,7 @@ export default function SearchModal() {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < allItems.length - 1 ? prev + 1 : prev
+          prev < allItems.length - 1 ? prev + 1 : prev,
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -172,7 +172,7 @@ export default function SearchModal() {
   const handleSearch = async (searchQuery = query) => {
     if (searchQuery.trim()) {
       const params = new URLSearchParams(
-        typeof window !== "undefined" ? window.location.search : ""
+        typeof window !== "undefined" ? window.location.search : "",
       );
       params.set("q", searchQuery.trim());
       router.push(`/homes/home-search?${params.toString()}`);
@@ -198,7 +198,7 @@ export default function SearchModal() {
     setIsLoading(true);
     try {
       const results = await fetch(
-        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`
+        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`,
       );
       const data = await results.json();
       setGrouped(
@@ -208,7 +208,7 @@ export default function SearchModal() {
           vehicles: [],
           brands: [],
           platforms: [],
-        }
+        },
       );
       setShowSuggestions(true);
       setSelectedIndex(-1);
@@ -283,7 +283,7 @@ export default function SearchModal() {
         closeModal();
         setTimeout(() => {
           router.push(
-            `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`
+            `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`,
           );
         }, 150);
       } else {
@@ -367,7 +367,7 @@ export default function SearchModal() {
                   onFocus={() => {
                     if (
                       Object.values(grouped).some(
-                        (arr) => arr && arr.length > 0
+                        (arr) => arr && arr.length > 0,
                       )
                     ) {
                       setShowSuggestions(true);

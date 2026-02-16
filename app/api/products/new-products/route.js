@@ -5,7 +5,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const scratchDent = searchParams.get("scrachDent") || "0";
+  const scratchDent =
+    searchParams.get("scratchDent") || searchParams.get("scratchDent") || "0";
   const limit = searchParams.get("limit")
     ? parseInt(searchParams.get("limit"))
     : 35;

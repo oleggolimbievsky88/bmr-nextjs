@@ -1,5 +1,6 @@
 "use client";
 import { useContextElement } from "@/context/Context";
+import { getProductImageUrl } from "@/lib/assets";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +9,25 @@ import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Quantity from "../shopDetails/Quantity";
 import { colors, sizeOptions } from "@/data/singleProductOptions";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+
+// Normalize product for display - handles both API shape (ProductID, ProductName, ImageLarge, ImageSmall)
+// and legacy shape (id, title, imgSrc, imgHoverSrc)
+function normalizeQuickViewProduct(item) {
+  if (!item) return null;
+  const productId = item.ProductID || item.id;
+  const mainImg =
+    item.imgSrc ||
+    (item.ImageLarge || item.ImageSmall
+      ? getProductImageUrl(item.ImageLarge || item.ImageSmall)
+      : "");
+  const hoverImg =
+    item.imgHoverSrc ||
+    (item.ImageSmall ? getProductImageUrl(item.ImageSmall) : mainImg);
+  const title = item.ProductName || item.title || "Product";
+  const price = item.Price ?? item.price ?? "0.00";
+  return { productId, mainImg, hoverImg, title, price };
+}
 
 export default function QuickView() {
   const {
@@ -17,11 +36,14 @@ export default function QuickView() {
     isAddedToCartProducts,
     addToWishlist,
     isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
   } = useContextElement();
   const [currentColor, setCurrentColor] = useState(colors[0]);
   const [currentSize, setCurrentSize] = useState(sizeOptions[0]);
+
+  const normalized = useMemo(
+    () => normalizeQuickViewProduct(quickViewItem),
+    [quickViewItem],
+  );
 
   const openModalSizeChoice = () => {
     const bootstrap = require("bootstrap"); // dynamically import bootstrap
@@ -55,7 +77,7 @@ export default function QuickView() {
           </div>
           <div className="wrap">
             <div className="tf-product-media-wrap">
-              {quickViewItem && (
+              {normalized && normalized.mainImg && (
                 <Swiper
                   modules={[Navigation]}
                   navigation={{
@@ -65,23 +87,26 @@ export default function QuickView() {
                   className="swiper tf-single-slide"
                 >
                   {[
-                    quickViewItem.imgSrc,
-                    quickViewItem.imgHoverSrc
-                      ? quickViewItem.imgHoverSrc
-                      : quickViewItem.imgSrc,
-                  ].map((product, index) => (
-                    <SwiperSlide className="swiper-slide" key={index}>
-                      <div className="item">
-                        <Image
-                          alt={""}
-                          src={product}
-                          width={720}
-                          height={1045}
-                          style={{ objectFit: "contain" }}
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))}
+                    normalized.mainImg,
+                    normalized.hoverImg &&
+                    normalized.hoverImg !== normalized.mainImg
+                      ? normalized.hoverImg
+                      : normalized.mainImg,
+                  ]
+                    .filter(Boolean)
+                    .map((imgSrc, index) => (
+                      <SwiperSlide className="swiper-slide" key={index}>
+                        <div className="item">
+                          <Image
+                            alt={normalized.title}
+                            src={imgSrc}
+                            width={720}
+                            height={1045}
+                            style={{ objectFit: "contain" }}
+                          />
+                        </div>
+                      </SwiperSlide>
+                    ))}
 
                   <div className="swiper-button-next button-style-arrow single-slide-prev snbqvp" />
                   <div className="swiper-button-prev button-style-arrow single-slide-next snbqvn" />
@@ -94,13 +119,9 @@ export default function QuickView() {
                   <h5>
                     <Link
                       className="link"
-                      href={`/product-detail/${
-                        quickViewItem.ProductID ||
-                        quickViewItem.ProductID ||
-                        quickViewItem.id
-                      }`}
+                      href={`/product/${normalized?.productId || ""}`}
                     >
-                      {quickViewItem.title}
+                      {normalized?.title || "Product"}
                     </Link>
                   </h5>
                 </div>
@@ -114,7 +135,7 @@ export default function QuickView() {
                   </div>
                 </div>
                 <div className="tf-product-info-price">
-                  <div className="price">${quickViewItem.Price || quickViewItem.price || "0.00"}</div>
+                  <div className="price">${normalized?.price ?? "0.00"}</div>
                 </div>
                 <div className="tf-product-description">
                   <p>
@@ -203,82 +224,34 @@ export default function QuickView() {
                     <a
                       href="#"
                       className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
-                      onClick={() =>
-                        addProductToCart(
-                          quickViewItem.ProductID ||
-                            quickViewItem.ProductID ||
-                            quickViewItem.id
-                        )
-                      }
+                      onClick={() => addProductToCart(normalized?.productId)}
                     >
                       <span>
-                        {isAddedToCartProducts(
-                          quickViewItem.ProductID ||
-                            quickViewItem.ProductID ||
-                            quickViewItem.id
-                        )
+                        {isAddedToCartProducts(normalized?.productId)
                           ? "Already Added - "
                           : "Add to cart - "}
                       </span>
                       <span className="tf-qty-price">
-                        ${quickViewItem.Price || quickViewItem.price || "0.00"}
+                        ${normalized?.price ?? "0.00"}
                       </span>
                     </a>
                     <a
-                      onClick={() =>
-                        addToWishlist(
-                          quickViewItem.ProductID || quickViewItem.id
-                        )
-                      }
+                      onClick={() => addToWishlist(normalized?.productId)}
                       className="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist btn-icon-action"
                     >
                       <span
                         className={`icon icon-heart ${
-                          isAddedtoWishlist(
-                            quickViewItem.ProductID || quickViewItem.id
-                          )
+                          isAddedtoWishlist(normalized?.productId)
                             ? "added"
                             : ""
                         }`}
                       />
                       <span className="tooltip">
-                        {isAddedtoWishlist(
-                          quickViewItem.ProductID || quickViewItem.id
-                        )
+                        {isAddedtoWishlist(normalized?.productId)
                           ? "Already Wishlisted"
                           : "Add to Wishlist"}
                       </span>
                       <span className="icon icon-delete" />
-                    </a>
-                    <a
-                      href="#compare"
-                      data-bs-toggle="offcanvas"
-                      aria-controls="offcanvasLeft"
-                      onClick={() =>
-                        addToCompareItem(
-                          quickViewItem.ProductID || quickViewItem.id
-                        )
-                      }
-                      className="tf-product-btn-wishlist hover-tooltip box-icon bg_white compare btn-icon-action"
-                    >
-                      <span
-                        className={`icon icon-compare ${
-                          isAddedtoCompareItem(
-                            quickViewItem.ProductID || quickViewItem.id
-                          )
-                            ? "added"
-                            : ""
-                        }`}
-                      />
-                      <span className="tooltip">
-                        {" "}
-                        {isAddedtoCompareItem(
-                          quickViewItem.ProductID || quickViewItem.id
-                        )
-                          ? "Already Compared"
-                          : "Add to Compare"}
-                      </span>
-                      <span className="icon icon-check" />
                     </a>
                     <div className="w-100">
                       <a href="#" className="btns-full">
@@ -298,11 +271,7 @@ export default function QuickView() {
                 </div>
                 <div>
                   <Link
-                    href={`/product-detail/${
-                      quickViewItem.ProductID ||
-                      quickViewItem.ProductID ||
-                      quickViewItem.id
-                    }`}
+                    href={`/product/${normalized?.productId || ""}`}
                     className="tf-btn fw-6 btn-line"
                   >
                     View full details

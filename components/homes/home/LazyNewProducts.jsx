@@ -23,14 +23,7 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
     rootMargin: "100px 0px", // Start loading 100px before the element is visible
   });
 
-  const {
-    setQuickViewItem,
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = useContextElement();
+  const { addToWishlist, isAddedtoWishlist } = useContextElement();
 
   useEffect(() => {
     setIsClient(true);
@@ -71,12 +64,8 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
       title={title}
       description={description}
       contextFunctions={{
-        setQuickViewItem,
-        setQuickAddItem,
         addToWishlist,
         isAddedtoWishlist,
-        addToCompareItem,
-        isAddedtoCompareItem,
       }}
       sectionRef={sectionRef}
     />
@@ -133,14 +122,7 @@ function NewProductsLoader({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const {
-    setQuickViewItem,
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = useContextElement();
+  const { addToWishlist, isAddedtoWishlist } = useContextElement();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -148,7 +130,7 @@ function NewProductsLoader({
       try {
         console.log(`Lazy loading ${title} products...`);
         const response = await fetch(
-          `/api/products/new-products?scrachDent=${scratchDent}&limit=12`,
+          `/api/products/new-products?scratchDent=${scratchDent}&limit=12`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -247,12 +229,8 @@ function NewProductsLoader({
       title={title}
       description={description}
       contextFunctions={{
-        setQuickViewItem,
-        setQuickAddItem,
         addToWishlist,
         isAddedtoWishlist,
-        addToCompareItem,
-        isAddedtoCompareItem,
       }}
       sectionRef={sectionRef}
     />
@@ -267,18 +245,13 @@ function NewProductsSection({
   contextFunctions,
   sectionRef,
 }) {
-  const {
-    setQuickViewItem,
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = contextFunctions;
+  const { addToWishlist, isAddedtoWishlist } = contextFunctions;
 
-  const navigationClass = title.toLowerCase().includes("scratch")
-    ? "scratch-dent"
-    : "new-products";
+  const isScratchDent = title.toLowerCase().includes("scratch");
+  const navigationClass = isScratchDent ? "scratch-dent" : "new-products";
+
+  const itemCount = products.length;
+  const useGridLayout = itemCount < 4;
 
   if (!products.length) {
     return (
@@ -311,153 +284,160 @@ function NewProductsSection({
     );
   }
 
+  const productCard = (product, { featured = false } = {}) => {
+    const hasHoverImage = !!product?.ImageSmall;
+    return (
+      <article
+        className={`bmrCard ${featured ? "bmrCard--featured" : ""}`}
+        data-product-card
+      >
+        <div className="bmrCard__inner">
+          <Link
+            href={`/product/${product.ProductID}`}
+            className={`bmrCard__media ${hasHoverImage ? "bmrCard__media--hasHover" : ""}`}
+            aria-label={product?.ProductName || "View product"}
+          >
+            <div className="bmrCard__badges">
+              {featured && (
+                <span className="bmrBadge bmrBadge--featured">Featured</span>
+              )}
+              {product?.ScratchDent === "1" && (
+                <span className="bmrBadge bmrBadge--warn">Scratch & Dent</span>
+              )}
+            </div>
+
+            <div className="bmrCard__imageWrap">
+              <Image
+                className="bmrCard__img"
+                src={getProductImageUrl(
+                  product.ImageLarge || product.ImageSmall,
+                )}
+                alt={product?.ProductName || "Product image"}
+                width={1200}
+                height={1200}
+                priority={featured}
+              />
+              {hasHoverImage ? (
+                <Image
+                  className="bmrCard__imgHover"
+                  src={getProductImageUrl(product.ImageSmall)}
+                  alt=""
+                  width={360}
+                  height={360}
+                />
+              ) : null}
+            </div>
+          </Link>
+
+          <div className="bmrCard__actions">
+            <button
+              type="button"
+              onClick={() => addToWishlist(product.ProductID)}
+              className={`bmrIconBtn bmrIconBtn--tooltip ${isAddedtoWishlist(product.ProductID) ? "is-active" : ""}`}
+              aria-label="Add to wishlist"
+              title={
+                isAddedtoWishlist(product.ProductID)
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+              }
+            >
+              <span
+                className={`icon icon-heart ${isAddedtoWishlist(product.ProductID) ? "added" : ""}`}
+              />
+              <span className="bmrIconBtn__tooltip">
+                {isAddedtoWishlist(product.ProductID)
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"}
+              </span>
+            </button>
+          </div>
+
+          <div className="bmrCard__body">
+            <div className="bmrCard__meta">
+              <span className="bmrCard__part">{product.PartNumber}</span>
+              <span className="bmrCard__platform">{product.PlatformName}</span>
+            </div>
+
+            <Link
+              href={`/product/${product.ProductID}`}
+              className="bmrCard__title"
+            >
+              {product?.ProductName}
+            </Link>
+
+            <div className="bmrCard__footer">
+              <span className="bmrCard__price">${product?.Price}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  };
+
   return (
-    <section className="homepage-section" ref={sectionRef}>
+    <section
+      className={`homepage-section ${!isScratchDent ? "homepage-section--newProducts" : ""}`}
+      ref={sectionRef}
+    >
       <div className="container">
         <SectionHeader title={title} subtitle={description} />
 
-        <div
-          className={`position-relative slider-container ${navigationClass}-slider`}
-        >
-          <Swiper
-            modules={[Navigation, Grid]}
-            navigation={{
-              nextEl: `.${navigationClass}-next`,
-              prevEl: `.${navigationClass}-prev`,
-            }}
-            grid={{
-              rows: 2,
-              fill: "row",
-            }}
-            spaceBetween={30}
-            slidesPerView={4}
-            breakpoints={{
-              0: {
-                slidesPerView: 1,
-              },
-              576: {
-                slidesPerView: 2,
-              },
-              768: {
-                slidesPerView: 3,
-              },
-              992: {
-                slidesPerView: 4,
-              },
-            }}
-            className="swiper-container"
-          >
-            {products.map((product) => (
-              <SwiperSlide key={product.ProductID}>
-                <div className="card-product bg_white radius-20 h-100">
-                  <div className="card-product-wrapper border-line h-100 d-flex flex-column">
-                    <Link
-                      href={`/product/${product.ProductID}`}
-                      className="product-img"
-                    >
-                      <Image
-                        className="lazyload img-product mb-2"
-                        src={getProductImageUrl(
-                          product.ImageLarge || product.ImageSmall,
-                        )}
-                        alt="image-product"
-                        width={1200}
-                        height={1200}
-                      />
-                      <Image
-                        className="lazyload img-hover"
-                        src={getProductImageUrl(product.ImageSmall)}
-                        alt="image-product"
-                        width={360}
-                        height={360}
-                      />
-                    </Link>
-                    <div className="list-product-btn mt-auto">
-                      <a
-                        href="#quick_add"
-                        onClick={() => setQuickAddItem(product.ProductID)}
-                        data-bs-toggle="modal"
-                        className="box-icon bg_white quick-add tf-btn-loading"
-                      >
-                        <span className="icon icon-bag" />
-                        <span className="tooltip">Quick Add</span>
-                      </a>
-                      <a
-                        onClick={() => addToWishlist(product.ProductID)}
-                        className="box-icon bg_white wishlist btn-icon-action"
-                      >
-                        <span
-                          className={`icon icon-heart ${
-                            isAddedtoWishlist(product.ProductID) ? "added" : ""
-                          }`}
-                        />
-                        <span className="tooltip">
-                          {isAddedtoWishlist(product.ProductID)
-                            ? "Already Wishlisted"
-                            : "Add to Wishlist"}
-                        </span>
-                      </a>
-                      <a
-                        href="#compare"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => addToCompareItem(product.ProductID)}
-                        className="box-icon bg_white compare btn-icon-action"
-                      >
-                        <span
-                          className={`icon icon-compare ${
-                            isAddedtoCompareItem(product.ProductID)
-                              ? "added"
-                              : ""
-                          }`}
-                        />
-                        <span className="tooltip">
-                          {isAddedtoCompareItem(product.ProductID)
-                            ? "Already Compared"
-                            : "Add to Compare"}
-                        </span>
-                      </a>
-                      <a
-                        href="#quick_view"
-                        onClick={() => setQuickViewItem(product)}
-                        data-bs-toggle="modal"
-                        className="box-icon bg_white quickview tf-btn-loading"
-                      >
-                        <span className="icon icon-view" />
-                        <span className="tooltip">Quick View</span>
-                      </a>
-                    </div>
-                    <div className="card-product-info mt-2">
-                      <div className="NewProductPartNumber">
-                        {product.PartNumber}
-                      </div>
-                      <span
-                        className="NewProductPlatformName"
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          margin: "0px",
-                          padding: "0px",
-                          lineHeight: "0.5",
-                        }}
-                      >
-                        {product.PlatformName}
-                      </span>
-                      <Link
-                        href={`/product/${product.ProductID}`}
-                        className="title link"
-                      >
-                        {product?.ProductName}
-                      </Link>
-                      <span className="price"> ${product?.Price} </span>
-                    </div>
-                  </div>
+        {useGridLayout ? (
+          <div className={`${navigationClass} new-products-content`}>
+            {itemCount === 1 ? (
+              <div className="newProductsFeatured">
+                <div className="newProductsFeatured__inner">
+                  {productCard(products[0], { featured: true })}
                 </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          <div className={`${navigationClass}-prev swiper-nav-button`}></div>
-          <div className={`${navigationClass}-next swiper-nav-button`}></div>
-        </div>
+              </div>
+            ) : (
+              <div className={`newProductsGrid newProductsGrid--${itemCount}`}>
+                {products.map((product) => productCard(product))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            className={`${navigationClass} new-products-content position-relative slider-container ${navigationClass}-slider`}
+          >
+            <Swiper
+              modules={[Navigation, Grid]}
+              navigation={{
+                nextEl: `.${navigationClass}-next`,
+                prevEl: `.${navigationClass}-prev`,
+              }}
+              grid={{
+                rows: 2,
+                fill: "row",
+              }}
+              spaceBetween={30}
+              slidesPerView={4}
+              breakpoints={{
+                0: {
+                  slidesPerView: 1,
+                },
+                576: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                },
+                992: {
+                  slidesPerView: 4,
+                },
+              }}
+              className="swiper-container"
+            >
+              {products.map((product) => (
+                <SwiperSlide key={product.ProductID}>
+                  {productCard(product)}
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className={`${navigationClass}-prev swiper-nav-button`}></div>
+            <div className={`${navigationClass}-next swiper-nav-button`}></div>
+          </div>
+        )}
       </div>
 
       <style jsx>{`

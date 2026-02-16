@@ -3683,20 +3683,6 @@ header[style*="transform:translateY(-"] {
   border-bottom:2px solid var(--primary);
 }
 
-.installation-hero-bg {
-	position: relative;
-	width: 100%;
-	min-height: 180px;
-	background-image: url('/images/slider/S650 Mustang_Banner.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-color: #000;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
 
 
 .installation-hero-content {
@@ -4565,7 +4551,7 @@ header[style*="transform:translateY(-"] {
 .installation-hero-bg {
 	position: relative;
 	width: 100%;
-	min-height: 180px;
+	min-height: 300px;
 	background-image: url('/images/pageHeaders/Installation_Header.jpg');
 	background-size: cover;
 	background-position: center;

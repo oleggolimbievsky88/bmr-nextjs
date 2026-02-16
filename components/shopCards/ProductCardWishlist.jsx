@@ -3,41 +3,56 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContextElement } from "@/context/Context";
+import { getProductImageUrl } from "@/lib/assets";
 import CountdownComponent from "../common/Countdown";
+
+// Support both API shape (ProductID, ImageLarge, ImageSmall, ProductName, Price)
+// and legacy shape (id, imgSrc, imgHoverSrc, title, price)
+function getProductDisplay(product) {
+  const id = product.ProductID ?? product.id;
+  const imgSrc =
+    product.imgSrc ||
+    (product.ImageLarge || product.ImageSmall
+      ? getProductImageUrl(product.ImageLarge || product.ImageSmall)
+      : "");
+  const imgHoverSrc =
+    product.imgHoverSrc ||
+    (product.ImageSmall ? getProductImageUrl(product.ImageSmall) : imgSrc);
+  const title = product.ProductName ?? product.title ?? "";
+  const price =
+    product.Price != null
+      ? parseFloat(product.Price).toFixed(2)
+      : product.price != null
+        ? product.price.toFixed(2)
+        : "0.00";
+  return { id, imgSrc, imgHoverSrc, title, price };
+}
+
 export const ProductCardWishlist = ({ product }) => {
-  const [currentImage, setCurrentImage] = useState(product.imgSrc);
-  const { setQuickViewItem } = useContextElement();
-  const {
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    removeFromWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = useContextElement();
+  const d = getProductDisplay(product);
+  const [currentImage, setCurrentImage] = useState(d.imgSrc);
+  const { setQuickViewItem, addToWishlist } = useContextElement();
 
   return (
-    <div className="card-product fl-item" key={product.id}>
+    <div className="card-product fl-item" key={d.id}>
       <div className="card-product-wrapper">
-        <Link href={`/product-detail/${product.id}`} className="product-img">
-          {currentImage && (
+        <Link href={`/product/${d.id}`} className="product-img">
+          {d.imgSrc && (
             <Image
               className="lazyload img-product"
-              data-src={product.imgSrc}
-              src={currentImage}
-              alt="image-product"
+              data-src={d.imgSrc}
+              src={currentImage || d.imgSrc}
+              alt={d.title}
               width={720}
               height={1005}
             />
           )}
-          {(product.imgHoverSrc || product.imgSrc) && (
+          {(d.imgHoverSrc || d.imgSrc) && d.imgHoverSrc !== d.imgSrc && (
             <Image
               className="lazyload img-hover"
-              data-src={
-                product.imgHoverSrc ? product.imgHoverSrc : product.imgSrc
-              }
-              src={product.imgHoverSrc ? product.imgHoverSrc : product.imgSrc}
-              alt="image-product"
+              data-src={d.imgHoverSrc}
+              src={d.imgHoverSrc}
+              alt=""
               width={720}
               height={1005}
             />
@@ -60,10 +75,18 @@ export const ProductCardWishlist = ({ product }) => {
         )}
       </div>
       <div className="card-product-info">
-        <Link href={`/product-detail/${product.id}`} className="title link">
-          {product.title}
+        <Link href={`/product/${d.id}`} className="title link">
+          {d.title}
         </Link>
-        <span className="price">${product.price.toFixed(2)}</span>
+        <span className="price">${d.price}</span>
+        <button
+          type="button"
+          onClick={() => addToWishlist(d.id)}
+          className="btn btn-sm btn-outline-secondary mt-2"
+          aria-label="Remove from wishlist"
+        >
+          Remove
+        </button>
         {product.colors && (
           <ul className="list-color-product">
             {product.colors.map((color) => (

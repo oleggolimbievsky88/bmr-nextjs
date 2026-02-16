@@ -2,10 +2,10 @@ async function getProducts(scratchDent = "0") {
   try {
     // Use relative URL to work in both development and production
     const res = await fetch(
-      `/api/products/new-products?scrachDent=${scratchDent}`,
+      `/api/products/new-products?scratchDent=${scratchDent}`,
       {
         cache: "no-store",
-      }
+      },
     );
     if (!res.ok) throw new Error("Failed to fetch products");
     return res.json();
