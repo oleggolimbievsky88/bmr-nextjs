@@ -8,7 +8,7 @@ import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
-import Details6 from "@/components/shopDetails/Details6";
+import Details from "@/components/shopDetails/Details";
 import TrackView from "@/components/shopDetails/TrackView";
 import {
   getProductById,
@@ -216,7 +216,7 @@ export default async function ProductDetails({ params, searchParams }) {
       <div className="container" style={{ paddingTop: "10px" }}>
         <Breadcrumbs items={breadcrumbItems} />
         <TrackView productId={product?.ProductID} />
-        <Details6
+        <Details
           product={product}
           initialColor={color}
           searchParams={awaitedSearchParams || {}}

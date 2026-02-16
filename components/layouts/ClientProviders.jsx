@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Context from "@/context/Context";
@@ -27,6 +27,7 @@ import { Analytics } from "@vercel/analytics/react";
 export default function ClientProviders({ children }) {
   const pathname = usePathname();
   const [scrollDirection, setScrollDirection] = useState("up");
+  const wowInstanceRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -115,10 +116,24 @@ export default function ClientProviders({ children }) {
     }
   }, [scrollDirection]);
 
+  // WOW.js: stop previous instance on route change so it doesn't hold refs to
+  // unmounted DOM nodes (avoids "removeChild" / RecursivelyTraverseMutationEffects errors)
   useEffect(() => {
-    const WOW = require("@/utlis/wow");
-    const wow = new WOW.default({ mobile: false, live: false });
-    wow.init();
+    const id = setTimeout(() => {
+      const WOW = require("@/utlis/wow");
+      const wow = new WOW.default({ mobile: false, live: false });
+      wowInstanceRef.current = wow;
+      wow.init();
+    }, 0);
+    return () => {
+      clearTimeout(id);
+      if (wowInstanceRef.current) {
+        try {
+          wowInstanceRef.current.stop();
+        } catch (_) {}
+        wowInstanceRef.current = null;
+      }
+    };
   }, [pathname]);
 
   return (

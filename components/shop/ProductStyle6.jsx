@@ -3,7 +3,7 @@ import { layouts } from "@/data/shop";
 import Sorting from "./Sorting";
 import { useState } from "react";
 import Pagination from "../common/Pagination";
-import { ProductCard25 } from "../shopCards/ProductCard25";
+import { ProductCard } from "../shopCards/ProductCard";
 import ShopFilter from "./ShopFilter";
 
 export default function ProductStyle6() {
@@ -65,7 +65,7 @@ export default function ProductStyle6() {
             >
               {/* card product 1 */}
               {finalSorted.map((elm, i) => (
-                <ProductCard25 product={elm} key={i} />
+                <ProductCard product={elm} key={i} />
               ))}
             </div>
             {/* pagination */}{" "}

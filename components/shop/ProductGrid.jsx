@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import ShopSidebarleft from "./ShopSidebarleft";
 import { ProductCard } from "../shopCards/ProductCard";
-import Productcard23 from "../shopCards/Productcard23";
+import ProductCardList from "../shopCards/ProductCardList";
 
 export default function ProductGrid({
   platformName,
@@ -33,7 +33,7 @@ export default function ProductGrid({
       setError(null);
       try {
         const response = await fetch(
-          `/api/categories?platform=${encodeURIComponent(platformName)}`
+          `/api/categories?platform=${encodeURIComponent(platformName)}`,
         );
         if (!response.ok) throw new Error("Failed to fetch data");
 
@@ -63,7 +63,7 @@ export default function ProductGrid({
         const data = await res.json();
         // data.colors should be an array of { ColorID, ColorName, ColorImg }
         const map = Object.fromEntries(
-          (data.colors || []).map((c) => [String(c.ColorID), c])
+          (data.colors || []).map((c) => [String(c.ColorID), c]),
         );
         setColorsMap(map);
       } catch (err) {
@@ -109,7 +109,7 @@ export default function ProductGrid({
               }`}
               onClick={() =>
                 setSelectedMainCategory(
-                  selectedMainCategory === category.id ? null : category.id
+                  selectedMainCategory === category.id ? null : category.id,
                 )
               }
             >
@@ -171,7 +171,7 @@ export default function ProductGrid({
         gridItems == 1 ? (
           <div className="grid-layout" data-grid="grid-list">
             {allproducts.map((elm, i) => (
-              <Productcard23 product={elm} colorsMap={colorsMap} key={i} />
+              <ProductCardList product={elm} colorsMap={colorsMap} key={i} />
             ))}
           </div>
         ) : (

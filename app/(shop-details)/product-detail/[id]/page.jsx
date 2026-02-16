@@ -8,7 +8,7 @@ import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
-import Details6 from "@/components/shopDetails/Details6";
+import Details from "@/components/shopDetails/Details";
 import { getProductById } from "@/lib/queries";
 import { notFound } from "next/navigation";
 

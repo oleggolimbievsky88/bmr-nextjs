@@ -1,7 +1,6 @@
 import Footer1 from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import Topbar4 from "@/components/header/Topbar4";
-import VehicleSearch from "@/components/common/VehicleSearch";
 import ContactForm from "@/components/othersPages/contact/ContactForm";
 import Map from "@/components/othersPages/contact/Map";
 import { pageMeta } from "@/lib/metadata";
@@ -30,11 +29,6 @@ export default function ContactPage() {
     <>
       <Topbar4 />
       <Header />
-      <div className="vehicle-search-desktop-wrapper">
-        <div className="container vehicle-search-desktop">
-          <VehicleSearch />
-        </div>
-      </div>
       <div>
         <div
           className="container text-center"
@@ -42,9 +36,6 @@ export default function ContactPage() {
         >
           <div className="home-title d-inline-block">Contact Us</div>
         </div>
-      </div>
-      <div className="container vehicle-search-mobile">
-        <VehicleSearch />
       </div>
       <main className="contact-1-page">
         <Map />
