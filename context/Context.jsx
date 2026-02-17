@@ -21,7 +21,7 @@ export default function Context({ children }) {
     ProductName: "Loading...",
     Price: "0.00",
   });
-  const [quickAddItem, setQuickAddItem] = useState(1);
+  const [quickAddItem, setQuickAddItem] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0);

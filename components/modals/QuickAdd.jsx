@@ -161,18 +161,6 @@ export default function QuickAdd() {
                       <i className="icon-heart" />
                       <i className="icon-delete" />
                     </div>
-                    <a
-                      href="#compare"
-                      data-bs-toggle="offcanvas"
-                      aria-controls="offcanvasLeft"
-                      onClick={() =>
-                        addToCompareItem(item.ProductID || item.id)
-                      }
-                      className="tf-product-btn-wishlist box-icon bg_white compare btn-icon-action"
-                    >
-                      <span className="icon icon-compare" />
-                      <span className="icon icon-check" />
-                    </a>
                     <div className="w-100">
                       <a href="#" className="btns-full">
                         Buy with
