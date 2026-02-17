@@ -22,8 +22,8 @@ export function buildMetadata(brand) {
     },
     twitter: {
       card: "summary_large_image",
-      title: defaultTitle.slice(0, 70),
-      description: defaultDescription.slice(0, 200),
+      title: (defaultTitle || "").slice(0, 70),
+      description: (defaultDescription || "").slice(0, 200),
       images: [og.url],
     },
     robots: {

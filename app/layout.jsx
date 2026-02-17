@@ -50,7 +50,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: "summary_large_image",
-      title: config.defaultTitle.slice(0, 70),
+      title: (config.defaultTitle || "").slice(0, 70),
       description: (config.defaultDescription || "").slice(0, 200),
       images: [ogImageUrl],
     },
