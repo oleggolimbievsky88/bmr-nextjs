@@ -481,48 +481,50 @@ export default function ShopCart() {
                       }}
                       className="swiper tf-cart-slide"
                     >
-                      {recommendations.slice(0, 2).map((elm, i) => (
-                        <SwiperSlide key={i} className="swiper-slide">
-                          <div className="tf-minicart-recommendations-item">
-                            <div className="tf-minicart-recommendations-item-image">
-                              <Link href={`/product/${elm.ProductID}`}>
-                                <Image
-                                  alt={elm.ProductName || "Product"}
-                                  src={
-                                    elm.ImageLarge
-                                      ? getProductImageUrl(elm.ImageLarge)
-                                      : "/images/logo/bmr_logo_square_small.webp"
-                                  }
-                                  width={720}
-                                  height={1005}
-                                />
-                              </Link>
-                            </div>
-                            <div className="tf-minicart-recommendations-item-infos flex-grow-1">
-                              <Link
-                                className="title"
-                                href={`/product/${elm.ProductID}`}
-                              >
-                                {elm.ProductName || "Product"}
-                              </Link>
-                              {elm.PlatformName && (
-                                <div
-                                  className="item-platform"
-                                  style={{
-                                    fontSize: "13px",
-                                    color: "#666",
-                                    marginTop: "4px",
-                                  }}
-                                >
-                                  {elm.YearRange ? `${elm.YearRange} ` : ""}
-                                  {elm.PlatformName}
-                                </div>
-                              )}
-                              <div className="price">
-                                ${(parseFloat(elm.Price) || 0).toFixed(2)}
+                      {(Array.isArray(recommendations) ? recommendations : [])
+                        .slice(0, 2)
+                        .map((elm, i) => (
+                          <SwiperSlide key={i} className="swiper-slide">
+                            <div className="tf-minicart-recommendations-item">
+                              <div className="tf-minicart-recommendations-item-image">
+                                <Link href={`/product/${elm.ProductID}`}>
+                                  <Image
+                                    alt={elm.ProductName || "Product"}
+                                    src={
+                                      elm.ImageLarge
+                                        ? getProductImageUrl(elm.ImageLarge)
+                                        : "/images/logo/bmr_logo_square_small.webp"
+                                    }
+                                    width={720}
+                                    height={1005}
+                                  />
+                                </Link>
                               </div>
-                            </div>
-                            {/* <div className="tf-minicart-recommendations-item-quickview">
+                              <div className="tf-minicart-recommendations-item-infos flex-grow-1">
+                                <Link
+                                  className="title"
+                                  href={`/product/${elm.ProductID}`}
+                                >
+                                  {elm.ProductName || "Product"}
+                                </Link>
+                                {elm.PlatformName && (
+                                  <div
+                                    className="item-platform"
+                                    style={{
+                                      fontSize: "13px",
+                                      color: "#666",
+                                      marginTop: "4px",
+                                    }}
+                                  >
+                                    {elm.YearRange ? `${elm.YearRange} ` : ""}
+                                    {elm.PlatformName}
+                                  </div>
+                                )}
+                                <div className="price">
+                                  ${(parseFloat(elm.Price) || 0).toFixed(2)}
+                                </div>
+                              </div>
+                              {/* <div className="tf-minicart-recommendations-item-quickview">
                               <a
                                 href="#quick_view"
                                 data-bs-toggle="modal"
@@ -532,9 +534,9 @@ export default function ShopCart() {
                                 <span className="icon icon-view" />
                               </a>
                             </div> */}
-                          </div>
-                        </SwiperSlide>
-                      ))}
+                            </div>
+                          </SwiperSlide>
+                        ))}
                     </Swiper>
                   </div>
                 </div>

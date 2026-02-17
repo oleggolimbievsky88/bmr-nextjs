@@ -157,10 +157,14 @@ export default function Slider1ZoomOuter({
   firstImage,
   images = imagesDefault,
 }) {
+  // Be defensive: some callers may pass `images={null}` which bypasses
+  // the default param value and breaks `images.slice(...)` during prerender.
+  const safeImages =
+    Array.isArray(images) && images.length ? images : imagesDefault;
   const [updatedImages, setfirst] = useState(
-    firstImage
-      ? [{ ...images[0], src: firstImage }, ...images.slice(1)]
-      : images
+    firstImage && safeImages[0]
+      ? [{ ...safeImages[0], src: firstImage }, ...safeImages.slice(1)]
+      : safeImages,
   );
 
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -168,7 +172,7 @@ export default function Slider1ZoomOuter({
   useEffect(() => {
     const slideIndex =
       updatedImages.filter(
-        (elm) => elm.dataValue?.toLowerCase() == currentColor.toLowerCase()
+        (elm) => elm.dataValue?.toLowerCase() == currentColor.toLowerCase(),
       )[0]?.id - 1;
     swiperRef.current.slideTo(slideIndex);
   }, [currentColor]);
