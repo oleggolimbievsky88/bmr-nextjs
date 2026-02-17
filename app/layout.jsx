@@ -20,38 +20,50 @@ export const viewport = {
 export async function generateMetadata() {
   const config = getBrandConfig();
   const siteUrl = getSiteUrl().replace(/\/$/, "");
-  const ogImageUrl = `${siteUrl}${config.ogImagePath.startsWith("/") ? config.ogImagePath : `/${config.ogImagePath}`}`;
+  const defaultTitle = config.defaultTitle ?? "";
+  const defaultDescription = config.defaultDescription ?? "";
+  const siteName = config.siteName || config.name || "";
+  const rawPath =
+    config.ogImagePath && typeof config.ogImagePath === "string"
+      ? config.ogImagePath
+      : "";
+  const ogImagePath = rawPath
+    ? rawPath.startsWith("/")
+      ? rawPath
+      : `/${rawPath}`
+    : "/og-image.png";
+  const ogImageUrl = `${siteUrl}${ogImagePath}`;
 
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: config.defaultTitle,
-      template: `%s | ${config.name}`,
+      default: defaultTitle,
+      template: `%s | ${siteName}`,
     },
-    description: config.defaultDescription,
+    description: defaultDescription,
     icons: {
-      icon: config.faviconPath,
+      icon: config.faviconPath || "/favicon.ico",
     },
     openGraph: {
       type: "website",
       locale: "en_US",
       url: siteUrl,
-      siteName: config.siteName || config.name,
-      title: config.defaultTitle,
-      description: config.defaultDescription,
+      siteName,
+      title: defaultTitle,
+      description: defaultDescription,
       images: [
         {
           url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: config.siteName || config.name,
+          alt: siteName,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: (config.defaultTitle || "").slice(0, 70),
-      description: (config.defaultDescription || "").slice(0, 200),
+      title: defaultTitle.slice(0, 70),
+      description: defaultDescription.slice(0, 200),
       images: [ogImageUrl],
     },
     robots: {
