@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { SITE_URL } from "@/lib/site-url";
+import { getSiteUrl } from "@bmr/core/url";
+
+const SITE_URL = getSiteUrl();
 import { getCouponByIdIfActive, getCouponByCode } from "@/lib/queries";
 
 const PAYPAL_BASE =
@@ -32,7 +34,7 @@ async function getPayPalAccessToken(clientId, clientSecret) {
     console.error(
       "PayPal OAuth token failed:",
       res.status,
-      err?.slice?.(0, 200) || err
+      err?.slice?.(0, 200) || err,
     );
     throw new Error(`PayPal token failed: ${res.status} ${err}`);
   }
@@ -55,7 +57,7 @@ export async function POST(request) {
     if (!clientId || !clientSecret) {
       return jsonError(
         "PayPal is not configured. Add PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET to your environment. See PAYPAL_SETUP.md.",
-        501
+        501,
       );
     }
 
@@ -100,7 +102,7 @@ export async function POST(request) {
       if (!activeCoupon) {
         return jsonError(
           "The coupon is no longer valid. Please remove it and try again.",
-          400
+          400,
         );
       }
     }
@@ -150,7 +152,7 @@ export async function POST(request) {
     } catch (parseErr) {
       console.error(
         "PayPal create-order: invalid create response JSON",
-        parseErr
+        parseErr,
       );
       return jsonError("PayPal checkout failed. Please try again.");
     }
@@ -184,11 +186,11 @@ export async function POST(request) {
           paypal_order_id VARCHAR(50) PRIMARY KEY,
           payload JSON NOT NULL,
           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        )`
+        )`,
       );
       await pool.query(
         "INSERT INTO paypal_pending_orders (paypal_order_id, payload) VALUES (?, ?)",
-        [paypalOrderId, JSON.stringify(payload)]
+        [paypalOrderId, JSON.stringify(payload)],
       );
     } catch (dbErr) {
       console.error("PayPal create-order: DB error", {
@@ -201,10 +203,10 @@ export async function POST(request) {
         500,
         isDev
           ? {
-              hint: "Check DB connectivity and MYSQL_* env on Vercel.",
+              hint: "Check DB connectivity and DATABASE_URL env on Vercel.",
               detail: dbErr.message,
             }
-          : {}
+          : {},
       );
     }
 
@@ -223,7 +225,7 @@ export async function POST(request) {
       /ECONNREFUSED|ETIMEDOUT|connect|ER_|MySQL|ECONNRESET/.test(msg)
     ) {
       userMessage =
-        "Database connection error. Check MYSQL_* env vars in Vercel and that the database is reachable from the server.";
+        "Database connection error. Check DATABASE_URL in Vercel and that the database is reachable from the server.";
     } else if (
       msg &&
       !msg.includes("PAYPAL_") &&
@@ -235,7 +237,7 @@ export async function POST(request) {
     return jsonError(
       userMessage,
       500,
-      isDev ? { detail: msg, stack: err?.stack } : {}
+      isDev ? { detail: msg, stack: err?.stack } : {},
     );
   }
 }

@@ -10,63 +10,90 @@ export default function page() {
       <Topbar4 />
       <Header showVehicleSearch={false} />
       <PageHeader title="PRIVACY POLICY" />
-      <>
-        {/* main-page */}
-        <section className="flat-spacing-25">
-          <div className="container">
-            <div className="tf-main-area-page">
-              <h4>The Company Private Limited Policy</h4>
-              <p>
-                The Company Private Limited and each of their respective
-                subsidiary, parent and affiliated companies is deemed to operate
-                this Website (“we” or “us”) recognizes that you care how
-                information about you is used and shared. We have created this
-                Privacy Policy to inform you what information we collect on the
-                Website, how we use your information and the choices you have
-                about the way your information is collected and used. Please
-                read this Privacy Policy carefully. Your use of the Website
-                indicates that you have read and accepted our privacy practices,
-                as outlined in this Privacy Policy.
+      <section className="flat-spacing-25 privacy-policy-page">
+        <div className="container">
+          <div className="privacy-policy-page__grid">
+            {/* Intro */}
+            <article className="privacy-policy-page__card">
+              <h1 className="privacy-policy-page__main-title">
+                BMR Suspension Privacy Policy
+              </h1>
+              <p className="privacy-policy-page__text">
+                This Privacy Policy explains how we collect, use, and share your
+                personal information when you visit or make a purchase from our
+                store. Your privacy is very important to us. Accordingly, we
+                have developed this Policy in order for you to understand how we
+                collect, use, communicate, disclose, and make use of personal
+                information. The following outlines our privacy policy.
               </p>
-              <p>
-                Please be advised that the practices described in this Privacy
-                Policy apply to information gathered by us or our subsidiaries,
-                affiliates or agents: (i) through this Website, (ii) where
-                applicable, through our Customer Service Department in
-                connection with this Website, (iii) through information provided
-                to us in our free standing retail stores, and (iv) through
-                information provided to us in conjunction with marketing
-                promotions and sweepstakes.
-              </p>
-              <p>
-                We are not responsible for the content or privacy practices on
-                any websites.
-              </p>
-              <p>
-                We reserve the right, in our sole discretion, to modify, update,
-                add to, discontinue, remove or otherwise change any portion of
-                this Privacy Policy, in whole or in part, at any time. When we
-                amend this Privacy Policy, we will revise the “last updated”
-                date located at the top of this Privacy Policy.
-              </p>
-              <p>
-                If you provide information to us or access or use the Website in
-                any way after this Privacy Policy has been changed, you will be
-                deemed to have unconditionally consented and agreed to such
-                changes. The most current version of this Privacy Policy will be
-                available on the Website and will supersede all previous
-                versions of this Privacy Policy.
-              </p>
-              <p>
-                If you have any questions regarding this Privacy Policy, you
-                should contact our Customer Service Department by email at
-                marketing@company.com
-              </p>
-            </div>
-          </div>
-        </section>
-      </>
+            </article>
 
+            {/* Our principles */}
+            <article className="privacy-policy-page__card">
+              <h2 className="privacy-policy-page__title">
+                Our privacy principles
+              </h2>
+              <ul className="privacy-policy-page__list">
+                <li>
+                  Before or at the time of collecting personal information, we
+                  will identify the purposes for which information is being
+                  collected.
+                </li>
+                <li>
+                  We will collect and use personal information solely with the
+                  objective of fulfilling those purposes specified by us and for
+                  other compatible purposes, unless we obtain the consent of the
+                  individual concerned or as required by law.
+                </li>
+                <li>
+                  We will only retain personal information as long as necessary
+                  for the fulfillment of those purposes.
+                </li>
+                <li>
+                  We will collect personal information by lawful and fair means
+                  and, where appropriate, with the knowledge or consent of the
+                  individual concerned.
+                </li>
+                <li>
+                  Personal data should be relevant to the purposes for which it
+                  is to be used, and, to the extent necessary for those
+                  purposes, should be accurate, complete, and up-to-date.
+                </li>
+                <li>
+                  We will protect personal information by reasonable security
+                  safeguards against loss or theft, as well as unauthorized
+                  access, disclosure, copying, use or modification.
+                </li>
+                <li>
+                  We will make readily available to customers information about
+                  our policies and practices relating to the management of
+                  personal information.
+                </li>
+                <li>
+                  We are committed to conducting our business in accordance with
+                  these principles in order to ensure that the confidentiality
+                  of personal information is protected and maintained.
+                </li>
+              </ul>
+            </article>
+
+            {/* How we use your information */}
+            <article className="privacy-policy-page__card">
+              <h2 className="privacy-policy-page__title">
+                How we use your information
+              </h2>
+              <p className="privacy-policy-page__text">
+                We may use your personal information to:
+              </p>
+              <ul className="privacy-policy-page__list">
+                <li>Process your transactions and provide customer service.</li>
+                <li>Send you a newsletter, if you have subscribed to one.</li>
+                <li>Respond to your customer service requests.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
       <Footer1 />
     </>
   );

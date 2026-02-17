@@ -1,24 +1,14 @@
 import Features from "@/components/common/Features";
 import Hero from "@/components/homes/home/Hero";
-import Marquee from "@/components/homes/home/Marquee";
-import Products from "@/components/homes/home/Products";
-import Products2 from "@/components/homes/home/Products2";
-import Testimonials from "@/components/homes/home/Testimonials";
-import Brands from "@/components/homes/home/Brands";
 import React from "react";
 import Footer from "@/components/footer/Footer";
-import Topbar1 from "@/components/header/Topbar1";
 import Header from "@/components/header/Header";
-import CollectionBanner from "@/components/homes/home/CollectionBanner";
 import ThreeColumnLayout from "@/components/homes/home/ThreeColumnLayout";
-import ProductsPage from "./products/page";
-import NewProductsPage from "./products/new/page";
 import LazyNewProducts from "@/components/homes/home/LazyNewProducts";
-import Topbar4 from "@/components/header/Topbar4";
+// import Topbar4 from "@/components/header/Topbar4";
 import VideoPage from "@/components/common/Videos";
-import Blogs from "@/components/homes/home/Blogs";
 import ShopCategories from "@/components/homes/home/ShopCategories";
-import SocialMedia from "@/components/homes/home/SocialMedia";
+// import SocialMedia from "@/components/homes/home/SocialMedia";
 import Topbar2 from "@/components/header/Topbar2";
 import VehicleSearch from "@/components/common/VehicleSearch";
 import { getBannerImagesForPublic } from "@/lib/queries";
@@ -52,12 +42,6 @@ export default async function page() {
     <>
       <Topbar2 />
       <Header />
-      {/* Duplicate VehicleSearch - keeping header version only for now */}
-      {/* <div className="vehicle-search-desktop-wrapper">
-        <div className="container vehicle-search-desktop">
-          <VehicleSearch />
-        </div>
-      </div> */}
       <Hero initialBannerImages={initialBannerImages} />
       <div className="container vehicle-search-mobile">
         <VehicleSearch />
@@ -66,20 +50,11 @@ export default async function page() {
       <div className="homepage-sections">
         <ThreeColumnLayout />
         <ShopCategories />
-        {/* <Categories /> - uses homepage-collections API */}
-        {/* <Products /> */}
         <LazyNewProducts scratchDent="0" />
-        {/* <ShopCategories /> */}
         <LazyNewProducts scratchDent="1" />
-        {/* <ProductsPage /> */}
-        {/* <CollectionBanner /> */}
-        {/* <Blogs /> */}
+        {/* <SocialMedia /> */}
         <VideoPage />
       </div>
-      {/* <Marquee /> */}
-      {/* <Testimonials /> */}
-      {/* <Brands /> */}
-      {/* <SocialMedia /> */}
       <Features />
       <Footer />
     </>

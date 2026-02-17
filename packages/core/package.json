@@ -1,0 +1,11 @@
+{
+  "name": "@bmr/core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./url": "./src/url/index.js",
+    "./brand": "./src/brand/index.js",
+    "./seo": "./src/seo/index.js"
+  }
+}

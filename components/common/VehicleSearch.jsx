@@ -50,11 +50,48 @@ export default function VehicleSearch() {
         ),
       ].sort();
       setMakes(filteredMakes);
-      setMake(filteredMakes.length === 1 ? filteredMakes[0] : "");
+      const singleMake = filteredMakes.length === 1 ? filteredMakes[0] : "";
+      setMake(singleMake);
       setModel("");
       setModels([]);
       setSubModel("");
       setSubModels([]);
+
+      // When we auto-select the only make, also load models (and auto-select if only one model)
+      if (singleMake) {
+        const makeLower = singleMake.toLowerCase();
+        const filteredModels = [
+          ...new Set(
+            list
+              .filter(
+                (v) =>
+                  v.year === yearNum &&
+                  (v.make || "").toLowerCase() === makeLower,
+              )
+              .map((v) => v.model)
+              .filter(Boolean),
+          ),
+        ].sort();
+        setModels(filteredModels);
+        const singleModel =
+          filteredModels.length === 1 ? filteredModels[0] : "";
+        setModel(singleModel);
+        if (singleModel) {
+          const matches = list.filter(
+            (v) =>
+              v.year === yearNum &&
+              (v.make || "").toLowerCase() === makeLower &&
+              v.model === singleModel,
+          );
+          const filteredSubModels = [
+            ...new Set(matches.map((v) => v.subModel).filter(Boolean)),
+          ].sort();
+          setSubModels(filteredSubModels);
+          setSubModel(
+            filteredSubModels.length === 1 ? filteredSubModels[0] : "",
+          );
+        }
+      }
     }
   };
 

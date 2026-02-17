@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useBrand } from "@bmr/ui/brand";
 import CartLength from "../common/CartLength";
 import MainMenu from "./MainMenu";
 import VehicleSearch from "../common/VehicleSearch";
@@ -25,6 +26,7 @@ export default function Header({
   void isArrow;
   void Linkfs;
 
+  const brand = useBrand();
   const [menuData, setMenuData] = useState(null);
 
   useEffect(() => {
@@ -77,9 +79,9 @@ export default function Header({
               </a>
               <Link href={`/`} className="logo-header">
                 <Image
-                  alt="BMR Suspension Logo"
+                  alt={brand.logo?.alt || `${brand.companyName} Logo`}
                   className="logo"
-                  src="/images/logo/BMR-Logo-White.png"
+                  src={brand.logo?.headerUrl || "/images/logo/logo-white.png"}
                   width={300}
                   height={100}
                   style={{

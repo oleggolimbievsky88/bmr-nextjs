@@ -60,6 +60,48 @@ export default function DeliveryReturnPage() {
             </div>
 
             <div className="delivery-return-page__card">
+              <h2 className="delivery-return-page__title">Warranty</h2>
+              <p className="delivery-return-page__text">
+                BMR products are warranted to the original purchaser against
+                defects in materials and workmanship under normal use for two
+                (2) years from the date of sale. Our obligation under this
+                warranty is limited to replacement of the product; we do not
+                cover reinstallation or other incidental costs. This warranty
+                does not apply to products that have been misused, neglected,
+                altered, damaged, or improperly installed, and normal wear is
+                not considered a defect. Warranty claims are limited to
+                replacement or credit for returned merchandise. Impact damage
+                and damage to powder coat are specifically excluded.
+              </p>
+              <p className="delivery-return-page__text">
+                An RMA is required for all warranty returns. Replacement product
+                is shipped at no charge via UPS Ground; upgraded shipping is
+                available at the customer’s expense for the difference in cost.
+              </p>
+              <p className="delivery-return-page__text">
+                BMR products are designed for use with OEM and other BMR
+                products. We do not warrant fitment with aftermarket products
+                from other manufacturers, including suspension, exhaust,
+                drivetrain, or other aftermarket components. Returns due to
+                fitment issues with OEM or BMR products receive a full refund;
+                returns due to fitment issues with other manufacturers’
+                aftermarket products are subject to a 15% restocking fee.
+              </p>
+              <p className="delivery-return-page__text delivery-return-page__text--legal">
+                Purchaser acknowledges that racing parts, equipment, and
+                services manufactured and/or sold by BMR are used under varied
+                conditions and that the suitability of any part for a particular
+                application is solely the purchaser’s decision. BMR makes no
+                warranties, express, implied, or written; there is no warranty
+                of merchantability. BMR reserves the right to change designs or
+                improve products without obligation to modify previously
+                manufactured units. Buyer agrees to indemnify and hold BMR
+                harmless from any claim, action, or demand arising from the
+                buyer’s installation or use of products purchased from BMR.
+              </p>
+            </div>
+
+            <div className="delivery-return-page__card">
               <h2 className="delivery-return-page__title">
                 Shipping &amp; Delivery
               </h2>

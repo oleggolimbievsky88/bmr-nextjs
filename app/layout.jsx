@@ -1,7 +1,11 @@
-import { SITE_URL } from "@/lib/site-url";
-import { DEFAULT_OG_IMAGE, OG_IMAGE_URL } from "@/lib/metadata";
+import { getSiteUrl } from "@bmr/core/url";
+import { brand } from "@/src/brand";
+import { getBrandConfig } from "@/lib/brand";
+import { BrandProvider } from "@bmr/ui/brand";
 import ClientProviders from "@/components/layouts/ClientProviders";
 import JsonLd from "@/components/seo/JsonLd";
+import "../public/scss/brand-bmr.scss";
+import "../public/scss/brand-controlfreak.scss";
 import "../public/scss/main.scss";
 import "photoswipe/dist/photoswipe.css";
 import "rc-slider/assets/index.css";
@@ -13,56 +17,55 @@ export const viewport = {
   viewportFit: "cover",
 };
 
-const defaultTitle = "BMR Suspension | Performance Suspension & Chassis Parts";
-const defaultDescription =
-  "BMR Suspension manufactures high-performance suspension and chassis parts for Mustang, Camaro, GM, Mopar, and more. Shop rear control arms, sway bars, springs, and race-proven components.";
+export async function generateMetadata() {
+  const config = getBrandConfig();
+  const siteUrl = getSiteUrl().replace(/\/$/, "");
+  const ogImageUrl = `${siteUrl}${config.ogImagePath.startsWith("/") ? config.ogImagePath : `/${config.ogImagePath}`}`;
 
-export const metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: { default: defaultTitle },
-  description: defaultDescription,
-  keywords: [
-    "BMR Suspension",
-    "performance suspension",
-    "chassis parts",
-    "Mustang",
-    "Camaro",
-    "GM",
-    "Mopar",
-    "control arms",
-    "sway bars",
-    "lowering springs",
-  ],
-  authors: [{ name: "Oleg Golimbievsky", url: SITE_URL }],
-  creator: "Oleg Golimbievsky",
-  publisher: "Oleg Golimbievsky - OG Web Services LLC",
-  formatDetection: { email: false, address: false, telephone: false },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: SITE_URL,
-    siteName: "BMR Suspension",
-    title: defaultTitle,
-    description: defaultDescription,
-    images: [DEFAULT_OG_IMAGE],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: defaultTitle.slice(0, 70),
-    description: defaultDescription.slice(0, 200),
-    images: [OG_IMAGE_URL],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true },
-  },
-  alternates: { canonical: "/" },
-};
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: config.defaultTitle,
+      template: `%s | ${config.name}`,
+    },
+    description: config.defaultDescription,
+    icons: {
+      icon: config.faviconPath,
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: siteUrl,
+      siteName: config.siteName || config.name,
+      title: config.defaultTitle,
+      description: config.defaultDescription,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: config.siteName || config.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: config.defaultTitle.slice(0, 70),
+      description: (config.defaultDescription || "").slice(0, 200),
+      images: [ogImageUrl],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+    alternates: { canonical: "/" },
+  };
+}
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-brand={brand.key}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -76,8 +79,10 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="preload-wrapper popup-loader">
-        <JsonLd />
-        <ClientProviders>{children}</ClientProviders>
+        <BrandProvider brand={brand}>
+          <JsonLd />
+          <ClientProviders>{children}</ClientProviders>
+        </BrandProvider>
       </body>
     </html>
   );

@@ -37,6 +37,9 @@ export default function AdminProductsPage() {
   const [filterManufacturerId, setFilterManufacturerId] = useState("");
   const [filterScratchAndDent, setFilterScratchAndDent] = useState(false);
   const [filterNewProducts, setFilterNewProducts] = useState(""); // "" | "all" | "onsite"
+  const [newProductsDays, setNewProductsDays] = useState(90);
+  const [newProductsDaysInput, setNewProductsDaysInput] = useState("90");
+  const [newProductsDaysSaving, setNewProductsDaysSaving] = useState(false);
   const [filterNoImage, setFilterNoImage] = useState(false);
   const [filterFeatured, setFilterFeatured] = useState(false);
   const [filterLowMargin, setFilterLowMargin] = useState(false);
@@ -124,6 +127,22 @@ export default function AdminProductsPage() {
     fetchProductOptions();
   }, []);
 
+  useEffect(() => {
+    const fetchNewProductsDays = async () => {
+      try {
+        const res = await fetch("/api/admin/settings/new-products-days");
+        const data = await res.json();
+        if (res.ok && typeof data.days === "number") {
+          setNewProductsDays(data.days);
+          setNewProductsDaysInput(String(data.days));
+        }
+      } catch (err) {
+        console.error("Error fetching new products days:", err);
+      }
+    };
+    fetchNewProductsDays();
+  }, []);
+
   const fetchProductOptions = async () => {
     try {
       const res = await fetch("/api/admin/product-options");
@@ -209,6 +228,33 @@ export default function AdminProductsPage() {
     filterPackage,
     filterNoManufacturer,
   ]);
+
+  const saveNewProductsDays = async () => {
+    const days = parseInt(newProductsDaysInput, 10);
+    if (!Number.isFinite(days) || days < 1 || days > 9999) {
+      showToast("Enter a number between 1 and 9999", "error");
+      return;
+    }
+    setNewProductsDaysSaving(true);
+    try {
+      const res = await fetch("/api/admin/settings/new-products-days", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to save");
+      }
+      setNewProductsDays(data.days);
+      setNewProductsDaysInput(String(data.days));
+      showToast("New products display days saved.", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to save", "error");
+    } finally {
+      setNewProductsDaysSaving(false);
+    }
+  };
 
   const applyFilters = useCallback(() => {
     setCurrentPage(1);
@@ -781,6 +827,40 @@ export default function AdminProductsPage() {
       {/* Filters */}
       <div className="card border-0 shadow-sm rounded-3 mb-4">
         <div className="card-body p-4">
+          <div className="row g-2 align-items-center mb-3 pb-3 border-bottom">
+            <div className="col-auto">
+              <label
+                htmlFor="new-products-days"
+                className="form-label small mb-0"
+              >
+                New products display
+              </label>
+              <div className="d-flex align-items-center gap-2">
+                <input
+                  id="new-products-days"
+                  type="number"
+                  min={1}
+                  max={9999}
+                  className="form-control form-control-sm"
+                  style={{ width: "80px", height: "28px" }}
+                  value={newProductsDaysInput}
+                  onChange={(e) => setNewProductsDaysInput(e.target.value)}
+                />
+                <span className="small text-muted">days</span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={saveNewProductsDays}
+                  disabled={
+                    newProductsDaysSaving ||
+                    parseInt(newProductsDaysInput, 10) === newProductsDays
+                  }
+                >
+                  {newProductsDaysSaving ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="row g-2 align-items-end flex-wrap">
             <div className="col-auto">
               <label htmlFor="filter-part" className="form-label small mb-0">
@@ -925,7 +1005,9 @@ export default function AdminProductsPage() {
               >
                 <option value="">—</option>
                 <option value="all">All (checked)</option>
-                <option value="onsite">On site (&lt;90 days)</option>
+                <option value="onsite">
+                  On site (&lt;{newProductsDays} days)
+                </option>
               </select>
             </div>
             <div className="col-auto d-flex gap-2">

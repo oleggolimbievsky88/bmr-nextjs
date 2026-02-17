@@ -3,15 +3,15 @@ import Header from "@/components/header/Header";
 import Topbar4 from "@/components/header/Topbar4";
 import ContactForm from "@/components/othersPages/contact/ContactForm";
 import Map from "@/components/othersPages/contact/Map";
-import { pageMeta } from "@/lib/metadata";
+import { pageMeta } from "@bmr/core/seo";
+import { brand } from "@/src/brand";
 import React from "react";
 
-const title =
-  "Contact Us | BMR Suspension | Performance Suspension & Chassis Parts";
-const description =
-  "Contact BMR Suspension – High Performance Suspension & Chassis parts. Visit us in Lakeland, FL or email sales@bmrsuspension.com.";
+const title = `Contact Us | ${brand.companyName} | Performance Suspension & Chassis Parts`;
+const description = `Contact ${brand.companyName} – High Performance Suspension & Chassis parts. Visit us in Lakeland, FL or email sales@bmrsuspension.com.`;
 
 const { openGraph, twitter } = pageMeta({
+  brand,
   path: "/contact",
   title,
   description,

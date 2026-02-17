@@ -149,18 +149,6 @@
       }
     }
   }
-  .flat-thumbs-testimonial-v2 {
-    padding: 85px 110px;
-  }
-  .tf-icon-box-v2 {
-    flex-direction: row;
-    .icon {
-      font-size: 30px;
-    }
-  }
-  .flat-testimonial-bg {
-    padding: 85px 0px 60px;
-  }
   .tf-slideshow {
     .card-box-2 {
       .title {
@@ -480,17 +468,6 @@
       padding: 30px;
     }
   }
-  .canvas-sidebar-blog {
-    .canvas-header {
-      .title {
-        font-size: 20px;
-        line-height: 24px;
-      }
-    }
-    .canvas-body {
-      padding: 20px;
-    }
-  }
   .tf-pagination-wrap {
     padding-top: 60px;
   }
@@ -643,32 +620,6 @@
   .flat-seller {
     .grid-layout {
       row-gap: 50px;
-    }
-  }
-  .testimonial-item {
-    .text {
-      font-size: 18px;
-      line-height: 28.8px;
-    }
-
-    &.style-column {
-      padding: 44px 36px 24px;
-
-      .text {
-        margin-bottom: 26px;
-      }
-      .author {
-        margin-bottom: 34px;
-      }
-      .rating {
-        margin-bottom: 16px;
-      }
-      &.style-2 {
-        padding: 36px 32px;
-        .text {
-          margin-bottom: 20px;
-        }
-      }
     }
   }
   .flat-iconbox {
@@ -861,17 +812,6 @@
       text-align: left;
     }
   }
-  .flat-testimonial-v2 {
-    padding-top: 110px;
-    padding-bottom: 110px;
-  }
-  .testimonial-item {
-    &.lg {
-      .icon {
-        font-size: 34px;
-      }
-    }
-  }
   .flat-lookbook-v2 {
     flex-direction: row;
     gap: 30px;
@@ -1012,21 +952,6 @@
       .store-heading {
         font-size: 40px;
         line-height: 48px;
-      }
-    }
-  }
-  .blog-detail .blog-detail-main .tf-article-navigation .icon {
-    width: 30px;
-    height: 30px;
-  }
-  .blog-detail .blog-detail-main .tf-article-navigation .item {
-    gap: 30px;
-  }
-  .blog-detail-main {
-    .tf-article-navigation {
-      h6 {
-        font-size: 20px;
-        line-height: 30px;
       }
     }
   }
@@ -1171,16 +1096,6 @@
   .flat-wrap-tes-text {
     margin-bottom: 30px;
   }
-  .testimonial-ver-text {
-    gap: 10px;
-    .heading {
-      margin-bottom: 30px;
-    }
-    .content {
-      font-size: 20px;
-      line-height: 32px;
-    }
-  }
   .tf-thumb-tes {
     .thumb-tes-item {
       padding-left: 20px;
@@ -1200,17 +1115,6 @@
       .wrap-slider {
         height: 840px;
       }
-    }
-  }
-  .flat-testimonial-bg-v2 {
-    padding: 90px 0px;
-    .wrap-content-left {
-      .rating {
-        margin-bottom: 14px;
-      }
-    }
-    .wrap-content-right {
-      margin-top: 30px;
     }
   }
 }
@@ -1342,11 +1246,6 @@
           margin-bottom: 18px;
         }
       }
-    }
-  }
-  .testimonial-ver-text {
-    .heading {
-      margin-bottom: 40px;
     }
   }
   .widget-card-store {
@@ -1544,21 +1443,6 @@
       line-height: 28.8px;
     }
   }
-  .flat-testimonial-bg-v2 {
-    padding: 106px 0px;
-    .wrap-content-right {
-      margin-top: 0px;
-    }
-  }
-  .testimonial-item {
-    &.style-column {
-      &.style-2 {
-        .text {
-          margin-bottom: 70px;
-        }
-      }
-    }
-  }
   .slideshow-tee {
     .wrap-slider {
       .box-content {
@@ -1577,29 +1461,12 @@
   .flat-wrap-tes-text {
     margin-bottom: 88px;
   }
-  .testimonial-ver-text {
-    .content {
-      font-size: 28px;
-      line-height: 44.8px;
-    }
-  }
   .tf-thumb-tes {
     .thumb-tes-item {
       padding-left: 42px;
       padding-right: 42px;
       img {
         max-width: 157px;
-      }
-    }
-  }
-  .testimonial-item {
-    &.style-row {
-      padding-right: 40px;
-      .rating {
-        margin-bottom: 18px;
-      }
-      .text {
-        margin-bottom: 38px;
       }
     }
   }
@@ -1631,15 +1498,6 @@
     }
   }
 
-  .flat-thumbs-testimonial-v2 {
-    .box-left {
-      .text {
-        font-size: 28px;
-        line-height: 44.8px;
-      }
-    }
-  }
-
   .col-xl-8 {
     .flat-accordion {
       .flat-toggle {
@@ -1657,9 +1515,6 @@
         line-height: 50.4px;
       }
     }
-  }
-  .flat-testimonial-bg {
-    padding: 100px 0px 68px;
   }
   .img-text-3 {
     .tf-content-wrap {
@@ -2231,17 +2086,6 @@
       }
     }
   }
-  .blog-sidebar-main,
-  .blog-list-main {
-    display: flex;
-    gap: 30px;
-    > .list-blog {
-      width: calc(75% - 15px);
-    }
-    > .tf-section-sidebar {
-      width: calc(25% - 15px);
-    }
-  }
   // flat tittle
   .flat-title {
     margin-bottom: 10px;
@@ -2466,53 +2310,6 @@
       margin-top: 50px;
     }
   }
-  .flat-testimonial-v2 {
-    padding-top: 130px;
-    padding-bottom: 130px;
-  }
-  .testimonial-item {
-    .icon {
-      margin-bottom: 40px;
-    }
-    &.lg {
-      .text {
-        font-size: 20px;
-        line-height: 32px;
-        margin-bottom: 36px;
-      }
-    }
-    .rating {
-      margin-bottom: 26px;
-    }
-    .divider {
-      margin-bottom: 22px;
-    }
-    &.lg-2 {
-      .icon {
-        margin-bottom: 22px;
-      }
-      .rating {
-        margin-bottom: 24px;
-      }
-      .text {
-        margin-bottom: 24px;
-      }
-      .box-author {
-        margin-bottom: 40px;
-      }
-    }
-    &.lg-3 {
-      .text {
-        font-size: 28px;
-        line-height: 44px;
-      }
-    }
-  }
-  .wrapper-thumbs-testimonial {
-    .box-right {
-      padding-right: 80px;
-    }
-  }
   .gallery-item {
     .box-icon {
       opacity: 0;
@@ -2668,10 +2465,6 @@
       }
     }
   }
-  .blog-detail .blog-detail-main .tf-article-navigation .icon {
-    width: 46px;
-    height: 46px;
-  }
   .flat-wrap-iconbox {
     padding: 20px 90px 50px;
   }
@@ -2766,11 +2559,6 @@
   .box-video-wrap {
     max-width: 612px;
     margin-left: auto;
-  }
-  .flat-testimonial-bg-v2 {
-    .wrap-content-right {
-      padding-left: 50px;
-    }
   }
 
   .slider-home-decor {
@@ -3000,13 +2788,6 @@
     }
   }
 
-  .flat-testimonial-bg-v2 {
-    .wrap-content-right {
-      .sw-wrapper-right {
-        margin-right: 0;
-      }
-    }
-  }
   .header-style-2 {
     .header-bottom {
       .box-navigation {
@@ -3244,14 +3025,6 @@
     min-width: 280px;
     max-width: 280px;
   }
-  .blog-article-item {
-    &.style-row {
-      .article-thumb {
-        width: 300px;
-        height: 300px;
-      }
-    }
-  }
   .widget-tabs {
     &.style-has-border {
       .widget-menu-tab {
@@ -3421,15 +3194,6 @@
       top: unset;
       transform: unset;
       bottom: 57px;
-    }
-  }
-  .testimonial-item {
-    &.style-row {
-      flex-direction: column;
-      .image {
-        margin-left: auto;
-        margin-right: auto;
-      }
     }
   }
   .hover-sw-nav {
@@ -3619,13 +3383,6 @@
       }
     }
   }
-  .wrapper-thumbs-testimonial {
-    padding: 0 50px;
-    .box-left {
-      padding-right: 33px;
-      padding-left: 10px;
-    }
-  }
   .tf-hero-image-liquid {
     .box-content {
       p {
@@ -3756,12 +3513,6 @@
       height: 40px;
     }
   }
-  .canvas-sidebar-blog {
-    &.canvas-sidebar {
-      max-width: 410px;
-      width: 100%;
-    }
-  }
   .masonry-layout-v3 {
     .collection-image {
       height: 415px;
@@ -3848,12 +3599,6 @@
     .heading {
       font-size: 32px;
       line-height: 38px;
-    }
-  }
-  .blog-detail-main-heading {
-    .title {
-      font-size: 32px !important;
-      line-height: 38px !important;
     }
   }
   h1 {
@@ -4300,28 +4045,6 @@
     padding-bottom: 15px;
     margin-bottom: 10px;
   }
-  .blog-article-item {
-    &.style-row {
-      flex-direction: column;
-      gap: 15px;
-      .article-thumb {
-        width: 100%;
-        height: unset;
-      }
-      .article-content {
-        gap: 10px;
-      }
-      .article-title {
-        a {
-          font-size: 16px;
-          line-height: 19px;
-        }
-      }
-      .article-btn {
-        margin-top: 10px;
-      }
-    }
-  }
   .tf-product-fbt-wrap {
     form {
       .tf-product-fbt-list {
@@ -4609,12 +4332,6 @@
     .heading {
       font-size: 22px;
       line-height: 26px;
-    }
-  }
-  .blog-detail-main-heading {
-    .title {
-      font-size: 22px !important;
-      line-height: 26px !important;
     }
   }
   .wrap-slider {
@@ -4919,37 +4636,6 @@
   }
   .md-pb-70 {
     padding-bottom: 70px;
-  }
-  .wrapper-thumbs-testimonial {
-    padding: 0;
-    .box-left {
-      display: none;
-    }
-    .box-right {
-      width: 100%;
-    }
-  }
-  .tf-sw-testimonial.mb_60 {
-    margin-bottom: 15px;
-  }
-  .testimonial-item {
-    .box-author {
-      .content {
-        margin-top: 5px;
-      }
-    }
-    &.style-box {
-      padding: 15px 24px;
-    }
-  }
-  .wrapper-thumbs-testimonial-v2 {
-    .box-right {
-      display: none;
-    }
-    .box-left {
-      width: 100% !important;
-      padding: 0;
-    }
   }
   .tf-icon-box {
     &.style-row {

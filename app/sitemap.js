@@ -1,4 +1,6 @@
-import { SITE_URL } from "@/lib/site-url";
+import { getSiteUrl } from "@bmr/core/url";
+
+const SITE_URL = getSiteUrl();
 import { getProductIdsForSitemap } from "@/lib/queries";
 
 const staticRoutes = [

@@ -5,7 +5,7 @@ import { getGiftCardsForOrder } from "@/lib/giftCards";
 export async function GET(request, { params }) {
   try {
     // Check if database connection is available
-    if (!process.env.MYSQL_HOST) {
+    if (!process.env.DATABASE_URL) {
       return NextResponse.json(
         { success: false, message: "Database configuration missing" },
         { status: 500 },

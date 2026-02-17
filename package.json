@@ -1,7 +1,7 @@
 {
-  "name": "ecoums-next",
-  "version": "0.1.1",
+  "name": "bmr-sites",
   "private": true,
+  "packageManager": "pnpm@10.29.3",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,6 +11,8 @@
     "knip": "knip"
   },
   "dependencies": {
+    "@bmr/core": "workspace:*",
+    "@bmr/ui": "workspace:*",
     "@aws-sdk/client-s3": "^3.990.0",
     "@emailjs/browser": "^4.4.1",
     "@google/model-viewer": "^3.5.0",
@@ -53,6 +55,5 @@
   "engines": {
     "node": "22.x",
     "pnpm": ">=9.0.0"
-  },
-  "packageManager": "pnpm@10.29.3"
+  }
 }

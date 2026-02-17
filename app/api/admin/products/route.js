@@ -6,6 +6,7 @@ import {
   getProductsCountAdmin,
   createProductAdmin,
 } from "@/lib/queries";
+import { getNewProductsDays } from "@/lib/settings";
 import { uploadProductImage } from "@/lib/upload-product-images";
 import { put } from "@vercel/blob";
 import { writeFile, mkdir } from "fs/promises";
@@ -48,6 +49,8 @@ export async function GET(request) {
     if (searchParams.get("noManufacturer") === "1")
       filters.noManufacturer = true;
 
+    const newProductsDays = await getNewProductsDays();
+
     const [products, total] = await Promise.all([
       getAllProductsAdmin(
         limit,
@@ -57,8 +60,9 @@ export async function GET(request) {
         sortDirection,
         displayFilter,
         filters,
+        newProductsDays,
       ),
-      getProductsCountAdmin(search, displayFilter, filters),
+      getProductsCountAdmin(search, displayFilter, filters, newProductsDays),
     ]);
 
     return NextResponse.json({ products, total });

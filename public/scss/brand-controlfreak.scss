@@ -1,0 +1,26 @@
+[data-brand="controlfreak"] {
+  --brand-primary: #ffec01;
+  --brand-primary-rgb: 255, 236, 1;
+  --brand-secondary: #7a7a7a;
+  --brand-dark: #06080b;
+  --brand-light: #ffffff;
+  --brand-text: #000000;
+  --main: #000000;
+  --white: #ffffff;
+  --text: #dcdcdc;
+  --text-2: #b5b5b5;
+  --text-3: #8c8c8c;
+  --line: rgba(255, 255, 255, 0.12);
+  --line-2: rgba(255, 255, 255, 0.08);
+  --bg-1: #0c0c0c;
+  --bg-2: #111111;
+  --bg-7: #151515;
+  --backdrop: rgba(0, 0, 0, 0.65);
+}
+
+[data-brand="controlfreak"] .btn-primary,
+[data-brand="controlfreak"] .bg-primary {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #000 !important;
+}

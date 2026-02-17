@@ -1,0 +1,17 @@
+{
+  "name": "@bmr/ui",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./brand": "./src/brand/index.js"
+  },
+  "peerDependencies": {
+    "@bmr/core": "workspace:*",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@bmr/core": "workspace:*"
+  }
+}

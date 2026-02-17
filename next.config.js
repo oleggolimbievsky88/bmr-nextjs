@@ -7,7 +7,7 @@ const nextConfig = {
   experimental: {
     proxyPrefetch: "strict",
     // Allow larger form uploads for admin product creation (images, PDFs)
-    serverActions: { bodySizeLimit: "10mb" },
+    serverActions: { bodySizeLimit: "20mb" },
   },
 
   // Image configuration for external domains

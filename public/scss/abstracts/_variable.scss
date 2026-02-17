@@ -1,4 +1,4 @@
-//settings
+//_variable.scss
 $font-main: "Albert Sans", sans-serif;
 $font-Young-Serif:"Young Serif", serif;
 $font-gloock:"Gloock", serif;
@@ -10,7 +10,8 @@ $fontIcon: "icomoon";
     // color
     --main: #000000;
     --white: #ffffff;
-    --primary: #db1215;
+    --primary: var(--brand-primary, #db1215);
+    --primary-rgb: var(--brand-primary-rgb, 219, 18, 21);
     --red_1: #db1215;
     --bmr-red: #db1215;
     --backdrop: rgba(0, 0, 0, 0.5);

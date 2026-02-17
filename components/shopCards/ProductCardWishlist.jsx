@@ -3,11 +3,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContextElement } from "@/context/Context";
-import { getProductImageUrl } from "@/lib/assets";
 import CountdownComponent from "../common/Countdown";
+import { getProductImageUrl } from "@/lib/assets";
 
-// Support both API shape (ProductID, ImageLarge, ImageSmall, ProductName, Price)
-// and legacy shape (id, imgSrc, imgHoverSrc, title, price)
 function getProductDisplay(product) {
   const id = product.ProductID ?? product.id;
   const imgSrc =
@@ -31,7 +29,7 @@ function getProductDisplay(product) {
 export const ProductCardWishlist = ({ product }) => {
   const d = getProductDisplay(product);
   const [currentImage, setCurrentImage] = useState(d.imgSrc);
-  const { setQuickViewItem, addToWishlist } = useContextElement();
+  const { addToWishlist } = useContextElement();
 
   return (
     <div className="card-product fl-item" key={d.id}>

@@ -27,7 +27,7 @@ export default function SearchResults({
         const data = await res.json();
         // data.colors should be an array of { ColorID, ColorName, ColorImg, ColorImgLarge }
         const map = Object.fromEntries(
-          (data.colors || []).map((c) => [String(c.ColorID), c])
+          (data.colors || []).map((c) => [String(c.ColorID), c]),
         );
         setColorsMap(map);
       } catch (err) {
@@ -194,7 +194,7 @@ export default function SearchResults({
                       platform.slug
                         ? `/products/${platform.slug}`
                         : `/homes/home-search?q=${encodeURIComponent(
-                            platform.Name || ""
+                            platform.Name || "",
                           )}`
                     }
                     className="card h-100 text-decoration-none search-result-card"
@@ -206,9 +206,10 @@ export default function SearchResults({
                       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "var(--primary)";
+                      e.currentTarget.style.borderColor =
+                        "var(--brand-primary)";
                       e.currentTarget.style.boxShadow =
-                        "0 4px 12px rgba(204, 0, 0, 0.2)";
+                        "0 4px 12px rgba(var(--primary-rgb), 0.25)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = "#e9ecef";
@@ -219,14 +220,17 @@ export default function SearchResults({
                     <div className="card-body" style={{ padding: "1.5rem" }}>
                       <h5
                         className="card-title"
-                        style={{ color: "#000", marginBottom: "0.5rem" }}
+                        style={{
+                          color: "var(--brand-text)",
+                          marginBottom: "0.5rem",
+                        }}
                       >
                         {platform.Name}
                       </h5>
                       <p
                         className="text-muted small mb-0"
                         style={{
-                          color: "#cc0000 !important",
+                          color: "var(--brand-primary)",
                           fontWeight: "600",
                         }}
                       >
@@ -270,9 +274,10 @@ export default function SearchResults({
                       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "var(--primary)";
+                      e.currentTarget.style.borderColor =
+                        "var(--brand-primary)";
                       e.currentTarget.style.boxShadow =
-                        "0 4px 12px rgba(204, 0, 0, 0.2)";
+                        "0 4px 12px rgba(var(--primary-rgb), 0.25)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = "#e9ecef";
@@ -283,14 +288,17 @@ export default function SearchResults({
                     <div className="card-body" style={{ padding: "1.5rem" }}>
                       <h5
                         className="card-title"
-                        style={{ color: "#000", marginBottom: "0.5rem" }}
+                        style={{
+                          color: "var(--brand-text)",
+                          marginBottom: "0.5rem",
+                        }}
                       >
                         {category.CatName}
                       </h5>
                       <p
                         className="text-muted small mb-0"
                         style={{
-                          color: "#cc0000 !important",
+                          color: "var(--brand-primary)",
                           fontWeight: "600",
                         }}
                       >
@@ -326,7 +334,7 @@ export default function SearchResults({
                       vehicle.PlatformSlug
                         ? `/products/${vehicle.PlatformSlug}`
                         : `/homes/home-search?q=${encodeURIComponent(
-                            vehicle.Make + " " + vehicle.Model
+                            vehicle.Make + " " + vehicle.Model,
                           )}`
                     }
                     className="card h-100 text-decoration-none search-result-card"
@@ -338,9 +346,10 @@ export default function SearchResults({
                       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "var(--primary)";
+                      e.currentTarget.style.borderColor =
+                        "var(--brand-primary)";
                       e.currentTarget.style.boxShadow =
-                        "0 4px 12px rgba(204, 0, 0, 0.2)";
+                        "0 4px 12px rgba(var(--primary-rgb), 0.25)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = "#e9ecef";
@@ -351,14 +360,17 @@ export default function SearchResults({
                     <div className="card-body" style={{ padding: "1.5rem" }}>
                       <h5
                         className="card-title"
-                        style={{ color: "#000", marginBottom: "0.5rem" }}
+                        style={{
+                          color: "var(--brand-text)",
+                          marginBottom: "0.5rem",
+                        }}
                       >
                         {vehicle.Make} {vehicle.Model}
                       </h5>
                       <p
                         className="text-muted small mb-0"
                         style={{
-                          color: "var(--primary) !important",
+                          color: "var(--brand-primary)",
                           fontWeight: "600",
                         }}
                       >
@@ -391,7 +403,7 @@ export default function SearchResults({
                 >
                   <Link
                     href={`/homes/home-search?q=${encodeURIComponent(
-                      brand.ManName
+                      brand.ManName,
                     )}`}
                     className="card h-100 text-decoration-none"
                   >

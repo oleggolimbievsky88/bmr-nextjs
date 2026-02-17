@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { SITE_URL } from "@/lib/site-url";
+import { getSiteUrl } from "@bmr/core/url";
+
+const SITE_URL = getSiteUrl();
 
 const PAYPAL_BASE =
   String(process.env.PAYPAL_SANDBOX || "")
@@ -41,7 +43,7 @@ export async function GET(request) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Missing token" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +57,7 @@ export async function GET(request) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     if (!captureRes.ok) {
@@ -66,7 +68,7 @@ export async function GET(request) {
           success: false,
           message: "PayPal capture failed. Please contact support.",
         },
-        { status: 502 }
+        { status: 502 },
       );
     }
 
@@ -78,14 +80,14 @@ export async function GET(request) {
 
     const [rows] = await pool.query(
       "SELECT payload FROM paypal_pending_orders WHERE paypal_order_id = ?",
-      [token]
+      [token],
     );
     const row = rows?.[0];
     if (!row || !row.payload) {
       console.error("No pending order found for PayPal ID:", token);
       return NextResponse.json(
         { success: false, message: "Checkout session expired or invalid." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -127,7 +129,7 @@ export async function GET(request) {
 
     await pool.query(
       "DELETE FROM paypal_pending_orders WHERE paypal_order_id = ?",
-      [token]
+      [token],
     );
 
     if (!orderRes.ok || !orderResult.success) {
@@ -143,7 +145,7 @@ export async function GET(request) {
           ...(process.env.NODE_ENV === "development" &&
             orderResult.details && { details: orderResult.details }),
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -163,7 +165,7 @@ export async function GET(request) {
           stack: err.stack,
         }),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

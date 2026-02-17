@@ -5,7 +5,6 @@ import React from "react";
 
 import {
   allPagesLinks,
-  blogLinks,
   productDetailPages,
   fordLinks,
   moparLinks,
@@ -24,7 +23,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
     }
     if (menuItem.length) {
       active = menuItem.some(
-        (elm) => elm.href?.split("/")[1] == pathname.split("/")[1]
+        (elm) => elm.href?.split("/")[1] == pathname.split("/")[1],
       );
     }
     if (menuItem.length) {
@@ -184,7 +183,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
         <a
           href="/installation"
           className={`item-link ${Linkfs} ${textColor}  ${
-            isMenuActive(blogLinks) ? "activeMenu" : ""
+            isMenuActive([{ href: "/installation" }]) ? "activeMenu" : ""
           }`}
         >
           Installation
@@ -194,7 +193,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
         <a
           href="#"
           className={`item-link ${Linkfs} ${textColor}  ${
-            isMenuActive(blogLinks) ? "activeMenu" : ""
+            isMenuActive([{ href: "/installation" }]) ? "activeMenu" : ""
           }`}
         >
           Pages
@@ -222,7 +221,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
         <a
           href="/about-us"
           className={`item-link ${Linkfs} ${textColor}  ${
-            isMenuActive(blogLinks) ? "activeMenu" : ""
+            isMenuActive([{ href: "/about-us" }]) ? "activeMenu" : ""
           }`}
         >
           About Us
@@ -232,7 +231,7 @@ export default function Nav({ isArrow = true, textColor = "", Linkfs = "" }) {
         <a
           href="/contact"
           className={`item-link ${Linkfs} ${textColor}  ${
-            isMenuActive(blogLinks) ? "activeMenu" : ""
+            isMenuActive([{ href: "/contact" }]) ? "activeMenu" : ""
           }`}
         >
           Contact

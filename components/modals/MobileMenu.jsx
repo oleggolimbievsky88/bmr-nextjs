@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import LanguageSelect from "../common/LanguageSelect";
-import CurrencySelect from "../common/CurrencySelect";
 import { usePathname } from "next/navigation";
 
 export default function MobileMenu() {
@@ -371,7 +370,6 @@ export default function MobileMenu() {
           </Link>
           <div className="bottom-bar-language">
             <div className="tf-currencies">
-              <CurrencySelect />
             </div>
             <div className="tf-languages">
               <LanguageSelect

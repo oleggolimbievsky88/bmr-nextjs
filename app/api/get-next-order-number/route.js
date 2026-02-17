@@ -4,10 +4,10 @@ import { query } from "@/lib/db";
 export async function GET() {
   try {
     // Check if database connection is available
-    if (!process.env.MYSQL_HOST) {
+    if (!process.env.DATABASE_URL) {
       return NextResponse.json(
         { error: "Database configuration missing" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 

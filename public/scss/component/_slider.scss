@@ -445,20 +445,6 @@
     }
   }
 }
-
-.flat-testimonial-bg {
-  padding: 40px 0px 30px;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-.flat-testimonial-bg-1 {
-  background-image: url(/images/slider/image_bg_testimonials.jpg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
 .height-auto {
   height: auto;
   > .h-100 {
@@ -481,23 +467,6 @@
   &.tf-slideshow {
     .wrap-slider {
       height: 400px;
-    }
-  }
-}
-.flat-testimonial-bg-v2 {
-  padding: 50px 0px 40px;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  .wrap-content-left {
-    .rating {
-      margin-bottom: 10px;
-    }
-  }
-  .wrap-content-right {
-    margin-top: 15px;
-    .box-sw-navigation {
-      margin-top: 30px;
     }
   }
 }

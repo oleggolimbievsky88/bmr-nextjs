@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Context from "@/context/Context";
-import ProductSidebar from "@/components/modals/ProductSidebar";
 import ShopCart from "@/components/modals/ShopCart";
 import QuickAdd from "@/components/modals/QuickAdd";
 import QuickView from "@/components/modals/QuickView";
 import AskQuestion from "@/components/modals/AskQuestion";
-import BlogSidebar from "@/components/modals/BlogSidebar";
 import ColorCompare from "@/components/modals/ColorCompare";
 import DeliveryReturn from "@/components/modals/DeliveryReturn";
 import FindSize from "@/components/modals/FindSize";
@@ -19,8 +17,6 @@ import Register from "@/components/modals/Register";
 import ResetPass from "@/components/modals/ResetPass";
 import SearchModal from "@/components/modals/SearchModal";
 import ToolbarBottom from "@/components/modals/ToolbarBottom";
-import ToolbarShop from "@/components/modals/ToolbarShop";
-import ShareModal from "@/components/modals/ShareModal";
 import ScrollTop from "@/components/common/ScrollTop";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -78,20 +74,21 @@ export default function ClientProviders({ children }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.bootstrap) {
-      const modalElements = document.querySelectorAll(".modal.show");
-      modalElements.forEach((modal) => {
-        if (modal.classList.contains("admin-edit-modal")) return;
-        const inst = window.bootstrap.Modal.getInstance(modal);
-        if (inst) inst.hide();
-      });
-      const offcanvasElements = document.querySelectorAll(".offcanvas.show");
-      offcanvasElements.forEach((oc) => {
-        const inst = window.bootstrap.Offcanvas.getInstance(oc);
-        if (inst) inst.hide();
-      });
-    }
+  // Close Bootstrap modals/offcanvas on route change before paint to reduce
+  // chance of DOM/node ownership mismatch and removeChild errors during unmount.
+  useLayoutEffect(() => {
+    if (typeof window === "undefined" || !window.bootstrap) return;
+    const modalElements = document.querySelectorAll(".modal.show");
+    modalElements.forEach((modal) => {
+      if (modal.classList.contains("admin-edit-modal")) return;
+      const inst = window.bootstrap.Modal.getInstance(modal);
+      if (inst) inst.hide();
+    });
+    const offcanvasElements = document.querySelectorAll(".offcanvas.show");
+    offcanvasElements.forEach((oc) => {
+      const inst = window.bootstrap.Offcanvas.getInstance(oc);
+      if (inst) inst.hide();
+    });
   }, [pathname]);
 
   useEffect(() => {
@@ -116,9 +113,19 @@ export default function ClientProviders({ children }) {
     }
   }, [scrollDirection]);
 
-  // WOW.js: stop previous instance on route change so it doesn't hold refs to
-  // unmounted DOM nodes (avoids "removeChild" / RecursivelyTraverseMutationEffects errors)
+  // WOW.js: only run on non-admin routes so we never hold refs to admin DOM.
+  // Stop previous instance on route change to avoid "removeChild" errors when navigating.
   useEffect(() => {
+    const isAdmin = pathname?.startsWith("/admin");
+    if (isAdmin) {
+      if (wowInstanceRef.current) {
+        try {
+          wowInstanceRef.current.stop();
+        } catch (_) {}
+        wowInstanceRef.current = null;
+      }
+      return;
+    }
     const id = setTimeout(() => {
       const WOW = require("@/utlis/wow");
       const wow = new WOW.default({ mobile: false, live: false });
@@ -141,12 +148,10 @@ export default function ClientProviders({ children }) {
       <SessionProvider refetchInterval={60} refetchOnWindowFocus={false}>
         <Context>
           <div id="wrapper">{children}</div>
-          <ProductSidebar />
           <ShopCart />
           <QuickAdd />
           <QuickView />
           <AskQuestion />
-          <BlogSidebar />
           <ColorCompare />
           <DeliveryReturn />
           <FindSize />
@@ -156,8 +161,6 @@ export default function ClientProviders({ children }) {
           <ResetPass />
           <SearchModal />
           <ToolbarBottom />
-          <ToolbarShop />
-          <ShareModal />
         </Context>
       </SessionProvider>
       <ScrollTop />

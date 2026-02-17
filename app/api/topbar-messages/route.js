@@ -1,5 +1,5 @@
 // app/api/topbar-messages/route.js
-// Public API for topbar scrolling messages (used by Topbar1, Topbar2, Topbar4)
+// Public API for topbar scrolling messages (used by Topbar2, Topbar4)
 
 import { NextResponse } from "next/server";
 import { getTopbarMessages } from "@/lib/queries";

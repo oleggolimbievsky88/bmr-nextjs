@@ -27,7 +27,7 @@ export async function POST(request) {
       ) ?? false;
     const hasGiftCards =
       Array.isArray(orderData.giftCards) && orderData.giftCards.length > 0;
-    if (hasGiftCertItems && !hasGiftCards && process.env.MYSQL_HOST) {
+    if (hasGiftCertItems && !hasGiftCards && process.env.DATABASE_URL) {
       try {
         const order = await getOrderById(orderId);
         if (order) {

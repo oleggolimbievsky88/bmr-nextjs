@@ -101,12 +101,6 @@ export default function AdminLayoutClient({ children }) {
         <div className="container-wide">{children}</div>
       </main>
       <Footer1 />
-      <div
-        id="toast-container"
-        className="toast-container admin-toast-container position-fixed top-0 end-0 p-3"
-        style={{ zIndex: 1090 }}
-        aria-live="polite"
-      />
     </>
   );
 }

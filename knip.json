@@ -1,6 +1,1 @@
-{
-  "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["app/**/{page,layout,route,error,not-found}.{js,jsx}"],
-  "ignore": ["scripts/**", "**/test-*.js", "**/diagnose-*.js", "**/fix-*.js", "**/quick-*.js", "**/mcp-init.js"],
-  "ignoreDependencies": ["@prisma/client", "prisma", "vercel"]
-}
+{"$schema":"https://unpkg.com/knip@5/schema.json","entry":["app/**/{page,layout,route,error,not-found}.{js,jsx}"],"ignore":["scripts/**","**/test-*.js","**/diagnose-*.js","**/fix-*.js","**/quick-*.js","**/mcp-init.js"],"ignoreDependencies":["@prisma/client","prisma","vercel"]}

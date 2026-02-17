@@ -7,31 +7,21 @@ import { useContextElement } from "@/context/Context";
 import { getProductImageUrl } from "@/lib/assets";
 
 export default function ProductCardList({ product, colorsMap = {} }) {
-  const [currentImage, setCurrentImage] = useState(product.imgSrc);
-  const { setQuickViewItem } = useContextElement();
   const {
-    setQuickAddItem,
     addToWishlist,
     isAddedtoWishlist,
     addToCompareItem,
     isAddedtoCompareItem,
   } = useContextElement();
-
   const imageSrc = product.ImageSmall
     ? getProductImageUrl(product.ImageSmall)
     : getProductImageUrl("noimage.jpg");
-
-  // Limit description to 200 chars
   const shortDescription =
     product.Description && product.Description.length > 200
       ? product.Description.slice(0, 200) + "..."
       : product.Description;
-
   const colorIds = product.Color ? product.Color.split(",") : [];
-
-  // Use the colorsMap from above (pass as prop or import)
   const productColors = colorIds.map((id) => colorsMap[id]).filter(Boolean);
-
   return (
     <div className="card-product list-layout">
       <div className="card-product-wrapper">

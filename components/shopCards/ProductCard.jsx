@@ -12,13 +12,6 @@ export const ProductCard = ({
 }) => {
   const [currentImage, setCurrentImage] = useState(product.imgSrc);
   const { setQuickViewItem } = useContextElement();
-  const {
-    setQuickAddItem,
-    addToWishlist,
-    isAddedtoWishlist,
-    addToCompareItem,
-    isAddedtoCompareItem,
-  } = useContextElement();
 
   // Debug logging
   // console.log("ProductCard received product:", product);

@@ -269,28 +269,11 @@ export const allPagesLinks = [
   { href: "/faq", text: "FAQ" },
   { href: "/our-store", text: "Our store" },
   { href: "/store-locations", text: "Store locator" },
-  {
-    href: "/Blog",
-    text: "Blog",
-    extra: (
-      <div className="demo-label">
-        <span className="demo-new">New</span>
-      </div>
-    ),
-  },
   { href: "/view-cart", text: "View cart" },
   { href: "/checkout", text: "Check out" },
   { href: "/payment-confirmation", text: "Payment Confirmation" },
   { href: "/payment-failure", text: "Payment Failure" },
   { href: "/my-account", text: "My Account" },
-];
-
-export const blogLinks = [
-  { href: "/blog-grid", text: "Grid layout" },
-  { href: "/blog-sidebar-left", text: "Left sidebar" },
-  { href: "/blog-sidebar-right", text: "Right sidebar" },
-  { href: "/blog-list", text: "Blog list" },
-  { href: "/blog-detail/1", text: "Single Post" },
 ];
 
 export const navItems = [
