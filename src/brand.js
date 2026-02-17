@@ -16,6 +16,12 @@ export function getBrand() {
       ...base.logo,
       headerPath: config.logoPath,
       footerPath: config.logoPath,
+      ...(config.logoHeaderMaxSize && {
+        headerMaxSize: config.logoHeaderMaxSize,
+      }),
+      ...(config.logoFooterMaxSize && {
+        footerMaxSize: config.logoFooterMaxSize,
+      }),
       alt: base.logo?.alt || `${base.companyName} Logo`,
     },
     defaultOgImagePath: config.ogImagePath,

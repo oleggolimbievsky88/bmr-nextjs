@@ -86,8 +86,9 @@ export default function Header({
                   height={100}
                   style={{
                     width: "auto",
-                    height: "40px",
+                    height: "auto",
                     objectFit: "contain",
+                    ...brand.logo?.headerMaxSize,
                   }}
                   priority
                 />

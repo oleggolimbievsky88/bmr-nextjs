@@ -16,6 +16,8 @@ export const brands = {
       footerPath:
         process.env.NEXT_PUBLIC_FOOTER_LOGO ||
         "/images/logo/BMR-Logo-White.png",
+      headerMaxSize: { maxWidth: "200px", maxHeight: "50px" },
+      footerMaxSize: { maxWidth: "240px", maxHeight: "60px" },
       alt: "BMR Logo",
     },
 
@@ -60,6 +62,8 @@ export const brands = {
       footerPath:
         process.env.NEXT_PUBLIC_FOOTER_LOGO ||
         "/images/logo/ControlFreak-Logo-White.png",
+      headerMaxSize: { maxWidth: "200px", maxHeight: "50px" },
+      footerMaxSize: { maxWidth: "240px", maxHeight: "60px" },
       alt: "Control Freak Logo",
     },
 

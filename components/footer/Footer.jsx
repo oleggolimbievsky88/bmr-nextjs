@@ -39,9 +39,13 @@ export default function Footer1({ bgColor = "background-black" }) {
                       width={200}
                       height={43}
                       style={{
-                        width: "225px",
+                        width: "auto",
                         height: "auto",
-                        maxWidth: "100%",
+                        objectFit: "contain",
+                        ...brand.logo?.footerMaxSize,
+                        maxWidth: brand.logo?.footerMaxSize?.maxWidth
+                          ? `min(${brand.logo.footerMaxSize.maxWidth}, 100%)`
+                          : "100%",
                       }}
                     />
                   </Link>
