@@ -92,6 +92,7 @@ export default function Header({
                     ...brand.logo?.headerMaxSize,
                   }}
                   priority
+                  unoptimized={!(brand.logo?.headerUrl || "/").startsWith("/")}
                 />
               </Link>
             </div>

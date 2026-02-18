@@ -47,6 +47,13 @@ export default function Footer1({ bgColor = "background-black" }) {
                           ? `min(${brand.logo.footerMaxSize.maxWidth}, 100%)`
                           : "100%",
                       }}
+                      unoptimized={
+                        !(
+                          brand.logo?.footerUrl ||
+                          brand.logo?.headerUrl ||
+                          "/"
+                        ).startsWith("/")
+                      }
                     />
                   </Link>
                 </div>

@@ -36,6 +36,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.paypalobjects.com",
       },
+      {
+        protocol: "https",
+        hostname: "dev.controlfreaksuspension.com",
+      },
+      {
+        protocol: "https",
+        hostname: "controlfreaksuspension.com",
+      },
     ],
   },
 
