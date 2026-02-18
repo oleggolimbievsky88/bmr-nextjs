@@ -6,10 +6,10 @@
 // Homepage only: space above assurance bar (between Videos CTA and features)
 
 .assuranceBar {
-  background: #0f0f10;
+  background: var(--brand-assurance-bar-bg, #f5f5f5);
   padding: 28px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .assuranceBar__grid {
@@ -19,11 +19,12 @@
 
   @media (max-width: 991px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 0;
   }
 
   @media (max-width: 575px) {
     grid-template-columns: 1fr;
+    gap: 0;
   }
 }
 
@@ -36,12 +37,38 @@
 
   &:hover {
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.04);
   }
 
+  /* Vertical divider between items - border-left on items 2+ (no border-right on last) */
   @media (min-width: 992px) {
     &:nth-child(n + 2) {
-      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 1px solid color-mix(in srgb, var(--brand-assurance-bar-text, #1a1a1a) 18%, transparent);
+    }
+  }
+
+  @media (min-width: 576px) and (max-width: 991px) {
+    /* 2 columns: border-left on items 2,4; border-top on items 3,4 */
+    &:nth-child(2),
+    &:nth-child(4) {
+      border-left: 1px solid color-mix(in srgb, var(--brand-assurance-bar-text, #1a1a1a) 18%, transparent);
+    }
+    &:nth-child(3),
+    &:nth-child(4) {
+      border-top: 1px solid color-mix(in srgb, var(--brand-assurance-bar-text, #1a1a1a) 18%, transparent);
+    }
+  }
+
+  @media (max-width: 575px) {
+    &:not(:first-child) {
+      border-top: 1px solid color-mix(in srgb, var(--brand-assurance-bar-text, #1a1a1a) 18%, transparent);
+    }
+    /* Match padding of first/last items: add extra top to item 2, extra bottom to item 3 */
+    &:nth-child(2) {
+      padding-top: 28px;
+    }
+    &:nth-child(3) {
+      padding-bottom: 28px;
     }
   }
 }
@@ -50,19 +77,19 @@
   flex-shrink: 0;
 
   i {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--brand-assurance-bar-text, #1a1a1a);
     font-size: 1.25rem;
   }
 }
 
 .assuranceBar__title {
-  color: #fff;
+  color: var(--brand-assurance-bar-text, #1a1a1a);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 .assuranceBar__desc {
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--brand-assurance-bar-text, #1a1a1a) 75%, transparent);
   font-size: 0.9rem;
   margin: 4px 0 0;
   line-height: 1.4;
@@ -102,6 +129,7 @@
   letter-spacing: 0.08em;
   font-size: 0.85rem;
   margin-bottom: 14px;
+  font-weight: 600;
 
   &--accent {
     position: relative;
@@ -228,7 +256,7 @@
         padding: 12px 14px;
         border-radius: 12px;
         background: var(--primary, #d10f0f);
-        color: #fff;
+        color: var(--brand-button-badge-text);
         border: 0;
 
         &:focus-visible {
@@ -288,6 +316,12 @@
     &:hover {
       color: #fff;
       border-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+  a.social-youtube {
+    color: var(--brand-button-badge-text) !important;
+    &:hover {
+      color: var(--brand-button-badge-text) !important;
     }
   }
 }
@@ -524,12 +558,12 @@
           width: 18px;
           height: 18px;
           @include flex(center, center);
-          background-color: var(--primary);
+          background-color: var(--brand-button-badge);
           border-radius: 50%;
           font-size: 10px;
           font-weight: 500;
           line-height: 18px;
-          color: var(--white);
+          color: var(--brand-button-badge-text);
         }
       }
       .toolbar-label {

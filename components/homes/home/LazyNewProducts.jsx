@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import { useBrand } from "@bmr/ui/brand";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,6 +24,7 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
     rootMargin: "100px 0px", // Start loading 100px before the element is visible
   });
 
+  const brand = useBrand();
   const { addToWishlist, isAddedtoWishlist } = useContextElement();
 
   useEffect(() => {
@@ -30,10 +32,11 @@ export default function LazyNewProducts({ scratchDent = "0" }) {
   }, []);
 
   const title = scratchDent === "1" ? "Scratch & Dent" : "New Products";
+  const shortName = brand.companyNameShort ?? brand.companyName;
   const description =
     scratchDent === "1"
-      ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price."
-      : "Check out the latest for your vehicle from BMR Suspension!";
+      ? `${shortName} Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, ${shortName} has chosen to leave the parts 'as-is' and sell them at a discounted price.`
+      : `Check out the latest for your vehicle from ${shortName}!`;
 
   const sectionRef = inViewRef;
 
@@ -288,27 +291,31 @@ function NewProductsSection({
     const hasHoverImage = !!product?.ImageSmall;
     return (
       <article
-        className={`bmrCard ${featured ? "bmrCard--featured" : ""}`}
+        className={`brandCard ${featured ? "brandCard--featured" : ""}`}
         data-product-card
       >
-        <div className="bmrCard__inner">
+        <div className="brandCard__inner">
           <Link
             href={`/product/${product.ProductID}`}
-            className={`bmrCard__media ${hasHoverImage ? "bmrCard__media--hasHover" : ""}`}
+            className={`brandCard__media ${hasHoverImage ? "brandCard__media--hasHover" : ""}`}
             aria-label={product?.ProductName || "View product"}
           >
-            <div className="bmrCard__badges">
+            <div className="brandCard__badges">
               {featured && (
-                <span className="bmrBadge bmrBadge--featured">Featured</span>
+                <span className="brandBadge brandBadge--featured">
+                  Featured
+                </span>
               )}
               {product?.ScratchDent === "1" && (
-                <span className="bmrBadge bmrBadge--warn">Scratch & Dent</span>
+                <span className="brandBadge brandBadge--warn">
+                  Scratch & Dent
+                </span>
               )}
             </div>
 
-            <div className="bmrCard__imageWrap">
+            <div className="brandCard__imageWrap">
               <Image
-                className="bmrCard__img"
+                className="brandCard__img"
                 src={getProductImageUrl(
                   product.ImageLarge || product.ImageSmall,
                 )}
@@ -319,7 +326,7 @@ function NewProductsSection({
               />
               {hasHoverImage ? (
                 <Image
-                  className="bmrCard__imgHover"
+                  className="brandCard__imgHover"
                   src={getProductImageUrl(product.ImageSmall)}
                   alt=""
                   width={360}
@@ -329,11 +336,11 @@ function NewProductsSection({
             </div>
           </Link>
 
-          <div className="bmrCard__actions">
+          <div className="brandCard__actions">
             <button
               type="button"
               onClick={() => addToWishlist(product.ProductID)}
-              className={`bmrIconBtn bmrIconBtn--tooltip ${isAddedtoWishlist(product.ProductID) ? "is-active" : ""}`}
+              className={`brandIconBtn brandIconBtn--tooltip ${isAddedtoWishlist(product.ProductID) ? "is-active" : ""}`}
               aria-label="Add to wishlist"
               title={
                 isAddedtoWishlist(product.ProductID)
@@ -344,7 +351,7 @@ function NewProductsSection({
               <span
                 className={`icon icon-heart ${isAddedtoWishlist(product.ProductID) ? "added" : ""}`}
               />
-              <span className="bmrIconBtn__tooltip">
+              <span className="brandIconBtn__tooltip">
                 {isAddedtoWishlist(product.ProductID)
                   ? "Remove from wishlist"
                   : "Add to wishlist"}
@@ -352,21 +359,23 @@ function NewProductsSection({
             </button>
           </div>
 
-          <div className="bmrCard__body">
-            <div className="bmrCard__meta">
-              <span className="bmrCard__part">{product.PartNumber}</span>
-              <span className="bmrCard__platform">{product.PlatformName}</span>
+          <div className="brandCard__body">
+            <div className="brandCard__meta">
+              <span className="brandCard__part">{product.PartNumber}</span>
+              <span className="brandCard__platform">
+                {product.PlatformName}
+              </span>
             </div>
 
             <Link
               href={`/product/${product.ProductID}`}
-              className="bmrCard__title"
+              className="brandCard__title"
             >
               {product?.ProductName}
             </Link>
 
-            <div className="bmrCard__footer">
-              <span className="bmrCard__price">${product?.Price}</span>
+            <div className="brandCard__footer">
+              <span className="brandCard__price">${product?.Price}</span>
             </div>
           </div>
         </div>
@@ -480,7 +489,7 @@ function NewProductsSection({
         :global(.swiper-nav-button::after) {
           font-family: "swiper-icons";
           font-size: 20px;
-          color: white;
+          color: var(--brand-button-badge-text);
         }
         :global(.new-products-prev::after),
         :global(.scratch-dent-prev::after) {

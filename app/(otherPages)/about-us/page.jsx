@@ -1,24 +1,37 @@
+import { getBrandConfig } from "@bmr/core/brand";
 import Footer1 from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
-import About from "@/components/othersPages/about/About";
-import Features from "@/components/othersPages/about/Features";
+import AboutPageContent from "@/components/othersPages/about/AboutPageContent";
 import React from "react";
 
-export const metadata = {
-  title: "About BMR | BMR Suspension | Performance Suspension & Chassis Parts",
-  description:
-    "BMR Suspension - High Performance Suspension & Chassis racing parts for Mustang, Camaro, F Body, A Body, B Body, G Body, GM W Body, X Body, Firebird, Nova, Trailblazer SS, SSR, Monte Carlo, Intrigue, Grand Prix, Regal, Cutlass, Grand Sport, El Camino, LeMans, Chevelle, Malibu, GTO, G8, Grand National, CTS-V, Caprice, Skylark, Buick 442, Shelby GT500, Mustang GT and more.",
-};
+export async function generateMetadata() {
+  const config = getBrandConfig();
+  const name = config.companyName || config.siteName || "Us";
+  const title = config.defaultTitle || "";
+  return {
+    title: `About ${config.companyNameShort || name} | ${title.split("|")[1]?.trim() || name}`,
+    description: config.defaultDescription || "",
+  };
+}
+
 export default function page() {
+  const config = getBrandConfig();
+  const hasAboutBrand =
+    config.aboutBrand &&
+    Array.isArray(config.aboutBrand.paragraphs) &&
+    config.aboutBrand.paragraphs.length > 0;
+  const pageTitle = hasAboutBrand
+    ? `ABOUT ${(config.companyNameShort || config.companyName || "").toUpperCase()}`
+    : "ABOUT BMR";
+
   return (
     <>
       <Topbar4 />
       <Header showVehicleSearch={true} />
-      <PageHeader title="ABOUT BMR" />
-      <About />
-      <Features />
+      <PageHeader title={pageTitle} />
+      <AboutPageContent />
       <Footer1 />
     </>
   );

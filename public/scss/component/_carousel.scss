@@ -18,7 +18,7 @@
     &.swiper-pagination-bullets{
         .swiper-pagination-bullet {
             @include flex(center, center);
-         
+
         }
     }
     .swiper-pagination-bullet {
@@ -183,7 +183,7 @@
                 width: 8px;
                 height: 8px;
             }
-        }  
+        }
     }
 }
 .box-sw-navigation {
@@ -386,7 +386,7 @@
     &:hover {
         background-color: var(--primary);
         &::after {
-            color: var(--white);
+            color: var(--brand-button-badge-text);
         }
     }
 }

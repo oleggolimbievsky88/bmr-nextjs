@@ -1,14 +1,11 @@
 "use client";
 
-import { products1 } from "@/data/products";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ProductCard } from "../shopCards/ProductCard";
 import { Navigation, Pagination } from "swiper/modules";
 
 export default function Products({ products = [] }) {
-  // Use the passed products prop, or fall back to static data if no products provided
-  const displayProducts =
-    products.length > 0 ? products : products1.slice(0, 8);
+  if (!products.length) return null;
 
   return (
     <section className="flat-spacing-1 pt_0">
@@ -40,8 +37,11 @@ export default function Products({ products = [] }) {
             }}
             pagination={{ clickable: true, el: ".spd307" }}
           >
-            {displayProducts.map((product, i) => (
-              <SwiperSlide key={i} className="swiper-slide">
+            {products.map((product, i) => (
+              <SwiperSlide
+                key={product.ProductID ?? i}
+                className="swiper-slide"
+              >
                 <ProductCard product={product} />
               </SwiperSlide>
             ))}

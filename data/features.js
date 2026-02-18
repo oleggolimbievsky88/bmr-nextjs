@@ -203,53 +203,6 @@ export const iconBoxSlides = [
   },
 ];
 
-export const recentCollectionSlides = [
-  {
-    imgSrc: "/images/collections/cls-sock.jpg",
-    alt: "collection-img",
-    width: 800,
-    height: 792,
-    wowDelay: "0s",
-    subheading: "UP TO 30% OFF",
-    heading: "Beachwear on Sale",
-    btnClass:
-      "tf-btn btn-color-2 style-3 text-uppercase rounded-0 fw-6 animate-hover-btn letter-2",
-  },
-  {
-    imgSrc: "/images/collections/cls-sock2.jpg",
-    alt: "collection-img",
-    width: 800,
-    height: 792,
-    wowDelay: "0s",
-    subheading: "UP TO 30% OFF",
-    heading: "Athleisure Wear",
-    btnClass:
-      "tf-btn btn-color-3 text-uppercase style-3 rounded-0 fw-6 animate-hover-btn letter-2",
-  },
-  {
-    imgSrc: "/images/collections/cls-sock.jpg",
-    alt: "collection-img",
-    width: 800,
-    height: 792,
-    wowDelay: "0s",
-    subheading: "UP TO 30% OFF",
-    heading: "Beachwear on Sale",
-    btnClass:
-      "tf-btn btn-color-2 style-3 text-uppercase rounded-0 fw-6 animate-hover-btn letter-2",
-  },
-  {
-    imgSrc: "/images/collections/cls-sock2.jpg",
-    alt: "collection-img",
-    width: 800,
-    height: 792,
-    wowDelay: "0s",
-    subheading: "UP TO 30% OFF",
-    heading: "Athleisure Wear",
-    btnClass:
-      "tf-btn btn-color-3 text-uppercase style-3 rounded-0 fw-6 animate-hover-btn letter-2",
-  },
-];
-
 export const iconBoxes4 = [
   {
     iconClass: "icon-materials",

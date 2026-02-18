@@ -23,7 +23,7 @@
   padding: 12px 14px;
   border-radius: 25px;
   background: var(--primary);
-  color: #fff;
+  color: var(--brand-button-badge-text);
   text-decoration: none;
   font-weight: 700;
   transition: transform 150ms ease, filter 150ms ease;
@@ -37,10 +37,31 @@
 
 .videosSection__ctaIcon {
   opacity: 0.9;
+  color: var(--brand-button-badge-text);
 }
 
 .videosSection__slider {
   position: relative;
+
+  /* Nav buttons: brand primary icon, no background */
+  .videosNext,
+  .videosPrev {
+    background-color: transparent !important;
+    color: var(--primary) !important;
+    &::after {
+      color: var(--primary) !important;
+    }
+    &:hover:not(.swiper-button-disabled) {
+      background-color: transparent !important;
+      color: var(--primary) !important;
+      &::after {
+        color: var(--primary) !important;
+      }
+    }
+    &.swiper-button-disabled {
+      opacity: 0.4;
+    }
+  }
 }
 
 .videoCard {

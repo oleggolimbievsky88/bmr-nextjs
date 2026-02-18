@@ -1,15 +1,9 @@
-import productsJson from "./products.json";
-
 /**
- * This project uses a mix of:
- * - Real DB-shaped product objects (from `data/products.json`)
- * - Theme/demo components that expect a simplified `{ id, title, price, imgSrc }` shape.
- *
- * `products1` is the DB-shaped list.
- * The other exports are lightweight adapters used by demo/theme components.
+ * Static product list is no longer used for related products (those come from the DB).
+ * Exports below are empty/placeholder for any remaining theme/demo components that
+ * still import from here; those components should be updated to fetch from the API.
  */
-
-export const products1 = Array.isArray(productsJson) ? productsJson : [];
+export const products1 = [];
 
 function toPriceNumber(value) {
   const n = Number.parseFloat(value);

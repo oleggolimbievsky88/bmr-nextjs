@@ -1,12 +1,12 @@
 import { getSiteUrl } from "@bmr/core/url";
+import { getBrandConfig } from "@bmr/core/brand";
 import { brand } from "@/src/brand";
-import { getBrandConfig } from "@/lib/brand";
 import { BrandProvider } from "@bmr/ui/brand";
 import ClientProviders from "@/components/layouts/ClientProviders";
 import JsonLd from "@/components/seo/JsonLd";
+import "../public/scss/main.scss";
 import "../public/scss/brand-bmr.scss";
 import "../public/scss/brand-controlfreak.scss";
-import "../public/scss/main.scss";
 import "photoswipe/dist/photoswipe.css";
 import "rc-slider/assets/index.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -76,9 +76,22 @@ export async function generateMetadata() {
 }
 
 export default function RootLayout({ children }) {
+  const config = getBrandConfig();
+  const buttonBadge = config.buttonBadgeColor ?? config.themeColor;
+  const buttonBadgeText = config.buttonBadgeTextColor ?? "#ffffff";
+  const primaryButtonText = config.primaryButtonTextColor ?? "#ffffff";
+  const assuranceBarBg =
+    config.assuranceBarBackgroundColor ?? config.themeColor ?? "#f5f5f5";
+  const assuranceBarText = config.assuranceBarTextColor ?? "#1a1a1a";
+
   return (
     <html lang="en" data-brand={brand.key}>
       <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `[data-brand="${brand.key}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

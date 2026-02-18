@@ -9,7 +9,7 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
 import Link from "next/link";
 import Details from "@/components/shopDetails/Details";
-import { getProductById } from "@/lib/queries";
+import { getProductById, getRelatedProducts } from "@/lib/queries";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +45,8 @@ export default async function ProductPage({ params }) {
     // Let Next.js render a 404 page for missing products
     return notFound();
   }
+
+  const relatedProducts = await getRelatedProducts(id);
 
   return (
     <>
@@ -92,7 +94,7 @@ export default async function ProductPage({ params }) {
 
       {/* <DetailsOuterZoom product={product} />  */}
       <ShopDetailsTab product={product} />
-      <Products />
+      <Products products={relatedProducts} />
       <RecentProducts />
       <Footer1 />
     </>

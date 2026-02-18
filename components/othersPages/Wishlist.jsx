@@ -33,17 +33,22 @@ export default function Wishlist() {
   }, [wishList]);
 
   return (
-    <section className="flat-spacing-2">
+    <section className="wishlist-section">
       <div className="container">
         {loading ? (
-          <div className="text-center p-5">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
+          <div className="wishlist-loading" aria-live="polite">
+            <div className="wishlist-loading-spinner" aria-hidden="true" />
+            <span className="wishlist-loading-text">
+              Loading your wishlist…
+            </span>
           </div>
-        ) : (
+        ) : wishListItems.length > 0 ? (
           <>
-            <div className="grid-layout wrapper-shop" data-grid="grid-4">
+            <p className="wishlist-count">
+              {wishListItems.length} item{wishListItems.length !== 1 ? "s" : ""}{" "}
+              saved
+            </p>
+            <div className="wishlist-grid">
               {wishListItems.map((elm) => (
                 <ProductCardWishlist
                   key={elm.ProductID || elm.id}
@@ -51,27 +56,31 @@ export default function Wishlist() {
                 />
               ))}
             </div>
-            {!wishListItems.length && (
-              <>
-                <div
-                  className="row align-items-center w-100"
-                  style={{ rowGap: "20px" }}
-                >
-                  <div className="col-lg-3 col-md-6 fs-18">
-                    Your wishlist is empty
-                  </div>
-                  <div className="col-lg-3  col-md-6">
-                    <Link
-                      href={`/products`}
-                      className="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"
-                    >
-                      Explore Products!
-                    </Link>
-                  </div>
-                </div>
-              </>
-            )}
           </>
+        ) : (
+          <div className="wishlist-empty">
+            <div className="wishlist-empty-icon" aria-hidden="true">
+              <svg
+                width="80"
+                height="80"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              </svg>
+            </div>
+            <h2 className="wishlist-empty-title">Your wishlist is empty</h2>
+            <p className="wishlist-empty-text">
+              Save parts you like here so you can find them quickly later.
+            </p>
+            <Link href="/products" className="wishlist-empty-cta">
+              Explore products
+            </Link>
+          </div>
         )}
       </div>
     </section>

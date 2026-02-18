@@ -1,0 +1,82 @@
+// About Brand section (Control Freak): black block + yellow feature bar.
+// Uses brand CSS vars so it works with Control Freak yellow/black.
+
+.aboutBrand {
+  margin: 40px 0 80px;
+}
+
+.aboutBrand__block {
+  background: #0a0a0a;
+  color: #fff;
+  padding: clamp(40px, 6vw, 64px) 0;
+}
+
+.aboutBrand__inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.aboutBrand__logo {
+  margin-bottom: 24px;
+}
+
+.aboutBrand__logoImg {
+  width: auto;
+  height: auto;
+  max-width: 240px;
+  max-height: 120px;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    max-width: 180px;
+    max-height: 72px;
+  }
+}
+
+.aboutBrand__heading {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  font-style: italic;
+  margin: 0 0 24px;
+  line-height: 1.2;
+}
+
+.aboutBrand__content {
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.aboutBrand__text {
+  margin: 0 0 1em;
+  font-size: clamp(0.9375rem, 1.5vw, 1rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.aboutBrand__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  background: var(--brand-button-badge, var(--primary));
+  color: var(--brand-button-badge-text, #000);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    color: var(--brand-button-badge-text, #000);
+  }
+}

@@ -15,6 +15,7 @@ export default function Context({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [cartLoading, setCartLoading] = useState(true);
   const [wishList, setWishList] = useState([]);
+  const guestWishlistHydratedRef = useRef(false);
   const [compareItem, setCompareItem] = useState([]);
   const [quickViewItem, setQuickViewItem] = useState({
     ProductID: 1,
@@ -478,35 +479,56 @@ export default function Context({ children }) {
       console.error("Error saving cart to cookies:", error);
     }
   }, [cartProducts]);
-  // Load wishlist: from API when logged in, from localStorage when guest
+  // Load wishlist: from API when logged in, from localStorage when guest. On login, merge guest list into API.
   useEffect(() => {
     if (sessionStatus === "loading") return;
     if (session?.user?.id) {
-      fetch("/api/wishlist")
-        .then((res) => (res.ok ? res.json() : { wishlist: [] }))
-        .then((data) => {
-          const list = data?.wishlist ?? [];
-          if (Array.isArray(list) && list.length) {
-            setWishList(
-              list.map((x) => (typeof x === "number" ? x : parseInt(x, 10))),
-            );
-          }
-        })
-        .catch(() => {});
-    } else {
-      const items = JSON.parse(localStorage.getItem("wishlist"));
-      if (items?.length) {
+      guestWishlistHydratedRef.current = true;
+      const raw =
+        typeof window !== "undefined" ? localStorage.getItem("wishlist") : null;
+      const guestIds = raw ? JSON.parse(raw) || [] : [];
+      const ids = guestIds
+        .map((x) => (typeof x === "number" ? x : parseInt(x, 10)))
+        .filter((n) => !isNaN(n));
+
+      const mergeThenFetch = async () => {
+        if (ids.length) {
+          await Promise.all(
+            ids.map((productId) =>
+              fetch("/api/wishlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productId }),
+              }),
+            ),
+          );
+        }
+        const res = await fetch("/api/wishlist");
+        const data = res.ok ? await res.json() : { wishlist: [] };
+        const list = data?.wishlist ?? [];
         setWishList(
-          items.map((x) => (typeof x === "number" ? x : parseInt(x, 10))),
+          Array.isArray(list)
+            ? list.map((x) => (typeof x === "number" ? x : parseInt(x, 10)))
+            : [],
         );
-      }
+      };
+      mergeThenFetch().catch(() => {});
+    } else {
+      const raw = localStorage.getItem("wishlist");
+      const items = raw ? JSON.parse(raw) : null;
+      const list = Array.isArray(items) ? items : [];
+      setWishList(
+        list.map((x) => (typeof x === "number" ? x : parseInt(x, 10))),
+      );
+      guestWishlistHydratedRef.current = true;
     }
   }, [session?.user?.id, sessionStatus]);
 
+  // Persist guest wishlist to localStorage only after we've hydrated (avoid overwriting with [] on load)
   useEffect(() => {
-    if (!session?.user?.id) {
-      localStorage.setItem("wishlist", JSON.stringify(wishList));
-    }
+    if (session?.user?.id) return;
+    if (!guestWishlistHydratedRef.current) return;
+    localStorage.setItem("wishlist", JSON.stringify(wishList));
   }, [wishList, session?.user?.id]);
 
   // Re-validate coupon when cart products change (but not on initial load)

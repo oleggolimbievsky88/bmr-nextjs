@@ -9,6 +9,7 @@ import MainMenu from "./MainMenu";
 import VehicleSearch from "../common/VehicleSearch";
 import SearchInput from "../search/SearchInput";
 import UserAccountMenu from "./UserAccountMenu";
+import WishlistLength from "../common/WishlistLength";
 
 export default function Header({
   textClass,
@@ -118,6 +119,14 @@ export default function Header({
                     <CartLength />
                   </span>
                 </a>
+              </li>
+              <li className="nav-wishlist">
+                <Link href={`/wishlist`} className="nav-icon-item">
+                  <i className="icon icon-heart" />
+                  <span className="count-box">
+                    <WishlistLength />
+                  </span>
+                </Link>
               </li>
             </ul>
           </div>

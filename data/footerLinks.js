@@ -7,7 +7,7 @@ export const footerLinks = [
 ];
 export const aboutLinks = [
   { href: "/contact", text: "Contact Support" },
-  { href: "/about-us", text: "About BMR" },
+  { href: "/about-us", text: "About" }, // label overridden in Footer with companyNameShort
   { href: "/login", text: "My Account" },
   { href: "/dealers-portal", text: "Dealer Login" },
 ];

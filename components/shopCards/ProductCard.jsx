@@ -89,11 +89,13 @@ export const ProductCard = ({
         {product.PlatformName && (
           <div
             style={{
-              color: "var(--primary)",
+              color: "#333",
               fontSize: "0.85em",
               margin: "2px 0 2px 0",
               lineHeight: 1,
               fontWeight: "500",
+              paddingLeft: 8,
+              borderLeft: "2px solid var(--primary)",
             }}
           >
             {product.PlatformStartYear && product.PlatformEndYear
@@ -113,7 +115,7 @@ export const ProductCard = ({
           <span
             className="price"
             style={{
-              color: "var(--primary)",
+              color: "#1a1a1a",
               fontWeight: 600,
               fontSize: "1.1em",
               marginBottom: 0,

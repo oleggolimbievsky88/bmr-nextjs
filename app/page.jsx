@@ -11,6 +11,7 @@ import ShopCategories from "@/components/homes/home/ShopCategories";
 // import SocialMedia from "@/components/homes/home/SocialMedia";
 import Topbar2 from "@/components/header/Topbar2";
 import VehicleSearch from "@/components/common/VehicleSearch";
+import AboutBrandSection from "@/components/homes/home/AboutBrandSection";
 import { getBannerImagesForPublic } from "@/lib/queries";
 
 export const metadata = {
@@ -55,7 +56,9 @@ export default async function page() {
         {/* <SocialMedia /> */}
         <VideoPage />
       </div>
+      <AboutBrandSection />
       <Features />
+
       <Footer />
     </>
   );

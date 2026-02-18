@@ -161,7 +161,11 @@ export default function Footer1({ bgColor = "background-black" }) {
                 <ul className="siteFooter__links">
                   {aboutLinks.map((link, index) => (
                     <li key={index}>
-                      <Link href={link.href}>{link.text}</Link>
+                      <Link href={link.href}>
+                        {link.href === "/about-us"
+                          ? `About ${brand.companyNameShort ?? brand.companyName ?? ""}`
+                          : link.text}
+                      </Link>
                     </li>
                   ))}
                 </ul>

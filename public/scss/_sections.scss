@@ -2126,8 +2126,8 @@
     }
     svg.progress-circle path {
         box-sizing: border-box;
-        stroke: var(--main);
-        stroke-width: 1.2;
+        stroke: var(--brand-primary);
+        stroke-width: 4px;
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 150ms;
@@ -2196,7 +2196,7 @@
         font-family: "Impact", sans-serif;
         letter-spacing: 1.0px;
         border-bottom: 3px solid var(--primary);
-        color: var(--main);
+        color: var(--brand-primary);
         text-align: center;
         padding: 0px 10px;
         &:first-child{

@@ -4,11 +4,12 @@ import React from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import CartLength from "../common/CartLength";
-//import WishlistLength from "../common/WishlistLength";
+import WishlistLength from "../common/WishlistLength";
 export default function ToolbarBottom() {
   const { data: session, status } = useSession();
   const isLoggedIn = status !== "loading" && !!session;
-  const accountHref = session?.user?.role === "admin" ? "/admin" : "/my-account";
+  const accountHref =
+    session?.user?.role === "admin" ? "/admin" : "/my-account";
 
   return (
     <div className="tf-toolbar-bottom type-1150">
@@ -53,7 +54,7 @@ export default function ToolbarBottom() {
           </a>
         )}
       </div>
-      {/* <div className="toolbar-item">
+      <div className="toolbar-item">
         <Link href={`/wishlist`}>
           <div className="toolbar-icon">
             <i className="icon-heart" />
@@ -63,7 +64,7 @@ export default function ToolbarBottom() {
           </div>
           <div className="toolbar-label">Wishlist</div>
         </Link>
-      </div> */}
+      </div>
       <div className="toolbar-item">
         <a href="#shoppingCart" data-bs-toggle="modal">
           <div className="toolbar-icon">

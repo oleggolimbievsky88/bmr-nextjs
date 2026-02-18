@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useBrand } from "@bmr/ui/brand";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +19,7 @@ export default function NewProductsPage({ scratchDent = "0" }) {
   const [error, setError] = useState(null);
   const navigationClass = scratchDent === "1" ? "scratch-dent" : "new-products";
 
+  const brand = useBrand();
   const { addToWishlist, isAddedtoWishlist } = useContextElement();
 
   useEffect(() => {
@@ -54,8 +56,8 @@ export default function NewProductsPage({ scratchDent = "0" }) {
           </span>
           <h6 className="home-title-description text-center text-muted">
             {scratchDent === "1"
-              ? "BMR Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, BMR has chosen to leave the parts 'as-is' and sell them at a discounted price."
-              : "Check out the latest for your vehicle from BMR Suspension!"}
+              ? `${brand.companyNameShort ?? brand.companyName} Scratch and Dent products have minor to moderate aesthetic defects. Due to the cost of stripping and recoating, ${brand.companyNameShort ?? brand.companyName} has chosen to leave the parts 'as-is' and sell them at a discounted price.`
+              : `Check out the latest for your vehicle from ${brand.companyNameShort ?? brand.companyName}!`}
           </h6>
         </div>
 
@@ -225,7 +227,7 @@ export default function NewProductsPage({ scratchDent = "0" }) {
         :global(.swiper-nav-button::after) {
           font-family: "swiper-icons";
           font-size: 20px;
-          color: white;
+          color: var(--brand-button-badge-text);
         }
         :global(.new-products-prev::after),
         :global(.scratch-dent-prev::after) {

@@ -1,7 +1,5 @@
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
-import VehicleSearch from "@/components/common/VehicleSearch";
-
 import Wishlist from "@/components/othersPages/Wishlist";
 import React from "react";
 
@@ -12,25 +10,20 @@ export const metadata = {
 };
 export default function page() {
   return (
-    <>
+    <div className="wishlist-page">
       <Header2 />
-      <div className="vehicle-search-desktop-wrapper">
-        <div className="container vehicle-search-desktop">
-          <VehicleSearch />
+      <header className="wishlist-page-header">
+        <div className="container">
+          <h1 className="wishlist-page-title">Your Wishlist</h1>
+          <p className="wishlist-page-subtitle">
+            Save your favorite parts and come back anytime
+          </p>
         </div>
-      </div>
-      <div className="tf-page-title ">
-        <div className="container-full">
-          <div className="heading text-center">Your wishlist</div>
-        </div>
-      </div>
-      <div className="container vehicle-search-mobile">
-        <VehicleSearch />
-      </div>
+      </header>
 
       <Wishlist />
 
       <Footer1 />
-    </>
+    </div>
   );
 }

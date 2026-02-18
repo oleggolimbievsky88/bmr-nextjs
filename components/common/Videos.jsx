@@ -52,9 +52,10 @@ export default function VideoPage() {
               className="videosSection__cta"
             >
               Visit YouTube
-              <span className="videosSection__ctaIcon" aria-hidden="true">
-                ↗
-              </span>
+              <i
+                className="icon icon-arrow1-top-left videosSection__ctaIcon"
+                aria-hidden="true"
+              />
             </Link>
           )}
         </div>

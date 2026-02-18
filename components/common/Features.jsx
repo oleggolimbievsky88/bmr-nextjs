@@ -1,8 +1,15 @@
 "use client";
+
+import { useBrand } from "@bmr/ui/brand";
 import { iconBoxData } from "@/data/features";
 
 export default function Features() {
-  const assuranceItems = iconBoxData.slice(0, 4);
+  const brand = useBrand();
+  const assuranceItems =
+    Array.isArray(brand?.assuranceBarItems) &&
+    brand.assuranceBarItems.length > 0
+      ? brand.assuranceBarItems
+      : iconBoxData.slice(0, 4);
 
   return (
     <section className="assuranceBar">

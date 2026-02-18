@@ -141,7 +141,7 @@
   padding: 0 44px 0 14px;
   border-radius: 12px;
 
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--brand-primary);
   background: rgba(0, 0, 0, 0.25);
 
   color: rgba(255, 255, 255, 0.92);
@@ -169,13 +169,13 @@
 }
 
 .search-input:focus {
-  border-color: rgba(220, 53, 69, 0.65);
+  border-color: var(--brand-primary-border);
   background: rgba(255, 255, 255, 0.09);
-  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.18);
+  box-shadow: 0 0 0 2px rgba(var(--brand-primary-rgb, 219, 18, 21), 0.25);
 }
 
 .search-input:hover {
-  border-color: rgba(255, 255, 255, 0.20);
+  border-color: var(--brand-primary-border);
   background: rgba(0, 0, 0, 0.32);
 }
 
@@ -197,9 +197,9 @@
   padding: 0 18px;
   border-radius: 12px;
 
-  border: 1px solid rgba(220, 53, 69, 0.35);
-  background: linear-gradient(180deg, rgba(220, 53, 69, 1), rgba(175, 35, 48, 1));
-  color: #fff;
+  border: 1px solid #0000009d;
+  background: var(--brand-primary);
+  color: var(--brand-primary-button-text);
 
   font-size: 13px;
   font-weight: 800;
@@ -211,7 +211,7 @@
   justify-content: center;
   gap: 10px;
 
-  box-shadow: 0 10px 20px rgba(220, 53, 69, 0.18);
+  box-shadow: 0 3px 5px rgba(var(--brand-primary-rgb, 219, 18, 21), 0.3);
   cursor: pointer;
 
   transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
@@ -219,8 +219,9 @@
 
 .search-button:hover {
   transform: translateY(-1px);
-  filter: brightness(1.03);
-  box-shadow: 0 14px 28px rgba(220, 53, 69, 0.22);
+  filter: brightness(1.05);
+  box-shadow: 0 5px 10px rgba(var(--brand-primary-rgb, 219, 18, 21), 0.35);
+  border: 1px solid #000000;
 }
 
 .search-button:active {
@@ -241,7 +242,7 @@
 :global(.header-vehicle-row) {
   /* let the form be the "bar", keep the row subtle */
   background: #111;
-  border-top: 1px solid rgba(255, 0, 0, 0.18);
+  border-top: 1px solid color-mix(in srgb, var(--brand-primary-border) 18%, transparent);
   padding: 10px 0;
 }
 
