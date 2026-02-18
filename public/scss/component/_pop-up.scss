@@ -574,7 +574,7 @@
 
 
 .bg-color-red {
-  background: conic-gradient(var(--primary) 0deg 360deg);
+  background: conic-gradient(#e70d0d 0deg 360deg); /* fixed red for color swatch, not brand primary */
 }
 .bg-color-beige {
   background: conic-gradient(#c8ad7f 0deg 360deg);

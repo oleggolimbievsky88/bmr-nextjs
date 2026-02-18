@@ -5,7 +5,39 @@ import { useSession } from "next-auth/react";
 //import { openCart } from "@/utlis/toggleCart";
 import React, { useEffect, useRef } from "react";
 import { useContext, useState } from "react";
-const dataContext = React.createContext();
+
+const noop = () => {};
+const noopAsync = async () => {};
+const defaultContextValue = {
+  cartProducts: [],
+  setCartProducts: noop,
+  cartLoading: true,
+  totalPrice: 0,
+  addProductToCart: noopAsync,
+  replaceCartLine: noopAsync,
+  isAddedToCartProducts: () => false,
+  clearCart: noop,
+  removeFromWishlist: noop,
+  addToWishlist: noop,
+  isAddedtoWishlist: () => false,
+  quickViewItem: { ProductID: 1, ProductName: "Loading...", Price: "0.00" },
+  wishList: [],
+  setQuickViewItem: noop,
+  quickAddItem: null,
+  setQuickAddItem: noop,
+  addToCompareItem: noop,
+  isAddedtoCompareItem: () => false,
+  removeFromCompareItem: noop,
+  compareItem: [],
+  setCompareItem: noop,
+  appliedCoupon: null,
+  couponDiscount: 0,
+  freeShipping: false,
+  applyCoupon: noopAsync,
+  removeCoupon: noop,
+};
+
+const dataContext = React.createContext(defaultContextValue);
 export const useContextElement = () => {
   return useContext(dataContext);
 };

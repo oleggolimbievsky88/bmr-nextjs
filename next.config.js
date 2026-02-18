@@ -26,17 +26,6 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "legacy.bmrsuspension.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "http",
-        hostname: "legacy.bmrsuspension.com",
-        pathname: "/**",
-      },
-
-      {
-        protocol: "https",
         hostname: "i.ytimg.com",
       },
       {

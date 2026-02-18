@@ -102,27 +102,6 @@ export default function DeliveryReturnPage() {
             </div>
 
             <div className="delivery-return-page__card">
-              <h2 className="delivery-return-page__title">
-                Shipping &amp; Delivery
-              </h2>
-              <ul className="delivery-return-page__list">
-                <li>
-                  We offer multiple shipping options at checkout so you can
-                  choose the speed and cost that works for you.
-                </li>
-                <li>
-                  Free shipping is available on qualifying orders (lower 48
-                  states; conditions and exclusions may apply). See checkout for
-                  current offers.
-                </li>
-                <li>
-                  All orders ship with tracking. You’ll receive tracking
-                  information once your order ships.
-                </li>
-              </ul>
-            </div>
-
-            <div className="delivery-return-page__card">
               <h2 className="delivery-return-page__title">Need Help?</h2>
               <p className="delivery-return-page__text">
                 Questions about your order, shipping, or returns? Get in touch

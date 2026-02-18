@@ -25,3 +25,9 @@
   border-color: var(--primary) !important;
   color: #000 !important;
 }
+
+/* Product detail: price in black for better readability (yellow primary is hard to see) */
+[data-brand="controlfreak"] .tf-product-info-price .price-on-sale,
+[data-brand="controlfreak"] .tf-product-info-price .price {
+  color: #000 !important;
+}

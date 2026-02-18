@@ -836,10 +836,14 @@ export default function Checkout() {
       const cartProductsForConfirmation = [...effectiveCartProducts];
 
       // Prepare order items for API (main product lines + hardware pack add-on lines)
+      // lineItemDiscounts is expanded: one entry per main line + one per hardware pack, same order
       const orderItems = [];
+      let lineDiscountIndex = 0;
       for (let i = 0; i < cartProductsForConfirmation.length; i++) {
         const product = cartProductsForConfirmation[i];
-        const lineDiscount = (appliedCoupon?.lineItemDiscounts?.[i] ?? 0) || 0;
+        const lineDiscount =
+          (appliedCoupon?.lineItemDiscounts?.[lineDiscountIndex] ?? 0) || 0;
+        lineDiscountIndex += 1;
         let productImage = null;
         if (
           product.selectedColor &&
@@ -905,6 +909,9 @@ export default function Checkout() {
           product.selectedHardwarePacks.length > 0
         ) {
           for (const pack of product.selectedHardwarePacks) {
+            const packLineDiscount =
+              (appliedCoupon?.lineItemDiscounts?.[lineDiscountIndex] ?? 0) || 0;
+            lineDiscountIndex += 1;
             orderItems.push({
               productId: pack.ProductID,
               name: pack.ProductName,
@@ -919,7 +926,7 @@ export default function Checkout() {
               Package: 0,
               LowMargin: 0,
               ManufacturerName: product.ManufacturerName ?? "",
-              lineDiscount: 0,
+              lineDiscount: packLineDiscount,
             });
           }
         }
@@ -2644,14 +2651,31 @@ export default function Checkout() {
                             item.quantity
                           ).toFixed(2);
                         })()}
-                        {appliedCoupon?.lineItemDiscounts?.[index] > 0 && (
-                          <div className="text-success small mt-1">
-                            Coupon: -$
-                            {Number(
-                              appliedCoupon.lineItemDiscounts[index],
-                            ).toFixed(2)}
-                          </div>
-                        )}
+                        {(() => {
+                          if (!appliedCoupon?.lineItemDiscounts?.length)
+                            return null;
+                          let lineIdx = 0;
+                          for (let i = 0; i < index; i++) {
+                            lineIdx +=
+                              1 +
+                              (effectiveCartProducts[i].selectedHardwarePacks
+                                ?.length || 0);
+                          }
+                          let itemDiscount =
+                            appliedCoupon.lineItemDiscounts[lineIdx] ?? 0;
+                          const packs = item.selectedHardwarePacks?.length || 0;
+                          for (let j = 1; j <= packs; j++) {
+                            itemDiscount +=
+                              appliedCoupon.lineItemDiscounts[lineIdx + j] ?? 0;
+                          }
+                          if (itemDiscount <= 0) return null;
+                          return (
+                            <div className="text-success small mt-1">
+                              Coupon: -$
+                              {Number(itemDiscount).toFixed(2)}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   ))

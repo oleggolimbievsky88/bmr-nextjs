@@ -483,17 +483,39 @@ export default function CartNew() {
                               elm.quantity
                             ).toFixed(2);
                           })()}
-                          {appliedCoupon?.lineItemDiscounts?.[i] > 0 && (
-                            <div
-                              className="text-success mt-1"
-                              style={{ fontSize: "12px", fontWeight: "500" }}
-                            >
-                              Coupon: -$
-                              {Number(
-                                appliedCoupon.lineItemDiscounts[i],
-                              ).toFixed(2)}
-                            </div>
-                          )}
+                          {(() => {
+                            if (!appliedCoupon?.lineItemDiscounts?.length)
+                              return null;
+                            let lineIdx = 0;
+                            for (let k = 0; k < i; k++) {
+                              lineIdx +=
+                                1 +
+                                (cartProducts[k].selectedHardwarePacks
+                                  ?.length || 0);
+                            }
+                            let itemDiscount =
+                              appliedCoupon.lineItemDiscounts[lineIdx] ?? 0;
+                            const packs =
+                              elm.selectedHardwarePacks?.length || 0;
+                            for (let j = 1; j <= packs; j++) {
+                              itemDiscount +=
+                                appliedCoupon.lineItemDiscounts[lineIdx + j] ??
+                                0;
+                            }
+                            if (itemDiscount <= 0) return null;
+                            return (
+                              <div
+                                className="text-success mt-1"
+                                style={{
+                                  fontSize: "12px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                Coupon: -$
+                                {Number(itemDiscount).toFixed(2)}
+                              </div>
+                            );
+                          })()}
                         </div>
                       </td>
                     </tr>
