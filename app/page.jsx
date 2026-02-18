@@ -1,3 +1,4 @@
+import { getBrandConfig } from "@bmr/core/brand";
 import Features from "@/components/common/Features";
 import Hero from "@/components/homes/home/Hero";
 import React from "react";
@@ -14,11 +15,13 @@ import VehicleSearch from "@/components/common/VehicleSearch";
 import AboutBrandSection from "@/components/homes/home/AboutBrandSection";
 import { getBannerImagesForPublic } from "@/lib/queries";
 
-export const metadata = {
-  title: "BMR Suspension | Performance Suspension & Chassis Parts",
-  description:
-    "BMR Suspension - High Performance Suspension & Chassis racing parts for Mustang, Camaro, F Body, A Body, B Body, G Body, GM W Body, X Body, Firebird, Nova, Trailblazer SS, SSR, Monte Carlo, Intrigue, Grand Prix, Regal, Cutlass, Grand Sport, El Camino, LeMans, Chevelle, Malibu, GTO, G8, Grand National, CTS-V, Caprice, Skylark, Buick 442, Shelby GT500, Mustang GT and more.",
-};
+export async function generateMetadata() {
+  const config = getBrandConfig();
+  return {
+    title: config.defaultTitle ?? "",
+    description: config.defaultDescription ?? "",
+  };
+}
 
 function resolveBannerSrc(imageSrc) {
   if (!imageSrc || typeof imageSrc !== "string") return "";

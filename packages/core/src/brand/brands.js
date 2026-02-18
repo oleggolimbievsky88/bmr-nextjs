@@ -55,14 +55,14 @@ export const brands = {
 
     copyrightName: "BMR Suspension",
 
-    themeColor: "#c8102e",
+    themeColor: "#fe0000",
     faviconPath: "/brands/bmr/favicons/favicon.svg",
     ogImagePath: "/brands/bmr/images/logo/BMR-Logo.jpg",
     defaultOgImagePath: "/og/bmr-og.jpg",
     envOgImageUrlKey: "NEXT_PUBLIC_OG_IMAGE_URL",
 
     /** Button/badge background (header search button, cart/wishlist badges) */
-    buttonBadgeColor: "#c8102e",
+    buttonBadgeColor: "#fe0000",
     /** Text color on buttons/badges using buttonBadgeColor */
     buttonBadgeTextColor: "#ffffff",
     /** Text color on primary-colored buttons (e.g. red SEARCH button) */
