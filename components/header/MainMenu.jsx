@@ -15,6 +15,7 @@ export default function MainMenu({ initialMenuData }) {
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
+  const [menuLoadError, setMenuLoadError] = useState(false);
   const [megaMenuTop, setMegaMenuTop] = useState(null);
 
   // Update menuData when initialMenuData changes (from Header)
@@ -23,6 +24,7 @@ export default function MainMenu({ initialMenuData }) {
       setMenuData(initialMenuData);
       setIsDataFetched(true);
       setIsLoading(false);
+      setMenuLoadError(false);
     }
   }, [initialMenuData]);
   const [activeVehicle, setActiveVehicle] = useState(null);
@@ -39,12 +41,17 @@ export default function MainMenu({ initialMenuData }) {
           const response = await fetch("/api/menu", {
             next: { revalidate: 3600 },
           });
-          if (!response.ok) throw new Error("Failed to fetch menu");
+          if (!response.ok) {
+            setMenuLoadError(true);
+            throw new Error("Failed to fetch menu");
+          }
           const data = await response.json();
           setMenuData(data);
           setIsDataFetched(true);
+          setMenuLoadError(false);
         } catch (err) {
           console.error("Error fetching menu:", err);
+          if (!isDataFetched) setMenuLoadError(true);
         } finally {
           setIsLoading(false);
         }
@@ -128,7 +135,9 @@ export default function MainMenu({ initialMenuData }) {
             <div className="container">
               <div className="row g-2 p-4">
                 <div className="col-12 text-center py-4 text-muted">
-                  No platforms in this category yet.
+                  {menuLoadError
+                    ? "Menu temporarily unavailable. Check back shortly."
+                    : "No platforms in this category yet."}
                 </div>
               </div>
             </div>

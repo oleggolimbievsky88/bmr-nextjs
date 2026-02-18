@@ -20,12 +20,21 @@ This is a Next.js application built with the App Router for BMR Suspension.
 
 ## Deployment to Vercel
 
-When deploying to Vercel, make sure to configure the following environment variables in your Vercel project settings:
+The app loads **products, platforms, and menu data from MySQL**. For production to work, the database must be reachable from Vercel’s servers.
 
-- `MYSQL_HOST` - Your MySQL database host
-- `MYSQL_USER` - Your MySQL database user
-- `MYSQL_PASSWORD` - Your MySQL database password
-- `MYSQL_DATABASE` - Your MySQL database name (usually "bmrsuspension")
+### Required: `DATABASE_URL`
+
+In Vercel, set **`DATABASE_URL`** (the app does **not** use `MYSQL_HOST` / `MYSQL_USER` / etc.):
+
+- **Format:** `mysql://USER:PASSWORD@HOST:PORT/DATABASE`
+- **Example:** `mysql://myuser:mypass@db.example.com:3306/bmrsuspension`
+- **If your provider requires SSL**, add: `?ssl=true` (e.g. `mysql://.../bmrsuspension?ssl=true`).
+
+**Important:**
+
+- Do **not** use `localhost` or `127.0.0.1` as the host on Vercel; the server runs in the cloud and cannot reach your local machine.
+- Use a MySQL host that accepts connections from the internet (e.g. PlanetScale, Railway, Aiven, or a VPS with remote access and firewall rules that allow Vercel).
+- Ensure the MySQL user is allowed to connect from any host (`'user'@'%'`) if your provider uses host-based permissions.
 
 ## Troubleshooting
 
@@ -37,13 +46,13 @@ If you encounter 404 errors for routes like `/fitment/[id]` or `/video/[id]`, ma
 2. The appropriate API routes exist in the `app/api` directory
 3. The database connection environment variables are correctly set in Vercel
 
-### Database Connection Errors (500)
+### Products / platforms / menu not loading on Vercel ("No platforms in this category")
 
-If your API routes return 500 errors:
+This usually means the app cannot reach the database in production:
 
-1. Check the Vercel logs for specific error messages
-2. Verify your environment variables in Vercel project settings
-3. Ensure your MySQL database is accessible from Vercel's deployment servers
+1. In Vercel → Project → **Settings → Environment Variables**, set **`DATABASE_URL`** (see "Deployment to Vercel" above). Do not rely on `MYSQL_*` variables; only `DATABASE_URL` is used.
+2. Use a **remotely accessible** MySQL host (not `localhost`). Add `?ssl=true` to `DATABASE_URL` if your provider requires SSL.
+3. In Vercel → **Deployments** → select a deployment → **Functions** or **Logs**, and check for connection/timeout errors when calling `/api/menu` or product APIs.
 
 ## Required Routes
 
