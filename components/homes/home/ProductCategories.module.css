@@ -7,13 +7,13 @@
 /* Modern full-bleed category tile */
 .categoryCard {
   position: relative;
-  height: 210px;
+  height: 240px;
   border-radius: 16px;
   overflow: hidden;
   background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: transform 350ms ease, box-shadow 350ms ease, border-color 350ms ease;
   cursor: pointer;
 }
 
@@ -21,7 +21,7 @@
 .cardImage {
   object-fit: cover;
   transform: scale(1.02);
-  transition: transform 220ms ease, filter 220ms ease;
+  transition: transform 400ms ease, filter 400ms ease;
   filter: saturate(1.05) contrast(1.05);
 }
 
@@ -38,32 +38,33 @@
 .content {
   position: absolute;
   inset: 0;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 .textBlock {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .title {
   margin: 0;
   color: #fff;
   font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: 0.2px;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
 .subtitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
@@ -78,8 +79,8 @@
 /* little brand accent detail */
 .accentBar {
   position: absolute;
-  left: 14px;
-  bottom: 14px;
+  left: 20px;
+  bottom: 20px;
   width: 54px;
   height: 3px;
   border-radius: 999px;
