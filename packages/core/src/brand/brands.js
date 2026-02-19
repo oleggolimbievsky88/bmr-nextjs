@@ -124,6 +124,33 @@ export const defaultBrands = {
     defaultDescription:
       "BMR Suspension manufactures high-performance suspension and chassis parts for Mustang, Camaro, GM, Mopar, and more. Shop rear control arms, sway bars, springs, and race-proven components.",
 
+    /** Homepage "Shop by Category" cards. items: [{ href, title, subtitle, img }] */
+    shopByCategory: {
+      sectionTitle: "Shop by Category",
+      sectionSubtitle:
+        "Browse our New Products, BMR Merchandise, and Gift Cards.",
+      items: [
+        {
+          href: "/products/new",
+          title: "New Products",
+          subtitle: "Latest releases",
+          img: "/images/shop-categories/NewProductsGradient.jpg",
+        },
+        {
+          href: "/products/bmr-merchandise",
+          title: "BMR Merchandise",
+          subtitle: "Apparel & more",
+          img: "/images/shop-categories/MerchGradient.jpg",
+        },
+        {
+          href: "/products/gift-cards",
+          title: "BMR Gift Cards",
+          subtitle: "Perfect gift",
+          img: "/images/shop-categories/GiftCardsGradient.jpg",
+        },
+      ],
+    },
+
     sameAs: [],
   },
 
@@ -208,6 +235,32 @@ export const defaultBrands = {
       "Control Freak Suspension | World Class Suspensions for the Best Price",
     defaultDescription:
       "Control Freak Suspension offers World Class Suspensions for the Best Price",
+
+    /** Homepage "Shop by Category" cards. items: [{ href, title, subtitle, img }] */
+    shopByCategory: {
+      sectionTitle: "Shop by Category",
+      sectionSubtitle: "Browse our New Products, Merchandise, and Gift Cards.",
+      items: [
+        {
+          href: "/products/new",
+          title: "New Products",
+          subtitle: "Latest releases",
+          img: "/images/shop-categories/NewProductsGradient.jpg",
+        },
+        {
+          href: "/products/bmr-merchandise",
+          title: "BMR Merchandise",
+          subtitle: "Apparel & more",
+          img: "/images/shop-categories/MerchGradient.jpg",
+        },
+        {
+          href: "/products/gift-cards",
+          title: "BMR Gift Cards",
+          subtitle: "Perfect gift",
+          img: "/images/shop-categories/GiftCardsGradient.jpg",
+        },
+      ],
+    },
 
     /**
      * About brand block (home page + about page). Used only when present.

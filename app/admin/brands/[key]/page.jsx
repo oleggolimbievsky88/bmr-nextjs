@@ -32,6 +32,30 @@ function ColorInput({ value, onChange, label, id }) {
   );
 }
 
+/** Options for Assurance Bar icon dropdown (value = icon class string) */
+const ASSURANCE_BAR_ICON_OPTIONS = [
+  { value: "icon-shipping", label: "Shipping" },
+  { value: "icon-payment fs-22", label: "Payment" },
+  { value: "icon-return fs-20", label: "Return" },
+  { value: "icon-suport", label: "Support" },
+  { value: "icon-shipping-1", label: "Shipping (alt)" },
+  { value: "icon-payment-1", label: "Payment (alt)" },
+  { value: "icon-return-1", label: "Return (alt)" },
+  { value: "icon-suport-1", label: "Support (alt)" },
+  { value: "icon-premium-support", label: "Premium Support" },
+  { value: "icon-help", label: "Help" },
+  { value: "icon-fast-shipping", label: "Fast Shipping" },
+  { value: "icon-delivery-time", label: "Delivery Time" },
+  { value: "icon-days-return", label: "Days Return" },
+  { value: "icon-safe", label: "Safe" },
+  { value: "icon-check", label: "Check" },
+  { value: "icon-gift", label: "Gift" },
+  { value: "icon-time", label: "Time" },
+  { value: "icon-warranty", label: "Warranty" },
+  { value: "icon-trial", label: "Trial" },
+  { value: "__custom__", label: "Custom…" },
+];
+
 export default function AdminBrandEditPage() {
   const params = useParams();
   const router = useRouter();
@@ -84,6 +108,39 @@ export default function AdminBrandEditPage() {
           sectionSubtitle: "",
           items: [],
         },
+        shopByCategory: (() => {
+          const section = data.shopByCategory || {};
+          const items =
+            Array.isArray(section.items) && section.items.length > 0
+              ? section.items
+              : [
+                  {
+                    href: "/products/new",
+                    title: "New Products",
+                    subtitle: "Latest releases",
+                    img: "/images/shop-categories/NewProductsGradient.jpg",
+                  },
+                  {
+                    href: "/products/bmr-merchandise",
+                    title: "BMR Merchandise",
+                    subtitle: "Apparel & more",
+                    img: "/images/shop-categories/MerchGradient.jpg",
+                  },
+                  {
+                    href: "/products/gift-cards",
+                    title: "BMR Gift Cards",
+                    subtitle: "Perfect gift",
+                    img: "/images/shop-categories/GiftCardsGradient.jpg",
+                  },
+                ];
+          return {
+            sectionTitle: section.sectionTitle?.trim() || "Shop by Category",
+            sectionSubtitle:
+              section.sectionSubtitle?.trim() ||
+              "Browse our New Products, BMR Merchandise, and Gift Cards.",
+            items,
+          };
+        })(),
         navLabels: data.navLabels || {},
         navUrls: data.navUrls || {},
         navOrder:
@@ -204,6 +261,102 @@ export default function AdminBrandEditPage() {
     }));
   };
 
+  const shopByCategory = form.shopByCategory || {
+    sectionTitle: "Shop by Category",
+    sectionSubtitle: "",
+    items: [],
+  };
+  const updateShopByCategory = (field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      shopByCategory: { ...(prev.shopByCategory || {}), [field]: value },
+    }));
+  };
+  const updateShopByCategoryItem = (index, field, value) => {
+    setForm((prev) => {
+      const items = [...(prev.shopByCategory?.items || [])];
+      items[index] = { ...(items[index] || {}), [field]: value };
+      return {
+        ...prev,
+        shopByCategory: { ...(prev.shopByCategory || {}), items },
+      };
+    });
+  };
+  const addShopByCategoryItem = () => {
+    setForm((prev) => ({
+      ...prev,
+      shopByCategory: {
+        ...(prev.shopByCategory || {}),
+        items: [
+          ...(prev.shopByCategory?.items || []),
+          { href: "", title: "", subtitle: "", img: "" },
+        ],
+      },
+    }));
+  };
+  const removeShopByCategoryItem = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      shopByCategory: {
+        ...(prev.shopByCategory || {}),
+        items: (prev.shopByCategory?.items || []).filter((_, i) => i !== index),
+      },
+    }));
+  };
+
+  const [uploadingShopCategoryImage, setUploadingShopCategoryImage] =
+    useState(null);
+  const [uploadingShopByMakeImage, setUploadingShopByMakeImage] =
+    useState(null);
+  const handleShopByMakeImageUpload = async (e, index) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingShopByMakeImage(index);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/admin/shop-by-make-images/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      updateShopByMakeItem(
+        index,
+        "imagePath",
+        data.path || data.filename || "",
+      );
+      showToast("Image uploaded. Save brand to apply.", "success");
+    } catch (err) {
+      showToast(err.message || "Upload failed", "error");
+    } finally {
+      setUploadingShopByMakeImage(null);
+      e.target.value = "";
+    }
+  };
+  const handleShopCategoryImageUpload = async (e, index) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingShopCategoryImage(index);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/admin/shop-category-images/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      updateShopByCategoryItem(index, "img", data.path || data.filename || "");
+      showToast("Image uploaded. Save brand to apply.", "success");
+    } catch (err) {
+      showToast(err.message || "Upload failed", "error");
+    } finally {
+      setUploadingShopCategoryImage(null);
+      e.target.value = "";
+    }
+  };
+
   const DEFAULT_NAV_PLACEHOLDERS = {
     ford: { label: "Ford", url: "/products/ford" },
     gmLateModel: {
@@ -310,6 +463,7 @@ export default function AdminBrandEditPage() {
         aboutBrand: form.aboutBrand,
         isActive: form.isActive,
         shopByMake: form.shopByMake,
+        shopByCategory: form.shopByCategory,
         navLabels: form.navLabels,
         navUrls: form.navUrls,
         navOrder: form.navOrder,
@@ -706,8 +860,8 @@ export default function AdminBrandEditPage() {
           <div className="admin-brand-card">
             <div className="admin-brand-card-header">
               <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Bar</span>
-                Assurance Bar Items
+                <span className="admin-brand-section-badge">Footer Bar</span>
+                Assurance Bar Items (Homepage above footer)
               </h2>
               <button
                 type="button"
@@ -727,18 +881,73 @@ export default function AdminBrandEditPage() {
                         htmlFor={`assurance-icon-${idx}`}
                         className="form-label small mb-1"
                       >
-                        Icon class
+                        Icon
                       </label>
-                      <input
-                        type="text"
-                        id={`assurance-icon-${idx}`}
-                        className="form-control form-control-sm"
-                        placeholder="e.g. icon-shipping or icon-payment fs-22"
-                        value={item.iconClass || ""}
-                        onChange={(e) =>
-                          updateAssuranceItem(idx, "iconClass", e.target.value)
-                        }
-                      />
+                      {(() => {
+                        const iconClass = item.iconClass || "";
+                        const matchingPreset = ASSURANCE_BAR_ICON_OPTIONS.find(
+                          (o) =>
+                            o.value !== "__custom__" && o.value === iconClass,
+                        );
+                        const isCustom = !matchingPreset;
+                        return (
+                          <div className="d-flex align-items-center gap-2 flex-wrap">
+                            <select
+                              id={`assurance-icon-${idx}`}
+                              className="form-select form-select-sm"
+                              style={{ maxWidth: "220px" }}
+                              value={
+                                matchingPreset
+                                  ? matchingPreset.value
+                                  : "__custom__"
+                              }
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                updateAssuranceItem(
+                                  idx,
+                                  "iconClass",
+                                  v === "__custom__" ? "" : v,
+                                );
+                              }}
+                            >
+                              {ASSURANCE_BAR_ICON_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                            {isCustom && (
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                style={{ minWidth: "160px" }}
+                                placeholder="e.g. icon-shipping fs-22"
+                                value={iconClass}
+                                onChange={(e) =>
+                                  updateAssuranceItem(
+                                    idx,
+                                    "iconClass",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                            )}
+                            {iconClass && (
+                              <span
+                                className="d-inline-flex align-items-center justify-content-center rounded bg-light border"
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  fontSize: "1rem",
+                                }}
+                                title={iconClass}
+                              >
+                                <i className={iconClass} />
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </div>
                     <div className="mb-2">
                       <label
@@ -838,27 +1047,76 @@ export default function AdminBrandEditPage() {
                 </div>
               </div>
               {(shopByMake.items || []).map((item, idx) => (
-                <div key={idx} className="admin-brand-list-item">
+                <div key={`make-${idx}`} className="admin-brand-list-item">
                   <span className="admin-brand-list-item-badge">{idx + 1}</span>
                   <div className="admin-brand-list-item-fields">
                     <div className="row">
-                      <div className="col-md-6 mb-2">
+                      <div className="col-12 mb-2">
                         <label className="form-label small mb-1">
-                          Image path
+                          Image (path or upload from PC)
                         </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="/images/logo/Ford_Logo.png"
-                          value={item.imagePath || ""}
-                          onChange={(e) =>
-                            updateShopByMakeItem(
-                              idx,
-                              "imagePath",
-                              e.target.value,
-                            )
-                          }
-                        />
+                        <div className="d-flex gap-2 flex-wrap align-items-center">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            style={{ minWidth: "200px" }}
+                            placeholder="/images/logo/Ford_Logo.png"
+                            value={item.imagePath || ""}
+                            onChange={(e) =>
+                              updateShopByMakeItem(
+                                idx,
+                                "imagePath",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <label className="btn btn-sm btn-outline-primary mb-0">
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                              className="visually-hidden"
+                              onChange={(e) =>
+                                handleShopByMakeImageUpload(e, idx)
+                              }
+                              disabled={
+                                uploadingShopByMakeImage !== null &&
+                                uploadingShopByMakeImage !== idx
+                              }
+                            />
+                            {uploadingShopByMakeImage === idx
+                              ? "Uploading…"
+                              : "Browse / Upload"}
+                          </label>
+                        </div>
+                        {(item.imagePath || "").startsWith("http") && (
+                          <div className="mt-1">
+                            <img
+                              src={item.imagePath}
+                              alt=""
+                              style={{
+                                maxHeight: 48,
+                                objectFit: "contain",
+                                borderRadius: 4,
+                              }}
+                            />
+                          </div>
+                        )}
+                        {(item.imagePath || "").startsWith("/") && (
+                          <div className="mt-1">
+                            <img
+                              src={item.imagePath}
+                              alt=""
+                              style={{
+                                maxHeight: 48,
+                                objectFit: "contain",
+                                borderRadius: 4,
+                              }}
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-6 mb-2">
                         <label className="form-label small mb-1">Title</label>
@@ -911,6 +1169,193 @@ export default function AdminBrandEditPage() {
                       type="button"
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => removeShopByMakeItem(idx)}
+                      aria-label="Remove"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="admin-brand-card">
+            <div className="admin-brand-card-header">
+              <h2 className="admin-brand-card-title">
+                <span className="admin-brand-section-badge">Home</span>
+                Shop by Category (homepage cards)
+              </h2>
+              <button
+                type="button"
+                className="admin-brand-btn-add"
+                onClick={addShopByCategoryItem}
+              >
+                + Add card
+              </button>
+            </div>
+            <div className="admin-brand-card-body">
+              <p className="admin-brand-nav-intro mb-3">
+                Full-bleed image tiles on the homepage. Upload an image or enter
+                a path. Order is preserved.
+              </p>
+              <div className="row mb-3">
+                <div className="col-md-6">
+                  <label className="form-label">Section title</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={shopByCategory.sectionTitle || ""}
+                    onChange={(e) =>
+                      updateShopByCategory("sectionTitle", e.target.value)
+                    }
+                    placeholder="Shop by Category"
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Section subtitle</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={shopByCategory.sectionSubtitle || ""}
+                    onChange={(e) =>
+                      updateShopByCategory("sectionSubtitle", e.target.value)
+                    }
+                    placeholder="Browse our New Products, Merchandise, and Gift Cards."
+                  />
+                </div>
+              </div>
+              {(shopByCategory.items || []).map((item, idx) => (
+                <div key={`cat-${idx}`} className="admin-brand-list-item">
+                  <span className="admin-brand-list-item-badge">{idx + 1}</span>
+                  <div className="admin-brand-list-item-fields">
+                    <div className="row">
+                      <div className="col-12 mb-2">
+                        <label className="form-label small mb-1">
+                          Image (path or upload from PC)
+                        </label>
+                        <div className="d-flex gap-2 flex-wrap align-items-center">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm flex-grow-1"
+                            style={{ minWidth: "200px" }}
+                            placeholder="/images/shop-categories/MyImage.jpg"
+                            value={item.img || ""}
+                            onChange={(e) =>
+                              updateShopByCategoryItem(
+                                idx,
+                                "img",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <label className="btn btn-sm btn-outline-primary mb-0">
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                              className="visually-hidden"
+                              onChange={(e) =>
+                                handleShopCategoryImageUpload(e, idx)
+                              }
+                              disabled={
+                                uploadingShopCategoryImage !== null &&
+                                uploadingShopCategoryImage !== idx
+                              }
+                            />
+                            {uploadingShopCategoryImage === idx
+                              ? "Uploading…"
+                              : "Browse / Upload"}
+                          </label>
+                        </div>
+                        {(item.img || "").startsWith("http") && (
+                          <div className="mt-1">
+                            <img
+                              src={item.img}
+                              alt=""
+                              style={{
+                                maxHeight: 48,
+                                objectFit: "contain",
+                                borderRadius: 4,
+                              }}
+                            />
+                          </div>
+                        )}
+                        {(item.img || "").startsWith("/") &&
+                          !item.img.startsWith("http") && (
+                            <div className="mt-1">
+                              <img
+                                src={item.img}
+                                alt=""
+                                style={{
+                                  maxHeight: 48,
+                                  objectFit: "contain",
+                                  borderRadius: 4,
+                                }}
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            </div>
+                          )}
+                      </div>
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small mb-1">Title</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="New Products"
+                          value={item.title || ""}
+                          onChange={(e) =>
+                            updateShopByCategoryItem(
+                              idx,
+                              "title",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small mb-1">
+                          Subtitle
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="Latest releases"
+                          value={item.subtitle || ""}
+                          onChange={(e) =>
+                            updateShopByCategoryItem(
+                              idx,
+                              "subtitle",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small mb-1">
+                          Link (path)
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="/products/new"
+                          value={item.href || ""}
+                          onChange={(e) =>
+                            updateShopByCategoryItem(
+                              idx,
+                              "href",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="admin-brand-list-item-actions">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => removeShopByCategoryItem(idx)}
                       aria-label="Remove"
                     >
                       Remove

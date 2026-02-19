@@ -828,28 +828,28 @@ export default function AdminProductsPage() {
       <div className="card border-0 shadow-sm rounded-3 mb-4">
         <div className="card-body p-4">
           <div className="row g-2 align-items-center mb-3 pb-3 border-bottom">
-            <div className="col-auto">
+            <div className="col-auto admin-new-products-days">
               <label
                 htmlFor="new-products-days"
-                className="form-label small mb-0"
+                className="form-label admin-new-products-days-label mb-0"
               >
                 New products display
               </label>
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex align-items-center gap-2 admin-new-products-days-controls">
                 <input
                   id="new-products-days"
                   type="number"
                   min={1}
                   max={9999}
-                  className="form-control form-control-sm"
-                  style={{ width: "80px", height: "28px" }}
+                  className="form-control form-control-sm admin-new-products-days-input"
+                  style={{ width: "80px" }}
                   value={newProductsDaysInput}
                   onChange={(e) => setNewProductsDaysInput(e.target.value)}
                 />
-                <span className="small text-muted">days</span>
+                <span className="admin-new-products-days-suffix">days</span>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn-primary admin-new-products-days-save"
                   onClick={saveNewProductsDays}
                   disabled={
                     newProductsDaysSaving ||
@@ -1117,7 +1117,7 @@ export default function AdminProductsPage() {
       {showForm && (
         <div className="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
           <div className="card-body p-4">
-            <h2 className="h4 fw-bold mb-4">
+            <h2 className="h3 fw-bold mb-4">
               {editingProduct ? "Edit Product" : "Add New Product"}
             </h2>
             <form onSubmit={handleSubmit} className="admin-product-form">
@@ -1497,20 +1497,6 @@ export default function AdminProductsPage() {
                             {man.ManName}
                           </option>
                         ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="admin-form-group">
-                      <label>Display</label>
-                      <select
-                        name="Display"
-                        className="form-select"
-                        value={formData.Display}
-                        onChange={handleInputChange}
-                      >
-                        <option value={1}>Yes</option>
-                        <option value={0}>No</option>
                       </select>
                     </div>
                   </div>
@@ -2078,6 +2064,30 @@ export default function AdminProductsPage() {
                       <label className="form-check-label">End Product</label>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Display on site — modern toggle above save */}
+              <div className="admin-form-section admin-display-toggle-section rounded-3 border-0 shadow-sm">
+                <div className="admin-form-group d-flex align-items-center justify-content-between flex-wrap gap-3">
+                  <label className="admin-display-toggle-label mb-0">
+                    Display on site
+                  </label>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={formData.Display === 1}
+                    aria-label="Display product on site"
+                    className={`admin-toggle-switch ${formData.Display === 1 ? "admin-toggle-switch-on" : ""}`}
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        Display: formData.Display === 1 ? 0 : 1,
+                      })
+                    }
+                  >
+                    <span className="admin-toggle-switch-thumb" />
+                  </button>
                 </div>
               </div>
 

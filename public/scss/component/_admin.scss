@@ -1067,7 +1067,7 @@
 		border: 1px solid var(--line);
 
 		.admin-form-section-title {
-			font-size: 18px;
+			font-size: 22px;
 			font-weight: 600;
 			color: var(--main);
 			margin-bottom: 1.25rem;
@@ -1085,6 +1085,57 @@
 			margin-top: 2rem;
 			padding-top: 1.5rem;
 			border-top: 1px solid var(--line);
+		}
+	}
+
+	/* Display on site — modern on/off toggle (products form) */
+	.admin-product-form {
+		.admin-display-toggle-section {
+			margin-bottom: 1.5rem;
+			.admin-display-toggle-label {
+				font-weight: 600;
+				color: var(--main);
+				font-size: 1rem;
+			}
+		}
+		.admin-toggle-switch {
+			--toggle-width: 48px;
+			--toggle-height: 26px;
+			--thumb-size: 22px;
+			--thumb-offset: 2px;
+			--track-off: #cbd5e0;
+			--track-on: var(--primary, #c00);
+			flex-shrink: 0;
+			width: var(--toggle-width);
+			height: var(--toggle-height);
+			padding: 0;
+			border: none;
+			border-radius: 999px;
+			background: var(--track-off);
+			cursor: pointer;
+			position: relative;
+			transition: background-color 0.2s ease, box-shadow 0.2s ease;
+			&:focus {
+				outline: none;
+				box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.25);
+			}
+			&.admin-toggle-switch-on {
+				background: var(--track-on);
+			}
+			.admin-toggle-switch-thumb {
+				position: absolute;
+				top: var(--thumb-offset);
+				left: var(--thumb-offset);
+				width: var(--thumb-size);
+				height: var(--thumb-size);
+				border-radius: 50%;
+				background: #fff;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+				transition: transform 0.2s ease;
+			}
+			&.admin-toggle-switch-on .admin-toggle-switch-thumb {
+				transform: translateX(calc(var(--toggle-width) - var(--thumb-size) - 2 * var(--thumb-offset)));
+			}
 		}
 	}
 
@@ -1125,6 +1176,33 @@
 		background-color: #c00;
 		border-color: #c00;
 		color: #fff;
+	}
+
+	/* New products display — clearer label, input, and button */
+	.admin-new-products-days {
+		.admin-new-products-days-label {
+			font-size: 0.875rem;
+			font-weight: 600;
+			color: var(--main, #212529) !important;
+		}
+		.admin-new-products-days-input {
+			min-height: 32px;
+			font-size: 0.9375rem;
+			font-weight: 500;
+			color: #212529 !important;
+			background-color: #fff !important;
+			border: 1px solid #ced4da;
+		}
+		.admin-new-products-days-suffix {
+			font-size: 0.875rem;
+			font-weight: 500;
+			color: #495057;
+		}
+		.admin-new-products-days-save {
+			font-weight: 600;
+			color: var(--brand-primary-button-text, var(--white)) !important;
+			min-height: 32px;
+		}
 	}
 }
 
@@ -1750,12 +1828,12 @@
 	align-items: center;
 	padding: 0.15rem 0.5rem;
 	border-radius: 6px;
-	font-size: 0.65rem;
+	font-size: 1.2rem;
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
 	background: var(--primary);
-	color: #fff;
+	color: var(--brand-button-badge-text, #fff);
 	line-height: 1.2;
 }
 
@@ -1951,7 +2029,7 @@
 	height: 32px;
 	border-radius: 8px;
 	background: var(--primary);
-	color: #fff;
+	color: var(--brand-button-badge-text, #fff);
 	font-size: 0.8rem;
 	font-weight: 700;
 	flex-shrink: 0;
@@ -1976,14 +2054,14 @@
 	font-size: 0.875rem;
 	font-weight: 600;
 	background: var(--primary);
-	color: #fff;
+	color: var(--brand-button-badge-text, #fff);
 	border: none;
 	cursor: pointer;
 	transition: background 0.2s, transform 0.1s;
 
 	&:hover {
 		background: color.adjust(#db1215, $lightness: -8%);
-		color: #fff;
+		color: var(--brand-button-badge-text, #fff);
 	}
 
 	&:active {

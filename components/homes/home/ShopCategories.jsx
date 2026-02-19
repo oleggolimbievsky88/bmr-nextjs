@@ -2,82 +2,84 @@ import Link from "next/link";
 import Image from "next/image";
 import SectionHeader from "@/components/common/SectionHeader";
 import styles from "./ProductCategories.module.css";
+import { getBrandConfig } from "@/lib/brandConfig";
 
-const ProductCategories = () => {
+const DEFAULT_CARDS = [
+  {
+    href: "/products/new",
+    title: "New Products",
+    subtitle: "Latest releases",
+    img: "/images/shop-categories/NewProductsGradient.jpg",
+  },
+  {
+    href: "/products/bmr-merchandise",
+    title: "BMR Merchandise",
+    subtitle: "Apparel & more",
+    img: "/images/shop-categories/MerchGradient.jpg",
+  },
+  {
+    href: "/products/gift-cards",
+    title: "BMR Gift Cards",
+    subtitle: "Perfect gift",
+    img: "/images/shop-categories/GiftCardsGradient.jpg",
+  },
+];
+
+export default async function ShopCategories() {
+  const brand = await getBrandConfig();
+
+  const accent = brand.buttonBadgeColor || brand.themeColor || "#ffd400";
+  const onAccent = brand.buttonBadgeTextColor || "#000000";
+
+  const brandVars = {
+    "--brand-accent": accent,
+    "--brand-on-accent": onAccent,
+  };
+
+  const section = brand.shopByCategory || {};
+  const sectionTitle = section.sectionTitle?.trim() || "Shop by Category";
+  const sectionSubtitle =
+    section.sectionSubtitle?.trim() ||
+    "Browse our New Products, BMR Merchandise, and Gift Cards.";
+  const cards =
+    Array.isArray(section.items) && section.items.length > 0
+      ? section.items
+      : DEFAULT_CARDS;
+
   return (
     <section className="homepage-section">
       <div className="container">
-        <SectionHeader
-          title="Shop by Category"
-          subtitle="Browse our New Products, BMR Merchandise, and Gift Cards."
-        />
+        <SectionHeader title={sectionTitle} subtitle={sectionSubtitle} />
+
         <div className="row mt-4">
-          {/* Card for New Products */}
-          <div className="col-md-4 mb-4">
-            <Link href="/products/new" className={styles.cardLink}>
-              <div className={`card ${styles.cardHover}`}>
-                <div className={styles.overlay}></div>
-                <Image
-                  className="card-img-top"
-                  src="/images/shop-categories/NewProductsGradient.jpg"
-                  alt="New Products"
-                  width={800}
-                  height={450}
-                />
-                <div className="card-body text-center">
-                  <p className={`card-text fs-5 ${styles.categoryTitle}`}>
-                    New Products
-                  </p>
+          {cards.map((c) => (
+            <div className="col-md-4 mb-4" key={c.href || c.title}>
+              <Link href={c.href || "#"} className={styles.cardLink}>
+                <div className={styles.categoryCard} style={brandVars}>
+                  <Image
+                    src={
+                      c.img || "/images/shop-categories/NewProductsGradient.jpg"
+                    }
+                    alt={c.title || "Category"}
+                    fill
+                    className={styles.cardImage}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                  <div className={styles.overlay} />
+                  <div className={styles.content}>
+                    <div className={styles.textBlock}>
+                      <h3 className={styles.title}>{c.title}</h3>
+                      <p className={styles.subtitle}>{c.subtitle}</p>
+                    </div>
+                    <span className={styles.cta}>Shop now →</span>
+                  </div>
+                  <div className={styles.accentBar} />
                 </div>
-              </div>
-            </Link>
-          </div>
-
-          {/* Card for BMR Merchandise */}
-          <div className="col-md-4 mb-4">
-            <Link href="/products/bmr-merchandise" className={styles.cardLink}>
-              <div className={`card ${styles.cardHover}`}>
-                <div className={styles.overlay}></div>
-                <Image
-                  className="card-img-top"
-                  src="/images/shop-categories/MerchGradient.jpg"
-                  alt="BMR Merchandise"
-                  width={800}
-                  height={450}
-                />
-                <div className="card-body text-center">
-                  <p className={`card-text fs-5 ${styles.categoryTitle}`}>
-                    BMR Merchandise
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </div>
-
-          {/* Card for BMR Gift Cards */}
-          <div className="col-md-4 mb-4">
-            <Link href="/products/gift-cards" className={styles.cardLink}>
-              <div className={`card ${styles.cardHover}`}>
-                <div className={styles.overlay}></div>
-                <Image
-                  className="card-img-top"
-                  src="/images/shop-categories/GiftCardsGradient.jpg"
-                  alt="BMR Gift Cards"
-                  width={800}
-                  height={450}
-                />
-                <div className="card-body text-center">
-                  <p className={`card-text fs-5 ${styles.categoryTitle}`}>
-                    BMR Gift Cards
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </div>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default ProductCategories;
+}

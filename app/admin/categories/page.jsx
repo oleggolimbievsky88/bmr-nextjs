@@ -3,6 +3,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { getCategoryImageUrl } from "@/lib/assets";
 
+// Normalize image value from API (DB/driver may return CatImage or catImage)
+function getCategoryImageValue(item) {
+  if (!item) return "";
+  const v = item.CatImage ?? item.catImage ?? item.image ?? "";
+  return v && String(v).trim() && v !== "0" ? String(v) : "";
+}
+function getMainCategoryImageValue(item) {
+  if (!item) return "";
+  const v = item.MainCatImage ?? item.mainCatImage ?? item.image ?? "";
+  return v && String(v).trim() && v !== "0" ? String(v) : "";
+}
+
 export default function AdminCategoriesPage() {
   const [activeTab, setActiveTab] = useState("categories");
   const [categories, setCategories] = useState([]);
@@ -178,7 +190,11 @@ export default function AdminCategoriesPage() {
         setEditingItem(category);
         setCategoryFormData({
           CatName: data.category.CatName || "",
-          CatImage: data.category.CatImage || "",
+          CatImage:
+            getCategoryImageValue(data.category) ||
+            data.category.CatImage ||
+            data.category.catImage ||
+            "",
           MainCatID: data.category.MainCatID
             ? String(data.category.MainCatID)
             : "",
@@ -206,7 +222,10 @@ export default function AdminCategoriesPage() {
         setEditingItem(mainCategory);
         setMainCategoryFormData({
           BodyID: mc.BodyID || mainCategory.BodyID || "",
-          MainCatImage: mc.MainCatImage ?? mainCategory.MainCatImage ?? "",
+          MainCatImage:
+            getMainCategoryImageValue(mc) ||
+            getMainCategoryImageValue(mainCategory) ||
+            "",
           MainCatName: mc.MainCatName || mainCategory.MainCatName || "",
         });
         setMainCategoryImage(null);
@@ -570,12 +589,13 @@ export default function AdminCategoriesPage() {
                       onChange={handleCategoryImageChange}
                       className="form-control"
                     />
-                    {categoryFormData.CatImage &&
-                      categoryFormData.CatImage !== "0" &&
+                    {getCategoryImageValue(categoryFormData) &&
                       !categoryImage && (
                         <div className="mt-2">
                           <img
-                            src={getCategoryImageUrl(categoryFormData.CatImage)}
+                            src={getCategoryImageUrl(
+                              getCategoryImageValue(categoryFormData),
+                            )}
                             alt="Current category image"
                             style={{ maxWidth: "200px", maxHeight: "200px" }}
                             onError={(e) => {
@@ -922,10 +942,11 @@ export default function AdminCategoriesPage() {
                                   : "—"}
                               </td>
                               <td className="d-none d-md-table-cell">
-                                {category.CatImage &&
-                                category.CatImage !== "0" ? (
+                                {getCategoryImageValue(category) ? (
                                   <img
-                                    src={getCategoryImageUrl(category.CatImage)}
+                                    src={getCategoryImageUrl(
+                                      getCategoryImageValue(category),
+                                    )}
                                     alt={category.CatName}
                                     style={{
                                       maxWidth: "50px",
@@ -946,8 +967,7 @@ export default function AdminCategoriesPage() {
                                 ) : null}
                                 <span
                                   className={
-                                    category.CatImage &&
-                                    category.CatImage !== "0"
+                                    getCategoryImageValue(category)
                                       ? "visually-hidden"
                                       : ""
                                   }
@@ -1022,16 +1042,14 @@ export default function AdminCategoriesPage() {
                       Select a file to replace. The image uploads when you click
                       Save.
                     </p>
-                    {((mainCategoryFormData.MainCatImage &&
-                      mainCategoryFormData.MainCatImage !== "0") ||
-                      (editingItem?.MainCatImage &&
-                        editingItem.MainCatImage !== "0")) &&
+                    {(getMainCategoryImageValue(mainCategoryFormData) ||
+                      getMainCategoryImageValue(editingItem)) &&
                       !mainCategoryImage && (
                         <div className="mt-2">
                           <img
                             src={getCategoryImageUrl(
-                              mainCategoryFormData.MainCatImage ||
-                                editingItem?.MainCatImage,
+                              getMainCategoryImageValue(mainCategoryFormData) ||
+                                getMainCategoryImageValue(editingItem),
                             )}
                             alt="Current main category image"
                             style={{ maxWidth: "200px", maxHeight: "200px" }}
@@ -1177,11 +1195,10 @@ export default function AdminCategoriesPage() {
                                   : "—"}
                               </td>
                               <td className="d-none d-md-table-cell">
-                                {mainCategory.MainCatImage &&
-                                mainCategory.MainCatImage !== "0" ? (
+                                {getMainCategoryImageValue(mainCategory) ? (
                                   <img
                                     src={getCategoryImageUrl(
-                                      mainCategory.MainCatImage,
+                                      getMainCategoryImageValue(mainCategory),
                                     )}
                                     alt={mainCategory.MainCatName}
                                     style={{
