@@ -5,13 +5,19 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import { useBrand } from "@bmr/ui/brand";
 
 const DEFAULT_MESSAGE = "FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!";
 const DEFAULT_DURATION = 3000;
 
 export default function Topbar2({ bgColor = "bg_dark" }) {
+  const brand = useBrand();
   const { data: session } = useSession();
   const [messages, setMessages] = useState([]);
+  const phoneDisplay =
+    brand?.contact?.phoneDisplay || brand?.contact?.phoneTel || "";
+  const phoneTel = brand?.contact?.phoneTel || "";
+  const email = brand?.contact?.email || "";
 
   useEffect(() => {
     fetch("/api/topbar-messages", { cache: "no-store" })
@@ -52,8 +58,32 @@ export default function Topbar2({ bgColor = "bg_dark" }) {
         <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
           <div className="tf-top-bar_left">
             <div className="d-flex gap-30 text_white">
-              <span>(813) 986-9302</span>
-              <span>sales@bmrsuspension.com</span>
+              {phoneDisplay && (
+                <span>
+                  {phoneTel ? (
+                    <a
+                      href={`tel:${phoneTel}`}
+                      className="text_white"
+                      style={{ textDecoration: "none" }}
+                    >
+                      {phoneDisplay}
+                    </a>
+                  ) : (
+                    phoneDisplay
+                  )}
+                </span>
+              )}
+              {email && (
+                <span>
+                  <a
+                    href={`mailto:${email}`}
+                    className="text_white"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {email}
+                  </a>
+                </span>
+              )}
             </div>
           </div>
           <div className="text-center overflow-hidden">

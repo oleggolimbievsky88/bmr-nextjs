@@ -4,13 +4,19 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import { useBrand } from "@bmr/ui/brand";
 import TopbarUserMenu from "./TopbarUserMenu";
 
 const DEFAULT_MESSAGE = "FREE SHIPPING IN THE US FOR ALL BMR PRODUCTS!";
 const DEFAULT_DURATION = 3000;
 
 export default function Topbar4() {
+  const brand = useBrand();
   const [messages, setMessages] = useState([]);
+  const phoneDisplay =
+    brand?.contact?.phoneDisplay || brand?.contact?.phoneTel || "";
+  const phoneTel = brand?.contact?.phoneTel || "";
+  const email = brand?.contact?.email || "";
 
   useEffect(() => {
     fetch("/api/topbar-messages", { cache: "no-store" })
@@ -48,21 +54,32 @@ export default function Topbar4() {
         <div className="tf-top-bar_left">
           <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
             <div className="tf-top-bar_left">
-              <div className="d-inline-block">
-                <span className="fw-7">
-                  Call Us Today!
+              <div className="d-flex gap-30 align-items-center flex-wrap">
+                {(phoneDisplay || phoneTel) && (
+                  <span className="fw-7">
+                    Call Us Today!
+                    <a
+                      href={phoneTel ? `tel:${phoneTel}` : undefined}
+                      style={{
+                        textDecoration: "none",
+                        marginLeft: "8px",
+                        color: "var(--white)",
+                      }}
+                      aria-describedby="external-message"
+                    >
+                      {phoneDisplay || phoneTel}
+                    </a>
+                  </span>
+                )}
+                {email && (
                   <a
-                    href="tel:+(813) 986-9302"
-                    style={{
-                      textDecoration: "none",
-                      marginLeft: "8px",
-                      color: "var(--white)",
-                    }}
-                    aria-describedby="external-message"
+                    href={`mailto:${email}`}
+                    className="text-white"
+                    style={{ textDecoration: "none" }}
                   >
-                    (813) 986-9302
+                    {email}
                   </a>
-                </span>
+                )}
               </div>
             </div>
             <div className="text-center overflow-hidden xs-hidden">
@@ -108,7 +125,11 @@ export default function Topbar4() {
                 </li>
                 <li>
                   <Link href={`/about-us`} className="text-white nav-text">
-                    About BMR
+                    About{" "}
+                    {brand?.companyNameShort ||
+                      brand?.companyName ||
+                      brand?.name ||
+                      "Us"}
                   </Link>
                 </li>
                 <TopbarUserMenu />

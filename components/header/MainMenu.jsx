@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useBrand } from "@bmr/ui/brand";
 
 // Provide a default structure to show immediately
 const defaultMenuData = {
@@ -11,7 +12,50 @@ const defaultMenuData = {
   gmClassicMuscleLinks: [],
 };
 
+const defaultNavLabels = {
+  ford: "Ford",
+  gmLateModel: "GM Late Model Cars",
+  gmMidMuscle: "GM Mid Muscle Cars",
+  gmClassicMuscle: "GM Classic Muscle Cars",
+  mopar: "Mopar",
+  installation: "Installation",
+  cart: "Cart",
+};
+const defaultNavUrls = {
+  ford: "/products/ford",
+  gmLateModel: "/products/gm/late-model",
+  gmMidMuscle: "/products/gm/mid-muscle",
+  gmClassicMuscle: "/products/gm/classic-muscle",
+  mopar: "/products/mopar",
+  installation: "/installation",
+  cart: "/view-cart",
+};
+
+/**
+ * Fallback when brand has no navPlatformIds (e.g. file-only or old DB).
+ * These nav ids are treated as simple links; all others in navOrder are platforms.
+ */
+const FALLBACK_SIMPLE_NAV_IDS = ["installation", "cart"];
+const DEFAULT_NAV_ORDER = Object.keys(defaultNavLabels);
+
+function normUrl(url, fallback) {
+  const s = (url || fallback || "").trim();
+  return s ? (s.startsWith("/") ? s : `/${s}`) : fallback || "#";
+}
+
 export default function MainMenu({ initialMenuData }) {
+  const brand = useBrand();
+  const navLabels = { ...defaultNavLabels, ...(brand?.navLabels || {}) };
+  const navUrls = { ...defaultNavUrls, ...(brand?.navUrls || {}) };
+  const navOrder =
+    Array.isArray(brand?.navOrder) && brand.navOrder.length > 0
+      ? brand.navOrder
+      : DEFAULT_NAV_ORDER;
+  /** Platform nav items (mega menus). From brand DB; fallback = navOrder minus simple links */
+  const platformIds =
+    Array.isArray(brand?.navPlatformIds) && brand.navPlatformIds.length > 0
+      ? brand.navPlatformIds
+      : navOrder.filter((id) => !FALLBACK_SIMPLE_NAV_IDS.includes(id));
   const [menuData, setMenuData] = useState(initialMenuData || defaultMenuData);
   const [isLoading, setIsLoading] = useState(!initialMenuData);
   const [isDataFetched, setIsDataFetched] = useState(!!initialMenuData);
@@ -238,95 +282,44 @@ export default function MainMenu({ initialMenuData }) {
             className="navbar-nav"
             style={{ position: "static", overflow: "visible", zIndex: 1000 }}
           >
-            {/* <li className="nav-item">
-              <Link href="/" className="nav-link">
-                Home
-              </Link>
-            </li> */}
-
-            {/* Ford Dropdown */}
-            <li
-              className="nav-item dropdown position-static"
-              onMouseEnter={(e) => handlePlatformHover("ford", e)}
-              onMouseLeave={handlePlatformLeave}
-            >
-              <Link href="/products/ford" className="nav-link dropdown-toggle">
-                Ford
-              </Link>
-              {renderMegaMenu(menuData.fordLinks || [], "ford")}
-            </li>
-
-            {/* GM Late Model Dropdown */}
-            <li
-              className="nav-item dropdown position-static"
-              onMouseEnter={(e) => handlePlatformHover("gmLateModel", e)}
-              onMouseLeave={handlePlatformLeave}
-            >
-              <Link
-                href="/products/gm/late-model"
-                className="nav-link dropdown-toggle"
-              >
-                GM Late Model Cars
-              </Link>
-              {renderMegaMenu(menuData.gmLateModelLinks || [], "gmLateModel")}
-            </li>
-
-            {/* GM Mid Muscle Dropdown */}
-            <li
-              className="nav-item dropdown position-static"
-              onMouseEnter={(e) => handlePlatformHover("gmMidMuscle", e)}
-              onMouseLeave={handlePlatformLeave}
-            >
-              <Link
-                href="/products/gm/mid-muscle"
-                className="nav-link dropdown-toggle"
-              >
-                GM Mid Muscle Cars
-              </Link>
-              {renderMegaMenu(menuData.gmMidMuscleLinks || [], "gmMidMuscle")}
-            </li>
-
-            {/* GM Classic Muscle Dropdown */}
-            <li
-              className="nav-item dropdown position-static"
-              onMouseEnter={(e) => handlePlatformHover("gmClassicMuscle", e)}
-              onMouseLeave={handlePlatformLeave}
-            >
-              <Link
-                href="/products/gm/classic-muscle"
-                className="nav-link dropdown-toggle"
-              >
-                GM Classic Muscle Cars
-              </Link>
-              {renderMegaMenu(
-                menuData.gmClassicMuscleLinks || [],
-                "gmClassicMuscle",
-              )}
-            </li>
-
-            {/* Mopar Dropdown */}
-            <li
-              className="nav-item dropdown position-static"
-              onMouseEnter={(e) => handlePlatformHover("mopar", e)}
-              onMouseLeave={handlePlatformLeave}
-            >
-              <Link href="/products/mopar" className="nav-link dropdown-toggle">
-                Mopar
-              </Link>
-              {renderMegaMenu(menuData.moparLinks || [], "mopar")}
-            </li>
-
-            {/* Static Links */}
-            <li className="nav-item nav-item-installation">
-              <Link href="/installation" className="nav-link">
-                Installation
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link href="/view-cart" className="nav-link">
-                Cart
-              </Link>
-            </li>
+            {navOrder.map((id) => {
+              const label = navLabels[id] ?? "";
+              const url = normUrl(
+                navUrls[id],
+                id === "installation"
+                  ? "/installation"
+                  : id === "cart"
+                    ? "/view-cart"
+                    : "#",
+              );
+              if (platformIds.includes(id)) {
+                const linksKey = `${id}Links`;
+                const platformLinks = menuData[linksKey] || [];
+                return (
+                  <li
+                    key={id}
+                    className="nav-item dropdown position-static"
+                    onMouseEnter={(e) => handlePlatformHover(id, e)}
+                    onMouseLeave={handlePlatformLeave}
+                  >
+                    <Link href={url} className="nav-link dropdown-toggle">
+                      {label}
+                    </Link>
+                    {renderMegaMenu(platformLinks, id)}
+                  </li>
+                );
+              }
+              return (
+                <li
+                  key={id}
+                  className={`nav-item${id === "installation" ? " nav-item-installation" : ""}`}
+                >
+                  <Link href={url} className="nav-link">
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

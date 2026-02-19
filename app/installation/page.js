@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useBrand } from "@bmr/ui/brand";
 import Topbar4 from "@/components/header/Topbar4";
 import Header from "@/components/header/Header";
 import { getInstallUrl } from "@/lib/assets";
 
+const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/@BMRSuspension";
+
 export default function InstallationPage() {
+  const brand = useBrand();
   const [partNumber, setPartNumber] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -160,7 +164,7 @@ export default function InstallationPage() {
       (hasPlatformSearched && selectedPlatform));
 
   return (
-    <div>
+    <div className="installation-page">
       <Topbar4 />
       <Header showVehicleSearch={false} />
 
@@ -397,12 +401,13 @@ export default function InstallationPage() {
                   View Available Install Videos on YouTube!
                 </h3>
                 <a
-                  href="https://www.youtube.com/@BMRSuspension"
+                  href={brand?.social?.youtube || DEFAULT_YOUTUBE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-danger btn-block w-100 mt-3"
                 >
-                  Visit BMR Suspension on YouTube
+                  Visit {brand?.companyName || brand?.name || "BMR Suspension"}{" "}
+                  on YouTube
                 </a>
               </div>
             </div>
@@ -417,10 +422,14 @@ export default function InstallationPage() {
                   Available 8:30-5:30 PM EST Monday-Friday
                 </p>
                 <a
-                  href="tel:8139869302"
+                  href={
+                    brand?.contact?.phoneTel
+                      ? `tel:${brand.contact.phoneTel}`
+                      : "tel:8139869302"
+                  }
                   className="btn btn-danger btn-block w-100"
                 >
-                  (813)-986-9302
+                  {brand?.contact?.phoneDisplay || "(813)-986-9302"}
                 </a>
               </div>
             </div>

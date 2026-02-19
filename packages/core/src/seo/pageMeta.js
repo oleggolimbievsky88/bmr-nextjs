@@ -37,14 +37,14 @@ export function pageMeta({ brand, path, title, description, image }) {
     url: ogUrl,
     width: 1200,
     height: 630,
-    alt: title || brand?.siteName || brand?.companyName || "Website",
+    alt: title || brand?.name || brand?.companyName || "Website",
   };
 
   const openGraph = {
     type: "website",
     locale: "en_US",
     url,
-    siteName: brand?.siteName || brand?.companyName || "Website",
+    siteName: brand?.name || brand?.companyName || "Website",
     title,
     description,
     images: [img],
@@ -71,6 +71,6 @@ export function defaultOgImage(brand) {
     url: OG_IMAGE_URL,
     width: 1200,
     height: 630,
-    alt: brand?.siteName || brand?.companyName || "Website",
+    alt: brand?.name || brand?.companyName || "Website",
   };
 }

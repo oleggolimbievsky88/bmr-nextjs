@@ -15,7 +15,7 @@ export function buildMetadata(brand) {
       type: "website",
       locale: "en_US",
       url: SITE_URL,
-      siteName: brand.siteName || brand.companyName,
+      siteName: brand.name || brand.companyName,
       title: defaultTitle,
       description: defaultDescription,
       images: [og],

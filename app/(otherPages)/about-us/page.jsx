@@ -1,4 +1,4 @@
-import { getBrandConfig } from "@bmr/core/brand";
+import { getBrandConfig } from "@/lib/brandConfig";
 import Footer1 from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import PageHeader from "@/components/header/PageHeader";
@@ -7,8 +7,8 @@ import AboutPageContent from "@/components/othersPages/about/AboutPageContent";
 import React from "react";
 
 export async function generateMetadata() {
-  const config = getBrandConfig();
-  const name = config.companyName || config.siteName || "Us";
+  const config = await getBrandConfig();
+  const name = config.companyName || config.name || "Us";
   const title = config.defaultTitle || "";
   return {
     title: `About ${config.companyNameShort || name} | ${title.split("|")[1]?.trim() || name}`,
@@ -16,8 +16,8 @@ export async function generateMetadata() {
   };
 }
 
-export default function page() {
-  const config = getBrandConfig();
+export default async function page() {
+  const config = await getBrandConfig();
   const hasAboutBrand =
     config.aboutBrand &&
     Array.isArray(config.aboutBrand.paragraphs) &&

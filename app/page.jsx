@@ -1,4 +1,4 @@
-import { getBrandConfig } from "@bmr/core/brand";
+import { getBrandConfig } from "@/lib/brandConfig";
 import Features from "@/components/common/Features";
 import Hero from "@/components/homes/home/Hero";
 import React from "react";
@@ -16,7 +16,7 @@ import AboutBrandSection from "@/components/homes/home/AboutBrandSection";
 import { getBannerImagesForPublic } from "@/lib/queries";
 
 export async function generateMetadata() {
-  const config = getBrandConfig();
+  const config = await getBrandConfig();
   return {
     title: config.defaultTitle ?? "",
     description: config.defaultDescription ?? "",
@@ -32,7 +32,33 @@ function resolveBannerSrc(imageSrc) {
   return `/images/slider/${s}`;
 }
 
+const DEFAULT_SHOP_BY_MAKE = {
+  sectionTitle: "Shop by Make",
+  sectionSubtitle: "Find parts for Ford, GM, and Dodge platforms.",
+  items: [
+    {
+      imagePath: "/images/logo/Ford_Logo.png",
+      title: "FORD",
+      link: "products/ford",
+      shopNowLabel: "SHOP NOW",
+    },
+    {
+      imagePath: "/images/logo/gm_logo.png",
+      title: "GM",
+      link: "products/gm",
+      shopNowLabel: "SHOP NOW",
+    },
+    {
+      imagePath: "/images/logo/dodge_logo.png",
+      title: "Dodge",
+      link: "products/mopar",
+      shopNowLabel: "SHOP NOW",
+    },
+  ],
+};
+
 export default async function page() {
+  const config = await getBrandConfig();
   const imageRows = await getBannerImagesForPublic();
   const initialBannerImages =
     imageRows?.length > 0
@@ -52,7 +78,13 @@ export default async function page() {
       </div>
 
       <div className="homepage-sections">
-        <ThreeColumnLayout />
+        <ThreeColumnLayout
+          shopByMake={
+            config.shopByMake?.items?.length > 0
+              ? config.shopByMake
+              : DEFAULT_SHOP_BY_MAKE
+          }
+        />
         <ShopCategories />
         <LazyNewProducts scratchDent="0" />
         <LazyNewProducts scratchDent="1" />

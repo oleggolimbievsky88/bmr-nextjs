@@ -1,10 +1,8 @@
 import { getSiteUrl } from "@bmr/core/url";
 import { resolveAssetUrl } from "@bmr/core/brand";
-import { brand } from "@/src/brand";
 
 /**
- * Server-friendly JSON-LD (no hooks required).
- * Reads brand from the app-level brand selector (apps/xxx/src/brand.js).
+ * Server-friendly JSON-LD. Receives brand from layout.
  */
 
 function absoluteUrl(base, maybePath) {
@@ -16,15 +14,15 @@ function absoluteUrl(base, maybePath) {
   return `${b}${p}`;
 }
 
-function getBrandLogoUrl(SITE_URL) {
-  const assetsBaseUrl = brand.assetsBaseUrl || "";
-  const headerPath = brand.logo?.headerPath || "";
+function getBrandLogoUrl(brand, SITE_URL) {
+  const assetsBaseUrl = brand?.assetsBaseUrl || "";
+  const headerPath = brand?.logo?.headerPath || "";
   const resolved = resolveAssetUrl({ assetsBaseUrl, path: headerPath });
   return absoluteUrl(SITE_URL, resolved);
 }
 
-function buildSameAs() {
-  const social = brand.social || {};
+function buildSameAs(brand) {
+  const social = brand?.social || {};
   const urls = [
     social.facebook,
     social.instagram,
@@ -34,13 +32,14 @@ function buildSameAs() {
     social.linkedin,
   ].filter(Boolean);
 
-  const extra = Array.isArray(brand.sameAs) ? brand.sameAs : [];
+  const extra = Array.isArray(brand?.sameAs) ? brand.sameAs : [];
   return Array.from(new Set([...urls, ...extra]));
 }
 
-export default function JsonLd() {
+export default function JsonLd({ brand }) {
+  if (!brand) return null;
   const SITE_URL = getSiteUrl();
-  const logoUrl = getBrandLogoUrl(SITE_URL);
+  const logoUrl = getBrandLogoUrl(brand, SITE_URL);
 
   const email = brand.contact?.email || "";
   const phoneTel = brand.contact?.phoneTel || "";
@@ -65,7 +64,7 @@ export default function JsonLd() {
           ],
         }
       : {}),
-    sameAs: buildSameAs(),
+    sameAs: buildSameAs(brand),
   };
 
   const website = {

@@ -76,16 +76,16 @@
 	padding: 0.5rem 1rem;
 	font-size: 0.875rem;
 	font-weight: 600;
-	color: var(--white);
-	background: rgba(220, 53, 69, 0.9);
+	color: var(--brand-primary-button-text, var(--white));
+	background: var(--primary);
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
 	@include transition3;
 
 	&:hover {
-		background: #dc3545;
-		color: var(--white);
+		background: color-mix(in srgb, var(--primary) 85%, black);
+		color: var(--brand-primary-button-text, var(--white));
 	}
 }
 
@@ -172,7 +172,7 @@
 		}
 
 		&.active {
-			color: var(--white);
+			color: var(--brand-primary-button-text, var(--white));
 			background: var(--primary);
 		}
 	}
@@ -224,11 +224,46 @@
 	}
 }
 
-/* Admin page container */
+/* Admin page container: fixed off-white so admin is readable regardless of brand theme */
 .admin-page {
-	background-color: var(--bg-2);
+	background-color: #f5f5f5;
 	min-height: 60vh;
 	padding: 2rem 0 3rem;
+}
+
+/* Admin form readability: force dark text and visible borders so inputs are never invisible on light backgrounds */
+.admin-page .form-control,
+.admin-page input[type="text"],
+.admin-page input[type="email"],
+.admin-page input[type="url"],
+.admin-page input[type="number"],
+.admin-page input[type="tel"],
+.admin-page input[type="color"],
+.admin-page input[type="search"],
+.admin-page textarea,
+.admin-page select {
+	color: #212529 !important;
+	background-color: #fff !important;
+	border: 1px solid #ced4da !important;
+	border-radius: 6px;
+}
+.admin-page .form-control::placeholder,
+.admin-page input::placeholder,
+.admin-page textarea::placeholder {
+	color: #6c757d;
+}
+.admin-page .form-label,
+.admin-page label.form-label,
+.admin-page .card-header {
+	color: #212529 !important;
+}
+.admin-page .card {
+	background-color: #fff;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+}
+.admin-page .card-body {
+	color: #212529;
 }
 
 /* Admin dashboard */
@@ -283,12 +318,15 @@
 		}
 
 		.admin-stat-label {
-			font-size: 13px;
-			color: var(--text);
-			font-weight: 500;
+			font-size: 12px;
+			color: var(--main, #1a1a1a);
+			font-weight: 600;
 			margin-bottom: 0.5rem;
+			padding-left: 0.75rem;
+			border-left: 3px solid var(--primary);
 			text-transform: uppercase;
-			letter-spacing: 0.02em;
+			letter-spacing: 0.04em;
+			line-height: 1.3;
 		}
 
 		.admin-stat-value {
@@ -314,14 +352,18 @@
 			display: inline-block;
 			margin-top: 0.75rem;
 			font-size: 13px;
-			font-weight: 500;
-			color: var(--primary);
+			font-weight: 600;
+			color: #fff;
+			background: var(--main, #1a1a1a);
 			text-decoration: none;
+			padding: 0.35rem 0.75rem;
+			border-radius: 999px;
 			@include transition3;
 
 			&:hover {
-				color: var(--main);
-				text-decoration: underline;
+				color: #fff;
+				background: color-mix(in srgb, var(--main, #1a1a1a) 80%, white);
+				text-decoration: none;
 			}
 		}
 	}
@@ -1584,4 +1626,486 @@
 .admin-filter-button {
 	border-radius: 5px !important;
 	height: 40px !important;
+}
+
+/* ========== Admin Brand Edit Page ========== */
+.admin-brand-edit {
+	--brand-edit-radius: 12px;
+	--brand-edit-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+	--brand-edit-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.08);
+	--brand-edit-border: 1px solid #e5e7eb;
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+.admin-brand-edit .admin-page-header-modern {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.75rem;
+	padding: 1.25rem 1.5rem;
+	background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+	border: var(--brand-edit-border);
+	border-radius: var(--brand-edit-radius);
+	box-shadow: var(--brand-edit-shadow);
+}
+
+.admin-brand-edit .admin-brand-title-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.admin-brand-edit .admin-brand-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: var(--main);
+	margin: 0;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+
+	@media (min-width: 768px) {
+		font-size: 1.75rem;
+	}
+}
+
+.admin-brand-edit .admin-brand-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.35rem 0.75rem;
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.admin-brand-edit .admin-brand-badge--active {
+	background: #d1fae5;
+	color: #065f46;
+	border: 1px solid #a7f3d0;
+}
+
+.admin-brand-edit .admin-brand-badge--inactive {
+	background: #fee2e2;
+	color: #991b1b;
+	border: 1px solid #fecaca;
+}
+
+.admin-brand-edit .admin-brand-subtitle {
+	font-size: 0.875rem;
+	color: var(--text);
+	margin: 0.25rem 0 0 0;
+}
+
+.admin-brand-edit .admin-brand-actions-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* Section cards */
+.admin-brand-edit .admin-brand-card {
+	background: #fff;
+	border: var(--brand-edit-border);
+	border-radius: var(--brand-edit-radius);
+	box-shadow: var(--brand-edit-shadow);
+	margin-bottom: 1.5rem;
+	overflow: hidden;
+	transition: box-shadow 0.2s ease;
+
+	&:hover {
+		box-shadow: var(--brand-edit-shadow-hover);
+	}
+}
+
+.admin-brand-edit .admin-brand-card-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+	border-bottom: var(--brand-edit-border);
+}
+
+.admin-brand-edit .admin-brand-card-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--main);
+	margin: 0;
+	line-height: 1.3;
+}
+
+.admin-brand-edit .admin-brand-section-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.15rem 0.5rem;
+	border-radius: 6px;
+	font-size: 0.65rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	background: var(--primary);
+	color: #fff;
+	line-height: 1.2;
+}
+
+.admin-brand-edit .admin-brand-card-body {
+	padding: 1.25rem;
+}
+
+.admin-brand-edit .admin-brand-card-body .form-label {
+	font-weight: 500;
+	color: var(--main);
+}
+
+.admin-brand-edit .admin-brand-card-body .form-control,
+.admin-brand-edit .admin-brand-card-body input[type="text"],
+.admin-brand-edit .admin-brand-card-body input[type="email"],
+.admin-brand-edit .admin-brand-card-body input[type="url"],
+.admin-brand-edit .admin-brand-card-body textarea {
+	border-radius: 8px;
+	border-color: #e5e7eb;
+
+	&:focus {
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(219, 18, 21, 0.12);
+	}
+}
+
+/* Nav link rows (mega menu) */
+.admin-brand-edit .admin-brand-nav-intro {
+	font-size: 0.875rem;
+	color: var(--text);
+	margin-bottom: 1rem;
+	line-height: 1.5;
+}
+
+.admin-brand-edit .admin-brand-nav-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 0.75rem;
+	padding: 1rem;
+	margin-bottom: 0.75rem;
+	background: #f8fafc;
+	border: var(--brand-edit-border);
+	border-radius: 10px;
+	transition: background 0.2s ease;
+
+	&:hover {
+		background: #f1f5f9;
+	}
+}
+
+.admin-brand-edit .admin-brand-nav-order {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 36px;
+	height: 36px;
+	border-radius: 10px;
+	background: var(--main);
+	color: #fff;
+	font-size: 0.875rem;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.admin-brand-edit .admin-brand-nav-move {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex-shrink: 0;
+
+	button {
+		width: 36px;
+		height: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		background: #fff;
+		color: var(--main);
+		font-size: 1rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: background 0.2s, border-color 0.2s;
+
+		&:hover:not(:disabled) {
+			background: var(--primary);
+			border-color: var(--primary);
+			color: #fff;
+		}
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+	}
+}
+
+.admin-brand-edit .admin-brand-nav-fields {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 0.75rem;
+}
+
+.admin-brand-edit .admin-brand-nav-field {
+	flex: 1 1 140px;
+	min-width: 0;
+}
+
+.admin-brand-edit .admin-brand-nav-field label {
+	display: block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--text);
+	margin-bottom: 0.25rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.admin-brand-edit .admin-brand-nav-dropdown-wrap {
+	margin-top: 0.5rem;
+	padding-top: 0.5rem;
+	border-top: 1px dashed #e5e7eb;
+}
+
+.admin-brand-edit .admin-brand-nav-dropdown-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.35rem 0.65rem;
+	border-radius: 8px;
+	background: #e0e7ff;
+	color: #3730a3;
+	font-size: 0.8rem;
+	font-weight: 600;
+	cursor: pointer;
+	user-select: none;
+	transition: background 0.2s;
+
+	&:hover {
+		background: #c7d2fe;
+	}
+
+	.form-check-input {
+		margin: 0;
+		cursor: pointer;
+	}
+}
+
+.admin-brand-edit .admin-brand-nav-delete {
+	flex-shrink: 0;
+
+	button {
+		padding: 0.5rem 0.75rem;
+		border-radius: 8px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		border: 1px solid #fecaca;
+		background: #fef2f2;
+		color: #991b1b;
+		transition: background 0.2s, border-color 0.2s;
+
+		&:hover {
+			background: #fee2e2;
+			border-color: #f87171;
+		}
+	}
+}
+
+/* List items (assurance bar, shop by make) */
+.admin-brand-edit .admin-brand-list-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 1rem;
+	padding: 1rem;
+	margin-bottom: 0.75rem;
+	background: #f8fafc;
+	border: var(--brand-edit-border);
+	border-radius: 10px;
+}
+
+.admin-brand-edit .admin-brand-list-item-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	background: var(--primary);
+	color: #fff;
+	font-size: 0.8rem;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.admin-brand-edit .admin-brand-list-item-fields {
+	flex: 1;
+	min-width: 0;
+}
+
+.admin-brand-edit .admin-brand-list-item-actions {
+	flex-shrink: 0;
+}
+
+/* Add buttons */
+.admin-brand-edit .admin-brand-btn-add {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.5rem 1rem;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	background: var(--primary);
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	transition: background 0.2s, transform 0.1s;
+
+	&:hover {
+		background: color.adjust(#db1215, $lightness: -8%);
+		color: #fff;
+	}
+
+	&:active {
+		transform: scale(0.98);
+	}
+}
+
+/* Form actions bar */
+.admin-brand-edit .admin-brand-form-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 1.25rem 1.5rem;
+	margin-top: 1.5rem;
+	background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+	border: var(--brand-edit-border);
+	border-radius: var(--brand-edit-radius);
+	box-shadow: var(--brand-edit-shadow);
+}
+
+.admin-brand-edit .admin-brand-form-actions .btn-primary {
+	padding: 0.6rem 1.5rem;
+	font-weight: 600;
+	border-radius: 8px;
+}
+
+.admin-brand-edit .admin-brand-form-actions .btn-outline-secondary {
+	border-radius: 8px;
+	font-weight: 500;
+}
+
+/* Active toggle as card */
+.admin-brand-edit .admin-brand-active-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 1rem;
+	padding: 1rem 1.25rem;
+	margin-bottom: 1.5rem;
+	background: #fff;
+	border: var(--brand-edit-border);
+	border-radius: var(--brand-edit-radius);
+	box-shadow: var(--brand-edit-shadow);
+}
+
+.admin-brand-edit .admin-brand-active-label {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--main);
+	margin: 0;
+}
+
+/* Error alert */
+.admin-brand-edit .alert-danger {
+	border-radius: 10px;
+	border: 1px solid #fecaca;
+}
+
+/* Mobile: stack and touch-friendly */
+@media (max-width: 767.98px) {
+	.admin-brand-edit .admin-page-header-modern {
+		padding: 1rem;
+	}
+
+	.admin-brand-edit .admin-brand-title {
+		font-size: 1.35rem;
+	}
+
+	.admin-brand-edit .admin-brand-actions-header {
+		width: 100%;
+	}
+
+	.admin-brand-edit .admin-brand-actions-header .btn {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.admin-brand-edit .admin-brand-card-header {
+		padding: 0.5rem 0.75rem;
+	}
+
+	.admin-brand-edit .admin-brand-card-body {
+		padding: 1rem;
+	}
+
+	.admin-brand-edit .admin-brand-nav-row {
+		flex-direction: column;
+		align-items: stretch;
+		padding: 1rem;
+	}
+
+	.admin-brand-edit .admin-brand-nav-move {
+		flex-direction: row;
+		justify-content: flex-start;
+	}
+
+	.admin-brand-edit .admin-brand-nav-move button {
+		width: 44px;
+		height: 36px;
+	}
+
+	.admin-brand-edit .admin-brand-nav-fields {
+		flex-direction: column;
+	}
+
+	.admin-brand-edit .admin-brand-nav-field {
+		flex: 1 1 100%;
+	}
+
+	.admin-brand-edit .admin-brand-list-item {
+		flex-direction: column;
+	}
+
+	.admin-brand-edit .admin-brand-form-actions {
+		flex-direction: column;
+		align-items: stretch;
+		padding: 1rem;
+	}
+
+	.admin-brand-edit .admin-brand-form-actions .btn {
+		width: 100%;
+	}
 }

@@ -4,25 +4,21 @@ import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
 import Login from "@/components/othersPages/Login";
 import { pageMeta } from "@bmr/core/seo";
-import { brand } from "@/src/brand";
+import { getBrandConfig } from "@/lib/brandConfig";
 import React, { Suspense } from "react";
 
-const title = `Login | ${brand.companyName} - Performance Racing Suspension & Chassis Parts`;
-const description = `Log in to your ${brand.companyName} account. Manage orders, addresses, and wishlist. Performance suspension and chassis parts for Mustang, Camaro, GM, Mopar.`;
-
-const { openGraph, twitter } = pageMeta({
-  brand,
-  path: "/login",
-  title,
-  description,
-});
-
-export const metadata = {
-  title,
-  description,
-  openGraph,
-  twitter,
-};
+export async function generateMetadata() {
+  const brand = await getBrandConfig();
+  const title = `Login | ${brand.companyName} - Performance Racing Suspension & Chassis Parts`;
+  const description = `Log in to your ${brand.companyName} account. Manage orders, addresses, and wishlist. Performance suspension and chassis parts for Mustang, Camaro, GM, Mopar.`;
+  const { openGraph, twitter } = pageMeta({
+    brand,
+    path: "/login",
+    title,
+    description,
+  });
+  return { title, description, openGraph, twitter };
+}
 
 function LoginFallback() {
   return (

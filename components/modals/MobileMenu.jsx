@@ -4,13 +4,32 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import LanguageSelect from "../common/LanguageSelect";
 import { usePathname } from "next/navigation";
+import { useBrand } from "@bmr/ui/brand";
+import { footerLinks, aboutLinks } from "@/data/footerLinks";
 
 export default function MobileMenu() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const brand = useBrand();
+  const navLabels = {
+    ford: "Ford",
+    gmLateModel: "GM Late Model Cars",
+    gmMidMuscle: "GM Mid Muscle Cars",
+    gmClassicMuscle: "GM Classic Muscle Cars",
+    mopar: "Mopar",
+    installation: "Installation",
+    cart: "Cart",
+    ...(brand?.navLabels || {}),
+  };
+  const navUrls = {
+    installation: "/installation",
+    cart: "/view-cart",
+    ...(brand?.navUrls || {}),
+  };
   const offcanvasRef = useRef(null);
   const isLoggedIn = status !== "loading" && !!session;
-  const accountHref = session?.user?.role === "admin" ? "/admin" : "/my-account";
+  const accountHref =
+    session?.user?.role === "admin" ? "/admin" : "/my-account";
   const [menuData, setMenuData] = useState({
     fordLinks: [],
     moparLinks: [],
@@ -55,7 +74,7 @@ export default function MobileMenu() {
       if (!offcanvasEl) return;
       // 1) Prefer clicking the close button so Bootstrap handles it the same way as user close
       const closeBtn = offcanvasEl.querySelector(
-        '[data-bs-dismiss="offcanvas"]'
+        '[data-bs-dismiss="offcanvas"]',
       );
       if (closeBtn) {
         closeBtn.click();
@@ -138,31 +157,31 @@ export default function MobileMenu() {
       links: [
         {
           id: "ford",
-          label: "Ford",
+          label: navLabels.ford,
           type: "platform",
           platformData: menuData.fordLinks,
         },
         {
           id: "gm-late-model",
-          label: "GM Late Model Cars",
+          label: navLabels.gmLateModel,
           type: "platform",
           platformData: menuData.gmLateModelLinks,
         },
         {
           id: "gm-mid-muscle",
-          label: "GM Mid Muscle Cars",
+          label: navLabels.gmMidMuscle,
           type: "platform",
           platformData: menuData.gmMidMuscleLinks,
         },
         {
           id: "gm-classic-muscle",
-          label: "GM Classic Muscle Cars",
+          label: navLabels.gmClassicMuscle,
           type: "platform",
           platformData: menuData.gmClassicMuscleLinks,
         },
         {
           id: "mopar",
-          label: "Mopar",
+          label: navLabels.mopar,
           type: "platform",
           platformData: menuData.moparLinks,
         },
@@ -170,8 +189,10 @@ export default function MobileMenu() {
     },
     {
       id: "installation",
-      label: "Installation",
-      href: "/installation",
+      label: navLabels.installation,
+      href:
+        (navUrls.installation || "/installation").replace(/^\/*/, "/") ||
+        "/installation",
       type: "link",
     },
     {
@@ -188,8 +209,8 @@ export default function MobileMenu() {
     },
     {
       id: "view-cart",
-      label: "View Cart",
-      href: "/view-cart",
+      label: navLabels.cart,
+      href: (navUrls.cart || "/view-cart").replace(/^\/*/, "/") || "/view-cart",
       type: "link",
     },
     {
@@ -199,18 +220,26 @@ export default function MobileMenu() {
       type: "link",
     },
     {
-      id: "pages",
-      label: "Pages",
+      id: "customer-resources",
+      label: "Customer Resources",
       type: "dropdown",
-      links: [
-        { href: "/faq", label: "FAQ" },
-        { href: "/terms-conditions", label: "Terms and conditions" },
-        { href: "/privacy-policy", label: "Privacy Policy" },
-        { href: "/shipping-delivery", label: "Shipping & Delivery" },
-        { href: "/delivery-return", label: "Delivery & Return" },
-        { href: "/checkout", label: "Check out" },
-        { href: "/register", label: "Register" },
-      ],
+      links: footerLinks.map((link) => ({
+        href: link.href,
+        label: link.text,
+      })),
+    },
+    {
+      id: "company-dealers",
+      label: "Company & Dealers",
+      type: "dropdown",
+      links: aboutLinks.map((link) => ({
+        href: link.href,
+        label:
+          link.href === "/about-us"
+            ? `About ${brand.companyNameShort ?? brand.companyName ?? ""}`.trim() ||
+              link.text
+            : link.text,
+      })),
     },
     {
       id: "login",
@@ -303,7 +332,7 @@ export default function MobileMenu() {
                                               {platform.heading}
                                             </Link>
                                           </li>
-                                        )
+                                        ),
                                       )
                                     ) : (
                                       <li>
@@ -342,21 +371,42 @@ export default function MobileMenu() {
               </Link>
             </div> */}
             <div className="mb-notice">
-              <Link href={`/contact`} className="text-need">
-                Need help ?
+              <Link href="/contact" className="text-need">
+                Need help?
               </Link>
             </div>
             <ul className="mb-info">
-              <li>
-                Address: BMR Suspension <br />
-                1033 Pine Chase Ave, Lakeland, FL 33815
-              </li>
-              <li>
-                Email: <b>sales@bmrsuspension.com</b>
-              </li>
-              <li>
-                Phone: <b>(813) 986-9302</b>
-              </li>
+              {(brand.contact?.addressLines?.length > 0 ||
+                brand.companyName ||
+                brand.companyNameShort) && (
+                <li>
+                  Address:{" "}
+                  {brand.companyNameShort || brand.companyName ? (
+                    <>
+                      {brand.companyNameShort || brand.companyName}
+                      {brand.contact?.addressLines?.length > 0 && <br />}
+                    </>
+                  ) : null}
+                  {brand.contact?.addressLines?.length > 0 &&
+                    brand.contact.addressLines.map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}
+                        {i < brand.contact.addressLines.length - 1 && <br />}
+                      </React.Fragment>
+                    ))}
+                </li>
+              )}
+              {brand.contact?.email && (
+                <li>
+                  Email: <b>{brand.contact.email}</b>
+                </li>
+              )}
+              {(brand.contact?.phoneDisplay || brand.contact?.phoneTel) && (
+                <li>
+                  Phone:{" "}
+                  <b>{brand.contact.phoneDisplay || brand.contact.phoneTel}</b>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -369,8 +419,7 @@ export default function MobileMenu() {
             {isLoggedIn ? "My Account" : "Login/Register"}
           </Link>
           <div className="bottom-bar-language">
-            <div className="tf-currencies">
-            </div>
+            <div className="tf-currencies"></div>
             <div className="tf-languages">
               <LanguageSelect
                 parentClassName={

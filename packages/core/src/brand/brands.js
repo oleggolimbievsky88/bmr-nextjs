@@ -8,22 +8,44 @@ export function getBrandKey() {
 }
 
 /**
- * Returns the config for the current brand (from env).
+ * Deep merge: target is mutated, source overrides. Arrays are replaced, not merged.
  */
-export function getBrandConfig() {
-  const key = getBrandKey();
-  const brand = brands[key];
-  return brand || brands.bmr;
+export function deepMerge(target, source) {
+  if (!source || typeof source !== "object") return target;
+  for (const key of Object.keys(source)) {
+    const srcVal = source[key];
+    if (
+      srcVal !== null &&
+      typeof srcVal === "object" &&
+      !Array.isArray(srcVal)
+    ) {
+      if (!(key in target) || typeof target[key] !== "object") {
+        target[key] = {};
+      }
+      deepMerge(target[key], srcVal);
+    } else {
+      target[key] = srcVal;
+    }
+  }
+  return target;
 }
 
-export const brands = {
+/**
+ * Sync fallback: returns brand from file only (no DB). Use getBrandConfig() for DB merge.
+ */
+export function getBrandConfigSync() {
+  const key = getBrandKey();
+  const brand = defaultBrands[key];
+  return brand || defaultBrands.bmr;
+}
+
+export const defaultBrands = {
   bmr: {
     key: "bmr",
     name: "BMR Suspension",
     companyName: "BMR Suspension",
     /** Short name for inline use (e.g. "Check out the latest from BMR!") */
     companyNameShort: "BMR",
-    siteName: "BMR Suspension",
     siteUrl: getSiteUrl(),
     assetsBaseUrl: process.env.NEXT_PUBLIC_ASSETS_BASE_URL || "",
 
@@ -115,7 +137,6 @@ export const brands = {
     companyName: "Control Freak Suspension",
     /** Short name for inline use (e.g. "Check out the latest from Control Freak!") */
     companyNameShort: "Control Freak",
-    siteName: "Control Freak Suspension",
     siteUrl: getSiteUrl(),
     assetsBaseUrl: process.env.NEXT_PUBLIC_ASSETS_BASE_URL || "",
 
@@ -142,7 +163,7 @@ export const brands = {
     copyrightName: "Control Freak Suspension",
 
     themeColor: "#ffec01",
-    faviconPath: "/brands/controlfreak/favicons/controlfreaksuspension.svg",
+    faviconPath: "/brands/controlfreak/favicons/ControlFreakLogo.svg",
     ogImagePath: "/brands/controlfreak/images/CFS_logo.png",
     defaultOgImagePath: "/og/controlfreak-og.jpg",
     envOgImageUrlKey: "NEXT_PUBLIC_OG_IMAGE_URL",
@@ -184,9 +205,9 @@ export const brands = {
     ],
 
     defaultTitle:
-      "Control Freak Suspension | Performance Suspension & Chassis Parts",
+      "Control Freak Suspension | World Class Suspensions for the Best Price",
     defaultDescription:
-      "Control Freak Suspension offers high-performance suspension and chassis parts engineered for serious handling and traction.",
+      "Control Freak Suspension offers World Class Suspensions for the Best Price",
 
     /**
      * About brand block (home page + about page). Used only when present.
@@ -198,10 +219,13 @@ export const brands = {
         "Our mission is simple: design, develop, and manufacture world-class suspension systems at a responsive price.",
         "All of our products are manufactured in-house at our central Florida facilities to uphold the high quality you know and trust. Whether it's a weekend cruiser or a dedicated track car, we have the parts you need to upgrade your classic ride with modern handling and performance.",
       ],
-      ctaLabel: "Contact Us",
+      ctaLabel: "Contact Support",
       ctaHref: "/contact",
     },
 
     sameAs: [],
   },
 };
+
+/** @deprecated Use defaultBrands */
+export const brands = defaultBrands;

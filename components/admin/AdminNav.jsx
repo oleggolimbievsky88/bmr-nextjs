@@ -10,6 +10,7 @@ export default function AdminNav({ user }) {
 
   const navLinks = [
     { href: "/admin", label: "Dashboard" },
+    { href: "/admin/brands", label: "Brands" },
     { href: "/admin/topbar", label: "Topbar" },
     { href: "/admin/banner", label: "Banners" },
     { href: "/admin/platforms", label: "Platforms" },

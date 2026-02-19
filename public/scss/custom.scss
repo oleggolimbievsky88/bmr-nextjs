@@ -138,7 +138,9 @@
 /* Force header background to always be black (all pages) */
 header,
 #header {
-	position: relative;
+	position: sticky;
+	position: -webkit-sticky;
+	top: 0;
 	z-index: 1000;
 	background-color: #000 !important;
 	margin-bottom: 0 !important;
@@ -4710,6 +4712,19 @@ header[style*="transform:translateY(-"] {
 	font-size: 1rem;
 	color: #666;
 	margin-bottom: 0;
+}
+
+/* Installation page: use brand colors for buttons */
+.installation-page .btn-danger {
+	background-color: var(--primary) !important;
+	border-color: var(--primary) !important;
+	color: var(--brand-primary-button-text, #fff) !important;
+}
+.installation-page .btn-danger:hover,
+.installation-page .btn-danger:focus {
+	background-color: color-mix(in srgb, var(--primary) 85%, black) !important;
+	border-color: color-mix(in srgb, var(--primary) 85%, black) !important;
+	color: var(--brand-primary-button-text, #fff) !important;
 }
 
 @media (max-width: 768px) {

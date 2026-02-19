@@ -1,12 +1,7 @@
-import { brands, getBrandKey } from "@bmr/core/brand";
-
 /**
- * Resolve brand for the current env (NEXT_PUBLIC_BRAND / BRAND).
+ * Brand helpers. Use getBrandConfig() for async DB-backed config.
+ * Client components: use useBrand() from BrandProvider.
  */
-export function getBrand() {
-  const key = getBrandKey();
-  const brand = brands[key];
-  return brand || brands.bmr;
-}
+import { getBrandKey, getBrandConfigSync } from "@bmr/core/brand";
 
-export const brand = getBrand();
+export { getBrandKey, getBrandConfigSync };

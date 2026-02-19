@@ -1,6 +1,5 @@
 import { getSiteUrl } from "@bmr/core/url";
-import { getBrandConfig } from "@bmr/core/brand";
-import { brand } from "@/src/brand";
+import { getBrandConfig } from "@/lib/brandConfig";
 import { BrandProvider } from "@bmr/ui/brand";
 import ClientProviders from "@/components/layouts/ClientProviders";
 import JsonLd from "@/components/seo/JsonLd";
@@ -18,11 +17,11 @@ export const viewport = {
 };
 
 export async function generateMetadata() {
-  const config = getBrandConfig();
+  const config = await getBrandConfig();
   const siteUrl = getSiteUrl().replace(/\/$/, "");
   const defaultTitle = config.defaultTitle ?? "";
   const defaultDescription = config.defaultDescription ?? "";
-  const siteName = config.siteName || config.name || "";
+  const siteName = config.name || "";
   const rawPath =
     config.ogImagePath && typeof config.ogImagePath === "string"
       ? config.ogImagePath
@@ -34,6 +33,26 @@ export async function generateMetadata() {
     : "/og-image.png";
   const ogImageUrl = `${siteUrl}${ogImagePath}`;
 
+  const rawFavicon = config.faviconPath || "/favicon.ico";
+  const faviconPath =
+    typeof rawFavicon === "string" && rawFavicon && !rawFavicon.startsWith("/")
+      ? `/${rawFavicon}`
+      : rawFavicon;
+  const isSvg =
+    typeof faviconPath === "string" &&
+    faviconPath.toLowerCase().endsWith(".svg");
+  const icons = isSvg
+    ? {
+        icon: [
+          {
+            url: faviconPath,
+            type: "image/svg+xml",
+            sizes: "any",
+          },
+        ],
+      }
+    : { icon: faviconPath };
+
   return {
     metadataBase: new URL(siteUrl),
     title: {
@@ -41,9 +60,7 @@ export async function generateMetadata() {
       template: `%s | ${siteName}`,
     },
     description: defaultDescription,
-    icons: {
-      icon: config.faviconPath || "/favicon.ico",
-    },
+    icons,
     openGraph: {
       type: "website",
       locale: "en_US",
@@ -75,21 +92,38 @@ export async function generateMetadata() {
   };
 }
 
-export default function RootLayout({ children }) {
-  const config = getBrandConfig();
+export default async function RootLayout({ children }) {
+  const config = await getBrandConfig();
   const buttonBadge = config.buttonBadgeColor ?? config.themeColor;
   const buttonBadgeText = config.buttonBadgeTextColor ?? "#ffffff";
   const primaryButtonText = config.primaryButtonTextColor ?? "#ffffff";
   const assuranceBarBg =
-    config.assuranceBarBackgroundColor ?? config.themeColor ?? "#f5f5f5";
+    config.assuranceBarBackgroundColor ?? config.themeColor ?? "#000000";
   const assuranceBarText = config.assuranceBarTextColor ?? "#1a1a1a";
+  const brandKey = config.key || "bmr";
+
+  const faviconHref =
+    config.faviconPath && String(config.faviconPath).trim()
+      ? config.faviconPath.startsWith("/")
+        ? config.faviconPath
+        : `/${config.faviconPath}`
+      : "/favicon.ico";
+  const faviconIsSvg =
+    typeof faviconHref === "string" &&
+    faviconHref.toLowerCase().endsWith(".svg");
 
   return (
-    <html lang="en" data-brand={brand.key}>
+    <html lang="en" data-brand={brandKey}>
       <head>
+        <link
+          rel="icon"
+          href={faviconHref}
+          type={faviconIsSvg ? "image/svg+xml" : undefined}
+          sizes={faviconIsSvg ? "any" : undefined}
+        />
         <style
           dangerouslySetInnerHTML={{
-            __html: `[data-brand="${brand.key}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,
+            __html: `[data-brand="${brandKey}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -104,8 +138,8 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="preload-wrapper popup-loader">
-        <BrandProvider brand={brand}>
-          <JsonLd />
+        <BrandProvider brand={config}>
+          <JsonLd brand={config} />
           <ClientProviders>{children}</ClientProviders>
         </BrandProvider>
       </body>

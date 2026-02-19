@@ -4,25 +4,21 @@ import Topbar4 from "@/components/header/Topbar4";
 import ContactForm from "@/components/othersPages/contact/ContactForm";
 import Map from "@/components/othersPages/contact/Map";
 import { pageMeta } from "@bmr/core/seo";
-import { brand } from "@/src/brand";
+import { getBrandConfig } from "@/lib/brandConfig";
 import React from "react";
 
-const title = `Contact Us | ${brand.companyName} | Performance Suspension & Chassis Parts`;
-const description = `Contact ${brand.companyName} – High Performance Suspension & Chassis parts. Visit us in Lakeland, FL or email sales@bmrsuspension.com.`;
-
-const { openGraph, twitter } = pageMeta({
-  brand,
-  path: "/contact",
-  title,
-  description,
-});
-
-export const metadata = {
-  title,
-  description,
-  openGraph,
-  twitter,
-};
+export async function generateMetadata() {
+  const brand = await getBrandConfig();
+  const title = `Contact Us | ${brand.companyName} | Performance Suspension & Chassis Parts`;
+  const description = `Contact ${brand.companyName} – High Performance Suspension & Chassis parts. Visit us in Lakeland, FL or email sales@bmrsuspension.com.`;
+  const { openGraph, twitter } = pageMeta({
+    brand,
+    path: "/contact",
+    title,
+    description,
+  });
+  return { title, description, openGraph, twitter };
+}
 
 export default function ContactPage() {
   return (
