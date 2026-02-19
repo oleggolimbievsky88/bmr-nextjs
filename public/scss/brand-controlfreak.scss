@@ -19,6 +19,25 @@
   --backdrop: rgba(0, 0, 0, 0.65);
 }
 
+/* Admin pages: use a light theme so labels and content are readable (no black background) */
+[data-brand="controlfreak"]:has(main.admin-page) {
+  --main: #1a1a1a;
+  --text: #1a1a1a;
+  --text-2: #4a4a4a;
+  --text-3: #6b6b6b;
+  --brand-text: #1a1a1a;
+  --line: rgba(0, 0, 0, 0.12);
+  --line-2: rgba(0, 0, 0, 0.08);
+  --bg-1: #f5f5f5;
+  --bg-2: #ffffff;
+  --bg-7: #eeeeee;
+}
+
+[data-brand="controlfreak"]:has(main.admin-page) body {
+  background-color: #f0f0f0 !important;
+  color: #1a1a1a;
+}
+
 [data-brand="controlfreak"] .btn-primary,
 [data-brand="controlfreak"] .bg-primary {
   background-color: var(--primary) !important;

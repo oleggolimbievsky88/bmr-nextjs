@@ -498,8 +498,16 @@ export default function Login() {
                       onClick={() => handleOAuthSignIn("google")}
                       disabled={isLoading}
                     >
-                      <span className="modern-social-icon">G</span>
-                      <span>Google</span>
+                      <span className="modern-social-icon modern-social-icon-google">
+                        <img
+                          src="/images/logo/Google_logo.png"
+                          alt="Google"
+                          width={24}
+                          height={24}
+                          className="modern-social-icon-img"
+                        />
+                      </span>
+                      <span>Sign in with Google</span>
                     </button>
                     <button
                       type="button"
@@ -507,8 +515,10 @@ export default function Login() {
                       onClick={() => handleOAuthSignIn("facebook")}
                       disabled={isLoading}
                     >
-                      <span className="modern-social-icon">f</span>
-                      <span>Facebook</span>
+                      <span className="modern-social-icon modern-social-icon-facebook">
+                        f
+                      </span>
+                      <span>Sign in with Facebook</span>
                     </button>
                   </div>
                 </form>

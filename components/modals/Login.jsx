@@ -584,9 +584,15 @@ export default function Login() {
             disabled={isLoading}
           >
             <span className="modern-social-icon modern-social-icon-google">
-              G
+              <img
+                src="/images/logo/Google_logo.png"
+                alt="Google"
+                width={24}
+                height={24}
+                className="modern-social-icon-img"
+              />
             </span>
-            <span>Google</span>
+            <span>Sign in with Google</span>
           </button>
           <button
             type="button"
@@ -597,7 +603,7 @@ export default function Login() {
             <span className="modern-social-icon modern-social-icon-facebook">
               f
             </span>
-            <span>Facebook</span>
+            <span>Sign in with Facebook</span>
           </button>
         </div>
       </div>
@@ -772,9 +778,15 @@ export default function Login() {
             disabled={isLoading}
           >
             <span className="modern-social-icon modern-social-icon-google">
-              G
+              <img
+                src="/images/logo/Google_logo.png"
+                alt="Google"
+                width={24}
+                height={24}
+                className="modern-social-icon-img"
+              />
             </span>
-            <span>Google</span>
+            <span>Sign in with Google</span>
           </button>
           <button
             type="button"
@@ -785,7 +797,7 @@ export default function Login() {
             <span className="modern-social-icon modern-social-icon-facebook">
               f
             </span>
-            <span>Facebook</span>
+            <span>Sign in with Facebook</span>
           </button>
         </div>
       </div>
