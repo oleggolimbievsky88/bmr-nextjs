@@ -4,26 +4,34 @@ import SectionHeader from "@/components/common/SectionHeader";
 import styles from "./ProductCategories.module.css";
 import { getBrandConfig } from "@/lib/brandConfig";
 
-const DEFAULT_CARDS = [
-  {
-    href: "/products/new",
-    title: "New Products",
-    subtitle: "Latest releases",
-    img: "/images/shop-categories/NewProductsGradient.jpg",
-  },
-  {
-    href: "/products/bmr-merchandise",
-    title: "BMR Merchandise",
-    subtitle: "Apparel & more",
-    img: "/images/shop-categories/MerchGradient.jpg",
-  },
-  {
-    href: "/products/gift-cards",
-    title: "BMR Gift Cards",
-    subtitle: "Perfect gift",
-    img: "/images/shop-categories/GiftCardsGradient.jpg",
-  },
-];
+/**
+ * Shop by Category data comes from the brands table (shop_by_category JSON)
+ * via getBrandConfig(), which merges DB over file defaults for the current brand key.
+ */
+
+function getDefaultCards(brandName) {
+  const name = brandName || "Our";
+  return [
+    {
+      href: "/products/new",
+      title: "New Products",
+      subtitle: "Latest releases",
+      img: "/images/shop-categories/NewProductsGradient.jpg",
+    },
+    {
+      href: "/products/bmr-merchandise",
+      title: `${name} Merchandise`,
+      subtitle: "Apparel & more",
+      img: "/images/shop-categories/MerchGradient.jpg",
+    },
+    {
+      href: "/products/gift-cards",
+      title: `${name} Gift Cards`,
+      subtitle: "Perfect gift",
+      img: "/images/shop-categories/GiftCardsGradient.jpg",
+    },
+  ];
+}
 
 export default async function ShopCategories() {
   const brand = await getBrandConfig();
@@ -40,11 +48,11 @@ export default async function ShopCategories() {
   const sectionTitle = section.sectionTitle?.trim() || "Shop by Category";
   const sectionSubtitle =
     section.sectionSubtitle?.trim() ||
-    "Browse our New Products, BMR Merchandise, and Gift Cards.";
+    `Browse our New Products, ${brand.companyNameShort || brand.name || "our"} Merchandise, and Gift Cards.`;
   const cards =
     Array.isArray(section.items) && section.items.length > 0
       ? section.items
-      : DEFAULT_CARDS;
+      : getDefaultCards(brand.companyNameShort || brand.name);
 
   return (
     <section className="homepage-section">
