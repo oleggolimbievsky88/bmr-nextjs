@@ -4,105 +4,90 @@
   color: inherit;
 }
 
-/* Modern full-bleed category tile */
-.categoryCard {
+/* modern tile - match Shop By Category height */
+.makeCard {
   position: relative;
   height: 240px;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  transition: transform 350ms ease, box-shadow 350ms ease, border-color 350ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
   cursor: pointer;
 }
 
-/* full-bleed image */
 .cardImage {
-  object-fit: cover;
+  object-fit: contain; /* logos look best as contain */
+  padding: 18px;       /* gives breathing room like your current version */
   transform: scale(1.02);
-  transition: transform 400ms ease, filter 400ms ease;
+  transition: transform 220ms ease, filter 220ms ease;
   filter: saturate(1.05) contrast(1.05);
 }
 
-/* overlay for readability */
+/* overlay: subtle, keep logos crisp */
 .overlay {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(800px 260px at 20% 80%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 60%),
-    linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.72) 100%);
+    radial-gradient(700px 240px at 20% 80%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.70) 100%);
 }
 
-/* content layout */
+/* bottom-left text - extra bottom padding to sit titles lower */
 .content {
   position: absolute;
   inset: 0;
-  padding: 20px;
+  padding: 16px 16px 28px 16px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: 6px;
 }
 
-.textBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .title {
   margin: 0;
   color: #fff;
-  font-weight: 800;
-  font-size: 1.5rem;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
+  font-weight: 900;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
-.subtitle {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1rem;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
-}
-
 .cta {
-  align-self: flex-start;
   color: var(--brand-accent, #ffd400);
   font-weight: 800;
   font-size: 0.95rem;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
-/* little brand accent detail */
 .accentBar {
   position: absolute;
-  left: 20px;
-  bottom: 20px;
-  width: 54px;
+  left: 16px;
+  bottom: 28px;
+  width: 56px;
   height: 3px;
   border-radius: 999px;
   background: var(--brand-accent, #ffd400);
   opacity: 0.95;
 }
 
-/* Hover effects */
-.categoryCard:hover {
+/* hover effects */
+.makeCard:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, 0.16);
   box-shadow:
     0 18px 52px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.10);
+    0 0 0 1px rgba(255,255,255,0.10);
 }
 
-.categoryCard:hover .cardImage {
-  transform: scale(1.08);
-  filter: saturate(1.12) contrast(1.08);
+.makeCard:hover .cardImage {
+  transform: scale(1.06);
+  filter: saturate(1.10) contrast(1.06);
 }
 
-.categoryCard:hover .cta {
+.makeCard:hover .cta {
   text-decoration: underline;
   text-decoration-color: var(--brand-accent, #ffd400);
   text-underline-offset: 4px;
