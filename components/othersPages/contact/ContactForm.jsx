@@ -1,25 +1,40 @@
 "use client";
 
-import { socialLinksWithBorder } from "@/data/socials";
 import { showToast } from "@/utlis/showToast";
 import React, { useRef, useState } from "react";
 
-const BMR_CONTACT = {
-  address: "1033 Pine Chase Ave",
-  city: "Lakeland, FL 33815",
-  phone: "(813) 986-9302",
-  email: "sales@bmrsuspension.com",
-  hours: "Mon–Fri 8:30am–5:30pm EST",
-};
+const FALLBACK_EMAIL = "sales@bmrsuspension.com";
 
-const DEPARTMENT_EMAILS = [
-  { label: "GM Tech", email: "GMTech@bmrsuspension.com" },
-  { label: "Ford Tech", email: "FordTech@bmrsuspension.com" },
-  { label: "Ford Sales", email: "FordSales@bmrsuspension.com" },
-  { label: "GM Sales", email: "GMSales@bmrsuspension.com" },
+const SOCIAL_ICONS = [
+  { key: "facebook", className: "social-facebook", iconClass: "icon-fb" },
+  {
+    key: "instagram",
+    className: "social-instagram",
+    iconClass: "icon-instagram",
+  },
+  { key: "youtube", className: "social-youtube", iconClass: "icon-youtube" },
+  { key: "tiktok", className: "social-tiktok", iconClass: "icon-tiktok" },
+  { key: "x", className: "social-x", iconClass: "icon-x" },
+  { key: "linkedin", className: "social-linkedin", iconClass: "icon-linkedin" },
 ];
 
-export default function ContactForm() {
+export default function ContactForm({ brand }) {
+  const contact = brand?.contact || {};
+  const social = brand?.social || {};
+  const companyName = brand?.companyName || "BMR Suspension";
+  const addressLines = contact.addressLines || [];
+  const contactEmail = contact.email || FALLBACK_EMAIL;
+  const phoneDisplay =
+    contact.phoneDisplay || contact.phoneTel || "(813) 986-9302";
+  const phoneTel = String(contact.phoneTel || "8139869302");
+  const hours = contact.hours || "";
+  const departments = Array.isArray(contact.departments)
+    ? contact.departments
+    : [];
+  const mapsQuery = addressLines.length
+    ? encodeURIComponent(addressLines.join(", "))
+    : "1033+Pine+Chase+Ave+Lakeland+FL+33815";
+  const mapsHref = `https://www.google.com/maps?q=${mapsQuery}`;
   const formRef = useRef();
   const [sending, setSending] = useState(false);
 
@@ -48,14 +63,14 @@ export default function ContactForm() {
       } else {
         showToast(
           data?.error ||
-            "Something went wrong. Please try again or email us directly at sales@bmrsuspension.com.",
+            `Something went wrong. Please try again or email us directly at ${contactEmail}.`,
           "error",
           5000,
         );
       }
     } catch {
       showToast(
-        "We couldn't send your message. Please try again or email us directly at sales@bmrsuspension.com.",
+        `We couldn't send your message. Please try again or email us directly at ${contactEmail}.`,
         "error",
         5000,
       );
@@ -69,77 +84,89 @@ export default function ContactForm() {
       <div className="container">
         <div className="tf-grid-layout gap30 lg-col-2 contact-page-grid">
           <div className="tf-content-left contact-info-card">
-            <h5 className="mb_20">BMR Suspension</h5>
-            <div className="contact-info-item mb_20">
-              <p className="mb_15">
-                <strong>Address</strong>
-              </p>
-              <p>
-                <a
-                  href="https://www.google.com/maps?q=1033+Pine+Chase+Ave+Lakeland+FL+33815"
-                  target="_blank"
-                  rel="noopener noreferrer"
+            <h5 className="mb_20">{companyName}</h5>
+            {addressLines.length > 0 && (
+              <div className="contact-info-item mb_20">
+                <p className="mb_15">
+                  <strong>Address</strong>
+                </p>
+                <p>
+                  <a href={mapsHref} target="_blank" rel="noopener noreferrer">
+                    {addressLines.map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}
+                        {i < addressLines.length - 1 && <br />}
+                      </React.Fragment>
+                    ))}
+                  </a>
+                </p>
+              </div>
+            )}
+            {(phoneDisplay || phoneTel) && (
+              <div className="contact-info-item mb_20">
+                <p className="mb_15">
+                  <strong>Phone</strong>
+                </p>
+                <p>
+                  <a href={`tel:${phoneTel.replace(/\D/g, "")}`}>
+                    {phoneDisplay || phoneTel}
+                  </a>
+                </p>
+              </div>
+            )}
+            {contactEmail && (
+              <div className="contact-info-item mb_20">
+                <p className="mb_15">
+                  <strong>Email</strong>
+                </p>
+                <p>
+                  <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+                </p>
+              </div>
+            )}
+            {hours && (
+              <div className="contact-info-item mb_20">
+                <p className="mb_15">
+                  <strong>Hours</strong>
+                </p>
+                <p>{hours}</p>
+              </div>
+            )}
+            {departments.length > 0 && (
+              <div className="contact-info-item mb_36">
+                <p className="mb_15">
+                  <strong>Departments</strong>
+                </p>
+                <ul
+                  className="mb-0"
+                  style={{ listStyle: "none", paddingLeft: 0 }}
                 >
-                  {BMR_CONTACT.address}
-                  <br />
-                  {BMR_CONTACT.city}
-                </a>
-              </p>
-            </div>
-            <div className="contact-info-item mb_20">
-              <p className="mb_15">
-                <strong>Phone</strong>
-              </p>
-              <p>
-                <a href={`tel:${BMR_CONTACT.phone.replace(/\D/g, "")}`}>
-                  {BMR_CONTACT.phone}
-                </a>
-              </p>
-            </div>
-            <div className="contact-info-item mb_20">
-              <p className="mb_15">
-                <strong>Email</strong>
-              </p>
-              <p>
-                <a href={`mailto:${BMR_CONTACT.email}`}>{BMR_CONTACT.email}</a>
-              </p>
-            </div>
-            <div className="contact-info-item mb_20">
-              <p className="mb_15">
-                <strong>Hours</strong>
-              </p>
-              <p>{BMR_CONTACT.hours}</p>
-            </div>
-            <div className="contact-info-item mb_36">
-              <p className="mb_15">
-                <strong>Departments</strong>
-              </p>
-              <ul
-                className="mb-0"
-                style={{ listStyle: "none", paddingLeft: 0 }}
-              >
-                {DEPARTMENT_EMAILS.map((dept) => (
-                  <li key={dept.email}>
-                    <a href={`mailto:${dept.email}`}>{dept.label}</a>
-                    {" — "}
-                    <a href={`mailto:${dept.email}`}>{dept.email}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
+                  {departments.map((dept) => (
+                    <li key={dept.email || dept.label}>
+                      <a href={`mailto:${dept.email || ""}`}>{dept.label}</a>
+                      {dept.email && (
+                        <>
+                          {" — "}
+                          <a href={`mailto:${dept.email}`}>{dept.email}</a>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div className={departments.length === 0 ? "mb_36" : ""}>
               <ul className="tf-social-icon d-flex gap-20 style-default">
-                {socialLinksWithBorder.map((link, index) => (
-                  <li key={index}>
+                {SOCIAL_ICONS.filter((s) => social[s.key]).map((s) => (
+                  <li key={s.key}>
                     <a
-                      href={link.href}
+                      href={social[s.key]}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`box-icon link round ${link.className} ${link.borderClass}`}
+                      className={`box-icon link round ${s.className} border-line-black`}
+                      aria-label={`${companyName} ${s.key}`}
                     >
-                      <i
-                        className={`icon ${link.iconSize} ${link.iconClass}`}
-                      />
+                      <i className={`icon fs-14 ${s.iconClass}`} />
                     </a>
                   </li>
                 ))}

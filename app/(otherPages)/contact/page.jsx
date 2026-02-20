@@ -10,7 +10,8 @@ import React from "react";
 export async function generateMetadata() {
   const brand = await getBrandConfig();
   const title = `Contact Us | ${brand.companyName} | Performance Suspension & Chassis Parts`;
-  const description = `Contact ${brand.companyName} – High Performance Suspension & Chassis parts. Visit us in Lakeland, FL or email sales@bmrsuspension.com.`;
+  const email = brand.contact?.email || "sales@bmrsuspension.com";
+  const description = `Contact ${brand.companyName} – High Performance Suspension & Chassis parts. Visit us or email ${email}.`;
   const { openGraph, twitter } = pageMeta({
     brand,
     path: "/contact",
@@ -20,7 +21,8 @@ export async function generateMetadata() {
   return { title, description, openGraph, twitter };
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const brand = await getBrandConfig();
   return (
     <>
       <Topbar4 />
@@ -34,8 +36,8 @@ export default function ContactPage() {
         </div>
       </div>
       <main className="contact-1-page">
-        <Map />
-        <ContactForm />
+        <Map brand={brand} />
+        <ContactForm brand={brand} />
       </main>
       <Footer1 />
     </>

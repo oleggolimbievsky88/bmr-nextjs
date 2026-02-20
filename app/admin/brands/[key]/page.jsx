@@ -822,6 +822,63 @@ export default function AdminBrandEditPage() {
                   placeholder="8139869302"
                 />
               </div>
+              <div className="mb-3">
+                <label className="form-label">Hours</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={contact.hours || ""}
+                  onChange={(e) =>
+                    updateForm("contact", {
+                      ...contact,
+                      hours: e.target.value,
+                    })
+                  }
+                  placeholder="Mon - Fri 8:30am - 5:30pm EST"
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Map embed URL (optional)</label>
+                <input
+                  type="url"
+                  className="form-control"
+                  value={contact.mapEmbedUrl || ""}
+                  onChange={(e) =>
+                    updateForm("contact", {
+                      ...contact,
+                      mapEmbedUrl: e.target.value.trim() || undefined,
+                    })
+                  }
+                  placeholder="https://www.google.com/maps/embed?pb=..."
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">
+                  Departments (one per line: Label — email@example.com)
+                </label>
+                <textarea
+                  className="form-control"
+                  rows={5}
+                  value={(contact.departments || [])
+                    .map((d) => `${d.label || ""} — ${d.email || ""}`.trim())
+                    .join("\n")}
+                  onChange={(e) => {
+                    const lines = e.target.value.split("\n").filter(Boolean);
+                    const departments = lines.map((line) => {
+                      const sep = line.indexOf(" — ");
+                      if (sep >= 0) {
+                        return {
+                          label: line.slice(0, sep).trim(),
+                          email: line.slice(sep + 3).trim(),
+                        };
+                      }
+                      return { label: line.trim(), email: "" };
+                    });
+                    updateForm("contact", { ...contact, departments });
+                  }}
+                  placeholder="GM Tech — GMTech@bmrsuspension.com"
+                />
+              </div>
             </div>
           </div>
 
