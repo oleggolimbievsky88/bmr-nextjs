@@ -1,7 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
 import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
-import Details21 from "@/components/shopDetails/Details21";
+import ProductDetailsUpsell from "@/components/shopDetails/ProductDetailsUpsell";
 import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
@@ -47,7 +47,7 @@ export default function page() {
           </div>
         </div>
       </div>
-      <Details21 />
+      <ProductDetailsUpsell />
       <ShopDetailsTab />
       <Products />
       <RecentProducts />

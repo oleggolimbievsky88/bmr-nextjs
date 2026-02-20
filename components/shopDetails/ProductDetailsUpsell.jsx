@@ -1,58 +1,22 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Slider1 from "./sliders/Slider1";
+import React, { useState } from "react";
 import Image from "next/image";
+import CountdownComponent from "../common/Countdown";
 import {
   colors,
-  options,
-  options2,
   paymentImages,
   sizeOptions,
 } from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
-import DetailsOuterZoom from "./DetailsOuterZoom";
+import ProductDetailsOuterZoom from "./ProductDetailsOuterZoom";
 import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
-
-export default function Detaila20() {
-  const [currentColor, setCurrentColor] = useState(null);
-  const [currentSize, setCurrentSize] = useState(null);
-  const [formattedOptions, setFormattedOptions] = useState([]);
-  const [formattedOptions2, setFormattedOptions2] = useState([]);
-
-  useEffect(() => {
-    // Initialize state after component mounts
-    if (colors && colors.length > 0) {
-      setCurrentColor(colors[0]);
-    }
-    if (sizeOptions && sizeOptions.length > 0) {
-      setCurrentSize(sizeOptions[0]);
-    }
-
-    // Format options
-    if (Array.isArray(options)) {
-      setFormattedOptions(options.map(option => ({
-        value: typeof option === 'object' ? option.value : option,
-        label: typeof option === 'object' ? option.label : option
-      })));
-    }
-
-    if (Array.isArray(options2)) {
-      setFormattedOptions2(options2.map(option => ({
-        value: option,
-        label: option
-      })));
-    }
-  }, []);
-
-  // Early return if data is not ready
-  if (!currentColor || !currentSize) {
-    return null;
-  }
-
+export default function ProductDetailsUpsell() {
+  const [currentColor, setCurrentColor] = useState(colors[0]);
+  const [currentSize, setCurrentSize] = useState(sizeOptions[0]);
   return (
     <section
-      className="flat-spacing-4 pt_0 "
+      className="flat-spacing-4 pt_0"
       style={{ maxWidth: "100vw", overflow: "clip" }}
     >
       <div className="tf-main-product section-image-zoom">
@@ -72,6 +36,15 @@ export default function Detaila20() {
                   <div className="tf-product-info-title">
                     <h5>Cotton jersey top</h5>
                   </div>
+                  <div className="tf-product-info-badges">
+                    <div className="badges">Best seller</div>
+                    <div className="product-status-content">
+                      <i className="icon-lightning" />
+                      <p className="fw-6">
+                        Selling fast! 56 people have this in their carts.
+                      </p>
+                    </div>
+                  </div>
                   <div className="tf-product-info-price">
                     <div className="price-on-sale">$8.00</div>
                     <div className="compare-at-price">$10.00</div>
@@ -79,16 +52,89 @@ export default function Detaila20() {
                       <span>20</span>% OFF
                     </div>
                   </div>
+                  <div className="tf-product-info-badges">
+                    <div className="product-status-content">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className=""
+                        width={14}
+                        height={19}
+                        viewBox="0 0 14 19"
+                        fill="none"
+                      >
+                        <path
+                          d="M7.02105 18.6774C10.055 18.6774 12.7816 16.7396 13.6906 13.8451C13.8829 13.2328 14 12.5829 14 11.908C14 8.13282 10.9092 5.08661 10.9092 5.08661C10.9092 5.08661 11.1221 6.31978 10.9896 7.36947C10.8572 8.41917 10.369 9.06356 10.369 9.06356C10.369 9.06356 10.7255 7.41532 10.2518 6.31025C9.70664 5.03834 8.68975 4.44831 8.29913 3.30309C7.84954 1.98502 8.52322 0.452148 8.52322 0.452148C8.52322 0.452148 6.30738 1.30837 4.70616 3.51789C2.89015 6.02383 4.11387 9.25234 4.11387 9.25234C4.11387 9.25234 3.94461 8.36058 3.02684 7.63809C2.10907 6.91559 2.48087 5.79505 2.48087 5.79505C2.48087 5.79505 0 8.57546 0 11.9081C0 12.8128 0.259084 13.7253 0.636502 14.5745C1.75251 17.0855 4.27321 18.6774 7.02105 18.6774Z"
+                          fill="#D10028"
+                        />
+                        <path
+                          d="M10.9092 5.08661C10.9092 5.08661 11.0247 5.75685 11.0324 6.52958C11.7557 7.74103 12.4378 9.35357 12.4378 11.1269C12.4378 11.8018 12.3208 12.4517 12.1285 13.064C11.2194 15.9585 8.49284 17.8963 5.45889 17.8963C4.65653 17.8962 3.86005 17.7595 3.10354 17.4922C4.26367 18.2655 5.62682 18.6779 7.02105 18.6774C10.055 18.6774 12.7816 16.7396 13.6906 13.8451C13.8829 13.2328 14 12.5829 14 11.908C14 8.13282 10.9092 5.08661 10.9092 5.08661Z"
+                          fill="#B7022D"
+                        />
+                        <path
+                          d="M10.5225 13.5592C10.5225 11.6529 9.27189 10.4233 8.49315 9.63453C7.1065 8.2296 7.3527 6.63104 7.3527 6.63104C7.3527 6.63104 4.63493 8.96756 4.20791 10.9056C3.79964 12.7592 4.82668 13.7896 4.82668 13.7896C4.82668 13.7896 4.34812 13.6048 4.05052 13.2738C3.67147 12.8523 3.53525 12.3415 3.53525 12.3415C3.53525 12.3415 3.37684 12.7248 3.58453 14.0361C3.73216 14.9681 4.21643 15.6656 4.78466 16.1789C6.16577 17.4264 8.3196 17.3057 9.57135 15.9284C10.1077 15.3384 10.5225 14.5588 10.5225 13.5592Z"
+                          fill="#FFA91A"
+                        />
+                        <path
+                          d="M5.15997 13.6162C5.11857 13.6162 5.07725 13.5999 5.04656 13.5675C4.9829 13.5003 4.42427 12.8791 4.42427 11.7617C4.42427 11.506 4.45419 11.2406 4.51308 10.9729C4.59939 10.5811 4.79521 10.1391 5.09498 9.65913C5.11693 9.62399 5.15194 9.599 5.19231 9.58967C5.23268 9.58034 5.27511 9.58743 5.31025 9.60938C5.34539 9.63132 5.37038 9.66633 5.37971 9.7067C5.38904 9.74707 5.38195 9.7895 5.36001 9.82464C5.07913 10.2743 4.8969 10.6832 4.81825 11.0401C4.7642 11.2857 4.73678 11.5285 4.73678 11.7617C4.73678 12.7751 5.25143 13.3294 5.27338 13.3525C5.2944 13.3747 5.30845 13.4026 5.31381 13.4326C5.31917 13.4627 5.31559 13.4937 5.30352 13.5217C5.29145 13.5498 5.27142 13.5737 5.24591 13.5905C5.22039 13.6073 5.19052 13.6162 5.15997 13.6162ZM5.57918 9.38177C5.5503 9.38176 5.522 9.37374 5.4974 9.35861C5.47281 9.34349 5.45289 9.32184 5.43985 9.29608C5.42682 9.27032 5.42118 9.24144 5.42356 9.21267C5.42594 9.18389 5.43625 9.15634 5.45334 9.13307L5.49919 9.07113C5.51146 9.05469 5.52685 9.04082 5.54447 9.03033C5.5621 9.01983 5.58162 9.01291 5.60192 9.00996C5.62222 9.00701 5.64291 9.00808 5.66279 9.01312C5.68268 9.01817 5.70138 9.02707 5.71782 9.03934C5.73426 9.05161 5.74813 9.067 5.75862 9.08462C5.76912 9.10225 5.77604 9.12177 5.77899 9.14207C5.78194 9.16237 5.78087 9.18306 5.77583 9.20294C5.77078 9.22283 5.76187 9.24152 5.74961 9.25797L5.70509 9.31803C5.6906 9.33782 5.67165 9.35391 5.64977 9.36499C5.62789 9.37606 5.6037 9.38181 5.57918 9.38177Z"
+                          fill="#FFC91D"
+                        />
+                        <path
+                          d="M8.49315 9.63453C7.1065 8.2296 7.3527 6.63104 7.3527 6.63104C7.3527 6.63104 6.48929 7.37346 5.65924 8.36832C6.42345 9.15877 7.39808 10.314 7.39808 11.9971C7.39808 12.9967 6.98332 13.7762 6.44696 14.3663C5.83506 15.0396 5.0075 15.4117 4.16011 15.4714C4.34429 15.7386 4.55752 15.9737 4.78466 16.1789C6.16577 17.4264 8.3196 17.3057 9.57135 15.9284C10.1077 15.3384 10.5225 14.5588 10.5225 13.5592C10.5225 11.6529 9.27189 10.4233 8.49315 9.63453Z"
+                          fill="#F79219"
+                        />
+                        <path
+                          d="M8.49315 9.63453C7.1065 8.2296 7.3527 6.63104 7.3527 6.63104C7.3527 6.63104 6.80774 7.10008 6.16772 7.79125C6.33964 8.13876 6.58427 8.50212 6.93099 8.85345C7.70965 9.64234 8.96032 10.8718 8.96032 12.7781C8.96032 13.7778 8.54556 14.5573 8.00919 15.1474C7.17508 16.0652 5.94058 16.4241 4.80099 16.1929C6.18272 17.4251 8.32444 17.3004 9.57135 15.9284C10.1077 15.3384 10.5225 14.5588 10.5225 13.5592C10.5225 11.6529 9.27189 10.4233 8.49315 9.63453Z"
+                          fill="#EF7816"
+                        />
+                      </svg>
+                      <p className="fw-6">10 sold in last 12 hours</p>
+                    </div>
+                  </div>
                   <div className="tf-product-info-liveview">
                     <div className="liveview-count">20</div>
                     <p className="fw-6">People are viewing this right now</p>
+                  </div>
+                  <div className="tf-product-info-countdown">
+                    <div className="countdown-wrap">
+                      <div className="countdown-title">
+                        <i className="icon-time tf-ani-tada" />
+                        <p>HURRY UP! SALE ENDS IN:</p>
+                      </div>
+                      <div className="tf-countdown style-1">
+                        <div className="js-countdown">
+                          <CountdownComponent
+                            targetDate="2025-08-07"
+                            labels="Days :,Hours :,Mins :,Secs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tf-product-inventory">
+                    <div className="d-flex align-items-center gap-5">
+                      <svg width={15} height={15} aria-hidden="true">
+                        <circle cx="7.5" cy="7.5" r="7.5" fill="currentColor" />
+                        <circle
+                          cx="7.5"
+                          cy="7.5"
+                          r={5}
+                          stroke="rgb(255, 255, 255)"
+                          strokeWidth={1}
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <div className="fw-6">300 in stock</div>
+                    </div>
+                    <div className="tf-progress-bar mt_5">
+                      <span style={{ width: "30%" }} />
+                    </div>
                   </div>
                   <div className="tf-product-info-variant-picker">
                     <div className="variant-picker-item">
                       <div className="variant-picker-label">
                         Color:{" "}
                         <span className="fw-6 variant-picker-label-value">
-                          {currentColor.value || ''}
+                          {currentColor.value}
                         </span>
                       </div>
                       <form className="variant-picker-values">
@@ -121,7 +167,7 @@ export default function Detaila20() {
                         <div className="variant-picker-label">
                           Size:{" "}
                           <span className="fw-6 variant-picker-label-value">
-                            {currentSize.value || ''}
+                            {currentSize.value}
                           </span>
                         </div>
                         <a
@@ -258,34 +304,24 @@ export default function Detaila20() {
                       <div className="text fw-6">Share</div>
                     </a>
                   </div>
-                  <div className="tf-product-info-delivery-return">
-                    <div className="row">
-                      <div className="col-xl-6 col-12">
-                        <div className="tf-product-delivery">
-                          <div className="icon">
-                            <i className="icon-delivery-time" />
-                          </div>
-                          <p>
-                            Estimate delivery times:{" "}
-                            <span className="fw-7">12-26 days</span>{" "}
-                            (International),{" "}
-                            <span className="fw-7">3-6 days</span> (United
-                            States).
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-xl-6 col-12">
-                        <div className="tf-product-delivery mb-0">
-                          <div className="icon">
-                            <i className="icon-return-order" />
-                          </div>
-                          <p>
-                            Return within <span className="fw-7">30 days</span>{" "}
-                            of purchase. Duties &amp; taxes are non-refundable.
-                          </p>
-                        </div>
-                      </div>
+                  <div className="tf-product-order">
+                    <div className="icon">
+                      <i className="icon-car-order" />
                     </div>
+                    <p>
+                      Order in the next{" "}
+                      <span className="tf-countdown-simple">
+                        04 Hours 16 Mins
+                      </span>{" "}
+                      to get it between{" "}
+                      <strong className="text-decoration-underline">
+                        Monday, 1st July
+                      </strong>{" "}
+                      and{" "}
+                      <strong className="text-decoration-underline">
+                        Monday, 8st July
+                      </strong>
+                    </p>
                   </div>
                   <div className="tf-product-info-trust-seal">
                     <div className="tf-product-trust-mess">
@@ -310,205 +346,6 @@ export default function Detaila20() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="tf-product-fbt-wrap">
-          <div className="title">Frequently Bought Together</div>
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="tf-product-form-fbt"
-          >
-            <div className="overflow-x-auto">
-              <div className="overflow-x-auto">
-                <div className="tf-product-fbt-list">
-                  <div className="tf-product-bundle-image">
-                    <Image
-                      alt=""
-                      src="/images/shop/products/p-d1.png"
-                      width={770}
-                      height={1075}
-                    />
-                  </div>
-                  <div className="tf-product-fbt-plus">
-                    <svg
-                      className=""
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={9}
-                      height={9}
-                      viewBox="0 0 9 9"
-                      fill="currentColor"
-                    >
-                      <path d="M9 5.14286H5.14286V9H3.85714V5.14286H0V3.85714H3.85714V0H5.14286V3.85714H9V5.14286Z" />
-                    </svg>
-                  </div>
-                  <div className="tf-product-bundle-image">
-                    <Image
-                      alt=""
-                      src="/images/shop/products/hmgoepprod.jpg"
-                      width={713}
-                      height={1070}
-                    />
-                  </div>
-                  <div className="tf-product-fbt-plus">
-                    <svg
-                      className=""
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={9}
-                      height={9}
-                      viewBox="0 0 9 9"
-                      fill="currentColor"
-                    >
-                      <path d="M9 5.14286H5.14286V9H3.85714V5.14286H0V3.85714H3.85714V0H5.14286V3.85714H9V5.14286Z" />
-                    </svg>
-                  </div>
-                  <div className="tf-product-bundle-image">
-                    <Image
-                      alt=""
-                      src="/images/shop/products/hmgoepprod2.jpg"
-                      width={713}
-                      height={1070}
-                    />
-                  </div>
-                  <div className="tf-product-fbt-plus">
-                    <svg
-                      className=""
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={9}
-                      height={9}
-                      viewBox="0 0 9 9"
-                      fill="currentColor"
-                    >
-                      <path d="M9 5.14286H5.14286V9H3.85714V5.14286H0V3.85714H3.85714V0H5.14286V3.85714H9V5.14286Z" />
-                    </svg>
-                  </div>
-                  <div className="tf-product-bundle-image">
-                    <Image
-                      alt=""
-                      src="/images/shop/products/hmgoepprod3.jpg"
-                      width={713}
-                      height={1070}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="tf-fbt-swatches">
-                <div className="tf-product-bundle-infos">
-                  <div className="tf-bundle-check">
-                    <input
-                      type="checkbox"
-                      defaultChecked="checked"
-                      id="fbt-ck-1"
-                    />
-                    <label htmlFor="fbt-ck-1" className="">
-                      <i className="icon-check" />
-                    </label>
-                  </div>
-                  <span className="tf-product-bundle-title">
-                    <strong>This item:</strong> Ribbed modal T-shirt
-                  </span>
-                  <div className="tf-product-bundle-variant position-relative">
-                    <select className="tf-select">
-                      {formattedOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="tf-product-bundle-price">
-                    <div className="compare-at-price">$30.00</div>
-                    <div className="price-on-sale">$25.00</div>
-                  </div>
-                </div>
-                <div className="tf-product-bundle-infos">
-                  <div className="tf-bundle-check">
-                    <input
-                      type="checkbox"
-                      defaultChecked="checked"
-                      id="fbt-ck-2"
-                    />
-                    <label htmlFor="fbt-ck-2" className="">
-                      <i className="icon-check" />
-                    </label>
-                  </div>
-                  <a href="#" className="tf-product-bundle-title">
-                    Ribbed Tank Top
-                  </a>
-                  <div className="tf-product-bundle-variant position-relative">
-                    <select className="tf-select">
-                      {formattedOptions2.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="tf-product-bundle-price">
-                    <div className="price">$18.00</div>
-                  </div>
-                </div>
-                <div className="tf-product-bundle-infos">
-                  <div className="tf-bundle-check">
-                    <input
-                      type="checkbox"
-                      defaultChecked="checked"
-                      id="fbt-ck-3"
-                    />
-                    <label htmlFor="fbt-ck-3" className="">
-                      <i className="icon-check" />
-                    </label>
-                  </div>
-                  <a href="#" className="tf-product-bundle-title">
-                    Oversized Motif T-shirt
-                  </a>
-                  <div className="tf-product-bundle-price">
-                    <div className="price">$25.00</div>
-                  </div>
-                </div>
-                <div className="tf-product-bundle-infos">
-                  <div className="tf-bundle-check">
-                    <input
-                      type="checkbox"
-                      defaultChecked="checked"
-                      id="fbt-ck-4"
-                    />
-                    <label htmlFor="fbt-ck-4" className="">
-                      <i className="icon-check" />
-                    </label>
-                  </div>
-                  <a href="#" className="tf-product-bundle-title">
-                    Oversized Printed T-shirt
-                  </a>
-                  <div className="tf-product-bundle-variant position-relative">
-                    <select className="tf-select">
-                      {formattedOptions2.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="tf-product-bundle-price">
-                    <div className="price">$18.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="tf-fbt-col-total-price">
-              <div className="tf-product-bundle-total-submit flex-wrap justify-content-center">
-                <div className="text w-100 text-center">Total price:</div>
-                <div className="compare-at-price">$86.00</div>
-                <div className="price-on-sale">$91.00</div>
-              </div>
-              <a
-                href="#"
-                className="tf-btn w-100 radius-3 justify-content-center btn-primary animate-hover-btn"
-              >
-                Add selected to cart
-              </a>
-            </div>
-          </form>
         </div>
       </div>
       <StickyItem />

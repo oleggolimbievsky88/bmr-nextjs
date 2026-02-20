@@ -16,7 +16,7 @@ import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 
-export default function Details({
+export default function ProductDetails({
   product,
   initialColor,
   searchParams,

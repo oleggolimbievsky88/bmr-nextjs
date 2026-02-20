@@ -6,9 +6,9 @@ import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
 import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
-import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
+import ProductDetailsOuterZoom from "@/components/shopDetails/ProductDetailsOuterZoom";
 import Link from "next/link";
-import Details from "@/components/shopDetails/Details";
+import ProductDetails from "@/components/shopDetails/ProductDetails";
 import { getProductById, getRelatedProducts } from "@/lib/queries";
 import { notFound } from "next/navigation";
 
@@ -92,7 +92,7 @@ export default async function ProductPage({ params }) {
       </div>
       {/* <Details6 product={product} /> */}
 
-      {/* <DetailsOuterZoom product={product} />  */}
+      {/* <ProductDetailsOuterZoom product={product} />  */}
       <ShopDetailsTab product={product} />
       <Products products={relatedProducts} />
       <RecentProducts />

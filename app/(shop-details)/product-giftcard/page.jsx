@@ -1,7 +1,7 @@
 import Footer1 from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
-import Details12 from "@/components/shopDetails/Details12";
+import ProductDetailsGiftCard from "@/components/shopDetails/ProductDetailsGiftCard";
 import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
@@ -9,7 +9,8 @@ import Tabs5 from "@/components/shopDetails/Tabs5";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title: "Shop Gift Card | BMR Suspension - Performance Racing Suspension & Chassis Parts",
+  title:
+    "Shop Gift Card | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
 export default function page() {
@@ -43,7 +44,7 @@ export default function page() {
           </div>
         </div>
       </div>
-      <Details12 />
+      <ProductDetailsGiftCard />
       <Tabs5 />
       <Products />
       <RecentProducts />

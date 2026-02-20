@@ -1,42 +1,42 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { colorOptions, paymentImages } from "@/data/singleProductOptions";
+import CountdownComponent from "../common/Countdown";
+import {
+  colors,
+  paymentImages,
+  sizeOptions,
+} from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
-
 import Quantity from "./Quantity";
-const colors = [
-  {
-    id: "values-light-blue",
-    value: "Light Blue",
-    className: "bg-color-light-blue",
-    checked: true,
-    soldOut: true,
-  },
-  {
-    id: "values-black",
-    value: "Black",
-    className: "bg-color-black",
-    checked: false,
-    soldOut: false,
-  },
-  {
-    id: "values-white",
-    value: "White",
-    className: "bg-color-white",
-    checked: false,
-    soldOut: false,
-  },
-];
+
 import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
-export default function Details23() {
-  const [currentColor, setCurrentColor] = useState(colors[0]);
+// Removed static product import
+import { useContextElement } from "@/context/Context";
+
+export default function ProductDetailsOuterZoom({
+  product = { id: 1, title: "Loading...", price: 0, images: [] },
+}) {
+  const [currentColor, setCurrentColor] = useState(colors[1]);
+  const [currentSize, setCurrentSize] = useState(sizeOptions[1]);
+
+  const {
+    addProductToCart,
+    isAddedToCartProducts,
+    addToCompareItem,
+    isAddedtoCompareItem,
+    addToWishlist,
+    isAddedtoWishlist,
+  } = useContextElement();
   return (
     <section
       className="flat-spacing-4 pt_0"
       style={{ maxWidth: "100vw", overflow: "clip" }}
     >
-      <div className="tf-main-product section-image-zoom">
+      <div
+        className="tf-main-product section-image-zoom"
+        style={{ maxWidth: "100vw", overflow: "clip" }}
+      >
         <div className="container">
           <div className="row">
             <div className="col-md-6">
@@ -51,54 +51,123 @@ export default function Details23() {
                 <div className="tf-zoom-main" />
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
-                    <h5>Cotton jersey top</h5>
+                    <h5>
+                      {product?.ProductName
+                        ? product.ProductName
+                        : "BMR Product"}
+                    </h5>
                   </div>
-                  <div className="tf-product-info-badges">
-                    <div className="badges">Sold Out</div>
-                  </div>
+                  {/* <div className="tf-product-info-badges">
+                    <div className="badges">Best seller</div>
+                    <div className="product-status-content">
+                      <i className="icon-lightning" />
+                      <p className="fw-6">
+                        Selling fast! 56 people have this in their carts.
+                      </p>
+                    </div>
+                  </div> */}
                   <div className="tf-product-info-price">
-                    <div className="price">$18.00</div>
+                    <div className="price-on-sale">${product?.Price}</div>
+                    {/* {product.oldPrice && (
+                      <div className="compare-at-price">
+                        ${product.oldPrice}
+                      </div>
+                    )}
+                    <div className="badges-on-sale">
+                      <span>20</span>% OFF
+                    </div> */}
                   </div>
-                  <div className="tf-product-info-liveview">
+                  {/* <div className="tf-product-info-liveview">
                     <div className="liveview-count">20</div>
                     <p className="fw-6">People are viewing this right now</p>
-                  </div>
+                  </div> */}
+                  {/* <div className="tf-product-info-countdown">
+                    <div className="countdown-wrap">
+                      <div className="countdown-title">
+                        <i className="icon-time tf-ani-tada" />
+                        <p>HURRY UP! SALE ENDS IN:</p>
+                      </div>
+                      <div className="tf-countdown style-1">
+                        <div className="js-countdown">
+                          <CountdownComponent
+                            targetDate="2025-08-07"
+                            labels="Days :,Hours :,Mins :,Secs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div> */}
                   <div className="tf-product-info-variant-picker">
                     <div className="variant-picker-item">
                       <div className="variant-picker-label">
-                        Color:{" "}
+                        Color:
                         <span className="fw-6 variant-picker-label-value">
                           {currentColor.value}
                         </span>
                       </div>
                       <form className="variant-picker-values">
-                        <div className="variant-picker-values">
-                          {colors.map((color) => (
-                            <React.Fragment key={color.id}>
-                              <input
-                                id={color.id}
-                                type="radio"
-                                name="color1"
-                                checked={currentColor == color}
-                                onChange={() => setCurrentColor(color)}
+                        {colors.map((color) => (
+                          <React.Fragment key={color.id}>
+                            <input
+                              id={color.id}
+                              type="radio"
+                              name="color1"
+                              readOnly
+                              checked={currentColor == color}
+                            />
+                            <label
+                              onClick={() => setCurrentColor(color)}
+                              className="hover-tooltip radius-60"
+                              htmlFor={color.id}
+                              data-value={color.value}
+                            >
+                              <span
+                                className={`btn-checkbox ${color.className}`}
                               />
-                              <label
-                                className={`hover-tooltip radius-60 ${
-                                  color.soldOut ? "sold-out-line" : ""
-                                }`}
-                                htmlFor={color.id}
-                                data-value={color.value}
-                              >
-                                <span
-                                  className={`btn-checkbox ${color.className}`}
-                                />
-                                <span className="tooltip">{color.value}</span>
-                              </label>
-                            </React.Fragment>
-                          ))}
-                        </div>
+                              <span className="tooltip">{color.value}</span>
+                            </label>
+                          </React.Fragment>
+                        ))}
                       </form>
                     </div>
+                    {/* <div className="variant-picker-item">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="variant-picker-label">
+                          Size:
+                          <span className="fw-6 variant-picker-label-value">
+                            {currentSize.value}
+                          </span>
+                        </div>
+                        <a
+                          href="#find_size"
+                          data-bs-toggle="modal"
+                          className="find-size fw-6"
+                        >
+                          Find your size
+                        </a>
+                      </div>
+                      <form className="variant-picker-values">
+                        {sizeOptions.map((size) => (
+                          <React.Fragment key={size.id}>
+                            <input
+                              type="radio"
+                              name="size1"
+                              id={size.id}
+                              readOnly
+                              checked={currentSize == size}
+                            />
+                            <label
+                              onClick={() => setCurrentSize(size)}
+                              className="style-text"
+                              htmlFor={size.id}
+                              data-value={size.value}
+                            >
+                              <p>{size.value}</p>
+                            </label>
+                          </React.Fragment>
+                        ))}
+                      </form>
+                    </div> */}
                   </div>
                   <div className="tf-product-info-quantity">
                     <div className="quantity-title fw-6">Quantity</div>
@@ -107,36 +176,56 @@ export default function Details23() {
                   <div className="tf-product-info-buy-button">
                     <form onSubmit={(e) => e.preventDefault()} className="">
                       <a
-                        href="#"
-                        className="tf-btn btns-sold-out cursor-not-allowed btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn "
+                        onClick={() => addProductToCart(product.id)}
+                        className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
                       >
-                        <span>Sold out -&nbsp;</span>
-                        <span className="tf-qty-price">$8.00</span>
+                        <span>
+                          {isAddedToCartProducts(product.id)
+                            ? "Already Added"
+                            : "Add to cart"}{" "}
+                          -
+                        </span>
+                        <span className="tf-qty-price">${product.Price}</span>
                       </a>
                       <a
-                        href="#"
+                        onClick={() => addToWishlist(product.id)}
                         className="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist btn-icon-action"
                       >
-                        <span className="icon icon-heart" />
-                        <span className="tooltip">Add to Wishlist</span>
+                        <span
+                          className={`icon icon-heart ${
+                            isAddedtoWishlist(product.id) ? "added" : ""
+                          }`}
+                        />
+                        <span className="tooltip">
+                          {" "}
+                          {isAddedtoWishlist(product.id)
+                            ? "Already Wishlisted"
+                            : "Add to Wishlist"}
+                        </span>
                         <span className="icon icon-delete" />
                       </a>
                       <a
                         href="#compare"
                         data-bs-toggle="offcanvas"
+                        onClick={() => addToCompareItem(product.id)}
                         aria-controls="offcanvasLeft"
                         className="tf-product-btn-wishlist hover-tooltip box-icon bg_white compare btn-icon-action"
                       >
-                        <span className="icon icon-compare" />
-                        <span className="tooltip">Add to Compare</span>
+                        <span
+                          className={`icon icon-compare ${
+                            isAddedtoCompareItem(product.id) ? "added" : ""
+                          }`}
+                        />
+                        <span className="tooltip">
+                          {isAddedtoCompareItem(product.id)
+                            ? "Already Compared"
+                            : "Add to Compare"}
+                        </span>
                         <span className="icon icon-check" />
                       </a>
                       <div className="w-100">
-                        <a
-                          href="#"
-                          className="btns-full btns-sold-out cursor-auto btns-sold-out"
-                        >
-                          Buy with{" "}
+                        <a href="#" className="btns-full">
+                          Buy with
                           <Image
                             alt=""
                             src="/images/payments/paypal.png"
@@ -148,33 +237,6 @@ export default function Details23() {
                           More payment options
                         </a>
                       </div>
-                    </form>
-                  </div>
-                  <div className="tf-product-notify-stock">
-                    <form onSubmit={(e) => e.preventDefault()}>
-                      <div className="tf-product-notify-stock-heading">
-                        <i className="icon-notify" />
-                        <div>Notify me when available</div>
-                      </div>
-                      <p>
-                        Register to receive a notification when this item comes
-                        back in stock.
-                      </p>
-                      <select className="tf-select">
-                        <option>Light Blue</option>
-                      </select>
-                      <input
-                        type="email"
-                        autoComplete="abc@xyz.com"
-                        name="email-form"
-                        placeholder="Enter *"
-                      />
-                      <button
-                        type="submit"
-                        className="tf-btn w-100 justify-content-center btn-fill animate-hover-btn flex-shrink-0"
-                      >
-                        Notify me when available
-                      </button>
                     </form>
                   </div>
                   <div className="tf-product-info-extra-link">
@@ -241,9 +303,9 @@ export default function Details23() {
                             <i className="icon-delivery-time" />
                           </div>
                           <p>
-                            Estimate delivery times:{" "}
-                            <span className="fw-7">12-26 days</span>{" "}
-                            (International),{" "}
+                            Estimate delivery times:
+                            <span className="fw-7">12-26 days</span>
+                            (International),
                             <span className="fw-7">3-6 days</span> (United
                             States).
                           </p>
@@ -266,7 +328,8 @@ export default function Details23() {
                     <div className="tf-product-trust-mess">
                       <i className="icon-safe" />
                       <p className="fw-6">
-                        Guarantee Safe <br /> Checkout
+                        Guarantee Safe <br />
+                        Checkout
                       </p>
                     </div>
                     <div className="tf-payment">
@@ -286,8 +349,8 @@ export default function Details23() {
             </div>
           </div>
         </div>
-      </div>
-      <StickyItem soldOut />
+      </div>{" "}
+      <StickyItem />
     </section>
   );
 }

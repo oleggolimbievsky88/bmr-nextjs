@@ -6,9 +6,9 @@ import DefaultShopDetails from "@/components/shopDetails/DefaultShopDetails";
 import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
-import DetailsOuterZoom from "@/components/shopDetails/DetailsOuterZoom";
+import ProductDetailsOuterZoom from "@/components/shopDetails/ProductDetailsOuterZoom";
 import Link from "next/link";
-import Details from "@/components/shopDetails/Details";
+import ProductDetails from "@/components/shopDetails/ProductDetails";
 import TrackView from "@/components/shopDetails/TrackView";
 import {
   getProductById,
@@ -216,7 +216,7 @@ export default async function ProductDetails({ params, searchParams }) {
       <div className="container" style={{ paddingTop: "10px" }}>
         <Breadcrumbs items={breadcrumbItems} />
         <TrackView productId={product?.ProductID} />
-        <Details
+        <ProductDetails
           product={product}
           initialColor={color}
           searchParams={awaitedSearchParams || {}}

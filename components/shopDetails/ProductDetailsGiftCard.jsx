@@ -1,19 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import Slider1 from "./sliders/Slider1";
 import Image from "next/image";
-import {
-  colors6,
-  paymentImages,
-  sizeOptions,
-} from "@/data/singleProductOptions";
+import { paymentImages, priceOptions } from "@/data/singleProductOptions";
 import StickyItem from "./StickyItem";
 import Quantity from "./Quantity";
-import DetailsOuterZoom from "./DetailsOuterZoom";
-import Slider1ZoomOuter from "./sliders/Slider1ZoomOuter";
-export default function Details18() {
-  const [currentSize, setCurrentSize] = useState(sizeOptions[0]);
-  const [currentColorOption, setCurrentColorOption] = useState(colors6[0]);
+export default function ProductDetailsGiftCard() {
+  const [currentPriceOption, setCurrentPriceOption] = useState(priceOptions[0]);
   return (
     <section
       className="flat-spacing-4 pt_0"
@@ -24,8 +16,24 @@ export default function Details18() {
           <div className="row">
             <div className="col-md-6">
               <div className="tf-product-media-wrap sticky-top">
-                <div className="thumbs-slider">
-                  <Slider1ZoomOuter />
+                <div className="other-image-zoom" id="gallery-swiper-started">
+                  <a
+                    href="/images/shop/products/gift-card-1.png"
+                    target="_blank"
+                    className="item"
+                    data-pswp-width="770px"
+                    data-pswp-height="1075px"
+                  >
+                    <Image
+                      className="tf-image-zoom lazyload"
+                      data-zoom="/images/shop/products/gift-card-1.png"
+                      data-src="/images/shop/products/gift-card-1.png"
+                      alt=""
+                      src="/images/shop/products/gift-card-1.png"
+                      width={713}
+                      height={713}
+                    />
+                  </a>
                 </div>
               </div>
             </div>
@@ -34,14 +42,10 @@ export default function Details18() {
                 <div className="tf-zoom-main" />
                 <div className="tf-product-info-list other-image-zoom">
                   <div className="tf-product-info-title">
-                    <h5>Cotton jersey top</h5>
+                    <h5>Gift Card</h5>
                   </div>
                   <div className="tf-product-info-price">
-                    <div className="price-on-sale">$8.00</div>
-                    <div className="compare-at-price">$10.00</div>
-                    <div className="badges-on-sale">
-                      <span>20</span>% OFF
-                    </div>
+                    <div className="price">$25.00</div>
                   </div>
                   <div className="tf-product-info-liveview">
                     <div className="liveview-count">20</div>
@@ -50,83 +54,32 @@ export default function Details18() {
                   <div className="tf-product-info-variant-picker">
                     <div className="variant-picker-item">
                       <div className="variant-picker-label">
-                        Color:{" "}
+                        Denominations:{" "}
                         <span className="fw-6 variant-picker-label-value">
-                          Beige
+                          {currentPriceOption.value}
                         </span>
                       </div>
-                      <div
-                        className="tf-dropdown-sort full position-relative has-color"
-                        data-bs-toggle="dropdown"
-                      >
-                        <div className="btn-select">
-                          <span className="text-sort-value">
-                            {currentColorOption.text}
-                          </span>
-                          <span className="icon icon-arrow-down" />
-                        </div>
-                        <div className="dropdown-menu">
-                          {colors6.map((item, index) => (
-                            <div
-                              key={index}
-                              className={`select-item ${
-                                currentColorOption == item ? "active" : ""
-                              }`}
-                              onClick={() => setCurrentColorOption(item)}
+                      <form className="variant-picker-values">
+                        {priceOptions.map((option) => (
+                          <React.Fragment key={option.id}>
+                            <input
+                              type="radio"
+                              name="size1"
+                              id={option.id}
+                              readOnly
+                              checked={currentPriceOption == option}
+                            />
+                            <label
+                              onClick={() => setCurrentPriceOption(option)}
+                              className="style-text"
+                              htmlFor={option.id}
+                              data-value={option.value}
                             >
-                              <span
-                                className={`box-color d-inline-block rounded-full ${item.colorClass}`}
-                              />
-                              <span className="text-value-item">
-                                {item.text}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="variant-picker-item">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div className="variant-picker-label">
-                          Size:{" "}
-                          <span className="fw-6 variant-picker-label-value">
-                            S
-                          </span>
-                        </div>
-                        <a
-                          href="#find_size"
-                          data-bs-toggle="modal"
-                          className="find-size fw-6"
-                        >
-                          Find your size
-                        </a>
-                      </div>
-                      <div
-                        className="tf-dropdown-sort full position-relative"
-                        data-bs-toggle="dropdown"
-                      >
-                        <div className="btn-select">
-                          <span className="text-sort-value">
-                            {currentSize.value}
-                          </span>
-                          <span className="icon icon-arrow-down" />
-                        </div>
-                        <div className="dropdown-menu">
-                          {sizeOptions.map((elm, i) => (
-                            <div
-                              onClick={() => setCurrentSize(elm)}
-                              key={i}
-                              className={`select-item  ${
-                                currentSize == elm ? "active" : ""
-                              } `}
-                            >
-                              <span className="text-value-item">
-                                {elm.value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                              <p>{option.value}</p>
+                            </label>
+                          </React.Fragment>
+                        ))}
+                      </form>
                     </div>
                   </div>
                   <div className="tf-product-info-quantity">
@@ -135,6 +88,84 @@ export default function Details18() {
                   </div>
                   <div className="tf-product-info-buy-button">
                     <form onSubmit={(e) => e.preventDefault()} className="">
+                      <div className="tf-cart-checkbox w-100 item-has-checkox opacity-100 flex-wrap">
+                        <div className="tf-checkbox-wrapp">
+                          <input
+                            className=""
+                            type="checkbox"
+                            id="CartDrawer-Form_agree"
+                            name="agree_checkbox"
+                          />
+                          <div>
+                            <i className="icon-check" />
+                          </div>
+                        </div>
+                        <label htmlFor="CartDrawer-Form_agree">
+                          I want to send this as a gift
+                        </label>
+                        <div className="wrap-content w-100">
+                          <div className="tf-product-form">
+                            <div className="tf-field">
+                              <input
+                                className="tf-field-input tf-input"
+                                placeholder=" "
+                                type="email"
+                                autoComplete="abc@xyz.com"
+                                id="property1"
+                                name="properties[email]"
+                              />
+                              <label
+                                className="tf-field-label"
+                                htmlFor="property1"
+                              >
+                                Recipient email
+                              </label>
+                            </div>
+                            <div className="tf-field">
+                              <input
+                                className="tf-field-input tf-input"
+                                placeholder=" "
+                                type="text"
+                                id="property2"
+                                name="properties[name]"
+                              />
+                              <label
+                                className="tf-field-label"
+                                htmlFor="property2"
+                              >
+                                Recipient name (optional)
+                              </label>
+                            </div>
+                            <div className="tf-field">
+                              <textarea
+                                className="tf-field-input tf-input"
+                                name="note"
+                                id="property3"
+                                placeholder=""
+                                defaultValue={""}
+                              />
+                              <label
+                                className="tf-field-label"
+                                htmlFor="property3"
+                              >
+                                Message (optional)
+                              </label>
+                              <p className="text-end">200 characters max</p>
+                            </div>
+                            <div className="tf-field style-1">
+                              <input
+                                className="fw-6"
+                                type="date"
+                                name="date"
+                                defaultValue=""
+                              />
+                              <label className="tf-field-label" htmlFor="">
+                                Send on (optional)
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       <a
                         href="#"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn "
@@ -160,20 +191,6 @@ export default function Details18() {
                         <span className="tooltip">Add to Compare</span>
                         <span className="icon icon-check" />
                       </a>
-                      <div className="w-100">
-                        <a href="#" className="btns-full">
-                          Buy with{" "}
-                          <Image
-                            alt=""
-                            src="/images/payments/paypal.png"
-                            width={64}
-                            height={18}
-                          />
-                        </a>
-                        <a href="#" className="payment-more-option">
-                          More payment options
-                        </a>
-                      </div>
                     </form>
                   </div>
                   <div className="tf-product-info-extra-link">
