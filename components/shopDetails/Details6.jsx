@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import Slider2 from "./sliders/Slider2";
 import Slider3 from "./sliders/Slider3";
 import Image from "next/image";
-import CountdownComponent from "../common/Countdown";
-import BoughtTogether from "./BoughtTogether";
 import {
   colors,
   paymentImages,

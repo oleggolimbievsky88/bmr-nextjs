@@ -8,9 +8,7 @@ import ShopCart from "@/components/modals/ShopCart";
 import QuickAdd from "@/components/modals/QuickAdd";
 import QuickView from "@/components/modals/QuickView";
 import AskQuestion from "@/components/modals/AskQuestion";
-import ColorCompare from "@/components/modals/ColorCompare";
 import DeliveryReturn from "@/components/modals/DeliveryReturn";
-import FindSize from "@/components/modals/FindSize";
 import Login from "@/components/modals/Login";
 import MobileMenu from "@/components/modals/MobileMenu";
 import Register from "@/components/modals/Register";
@@ -152,9 +150,7 @@ export default function ClientProviders({ children }) {
           <QuickAdd />
           <QuickView />
           <AskQuestion />
-          <ColorCompare />
           <DeliveryReturn />
-          <FindSize />
           <Login />
           <MobileMenu />
           <Register />

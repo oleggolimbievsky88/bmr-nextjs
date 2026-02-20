@@ -4,6 +4,19 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { showToast } from "@/utlis/showToast";
 import { getPlatformImageUrl, getPlatformBannerUrl } from "@/lib/assets";
 
+/** Build default slug: startyear-endyear-platformname (lowercase, hyphenated). */
+function defaultSlugFromFields(name, startYear, endYear) {
+  const n = (name || "").trim();
+  const start = (startYear || "").toString().trim();
+  const end = (endYear || "").toString().trim();
+  const slugPart = n
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (!slugPart) return start && end ? `${start}-${end}` : "";
+  return start && end ? `${start}-${end}-${slugPart}` : slugPart || "";
+}
+
 function ConfirmDeleteModal({
   show,
   onClose,
@@ -227,7 +240,9 @@ export default function AdminPlatformsPage() {
     const name = e.target.bodyName?.value?.trim() || "New Platform";
     const startYear = e.target.startYear?.value?.trim() || "0";
     const endYear = e.target.endYear?.value?.trim() || "0";
-    const slug = e.target.slug?.value?.trim() || null;
+    const slugRaw = e.target.slug?.value?.trim();
+    const slug =
+      slugRaw || defaultSlugFromFields(name, startYear, endYear) || null;
     setSaving(true);
     try {
       const res = await fetch("/api/admin/bodies", {
@@ -673,9 +688,9 @@ export default function AdminPlatformsPage() {
                     <input
                       type="text"
                       name="slug"
-                      placeholder="2015-2025-s650"
+                      placeholder="startyear-endyear-name (e.g. 2015-2025-s650-mustang)"
                       className="form-control form-control-sm"
-                      style={{ width: "160px" }}
+                      style={{ width: "260px" }}
                     />
                   </div>
                   <button
@@ -977,14 +992,23 @@ export default function AdminPlatformsPage() {
                   onSubmit={(e) => {
                     e.preventDefault();
                     const f = e.target;
+                    // Use editingBody state for images so newly uploaded filenames are saved (form inputs are controlled by state)
+                    const imageVal =
+                      editingBody.Image && editingBody.Image !== "0"
+                        ? editingBody.Image
+                        : f.image?.value?.trim() || "0";
+                    const headerVal =
+                      editingBody.HeaderImage && editingBody.HeaderImage !== "0"
+                        ? editingBody.HeaderImage
+                        : f.headerImage?.value?.trim() || "0";
                     handleUpdateBody(editingBody.BodyID, {
                       name: f.name?.value,
                       startYear: f.startYear?.value,
                       endYear: f.endYear?.value,
                       slug: f.slug?.value || null,
                       platformGroupId: Number(selectedGroupId),
-                      image: f.image?.value?.trim() || "0",
-                      headerImage: f.headerImage?.value?.trim() || "0",
+                      image: imageVal,
+                      headerImage: headerVal,
                     });
                   }}
                 >
@@ -1023,7 +1047,15 @@ export default function AdminPlatformsPage() {
                       type="text"
                       name="slug"
                       className="form-control form-control-sm"
-                      defaultValue={editingBody.slug || ""}
+                      defaultValue={
+                        editingBody.slug ||
+                        defaultSlugFromFields(
+                          editingBody.Name,
+                          editingBody.StartYear,
+                          editingBody.EndYear,
+                        ) ||
+                        ""
+                      }
                     />
                   </div>
                   <div className="mb-2">
