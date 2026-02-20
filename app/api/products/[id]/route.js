@@ -13,7 +13,7 @@ export async function GET(_, context) {
     if (!id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     try {
@@ -31,7 +31,7 @@ export async function GET(_, context) {
       LEFT JOIN maincategories mc ON c.MainCatID = mc.MainCatID
       WHERE p.ProductID = ?
       LIMIT 1`,
-        [id]
+        [id],
       );
 
       const product = rows[0];
@@ -40,40 +40,31 @@ export async function GET(_, context) {
       if (!product) {
         return NextResponse.json(
           { error: "Product not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
-      // Helper function to parse the Images field and create small/large image pairs
+      // Parse Images field: comma-separated list of paths (one per image); each used for both main and thumbnail
       const parseImages = (imagesString) => {
-        // Guard against null/undefined input
-        if (!imagesString || typeof imagesString !== "string") {
+        if (
+          !imagesString ||
+          typeof imagesString !== "string" ||
+          imagesString.trim() === "" ||
+          imagesString === "0"
+        ) {
           return [];
         }
-
         return imagesString
-          .split(/[,;]/) // Split on both commas and semicolons
-          .map((imgSrc) => imgSrc.trim()) // Trim whitespace
-          .filter((imgSrc) => imgSrc !== "" && imgSrc !== "0") // Filter out invalid entries
-          .reduce((acc, imgSrc, index, array) => {
-            // Check if this is a small image (followed by a large image)
-            if (index % 2 === 0 && index + 1 < array.length) {
-              const smallImg = imgSrc;
-              const largeImg = array[index + 1];
-
-              // Only add if both small and large images are valid
-              if (smallImg !== "0" && largeImg !== "0") {
-                acc.push({
-                  imgSrc: getProductImageUrl(largeImg),
-                  smallImgSrc: getProductImageUrl(smallImg),
-                  alt: `Image ${acc.length + 1} for ${product?.ProductName}`,
-                  width: 770,
-                  height: 1075,
-                });
-              }
-            }
-            return acc;
-          }, []);
+          .split(/[,;]/)
+          .map((path) => path.trim())
+          .filter((path) => path !== "" && path !== "0")
+          .map((path, index) => ({
+            imgSrc: getProductImageUrl(path),
+            smallImgSrc: getProductImageUrl(path),
+            alt: `Image ${index + 1} for ${product?.ProductName}`,
+            width: 770,
+            height: 1075,
+          }));
       };
 
       // Create the main image object using ImageLarge if valid
@@ -84,8 +75,8 @@ export async function GET(_, context) {
               smallImgSrc: getProductImageUrl(
                 product.ImageLarge.trim().replace(
                   /\.(jpg|jpeg|png|gif|webp)$/i,
-                  "_small.$1"
-                )
+                  "_small.$1",
+                ),
               ),
               alt: `Image for${product?.PartNumber} - ${product?.ProductName}`,
               width: 770,
@@ -111,7 +102,7 @@ export async function GET(_, context) {
     console.error("API route error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

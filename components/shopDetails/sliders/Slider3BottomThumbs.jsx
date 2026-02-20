@@ -1,7 +1,7 @@
 "use client";
 import Drift from "drift-zoom";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Gallery, Item } from "react-photoswipe-gallery";
 import { Navigation, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,6 +10,8 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [product, setProduct] = useState(null);
   const [mainSwiper, setMainSwiper] = useState(null);
+  // Store each slide's lightbox open function so Swiper's onClick (reliable on mobile) can open the modal
+  const openLightboxRefs = useRef([]);
 
   console.log("Slider3BottomThumbs rendered with:", {
     productId,
@@ -235,6 +237,27 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
   // Force Swiper to remount when product changes (e.g. size variant) so images update
   const sliderKey = product?.ProductID ?? `loading-${productId}`;
 
+  const handleLightboxOpen = (pswp) => {
+    if (!pswp?.element) return;
+    const closeOnBackdropTap = (e) => {
+      const target = e.target;
+      if (!target || !target.closest) return;
+      if (target.closest(".pswp__img") || target.closest(".pswp__button"))
+        return;
+      pswp.close();
+    };
+    pswp.element.addEventListener("click", closeOnBackdropTap);
+    pswp.element.addEventListener("touchend", closeOnBackdropTap, {
+      passive: true,
+    });
+    const unbind = () => {
+      pswp.element.removeEventListener("click", closeOnBackdropTap);
+      pswp.element.removeEventListener("touchend", closeOnBackdropTap);
+      pswp.off("close", unbind);
+    };
+    pswp.on("close", unbind);
+  };
+
   return (
     <>
       <Gallery
@@ -247,6 +270,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
           closeOnVerticalDrag: false,
           allowPanToNext: true,
           allowPanToPrev: true,
+          bgClickAction: "close",
           getThumbBoundsFn: function (index) {
             const thumbnail = document.querySelectorAll(
               ".tf-product-media-thumbs .item img",
@@ -262,6 +286,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
             return { x: 0, y: 0, w: 0 };
           },
         }}
+        onOpen={handleLightboxOpen}
       >
         <Swiper
           key={sliderKey}
@@ -282,8 +307,19 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
             console.log("Main swiper initialized:", swiper);
             setMainSwiper(swiper);
           }}
+          onClick={(swiper) => {
+            // On mobile, tap often doesn't fire the link's onClick; Swiper's onClick is reliable
+            const idx = swiper.clickedIndex;
+            if (
+              idx != null &&
+              typeof openLightboxRefs.current[idx] === "function"
+            ) {
+              openLightboxRefs.current[idx]();
+            }
+          }}
         >
           {images.map((slide, index) => {
+            if (index === 0) openLightboxRefs.current = [];
             // Calculate display dimensions - scale down to max 600px width while maintaining aspect ratio
             const maxDisplayWidth = 1400;
             const originalWidth = slide.width || 1400;
@@ -300,36 +336,45 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
                   width={originalWidth}
                   height={originalHeight}
                 >
-                  {({ ref, open }) => (
-                    <a
-                      className="item"
-                      data-pswp-width={originalWidth}
-                      data-pswp-height={originalHeight}
-                      onClick={open}
-                      style={{
-                        position: "relative",
-                        width: "100%",
-                        height: "auto",
-                        display: "block",
-                      }}
-                    >
-                      <Image
-                        className="tf-image-zoom lazyload"
-                        data-zoom={slide.imgSrc}
-                        src={slide.imgSrc}
-                        alt={slide.alt}
-                        width={displayWidth}
-                        height={displayHeight}
-                        ref={ref}
+                  {({ ref, open }) => {
+                    openLightboxRefs.current[index] = open;
+                    return (
+                      <a
+                        className="item"
+                        data-pswp-width={originalWidth}
+                        data-pswp-height={originalHeight}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          open();
+                        }}
+                        href={slide.imgSrc}
                         style={{
+                          position: "relative",
                           width: "100%",
                           height: "auto",
-                          objectFit: "contain",
-                          objectPosition: "center",
+                          display: "block",
+                          cursor: "pointer",
                         }}
-                      />
-                    </a>
-                  )}
+                      >
+                        <Image
+                          className="tf-image-zoom lazyload"
+                          data-zoom={slide.imgSrc}
+                          src={slide.imgSrc}
+                          alt={slide.alt}
+                          width={displayWidth}
+                          height={displayHeight}
+                          ref={ref}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            objectFit: "contain",
+                            objectPosition: "center",
+                            pointerEvents: "none",
+                          }}
+                        />
+                      </a>
+                    );
+                  }}
                 </Item>
               </SwiperSlide>
             );
@@ -362,9 +407,26 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
       >
         {images.map((slide, index) => (
           <SwiperSlide key={index} className="stagger-item">
-            <div className="item">
+            <button
+              type="button"
+              className="item"
+              onClick={() => {
+                if (typeof openLightboxRefs.current[index] === "function") {
+                  openLightboxRefs.current[index]();
+                }
+              }}
+              style={{
+                border: "none",
+                padding: 0,
+                background: "none",
+                cursor: "pointer",
+                display: "block",
+                width: "100%",
+              }}
+              aria-label={`View image ${index + 1} full size`}
+            >
               <Image
-                src={slide.smallImgSrc || slide.imgSrc} // Use small image for thumbnails, fallback to large if small doesn't exist
+                src={slide.smallImgSrc || slide.imgSrc}
                 alt={slide.alt}
                 width={133}
                 height={100}
@@ -372,7 +434,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
                 loading="eager"
                 priority
               />
-            </div>
+            </button>
           </SwiperSlide>
         ))}
       </Swiper>
