@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { getProductImageUrl, getInstallUrl } from "@/lib/assets";
 import { showToast } from "@/utlis/showToast";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [bodies, setBodies] = useState([]);
+  const [platformGroups, setPlatformGroups] = useState([]);
   const [categories, setCategories] = useState([]);
   const [availableCategories, setAvailableCategories] = useState([]); // Categories for selected platform (product form)
   const [filterCategories, setFilterCategories] = useState([]); // Categories for filter dropdown (scoped + grouped when platform selected)
@@ -58,6 +59,7 @@ export default function AdminProductsPage() {
     ImageSmall: "",
     Qty: 0,
     BodyID: "",
+    BodyIDs: [],
     CatID: "",
     ImageLarge: "",
     Features: "",
@@ -121,6 +123,7 @@ export default function AdminProductsPage() {
   useEffect(() => {
     fetchProducts();
     fetchBodies();
+    fetchPlatformGroups();
     fetchCategories();
     fetchMainCategories();
     fetchManufacturers();
@@ -291,6 +294,43 @@ export default function AdminProductsPage() {
     }
   };
 
+  const fetchPlatformGroups = async () => {
+    try {
+      const response = await fetch("/api/admin/platform-groups");
+      const data = await response.json();
+      if (response.ok) {
+        setPlatformGroups(
+          Array.isArray(data) ? data : data.groups || data.platformGroups || [],
+        );
+      }
+    } catch (err) {
+      console.error("Error fetching platform groups:", err);
+    }
+  };
+
+  // Group platforms by platform group for the product form (with "Other" for ungrouped)
+  const bodiesByGroup = useMemo(() => {
+    const groups = [...(platformGroups || [])].sort(
+      (a, b) =>
+        (a.position ?? 0) - (b.position ?? 0) || (a.id ?? 0) - (b.id ?? 0),
+    );
+    const result = [];
+    for (const g of groups) {
+      const list = (bodies || []).filter(
+        (b) => (b.platform_group_id ?? b.BodyCatID ?? 0) == g.id,
+      );
+      if (list.length) result.push({ group: g, bodies: list });
+    }
+    const uncat = (bodies || []).filter(
+      (b) =>
+        !groups.some((g) => (b.platform_group_id ?? b.BodyCatID ?? 0) == g.id),
+    );
+    if (uncat.length) {
+      result.push({ group: { id: null, name: "Other" }, bodies: uncat });
+    }
+    return result;
+  }, [bodies, platformGroups]);
+
   const fetchCategories = async () => {
     try {
       const response = await fetch("/api/admin/categories");
@@ -433,14 +473,33 @@ export default function AdminProductsPage() {
             : value,
     };
 
-    // If BodyID changes, fetch categories for that platform
+    // If BodyID changes (legacy single select), fetch categories and sync BodyIDs
     if (name === "BodyID") {
       fetchCategoriesByBody(value);
-      // Reset CatID when platform changes
       newFormData.CatID = "";
+      newFormData.BodyIDs = value ? [String(value)] : [];
     }
 
     setFormData(newFormData);
+  };
+
+  const handlePlatformToggle = (bodyId) => {
+    const id = String(bodyId);
+    const current = Array.isArray(formData.BodyIDs) ? formData.BodyIDs : [];
+    const next = current.includes(id)
+      ? current.filter((b) => b !== id)
+      : [...current, id].sort((a, b) => Number(a) - Number(b));
+    const prevFirst = current[0];
+    const newFirst = next[0];
+    setFormData((prev) => ({
+      ...prev,
+      BodyIDs: next,
+      BodyID: newFirst || "",
+      CatID: prevFirst !== newFirst ? "" : prev.CatID,
+    }));
+    if (newFirst && newFirst !== prevFirst) {
+      fetchCategoriesByBody(newFirst);
+    }
   };
 
   const handleMainImageChange = (e) => {
@@ -476,6 +535,7 @@ export default function AdminProductsPage() {
       ImageSmall: "",
       Qty: 0,
       BodyID: "",
+      BodyIDs: [],
       CatID: "",
       ImageLarge: "",
       Features: "",
@@ -530,10 +590,14 @@ export default function AdminProductsPage() {
       const data = await response.json();
       if (response.ok) {
         setEditingProduct(product);
-        const bodyId = data.product.BodyID || "";
+        const bodyIds = Array.isArray(data.product.BodyIDs)
+          ? data.product.BodyIDs.map(String)
+          : data.product.BodyID
+            ? [String(data.product.BodyID)]
+            : [];
+        const bodyId = bodyIds[0] || data.product.BodyID || "";
         const catId = data.product.CatID || "";
 
-        // Fetch categories for this platform
         if (bodyId) {
           await fetchCategoriesByBody(bodyId);
         }
@@ -547,6 +611,7 @@ export default function AdminProductsPage() {
           ImageSmall: data.product.ImageSmall || "",
           Qty: data.product.Qty || 0,
           BodyID: bodyId,
+          BodyIDs: bodyIds,
           CatID: catId,
           ImageLarge: data.product.ImageLarge || "",
           Features: data.product.Features || "",
@@ -639,13 +704,27 @@ export default function AdminProductsPage() {
       }
     }
 
+    const bodyIds = formData.BodyIDs || [];
+    if (bodyIds.length === 0) {
+      setError("Select at least one platform.");
+      showToast("Select at least one platform.", "error");
+      return;
+    }
+
     try {
       const submitFormData = new FormData();
 
-      // Add all form fields
+      // Add all form fields (BodyIDs sent separately as JSON)
       Object.keys(formData).forEach((key) => {
-        submitFormData.append(key, formData[key]);
+        if (key === "BodyIDs") return;
+        const val = formData[key];
+        submitFormData.append(
+          key,
+          val === undefined || val === null ? "" : val,
+        );
       });
+      submitFormData.append("BodyIDs", JSON.stringify(bodyIds));
+      submitFormData.append("BodyID", bodyIds[0] || "");
 
       // Add main image if selected
       if (mainImage) {
@@ -893,10 +972,14 @@ export default function AdminProductsPage() {
                 style={{ minWidth: "180px" }}
               >
                 <option value="">All Platforms</option>
-                {bodies.map((b) => (
-                  <option key={b.BodyID} value={b.BodyID}>
-                    {b.StartYear}-{b.EndYear} {b.Name}
-                  </option>
+                {bodiesByGroup.map(({ group, bodies: groupBodies }) => (
+                  <optgroup key={group.id ?? "other"} label={group.name}>
+                    {groupBodies.map((b) => (
+                      <option key={b.BodyID} value={b.BodyID}>
+                        {b.StartYear}-{b.EndYear} {b.Name}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
@@ -1433,21 +1516,67 @@ export default function AdminProductsPage() {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="admin-form-group">
-                      <label>Platform (Body) *</label>
-                      <select
-                        name="BodyID"
-                        className="form-select"
-                        value={formData.BodyID}
-                        onChange={handleInputChange}
-                        required
+                      <label>Platforms (Body) *</label>
+                      <p className="small text-muted mb-2">
+                        Select one or more platforms this part number fits.
+                      </p>
+                      <div
+                        className="border rounded p-3 bg-light"
+                        style={{ maxHeight: "320px", overflowY: "auto" }}
                       >
-                        <option value="">Select Platform</option>
-                        {bodies.map((body) => (
-                          <option key={body.BodyID} value={body.BodyID}>
-                            {body.StartYear}-{body.EndYear} {body.Name}
-                          </option>
-                        ))}
-                      </select>
+                        {bodiesByGroup.length === 0 ? (
+                          <span className="text-muted small">
+                            No platforms loaded.
+                          </span>
+                        ) : (
+                          bodiesByGroup.map(
+                            ({ group, bodies: groupBodies }) => (
+                              <div key={group.id ?? "other"} className="mb-3">
+                                <div
+                                  className="fw-semibold small text-uppercase border-bottom pb-1 mb-2 text-dark"
+                                  style={{ fontSize: "0.75rem" }}
+                                >
+                                  {group.name}
+                                </div>
+                                {groupBodies.map((body) => {
+                                  const id = String(body.BodyID);
+                                  const checked = (
+                                    formData.BodyIDs || []
+                                  ).includes(id);
+                                  return (
+                                    <div
+                                      key={body.BodyID}
+                                      className="form-check"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        id={`platform-${body.BodyID}`}
+                                        className="form-check-input"
+                                        checked={checked}
+                                        onChange={() =>
+                                          handlePlatformToggle(body.BodyID)
+                                        }
+                                      />
+                                      <label
+                                        className="form-check-label"
+                                        htmlFor={`platform-${body.BodyID}`}
+                                      >
+                                        {body.StartYear}-{body.EndYear}{" "}
+                                        {body.Name}
+                                      </label>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ),
+                          )
+                        )}
+                      </div>
+                      {(formData.BodyIDs || []).length === 0 && (
+                        <small className="text-danger">
+                          Select at least one platform
+                        </small>
+                      )}
                     </div>
                   </div>
                   <div className="col-md-6">
@@ -1459,10 +1588,10 @@ export default function AdminProductsPage() {
                         value={formData.CatID}
                         onChange={handleInputChange}
                         required
-                        disabled={!formData.BodyID}
+                        disabled={(formData.BodyIDs || []).length === 0}
                       >
                         <option value="">
-                          {formData.BodyID
+                          {(formData.BodyIDs || []).length > 0
                             ? "Select Category"
                             : "Select Platform First"}
                         </option>
@@ -1473,9 +1602,9 @@ export default function AdminProductsPage() {
                           </option>
                         ))}
                       </select>
-                      {!formData.BodyID && (
+                      {(formData.BodyIDs || []).length === 0 && (
                         <small className="text-muted">
-                          Please select a platform first
+                          Please select at least one platform first
                         </small>
                       )}
                     </div>

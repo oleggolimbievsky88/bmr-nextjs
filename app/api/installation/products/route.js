@@ -38,14 +38,14 @@ export async function GET(request) {
 			FROM products p
 			LEFT JOIN categories c ON FIND_IN_SET(c.CatID, p.CatID) > 0
 			LEFT JOIN maincategories m ON c.MainCatID = m.MainCatID
-			WHERE p.BodyID = ?
+			WHERE (EXISTS (SELECT 1 FROM product_platforms pp WHERE pp.ProductID = p.ProductID AND pp.BodyID = ?) OR p.BodyID = ?)
 				AND p.Display = 1
 				AND p.Instructions IS NOT NULL
 				AND p.Instructions != ''
 				AND p.Instructions != '0'
 		`;
 
-    const params = [platform];
+    const params = [platform, platform];
 
     if (category) {
       query += ` AND FIND_IN_SET(?, p.CatID) > 0`;

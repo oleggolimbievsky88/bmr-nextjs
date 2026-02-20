@@ -304,6 +304,16 @@ export async function POST(request) {
       productData.FreeShipping = "1";
     }
 
+    // Multiple platforms: BodyIDs as JSON array from form
+    const bodyIdsRaw = formData.get("BodyIDs");
+    if (bodyIdsRaw !== null && bodyIdsRaw !== undefined) {
+      try {
+        productData.BodyIDs = JSON.parse(bodyIdsRaw);
+      } catch {
+        productData.BodyIDs = bodyIdsRaw;
+      }
+    }
+
     const productId = await createProductAdmin(productData);
     return NextResponse.json({ success: true, productId });
   } catch (error) {

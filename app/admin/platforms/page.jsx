@@ -99,6 +99,22 @@ export default function AdminPlatformsPage() {
   const [failedThumbnailIds, setFailedThumbnailIds] = useState(new Set());
   const [failedBannerIds, setFailedBannerIds] = useState(new Set());
 
+  // Add-platform form: slug auto-generates from name + years as you type (still editable)
+  const [addFormBodyName, setAddFormBodyName] = useState("");
+  const [addFormStartYear, setAddFormStartYear] = useState("");
+  const [addFormEndYear, setAddFormEndYear] = useState("");
+  const [addFormSlug, setAddFormSlug] = useState("");
+  const [addFormSlugManuallyEdited, setAddFormSlugManuallyEdited] =
+    useState(false);
+
+  const resetAddForm = useCallback(() => {
+    setAddFormBodyName("");
+    setAddFormStartYear("");
+    setAddFormEndYear("");
+    setAddFormSlug("");
+    setAddFormSlugManuallyEdited(false);
+  }, []);
+
   const fetchGroups = useCallback(async () => {
     const res = await fetch("/api/admin/platform-groups");
     if (res.ok) {
@@ -231,18 +247,47 @@ export default function AdminPlatformsPage() {
     }
   };
 
+  const handleAddFormFieldChange = (field, value) => {
+    if (field === "bodyName") {
+      setAddFormBodyName(value);
+      if (!addFormSlugManuallyEdited) {
+        setAddFormSlug(
+          defaultSlugFromFields(value, addFormStartYear, addFormEndYear),
+        );
+      }
+    } else if (field === "startYear") {
+      setAddFormStartYear(value);
+      if (!addFormSlugManuallyEdited) {
+        setAddFormSlug(
+          defaultSlugFromFields(addFormBodyName, value, addFormEndYear),
+        );
+      }
+    } else if (field === "endYear") {
+      setAddFormEndYear(value);
+      if (!addFormSlugManuallyEdited) {
+        setAddFormSlug(
+          defaultSlugFromFields(addFormBodyName, addFormStartYear, value),
+        );
+      }
+    } else if (field === "slug") {
+      setAddFormSlug(value);
+      setAddFormSlugManuallyEdited(true);
+    }
+  };
+
   const handleCreateBody = async (e) => {
     e.preventDefault();
     if (!selectedGroupId) {
       showToast("Select a platform group first.", "error");
       return;
     }
-    const name = e.target.bodyName?.value?.trim() || "New Platform";
-    const startYear = e.target.startYear?.value?.trim() || "0";
-    const endYear = e.target.endYear?.value?.trim() || "0";
-    const slugRaw = e.target.slug?.value?.trim();
+    const name = addFormBodyName?.trim() || "New Platform";
+    const startYear = addFormStartYear?.trim() || "0";
+    const endYear = addFormEndYear?.trim() || "0";
     const slug =
-      slugRaw || defaultSlugFromFields(name, startYear, endYear) || null;
+      addFormSlug?.trim() ||
+      defaultSlugFromFields(name, startYear, endYear) ||
+      null;
     setSaving(true);
     try {
       const res = await fetch("/api/admin/bodies", {
@@ -260,7 +305,7 @@ export default function AdminPlatformsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
       showToast("Platform created.", "success");
-      e.target.reset();
+      resetAddForm();
       await fetchBodies(selectedGroupId);
     } catch (err) {
       showToast(err.message || "Failed", "error");
@@ -652,18 +697,6 @@ export default function AdminPlatformsPage() {
                   className="d-flex flex-wrap gap-3 align-items-end mb-4"
                 >
                   <div>
-                    <label className="form-label small mb-1">
-                      Platform name
-                    </label>
-                    <input
-                      type="text"
-                      name="bodyName"
-                      placeholder="e.g. S650 Mustang"
-                      className="form-control form-control-sm"
-                      style={{ width: "160px" }}
-                    />
-                  </div>
-                  <div>
                     <label className="form-label small mb-1">Start year</label>
                     <input
                       type="text"
@@ -671,6 +704,10 @@ export default function AdminPlatformsPage() {
                       placeholder="2015"
                       className="form-control form-control-sm"
                       style={{ width: "80px" }}
+                      value={addFormStartYear}
+                      onChange={(e) =>
+                        handleAddFormFieldChange("startYear", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -681,6 +718,26 @@ export default function AdminPlatformsPage() {
                       placeholder="2025"
                       className="form-control form-control-sm"
                       style={{ width: "80px" }}
+                      value={addFormEndYear}
+                      onChange={(e) =>
+                        handleAddFormFieldChange("endYear", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label small mb-1">
+                      Platform name
+                    </label>
+                    <input
+                      type="text"
+                      name="bodyName"
+                      placeholder="e.g. S650 Mustang"
+                      className="form-control form-control-sm"
+                      style={{ width: "160px" }}
+                      value={addFormBodyName}
+                      onChange={(e) =>
+                        handleAddFormFieldChange("bodyName", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -688,9 +745,13 @@ export default function AdminPlatformsPage() {
                     <input
                       type="text"
                       name="slug"
-                      placeholder="startyear-endyear-name (e.g. 2015-2025-s650-mustang)"
+                      placeholder="Auto: startyear-endyear-name"
                       className="form-control form-control-sm"
                       style={{ width: "260px" }}
+                      value={addFormSlug}
+                      onChange={(e) =>
+                        handleAddFormFieldChange("slug", e.target.value)
+                      }
                     />
                   </div>
                   <button

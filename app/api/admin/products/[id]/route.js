@@ -285,6 +285,16 @@ export async function PUT(request, context) {
       }
     }
 
+    // Multiple platforms: BodyIDs as JSON array from form
+    const bodyIdsRaw = formData.get("BodyIDs");
+    if (bodyIdsRaw !== null && bodyIdsRaw !== undefined) {
+      try {
+        productData.BodyIDs = JSON.parse(bodyIdsRaw);
+      } catch {
+        productData.BodyIDs = bodyIdsRaw;
+      }
+    }
+
     const success = await updateProductAdmin(id, productData);
     if (!success) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

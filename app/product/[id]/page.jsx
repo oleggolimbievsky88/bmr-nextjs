@@ -215,6 +215,34 @@ export default async function ProductPage({ params, searchParams }) {
 
       <div className="container" style={{ paddingTop: "10px" }}>
         <Breadcrumbs items={breadcrumbItems} />
+        {Array.isArray(product?.platforms) && product.platforms.length > 1 && (
+          <p className="mb-2 text-muted" style={{ fontSize: "0.95rem" }}>
+            <strong>Fits:</strong>{" "}
+            {product.platforms.map((pl, i) => {
+              const slug =
+                pl.slug ||
+                (pl.name || "")
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/\//g, "-");
+              const label =
+                pl.startYear && pl.endYear && pl.startYear !== "0"
+                  ? `${pl.startYear}-${pl.endYear} ${pl.name}`
+                  : pl.name || "";
+              return (
+                <span key={pl.bodyId}>
+                  {i > 0 && ", "}
+                  <Link
+                    href={`/products/${slug}`}
+                    className="text-decoration-underline"
+                  >
+                    {label}
+                  </Link>
+                </span>
+              );
+            })}
+          </p>
+        )}
         <TrackView productId={product?.ProductID} />
         <ProductDetails
           product={product}
