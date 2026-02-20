@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getBrandByKeyAdmin, updateBrand } from "@/lib/brandQueries";
@@ -57,6 +58,9 @@ export async function PATCH(request, { params }) {
 
     const body = await request.json().catch(() => ({}));
     await updateBrand(key, body);
+
+    // Invalidate homepage so Shop by Make and other brand-dependent content updates in production
+    revalidatePath("/");
 
     return NextResponse.json({ success: true });
   } catch (error) {

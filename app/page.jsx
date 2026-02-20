@@ -15,6 +15,9 @@ import VehicleSearch from "@/components/common/VehicleSearch";
 import AboutBrandSection from "@/components/homes/home/AboutBrandSection";
 import { getBannerImagesForPublic } from "@/lib/queries";
 
+// Revalidate so production picks up admin brand changes (e.g. Shop by Make logos) without redeploy
+export const revalidate = 60;
+
 export async function generateMetadata() {
   const config = await getBrandConfig();
   return {

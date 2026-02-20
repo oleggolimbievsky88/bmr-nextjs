@@ -168,8 +168,8 @@ header + .installation-hero {
 }
 
 
-/* Hide Installation link and main menu at 1400px and below to prevent stacking */
-@media (max-width: 1400px) {
+/* Hide Installation link and main menu only below 992px; show main menu from 992px up */
+@media (max-width: 991.98px) {
   .nav-item-installation {
     display: none !important;
   }
@@ -210,7 +210,7 @@ header + .installation-hero {
     display: none !important;
   }
 
-  /* Show hamburger menu at 1400px and below */
+  /* Show hamburger / mobile menu trigger only below 992px */
   .tf-lg-hidden {
     display: block !important;
   }
@@ -1861,8 +1861,8 @@ section.tf-slideshow,
   max-width: 100%;
   overflow-x: hidden;
 
-  /* Hide at 1400px and below */
-  @media (max-width: 1400px) {
+  /* Hide below 992px only */
+  @media (max-width: 991.98px) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -1885,8 +1885,8 @@ section.tf-slideshow,
   z-index: 1001;
 
 
-  /* Hide at 1400px and below */
-  @media (max-width: 1400px) {
+  /* Hide below 992px only */
+  @media (max-width: 991.98px) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -1902,8 +1902,8 @@ section.tf-slideshow,
   position: relative;
   z-index: 1002;
 
-  /* Hide at 1400px and below */
-  @media (max-width: 1400px) {
+  /* Hide below 992px only */
+  @media (max-width: 991.98px) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -2618,8 +2618,8 @@ header[style*="transform:translateY(-"] {
 	}
 }
 
-/* Hide header navigation row on screens smaller than large (below lg breakpoint) */
-@media (max-width: 1400px) {
+/* Hide header navigation row below 992px (lg breakpoint) */
+@media (max-width: 991.98px) {
 	.header-navigation-row {
 		display: none !important;
 	}
