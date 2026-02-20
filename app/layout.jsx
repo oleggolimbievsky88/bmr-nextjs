@@ -41,17 +41,15 @@ export async function generateMetadata() {
   const isSvg =
     typeof faviconPath === "string" &&
     faviconPath.toLowerCase().endsWith(".svg");
+  // Omit sizes for SVG so Chromium doesn't prefer .ico; use full URL for metadata
+  const iconUrl = faviconPath.startsWith("http")
+    ? faviconPath
+    : `${siteUrl}${faviconPath}`;
   const icons = isSvg
     ? {
-        icon: [
-          {
-            url: faviconPath,
-            type: "image/svg+xml",
-            sizes: "any",
-          },
-        ],
+        icon: [{ url: iconUrl, type: "image/svg+xml" }],
       }
-    : { icon: faviconPath };
+    : { icon: iconUrl };
 
   return {
     metadataBase: new URL(siteUrl),
@@ -102,25 +100,9 @@ export default async function RootLayout({ children }) {
   const assuranceBarText = config.assuranceBarTextColor ?? "#1a1a1a";
   const brandKey = config.key || "bmr";
 
-  const faviconHref =
-    config.faviconPath && String(config.faviconPath).trim()
-      ? config.faviconPath.startsWith("/")
-        ? config.faviconPath
-        : `/${config.faviconPath}`
-      : "/favicon.ico";
-  const faviconIsSvg =
-    typeof faviconHref === "string" &&
-    faviconHref.toLowerCase().endsWith(".svg");
-
   return (
     <html lang="en" data-brand={brandKey}>
       <head>
-        <link
-          rel="icon"
-          href={faviconHref}
-          type={faviconIsSvg ? "image/svg+xml" : undefined}
-          sizes={faviconIsSvg ? "any" : undefined}
-        />
         <style
           dangerouslySetInnerHTML={{
             __html: `[data-brand="${brandKey}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,

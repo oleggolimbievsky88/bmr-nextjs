@@ -90,6 +90,16 @@ const nextConfig = {
           },
         ],
       },
+      // Ensure SVG favicons are served with correct MIME type so browsers use them
+      {
+        source: "/brands/:brand/favicons/:file",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "image/svg+xml",
+          },
+        ],
+      },
     ];
   },
 };

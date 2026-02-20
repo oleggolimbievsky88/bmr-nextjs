@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { put } from "@vercel/blob";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
@@ -10,6 +11,29 @@ function requireAdmin(session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   return null;
+}
+
+function getR2Client() {
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+  const bucketName = process.env.R2_BUCKET_NAME;
+  if (!accountId || !accessKeyId || !secretAccessKey || !bucketName) {
+    return null;
+  }
+  const endpoint =
+    process.env.R2_ENDPOINT || `https://${accountId}.r2.cloudflarestorage.com`;
+  return {
+    client: new S3Client({
+      region: "auto",
+      endpoint,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+    }),
+    bucketName,
+  };
 }
 
 const ALLOWED_TYPES = [
@@ -57,16 +81,35 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // 1. Cloudflare R2 (assets.controlfreaksuspension.com) — upload so file actually lives at ASSETS_BASE_URL
+    const r2 = getR2Client();
+    if (r2) {
+      const key = `images/${SUBDIR}/${filename}`;
+      await r2.client.send(
+        new PutObjectCommand({
+          Bucket: r2.bucketName,
+          Key: key,
+          Body: buffer,
+          ContentType: file.type,
+        }),
+      );
+      const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.();
+      const path = assetsBase
+        ? `${assetsBase.replace(/\/$/, "")}/images/${SUBDIR}/${filename}`
+        : `/${key}`;
+      return NextResponse.json({ success: true, path });
+    }
+
+    // 2. Vercel/serverless without R2 — use Blob and return actual Blob URL (not ASSETS_BASE_URL; file is not on Cloudflare)
     const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-    const cwd = process.cwd();
     const isReadOnlyFs =
-      cwd.includes("/var/task") || process.env.VERCEL === "1";
+      process.cwd().includes("/var/task") || process.env.VERCEL === "1";
 
     if (isReadOnlyFs && !blobToken) {
       return NextResponse.json(
         {
           error:
-            "Shop by Make image uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN in environment variables.",
+            "Shop by Make image uploads require Cloudflare R2 (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME) or Blob storage. Set R2 env vars for assets.controlfreaksuspension.com, or add a Blob store and BLOB_READ_WRITE_TOKEN.",
         },
         { status: 503 },
       );
@@ -77,16 +120,13 @@ export async function POST(request) {
         access: "public",
         token: blobToken,
       });
-      const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.();
-      const path = assetsBase
-        ? `${assetsBase.replace(/\/$/, "")}/images/${SUBDIR}/${filename}`
-        : blob.url;
       return NextResponse.json({
         success: true,
-        path,
+        path: blob.url,
       });
     }
 
+    // 3. Local development: use filesystem
     try {
       const uploadDir = join(process.cwd(), "public", "images", SUBDIR);
       await mkdir(uploadDir, { recursive: true });
@@ -104,7 +144,7 @@ export async function POST(request) {
         return NextResponse.json(
           {
             error:
-              "Shop by Make uploads require Blob storage on this server. Add a Blob store in Vercel Dashboard → Storage, then set BLOB_READ_WRITE_TOKEN in environment variables.",
+              "Shop by Make uploads require Cloudflare R2 or Blob storage on this server.",
           },
           { status: 503 },
         );
