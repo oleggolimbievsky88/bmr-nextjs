@@ -520,9 +520,15 @@ export default function AdminBrandEditPage() {
   const aboutBrand = form.aboutBrand || {};
 
   const displayName = form.companyNameShort?.trim() || form.name?.trim() || key;
+  const accent = form.buttonBadgeColor || form.themeColor || "#db1215";
+  const onAccent = form.buttonBadgeTextColor || "#fff";
+  const brandAccentStyle = {
+    "--admin-brand-accent": accent,
+    "--admin-brand-on-accent": onAccent,
+  };
 
   return (
-    <div className="admin-page">
+    <div className="admin-page" style={brandAccentStyle}>
       <div className="admin-brand-edit py-4">
         <div className="admin-page-header-modern">
           <div>

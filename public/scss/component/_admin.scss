@@ -1707,7 +1707,10 @@
 }
 
 /* ========== Admin Brand Edit Page ========== */
+/* When editing a brand, parent sets --admin-brand-accent and --admin-brand-on-accent so UI uses that brand's colors */
 .admin-brand-edit {
+	--primary: var(--admin-brand-accent, var(--primary));
+	--brand-button-badge-text: var(--admin-brand-on-accent, #fff);
 	--brand-edit-radius: 12px;
 	--brand-edit-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 	--brand-edit-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -1856,7 +1859,7 @@
 
 	&:focus {
 		border-color: var(--primary);
-		box-shadow: 0 0 0 3px rgba(219, 18, 21, 0.12);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
 	}
 }
 
