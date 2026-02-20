@@ -1,4 +1,26 @@
 /** @type {import('next').NextConfig} */
+
+// Allow image optimization from NEXT_PUBLIC_ASSETS_BASE_URL (e.g. Shop by Make logos).
+const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.() || "";
+let assetsHostname = null;
+if (assetsBase && assetsBase.startsWith("http")) {
+  try {
+    assetsHostname = new URL(assetsBase).hostname;
+  } catch (_) {}
+}
+const remotePatterns = [
+  { protocol: "https", hostname: "bmrsuspension.com" },
+  { protocol: "https", hostname: "www.bmrsuspension.com" },
+  { protocol: "https", hostname: "i.ytimg.com" },
+  { protocol: "https", hostname: "img.youtube.com" },
+  { protocol: "https", hostname: "www.paypalobjects.com" },
+  { protocol: "https", hostname: "dev.controlfreaksuspension.com" },
+  { protocol: "https", hostname: "controlfreaksuspension.com" },
+];
+if (assetsHostname) {
+  remotePatterns.push({ protocol: "https", hostname: assetsHostname });
+}
+
 const nextConfig = {
   // External packages for server components (updated syntax for Next.js 15)
   serverExternalPackages: ["mysql2"],
@@ -11,40 +33,9 @@ const nextConfig = {
   },
 
   // Image configuration for external domains
-  // In development, use unoptimized images to avoid EACCES on .next/cache/images
-
   images: {
     unoptimized: process.env.NODE_ENV === "development",
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "bmrsuspension.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.bmrsuspension.com",
-      },
-      {
-        protocol: "https",
-        hostname: "i.ytimg.com",
-      },
-      {
-        protocol: "https",
-        hostname: "img.youtube.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.paypalobjects.com",
-      },
-      {
-        protocol: "https",
-        hostname: "dev.controlfreaksuspension.com",
-      },
-      {
-        protocol: "https",
-        hostname: "controlfreaksuspension.com",
-      },
-    ],
+    remotePatterns,
   },
 
   // Redirect old URLs to current pages

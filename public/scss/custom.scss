@@ -168,13 +168,13 @@ header + .installation-hero {
 }
 
 
-/* Hide Installation link and main menu only below 992px; show main menu from 992px up */
-@media (max-width: 991.98px) {
+/* Match main menu visibility to Search by Vehicle: hide only when header-bottom is hidden (below 768px) */
+@media (max-width: 767.98px) {
   .nav-item-installation {
     display: none !important;
   }
 
-  /* Hide main menu navigation completely - override all other rules */
+  /* Hide main menu navigation when header-bottom is hidden (same breakpoint as vehicle row) */
   .header-bottom .box-navigation,
   .header-bottom nav.box-navigation,
   .header-bottom nav.box-navigation.tf-md-hidden,
@@ -210,9 +210,42 @@ header + .installation-hero {
     display: none !important;
   }
 
-  /* Show hamburger / mobile menu trigger only below 992px */
+  /* Show hamburger / mobile menu trigger only when header-bottom is hidden (below 768px) */
   .tf-lg-hidden {
     display: block !important;
+  }
+}
+
+/* When Search by Vehicle row is visible (768px+), ensure main menu is visible (override theme/Bootstrap) */
+@media (min-width: 768px) {
+  .header-bottom .header-navigation-row {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  .header-bottom .navbar,
+  .header-bottom .navbar-collapse,
+  .header-bottom #navbarNavDropdown,
+  .header-bottom .navbar-nav {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .header-bottom .nav-item {
+    display: list-item !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  .header-bottom .nav-link {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  .header-bottom .navbar-nav {
+    flex-wrap: wrap;
   }
 }
 
@@ -1861,8 +1894,8 @@ section.tf-slideshow,
   max-width: 100%;
   overflow-x: hidden;
 
-  /* Hide below 992px only */
-  @media (max-width: 991.98px) {
+  /* Hide when header-bottom is hidden (below 768px, same as Search by Vehicle) */
+  @media (max-width: 767.98px) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -1885,8 +1918,8 @@ section.tf-slideshow,
   z-index: 1001;
 
 
-  /* Hide below 992px only */
-  @media (max-width: 991.98px) {
+  /* Hide when header-bottom is hidden (below 768px) */
+  @media (max-width: 767.98px) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -1902,8 +1935,8 @@ section.tf-slideshow,
   position: relative;
   z-index: 1002;
 
-  /* Hide below 992px only */
-  @media (max-width: 991.98px) {
+  /* Hide when header-bottom is hidden (below 768px) */
+  @media (max-width: 767.98px) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -2469,7 +2502,8 @@ section.tf-slideshow,
   color: var(--white);
 }
 
-@media (min-width: 992px) {
+/* Hide hamburger when main menu is visible (768px+, same breakpoint as Search by Vehicle) */
+@media (min-width: 768px) {
   .btn-mobile {
     display: none !important;
   }
@@ -2618,8 +2652,8 @@ header[style*="transform:translateY(-"] {
 	}
 }
 
-/* Hide header navigation row below 992px (lg breakpoint) */
-@media (max-width: 991.98px) {
+/* Hide header navigation row when header-bottom is hidden (below 768px, same as Search by Vehicle) */
+@media (max-width: 767.98px) {
 	.header-navigation-row {
 		display: none !important;
 	}

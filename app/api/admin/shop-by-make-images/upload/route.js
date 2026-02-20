@@ -77,9 +77,13 @@ export async function POST(request) {
         access: "public",
         token: blobToken,
       });
+      const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.();
+      const path = assetsBase
+        ? `${assetsBase.replace(/\/$/, "")}/images/${SUBDIR}/${filename}`
+        : blob.url;
       return NextResponse.json({
         success: true,
-        path: blob.url,
+        path,
       });
     }
 

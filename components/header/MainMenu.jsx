@@ -255,7 +255,7 @@ export default function MainMenu({ initialMenuData }) {
   // Always render the menu structure, even if data is loading
   return (
     <nav
-      className="navbar navbar-expand-lg text-center"
+      className="navbar navbar-expand-md text-center"
       style={{
         position: "static",
         overflow: "visible",
