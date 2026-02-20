@@ -16,6 +16,7 @@ const remotePatterns = [
   { protocol: "https", hostname: "www.paypalobjects.com" },
   { protocol: "https", hostname: "dev.controlfreaksuspension.com" },
   { protocol: "https", hostname: "controlfreaksuspension.com" },
+  { protocol: "https", hostname: "assets.controlfreaksuspension.com" },
 ];
 if (assetsHostname) {
   remotePatterns.push({ protocol: "https", hostname: assetsHostname });
