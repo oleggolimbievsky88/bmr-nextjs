@@ -33,23 +33,10 @@ export async function generateMetadata() {
     : "/og-image.png";
   const ogImageUrl = `${siteUrl}${ogImagePath}`;
 
-  const rawFavicon = config.faviconPath || "/favicon.ico";
-  const faviconPath =
-    typeof rawFavicon === "string" && rawFavicon && !rawFavicon.startsWith("/")
-      ? `/${rawFavicon}`
-      : rawFavicon;
-  const isSvg =
-    typeof faviconPath === "string" &&
-    faviconPath.toLowerCase().endsWith(".svg");
-  // Omit sizes for SVG so Chromium doesn't prefer .ico; use full URL for metadata
-  const iconUrl = faviconPath.startsWith("http")
-    ? faviconPath
-    : `${siteUrl}${faviconPath}`;
-  const icons = isSvg
-    ? {
-        icon: [{ url: iconUrl, type: "image/svg+xml" }],
-      }
-    : { icon: iconUrl };
+  // Use /api/favicon?brand= so the correct brand is served and browser cache is per-brand
+  const brandKey = (config.key || "bmr").toLowerCase();
+  const faviconUrl = `${siteUrl}/api/favicon?brand=${encodeURIComponent(brandKey)}`;
+  const icons = { icon: faviconUrl };
 
   return {
     metadataBase: new URL(siteUrl),
@@ -100,9 +87,11 @@ export default async function RootLayout({ children }) {
   const assuranceBarText = config.assuranceBarTextColor ?? "#1a1a1a";
   const brandKey = config.key || "bmr";
 
+  const faviconHref = `/api/favicon?brand=${encodeURIComponent(brandKey)}`;
   return (
     <html lang="en" data-brand={brandKey}>
       <head>
+        <link rel="icon" href={faviconHref} />
         <style
           dangerouslySetInnerHTML={{
             __html: `[data-brand="${brandKey}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,

@@ -48,3 +48,39 @@ export async function getBrandConfig() {
   cache.set(key, { config: merged, expiresAt: now + CACHE_TTL_MS });
   return merged;
 }
+
+/**
+ * Load brand config for a specific key (e.g. for /api/favicon?brand=controlfreak).
+ * Same merge logic as getBrandConfig() but uses the given key instead of env.
+ */
+export async function getBrandConfigByKey(key) {
+  const effectiveKey = key && String(key).trim() ? key : getBrandKey();
+  const now = Date.now();
+  const cached = cache.get(effectiveKey);
+  if (cached && cached.expiresAt > now) {
+    return cached.config;
+  }
+
+  const base = defaultBrands[effectiveKey] || defaultBrands.bmr;
+  const merged = JSON.parse(JSON.stringify(base));
+
+  let dbConfig = null;
+  if (dbFetcher) {
+    try {
+      dbConfig = await dbFetcher(effectiveKey);
+    } catch (err) {
+      console.error("loadBrandConfig: DB fetch failed:", err);
+    }
+  }
+
+  if (dbConfig) {
+    deepMerge(merged, dbConfig);
+  }
+
+  merged.siteUrl = getSiteUrl();
+  merged.assetsBaseUrl =
+    process.env.NEXT_PUBLIC_ASSETS_BASE_URL || merged.assetsBaseUrl || "";
+
+  cache.set(effectiveKey, { config: merged, expiresAt: now + CACHE_TTL_MS });
+  return merged;
+}

@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { getBrandConfig } from "@/lib/brandConfig";
 import Features from "@/components/common/Features";
 import Hero from "@/components/homes/home/Hero";
@@ -7,8 +8,11 @@ import Header from "@/components/header/Header";
 import ThreeColumnLayout from "@/components/homes/home/ThreeColumnLayout";
 import LazyNewProducts from "@/components/homes/home/LazyNewProducts";
 // import Topbar4 from "@/components/header/Topbar4";
-import VideoPage from "@/components/common/Videos";
 import ShopCategories from "@/components/homes/home/ShopCategories";
+
+const VideoPage = dynamic(() => import("@/components/common/Videos"), {
+  ssr: true,
+});
 // import SocialMedia from "@/components/homes/home/SocialMedia";
 import Topbar2 from "@/components/header/Topbar2";
 import VehicleSearch from "@/components/common/VehicleSearch";
@@ -92,7 +96,7 @@ export default async function page() {
         <LazyNewProducts scratchDent="0" />
         <LazyNewProducts scratchDent="1" />
         {/* <SocialMedia /> */}
-        <VideoPage />
+        {config.key !== "controlfreak" && <VideoPage />}
       </div>
       <AboutBrandSection />
       <Features />
