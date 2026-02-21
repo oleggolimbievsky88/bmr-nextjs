@@ -33,10 +33,30 @@ export async function generateMetadata() {
     : "/og-image.png";
   const ogImageUrl = `${siteUrl}${ogImagePath}`;
 
-  // Use /api/favicon?brand= so the correct brand is served and browser cache is per-brand
+  // Use static path when under /brands/ so the file is served directly with correct Content-Type
   const brandKey = (config.key || "bmr").toLowerCase();
-  const faviconUrl = `${siteUrl}/api/favicon?brand=${encodeURIComponent(brandKey)}`;
-  const icons = { icon: faviconUrl };
+  const rawFavicon = config.faviconPath && String(config.faviconPath).trim();
+  const faviconPath =
+    rawFavicon && rawFavicon.startsWith("/brands/")
+      ? rawFavicon.startsWith("/")
+        ? rawFavicon
+        : `/${rawFavicon}`
+      : null;
+  const faviconUrl = faviconPath
+    ? `${siteUrl}${faviconPath}`
+    : `${siteUrl}/api/favicon?brand=${encodeURIComponent(brandKey)}`;
+  const faviconExt = faviconPath
+    ? faviconPath.toLowerCase().slice(faviconPath.lastIndexOf("."))
+    : "";
+  const faviconType =
+    faviconExt === ".svg"
+      ? "image/svg+xml"
+      : faviconExt === ".png"
+        ? "image/png"
+        : "image/x-icon";
+  const icons = {
+    icon: [{ url: faviconUrl, type: faviconType }],
+  };
 
   return {
     metadataBase: new URL(siteUrl),
@@ -87,11 +107,20 @@ export default async function RootLayout({ children }) {
   const assuranceBarText = config.assuranceBarTextColor ?? "#1a1a1a";
   const brandKey = config.key || "bmr";
 
-  const faviconHref = `/api/favicon?brand=${encodeURIComponent(brandKey)}`;
+  const faviconHref =
+    config.faviconPath &&
+    String(config.faviconPath).trim().startsWith("/brands/")
+      ? config.faviconPath.startsWith("/")
+        ? config.faviconPath
+        : `/${config.faviconPath}`
+      : `/api/favicon?brand=${encodeURIComponent(brandKey)}`;
+  const faviconType = faviconHref.toLowerCase().endsWith(".svg")
+    ? "image/svg+xml"
+    : "image/x-icon";
   return (
     <html lang="en" data-brand={brandKey}>
       <head>
-        <link rel="icon" href={faviconHref} />
+        <link rel="icon" href={faviconHref} type={faviconType} />
         <style
           dangerouslySetInnerHTML={{
             __html: `[data-brand="${brandKey}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,

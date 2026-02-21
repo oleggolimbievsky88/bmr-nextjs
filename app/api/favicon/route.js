@@ -1,3 +1,4 @@
+import "@/lib/brandConfig"; // ensure DB brand fetcher is set before getBrandConfigByKey
 import { getBrandConfigByKey } from "@bmr/core/brand";
 import { readFile } from "fs/promises";
 import { join } from "path";
