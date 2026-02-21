@@ -12,7 +12,14 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const platform = searchParams.get("platform");
-    const mainCategory = searchParams.get("mainCategory");
+    let mainCategory = searchParams.get("mainCategory");
+    if (mainCategory && typeof mainCategory === "string") {
+      try {
+        mainCategory = decodeURIComponent(mainCategory);
+      } catch {
+        // keep as-is if decoding fails
+      }
+    }
 
     if (!platform || !mainCategory) {
       return NextResponse.json(
