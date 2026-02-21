@@ -411,8 +411,9 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
               type="button"
               className="item"
               onClick={() => {
-                if (typeof openLightboxRefs.current[index] === "function") {
-                  openLightboxRefs.current[index]();
+                // Thumbnail only switches the main image; user opens modal by clicking the main image
+                if (mainSwiper && !mainSwiper.destroyed) {
+                  mainSwiper.slideTo(index);
                 }
               }}
               style={{
@@ -423,7 +424,7 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
                 display: "block",
                 width: "100%",
               }}
-              aria-label={`View image ${index + 1} full size`}
+              aria-label={`View image ${index + 1}`}
             >
               <Image
                 src={slide.smallImgSrc || slide.imgSrc}

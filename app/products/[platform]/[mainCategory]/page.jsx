@@ -36,7 +36,7 @@ export default function MainCategoryPage({ params }) {
       try {
         // Fetch main categories for the platform
         const mainCatRes = await fetch(
-          `/api/platform-by-slug?platform=${platform}`,
+          `/api/platform-by-slug?platform=${encodeURIComponent(platform)}`,
         );
         const mainCatData = await mainCatRes.json();
         const mainCats = mainCatData.mainCategories || [];
@@ -56,7 +56,7 @@ export default function MainCategoryPage({ params }) {
 
         // Fetch subcategories and products for the selected main category
         const res = await fetch(
-          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`,
+          `/api/platform-maincategory?platform=${encodeURIComponent(platform)}&mainCategory=${encodeURIComponent(mainCategory)}`,
         );
         if (!res.ok) {
           throw new Error("Failed to fetch data");
@@ -137,49 +137,27 @@ export default function MainCategoryPage({ params }) {
           />
         </section>
 
-        {/* Featured Products Section */}
-        {products && products.length > 0 && (
-          <section
-            className="mb-5 mt-10"
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            {/* <div className="text-center mb-4">
-              <h6 className="position-relative">
-                <div
-                  className="pt-1 pb-0 mt-1 mb-0 fs-3"
-                  style={{
-                    borderBottom: "1px solid #ccc",
-                    width: "20%",
-                    textAlign: "center",
-                    margin: "0 auto",
-                    color: "#202020",
-                  }}
-                >
-                  <h6 className="position-relative  text-capitalize">
-                    {mainCategory}
-                  </h6>
-                </div>
-                <div className="position-absolute start-0 end-0 bottom-0"></div>
-              </h6>
-            </div> */}
-
-            <ShopSidebarleft
-              categories={categories}
-              platform={platformInfo}
-              isMainCategory={false}
-              mainCategories={mainCategories}
-              products={products}
-              selectedMainCatId={mainCategory}
-              selectedProductType={products.catId}
-              selectedMainCatSlug={mainCategory}
-            />
-          </section>
-        )}
+        {/* Featured Products Section - always show so ShopLoadmoreOnScroll can fetch when initial products are empty */}
+        <section
+          className="mb-5 mt-10"
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "10px",
+            border: "1px solid #ddd",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <ShopSidebarleft
+            categories={categories}
+            platform={platformInfo}
+            isMainCategory={false}
+            mainCategories={mainCategories}
+            products={products || []}
+            selectedMainCatId={mainCategory}
+            selectedProductType={products?.catId}
+            selectedMainCatSlug={mainCategory}
+          />
+        </section>
       </div>
     </div>
   );

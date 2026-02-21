@@ -49,7 +49,7 @@ export default function CategoryPage({ params }) {
       try {
         // 1. Fetch platform info and main categories
         const platformRes = await fetch(
-          `/api/platform-by-slug?platform=${platform}`,
+          `/api/platform-by-slug?platform=${encodeURIComponent(platform)}`,
         );
         if (!platformRes.ok) {
           const errorData = await platformRes.json();
@@ -76,7 +76,7 @@ export default function CategoryPage({ params }) {
 
         // 2. Fetch subcategories for the selected main category
         const subcatRes = await fetch(
-          `/api/platform-maincategory?platform=${platform}&mainCategory=${mainCategory}`,
+          `/api/platform-maincategory?platform=${encodeURIComponent(platform)}&mainCategory=${encodeURIComponent(mainCategory)}`,
         );
         if (!subcatRes.ok) throw new Error("Failed to fetch subcategories");
         const subcatData = await subcatRes.json();
