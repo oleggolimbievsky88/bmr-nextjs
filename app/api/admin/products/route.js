@@ -314,6 +314,16 @@ export async function POST(request) {
       }
     }
 
+    // Per-platform category: { [bodyId]: catId } as JSON from form
+    const categoryByPlatformRaw = formData.get("categoryByPlatform");
+    if (categoryByPlatformRaw !== null && categoryByPlatformRaw !== undefined) {
+      try {
+        productData.categoryByPlatform = JSON.parse(categoryByPlatformRaw);
+      } catch {
+        productData.categoryByPlatform = categoryByPlatformRaw;
+      }
+    }
+
     const productId = await createProductAdmin(productData);
     return NextResponse.json({ success: true, productId });
   } catch (error) {

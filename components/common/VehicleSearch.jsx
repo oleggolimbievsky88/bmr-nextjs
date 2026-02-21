@@ -157,7 +157,8 @@ export default function VehicleSearch() {
         (subModel ? (v.subModel || "") === subModel : true),
     );
     if (match?.platformSlug) {
-      window.location.href = `/products/${match.platformSlug}`;
+      const yearParam = yearNum ? `?year=${yearNum}` : "";
+      window.location.href = `/products/${match.platformSlug}${yearParam}`;
     }
   };
 

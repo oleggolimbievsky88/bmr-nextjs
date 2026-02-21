@@ -48,8 +48,8 @@ export async function GET(request) {
     const params = [platform, platform];
 
     if (category) {
-      query += ` AND FIND_IN_SET(?, p.CatID) > 0`;
-      params.push(category);
+      query += ` AND (EXISTS (SELECT 1 FROM product_platform_category ppc WHERE ppc.ProductID = p.ProductID AND ppc.BodyID = ? AND ppc.CatID = ?) OR FIND_IN_SET(?, p.CatID) > 0)`;
+      params.push(platform, category, category);
     }
 
     query += ` GROUP BY p.ProductID, p.PartNumber, p.ProductName, p.Instructions, p.ImageSmall, p.CatID ORDER BY p.PartNumber`;

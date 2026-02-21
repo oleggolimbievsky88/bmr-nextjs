@@ -50,6 +50,7 @@ export default function AdminProductsPage() {
   const [filterNoManufacturer, setFilterNoManufacturer] = useState(false);
   const [instructionsPdfFile, setInstructionsPdfFile] = useState(null);
   const [instructionsDelete, setInstructionsDelete] = useState(false);
+  const [categoriesByPlatform, setCategoriesByPlatform] = useState({});
   const [formData, setFormData] = useState({
     PartNumber: "",
     ProductName: "",
@@ -61,6 +62,7 @@ export default function AdminProductsPage() {
     BodyID: "",
     BodyIDs: [],
     CatID: "",
+    categoryByPlatform: {},
     ImageLarge: "",
     Features: "",
     Instructions: "",
@@ -401,6 +403,49 @@ export default function AdminProductsPage() {
     return [];
   };
 
+  // Group categories by main category for dropdowns (like platform groups)
+  const groupCategoriesByMain = (categories) => {
+    if (!Array.isArray(categories) || categories.length === 0) return [];
+    const byMain = {};
+    for (const c of categories) {
+      const id = c.MainCatID ?? 0;
+      const name = c.MainCatName || "Other";
+      if (!byMain[id]) byMain[id] = { group: { id, name }, categories: [] };
+      byMain[id].categories.push(c);
+    }
+    return Object.values(byMain).sort((a, b) =>
+      (a.group.name || "").localeCompare(b.group.name || ""),
+    );
+  };
+
+  // When selected platforms (BodyIDs) change: fetch categories for each platform for per-platform category dropdowns
+  useEffect(() => {
+    const bodyIds = formData.BodyIDs || [];
+    if (bodyIds.length === 0) {
+      setCategoriesByPlatform({});
+      return;
+    }
+    let cancelled = false;
+    const load = async () => {
+      const next = {};
+      for (const bodyId of bodyIds) {
+        try {
+          const res = await fetch(`/api/admin/categories/by-body/${bodyId}`);
+          const data = await res.json();
+          if (cancelled) return;
+          next[String(bodyId)] = data.categories || [];
+        } catch {
+          if (!cancelled) next[String(bodyId)] = [];
+        }
+      }
+      if (!cancelled) setCategoriesByPlatform(next);
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [formData.BodyIDs?.length ? formData.BodyIDs.join(",") : ""]);
+
   // When platform/vehicle filter changes: fetch scoped categories and clear category if invalid
   useEffect(() => {
     if (filterBodyId) {
@@ -491,15 +536,40 @@ export default function AdminProductsPage() {
       : [...current, id].sort((a, b) => Number(a) - Number(b));
     const prevFirst = current[0];
     const newFirst = next[0];
-    setFormData((prev) => ({
-      ...prev,
-      BodyIDs: next,
-      BodyID: newFirst || "",
-      CatID: prevFirst !== newFirst ? "" : prev.CatID,
-    }));
+    setFormData((prev) => {
+      const nextCatByPlat = { ...(prev.categoryByPlatform || {}) };
+      if (!next.includes(id)) delete nextCatByPlat[id];
+      const nextCatID =
+        newFirst && nextCatByPlat[newFirst] != null
+          ? nextCatByPlat[newFirst]
+          : prev.CatID;
+      return {
+        ...prev,
+        BodyIDs: next,
+        BodyID: newFirst || "",
+        CatID: next.length === 1 ? nextCatID : (nextCatByPlat[newFirst] ?? ""),
+        categoryByPlatform: nextCatByPlat,
+      };
+    });
     if (newFirst && newFirst !== prevFirst) {
       fetchCategoriesByBody(newFirst);
     }
+  };
+
+  const handleCategoryForPlatform = (bodyId, catId) => {
+    const id = String(bodyId);
+    setFormData((prev) => {
+      const nextCatByPlat = { ...(prev.categoryByPlatform || {}), [id]: catId };
+      const bodyIds = prev.BodyIDs || [];
+      const firstId = bodyIds[0];
+      const nextCatID =
+        firstId === id ? catId : (nextCatByPlat[firstId] ?? prev.CatID);
+      return {
+        ...prev,
+        categoryByPlatform: nextCatByPlat,
+        CatID: bodyIds.length === 1 ? nextCatID : prev.CatID,
+      };
+    });
   };
 
   const handleMainImageChange = (e) => {
@@ -537,6 +607,7 @@ export default function AdminProductsPage() {
       BodyID: "",
       BodyIDs: [],
       CatID: "",
+      categoryByPlatform: {},
       ImageLarge: "",
       Features: "",
       Instructions: "",
@@ -596,7 +667,11 @@ export default function AdminProductsPage() {
             ? [String(data.product.BodyID)]
             : [];
         const bodyId = bodyIds[0] || data.product.BodyID || "";
-        const catId = data.product.CatID || "";
+        const categoryByPlatform = data.product.categoryByPlatform || {};
+        const catId =
+          bodyId && categoryByPlatform[bodyId] != null
+            ? categoryByPlatform[bodyId]
+            : data.product.CatID || "";
 
         if (bodyId) {
           await fetchCategoriesByBody(bodyId);
@@ -613,6 +688,7 @@ export default function AdminProductsPage() {
           BodyID: bodyId,
           BodyIDs: bodyIds,
           CatID: catId,
+          categoryByPlatform,
           ImageLarge: data.product.ImageLarge || "",
           Features: data.product.Features || "",
           Instructions: data.product.Instructions || "",
@@ -711,12 +787,25 @@ export default function AdminProductsPage() {
       return;
     }
 
+    const categoryByPlatform = { ...(formData.categoryByPlatform || {}) };
+    if (bodyIds.length === 1 && formData.CatID) {
+      categoryByPlatform[bodyIds[0]] = formData.CatID;
+    }
+    const missing = bodyIds.filter(
+      (bid) => !categoryByPlatform[bid] || categoryByPlatform[bid] === "",
+    );
+    if (missing.length > 0) {
+      setError("Select a category for each selected platform.");
+      showToast("Select a category for each selected platform.", "error");
+      return;
+    }
+
     try {
       const submitFormData = new FormData();
 
-      // Add all form fields (BodyIDs sent separately as JSON)
+      // Add all form fields (BodyIDs and categoryByPlatform sent separately as JSON)
       Object.keys(formData).forEach((key) => {
-        if (key === "BodyIDs") return;
+        if (key === "BodyIDs" || key === "categoryByPlatform") return;
         const val = formData[key];
         submitFormData.append(
           key,
@@ -725,6 +814,10 @@ export default function AdminProductsPage() {
       });
       submitFormData.append("BodyIDs", JSON.stringify(bodyIds));
       submitFormData.append("BodyID", bodyIds[0] || "");
+      submitFormData.append(
+        "categoryByPlatform",
+        JSON.stringify(categoryByPlatform),
+      );
 
       // Add main image if selected
       if (mainImage) {
@@ -1581,36 +1674,141 @@ export default function AdminProductsPage() {
                   </div>
                   <div className="col-md-6">
                     <div className="admin-form-group">
-                      <label>Category *</label>
-                      <select
-                        name="CatID"
-                        className="form-select"
-                        value={formData.CatID}
-                        onChange={handleInputChange}
-                        required
-                        disabled={(formData.BodyIDs || []).length === 0}
-                      >
-                        <option value="">
-                          {(formData.BodyIDs || []).length > 0
-                            ? "Select Category"
-                            : "Select Platform First"}
-                        </option>
-                        {availableCategories.map((cat) => (
-                          <option key={cat.CatID} value={cat.CatID}>
-                            {cat.CatName}{" "}
-                            {cat.MainCatName ? `(${cat.MainCatName})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                      {(formData.BodyIDs || []).length === 0 && (
-                        <small className="text-muted">
-                          Please select at least one platform first
-                        </small>
+                      {(formData.BodyIDs || []).length > 1 ? (
+                        <>
+                          <label>Category per platform *</label>
+                          <p className="small text-muted mb-2">
+                            Select a category for each selected platform.
+                          </p>
+                          <div className="border rounded p-3 bg-light">
+                            {(formData.BodyIDs || []).map((bid) => {
+                              const body = bodies.find(
+                                (b) => String(b.BodyID) === String(bid),
+                              );
+                              const platformLabel = body
+                                ? `${body.StartYear}-${body.EndYear} ${body.Name}`
+                                : `Platform ${bid}`;
+                              const cats = categoriesByPlatform[bid] || [];
+                              const value =
+                                (formData.categoryByPlatform || {})[bid] || "";
+                              return (
+                                <div key={bid} className="mb-3">
+                                  <label
+                                    className="form-label small mb-1"
+                                    htmlFor={`cat-platform-${bid}`}
+                                  >
+                                    {platformLabel}
+                                  </label>
+                                  <select
+                                    id={`cat-platform-${bid}`}
+                                    className="form-select form-select-sm"
+                                    value={value}
+                                    onChange={(e) =>
+                                      handleCategoryForPlatform(
+                                        bid,
+                                        e.target.value,
+                                      )
+                                    }
+                                    required
+                                  >
+                                    <option value="">Select category</option>
+                                    {groupCategoriesByMain(cats).map(
+                                      ({ group, categories: groupCats }) => (
+                                        <optgroup
+                                          key={group.id}
+                                          label={group.name}
+                                        >
+                                          {groupCats.map((cat) => (
+                                            <option
+                                              key={cat.CatID}
+                                              value={cat.CatID}
+                                            >
+                                              {cat.CatName}
+                                            </option>
+                                          ))}
+                                        </optgroup>
+                                      ),
+                                    )}
+                                  </select>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <label>Category *</label>
+                          <select
+                            name="CatID"
+                            className="form-select"
+                            value={formData.CatID}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              handleInputChange(e);
+                              const firstId = (formData.BodyIDs || [])[0];
+                              if (firstId)
+                                handleCategoryForPlatform(firstId, val);
+                            }}
+                            required
+                            disabled={(formData.BodyIDs || []).length === 0}
+                          >
+                            <option value="">
+                              {(formData.BodyIDs || []).length > 0
+                                ? "Select Category"
+                                : "Select Platform First"}
+                            </option>
+                            {groupCategoriesByMain(availableCategories).map(
+                              ({ group, categories: groupCats }) => (
+                                <optgroup key={group.id} label={group.name}>
+                                  {groupCats.map((cat) => (
+                                    <option key={cat.CatID} value={cat.CatID}>
+                                      {cat.CatName}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              ),
+                            )}
+                          </select>
+                          {(formData.BodyIDs || []).length === 0 && (
+                            <small className="text-muted">
+                              Please select at least one platform first
+                            </small>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
                 </div>
                 <div className="row">
+                  <div className="col-md-3">
+                    <div className="admin-form-group">
+                      <label>Start Application Year</label>
+                      <input
+                        type="text"
+                        name="StartAppYear"
+                        className="form-control"
+                        placeholder="e.g. 2008"
+                        value={formData.StartAppYear}
+                        onChange={handleInputChange}
+                      />
+                      <small className="text-muted">
+                        Leave blank to use platform years
+                      </small>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="admin-form-group">
+                      <label>End Application Year</label>
+                      <input
+                        type="text"
+                        name="EndAppYear"
+                        className="form-control"
+                        placeholder="e.g. 2010"
+                        value={formData.EndAppYear}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
                   <div className="col-md-6">
                     <div className="admin-form-group">
                       <label>Manufacturer</label>
@@ -1927,32 +2125,6 @@ export default function AdminProductsPage() {
                       e.target.value = "";
                     }}
                   />
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="admin-form-group">
-                      <label>Start Application Year</label>
-                      <input
-                        type="text"
-                        name="StartAppYear"
-                        className="form-control"
-                        value={formData.StartAppYear}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="admin-form-group">
-                      <label>End Application Year</label>
-                      <input
-                        type="text"
-                        name="EndAppYear"
-                        className="form-control"
-                        value={formData.EndAppYear}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
                 </div>
                 <div className="row">
                   <div className="col-md-6">

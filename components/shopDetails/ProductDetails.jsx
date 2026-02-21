@@ -447,6 +447,26 @@ export default function ProductDetails({
                   <div className="tf-product-info-list">
                     <div className="tf-product-info-title">
                       <h5>{product?.ProductName}</h5>
+                      {product?.StartAppYear &&
+                        product?.EndAppYear &&
+                        String(product.StartAppYear).trim() !== "" &&
+                        String(product.EndAppYear).trim() !== "" && (
+                          <span
+                            className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
+                            style={{
+                              fontSize: "0.8rem",
+                              letterSpacing: "0.04em",
+                              backgroundColor:
+                                "var(--tf-theme-primary, #e8b923)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            Fits:{" "}
+                            {product.StartAppYear === product.EndAppYear
+                              ? product.StartAppYear
+                              : `${product.StartAppYear} – ${product.EndAppYear}`}
+                          </span>
+                        )}
                     </div>
                     <div className="tf-product-info-price">
                       <div className="price-on-sale">
@@ -503,6 +523,52 @@ export default function ProductDetails({
                     <h5>
                       {displayProduct?.ProductName || product?.ProductName}
                     </h5>
+                    {(() => {
+                      const p = product || {};
+                      const hasProductYears =
+                        p.StartAppYear &&
+                        String(p.StartAppYear).trim() !== "" &&
+                        parseInt(p.StartAppYear, 10) > 0 &&
+                        p.EndAppYear &&
+                        String(p.EndAppYear).trim() !== "" &&
+                        parseInt(p.EndAppYear, 10) > 0;
+                      const startYear = hasProductYears
+                        ? String(p.StartAppYear).trim()
+                        : (Array.isArray(p.platforms) && p.platforms[0]
+                            ? String(p.platforms[0].startYear || "").trim()
+                            : null) ||
+                          (p.YearRange
+                            ? String(p.YearRange).split("-")[0]?.trim()
+                            : null);
+                      const endYear = hasProductYears
+                        ? String(p.EndAppYear).trim()
+                        : (Array.isArray(p.platforms) && p.platforms[0]
+                            ? String(p.platforms[0].endYear || "").trim()
+                            : null) ||
+                          (p.YearRange
+                            ? String(p.YearRange).split("-")[1]?.trim()
+                            : null);
+                      if (!startYear && !endYear) return null;
+                      const label =
+                        startYear && endYear
+                          ? startYear === endYear
+                            ? startYear
+                            : `${startYear} – ${endYear}`
+                          : startYear || endYear;
+                      return (
+                        <span
+                          className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
+                          style={{
+                            fontSize: "0.8rem",
+                            letterSpacing: "0.04em",
+                            backgroundColor: "var(--tf-theme-primary, #e8b923)",
+                            color: "#1a1a1a",
+                          }}
+                        >
+                          Fits: {label}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="tf-breadcrumb-list">
                     <span>

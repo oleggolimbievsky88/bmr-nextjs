@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import CategoryGrid from "@/components/shop/CategoryGrid";
@@ -25,6 +26,11 @@ const sanitizeSlug = (slug) => {
 
 export default function CategoryPage({ params }) {
   const { platform, mainCategory, category } = use(params);
+  const searchParams = useSearchParams();
+  const applicationYear = useMemo(
+    () => searchParams.get("year") || null,
+    [searchParams],
+  );
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -125,9 +131,10 @@ export default function CategoryPage({ params }) {
           page: 1,
           limit: 12,
           ...(includeDescendants && { includeDescendants: "true" }),
-        }).toString();
+        });
+        if (applicationYear) query.set("year", applicationYear);
 
-        const prodRes = await fetch(`/api/products?${query}`);
+        const prodRes = await fetch(`/api/products?${query.toString()}`);
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const products = await prodRes.json();
         // console.log("API Response:", products);
@@ -142,7 +149,7 @@ export default function CategoryPage({ params }) {
     }
 
     fetchData();
-  }, [platform, mainCategory, category]);
+  }, [platform, mainCategory, category, applicationYear]);
 
   if (loading) return <div>Loading...</div>;
   if (error) {
@@ -303,6 +310,7 @@ export default function CategoryPage({ params }) {
               selectedMainCatSlug={mainCategory}
               selectedCatSlug={category}
               selectedCatId={currentCategory?.CatID || currentCategory?.id}
+              applicationYear={applicationYear}
             />
           </section>
         )}

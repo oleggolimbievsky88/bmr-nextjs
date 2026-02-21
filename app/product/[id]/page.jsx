@@ -7,7 +7,6 @@ import Products from "@/components/shopDetails/Products";
 import RecentProducts from "@/components/shopDetails/RecentProducts";
 import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import ProductDetailsOuterZoom from "@/components/shopDetails/ProductDetailsOuterZoom";
-import Link from "next/link";
 import ProductDetails from "@/components/shopDetails/ProductDetails";
 import TrackView from "@/components/shopDetails/TrackView";
 import {
@@ -17,7 +16,7 @@ import {
   getPlatformById,
   getCategoryById,
   getMainCategoryById,
-  getVehiclesByBodyId,
+  getVehiclesForProduct,
   getMerchandiseSizeVariants,
 } from "@/lib/queries";
 import pool from "@/lib/db";
@@ -82,10 +81,8 @@ export default async function ProductPage({ params, searchParams }) {
     ? await getMainCategoryById(currentCategory.MainCatID)
     : null;
 
-  // Fetch vehicle fitment data
-  const vehicles = product?.BodyID
-    ? await getVehiclesByBodyId(product.BodyID)
-    : [];
+  // Fetch vehicle fitment data (filtered by product application years)
+  const vehicles = await getVehiclesForProduct(product);
 
   // Debug logging
   console.log("Product:", product);
@@ -215,34 +212,6 @@ export default async function ProductPage({ params, searchParams }) {
 
       <div className="container" style={{ paddingTop: "10px" }}>
         <Breadcrumbs items={breadcrumbItems} />
-        {Array.isArray(product?.platforms) && product.platforms.length > 1 && (
-          <p className="mb-2 text-muted" style={{ fontSize: "0.95rem" }}>
-            <strong>Fits:</strong>{" "}
-            {product.platforms.map((pl, i) => {
-              const slug =
-                pl.slug ||
-                (pl.name || "")
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/\//g, "-");
-              const label =
-                pl.startYear && pl.endYear && pl.startYear !== "0"
-                  ? `${pl.startYear}-${pl.endYear} ${pl.name}`
-                  : pl.name || "";
-              return (
-                <span key={pl.bodyId}>
-                  {i > 0 && ", "}
-                  <Link
-                    href={`/products/${slug}`}
-                    className="text-decoration-underline"
-                  >
-                    {label}
-                  </Link>
-                </span>
-              );
-            })}
-          </p>
-        )}
         <TrackView productId={product?.ProductID} />
         <ProductDetails
           product={product}

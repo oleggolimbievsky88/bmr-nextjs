@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { getInstallUrl } from "@/lib/assets";
 
 export default function ShopDetailsTab({ product, vehicles = [] }) {
@@ -22,7 +23,10 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
   const hasFeatures =
     featuresArr.length > 0 ||
     (product?.Features && String(product.Features).trim() !== "");
-  const hasFitment = Array.isArray(vehicles) && vehicles.length > 0;
+  const hasPlatforms =
+    Array.isArray(product?.platforms) && product.platforms.length > 0;
+  const hasFitment =
+    (Array.isArray(vehicles) && vehicles.length > 0) || hasPlatforms;
   const hasInstallation =
     product?.Instructions &&
     product?.Instructions !== "0" &&
@@ -156,34 +160,82 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                 {currentTab === "fitment" && hasFitment && (
                   <div className="widget-content-inner active">
                     <div>
-                      <div className="row">
-                        <div className="col-12">
-                          <div className="table-responsive">
-                            <table className="table table-striped table-hover">
-                              <thead className="table-dark">
-                                <tr>
-                                  <th scope="col">Make</th>
-                                  <th scope="col">Model</th>
-                                  <th scope="col">Year Range</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {vehicles.map((vehicle, index) => (
-                                  <tr key={index}>
-                                    <td>
-                                      <strong>{vehicle.Make}</strong>
-                                    </td>
-                                    <td>{vehicle.Model}</td>
-                                    <td>
-                                      {vehicle.StartYear} - {vehicle.EndYear}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                      {hasPlatforms && (
+                        <div className="mb-4">
+                          <p className="mb-2 fw-semibold">
+                            Fits these platforms:
+                          </p>
+                          <div className="d-flex flex-wrap gap-2">
+                            {product.platforms.map((pl) => {
+                              const slug =
+                                pl.slug ||
+                                (pl.name || "")
+                                  .toLowerCase()
+                                  .replace(/\s+/g, "-")
+                                  .replace(/\//g, "-");
+                              const appStart =
+                                product?.StartAppYear &&
+                                String(product.StartAppYear).trim() !== "" &&
+                                parseInt(product.StartAppYear, 10) > 0
+                                  ? product.StartAppYear
+                                  : pl.startYear;
+                              const appEnd =
+                                product?.EndAppYear &&
+                                String(product.EndAppYear).trim() !== "" &&
+                                parseInt(product.EndAppYear, 10) > 0
+                                  ? product.EndAppYear
+                                  : pl.endYear;
+                              const label =
+                                appStart && appEnd && appStart !== "0"
+                                  ? `${appStart}-${appEnd} ${pl.name || ""}`
+                                  : pl.name || "";
+                              return (
+                                <Link
+                                  key={pl.bodyId ?? pl.BodyID ?? pl.name}
+                                  href={`/products/${slug}`}
+                                  className="badge bg-secondary text-decoration-none px-3 py-2"
+                                  style={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {label.trim() || slug}
+                                </Link>
+                              );
+                            })}
                           </div>
                         </div>
-                      </div>
+                      )}
+                      {Array.isArray(vehicles) && vehicles.length > 0 && (
+                        <div className="row">
+                          <div className="col-12">
+                            <div className="table-responsive">
+                              <table className="table table-striped table-hover">
+                                <thead className="table-dark">
+                                  <tr>
+                                    <th scope="col">Make</th>
+                                    <th scope="col">Model</th>
+                                    <th scope="col">Year Range</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {vehicles.map((vehicle, index) => (
+                                    <tr key={vehicle.VehicleID ?? index}>
+                                      <td>
+                                        <strong>{vehicle.Make}</strong>
+                                      </td>
+                                      <td>{vehicle.Model}</td>
+                                      <td>
+                                        {vehicle.StartYear} - {vehicle.EndYear}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

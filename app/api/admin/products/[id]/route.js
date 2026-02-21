@@ -295,6 +295,16 @@ export async function PUT(request, context) {
       }
     }
 
+    // Per-platform category: { [bodyId]: catId } as JSON from form
+    const categoryByPlatformRaw = formData.get("categoryByPlatform");
+    if (categoryByPlatformRaw !== null && categoryByPlatformRaw !== undefined) {
+      try {
+        productData.categoryByPlatform = JSON.parse(categoryByPlatformRaw);
+      } catch {
+        productData.categoryByPlatform = categoryByPlatformRaw;
+      }
+    }
+
     const success = await updateProductAdmin(id, productData);
     if (!success) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

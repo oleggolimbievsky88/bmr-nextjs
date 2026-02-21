@@ -34,6 +34,8 @@ export async function GET(request) {
   const category = searchParams.get("category");
   const colors = searchParams.get("colors"); // e.g. "Red,Black Hammertone"
   const brands = searchParams.get("brands"); // e.g. "BMR Suspension,Qa1"
+  const yearParam = searchParams.get("year");
+  const applicationYear = yearParam ? parseInt(yearParam, 10) : null;
 
   let platformId, mainCategoryId, categoryId;
 
@@ -108,6 +110,9 @@ export async function GET(request) {
     categoryId,
     limit,
     offset,
+    applicationYear: Number.isFinite(applicationYear)
+      ? applicationYear
+      : undefined,
     colors: colors ? colors.split(",") : [],
     brands: brands ? brands.split(",") : [],
   });

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CategoryGrid from "@/components/shop/CategoryGrid";
@@ -8,6 +9,8 @@ import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 
 export default function PlatformPage({ params }) {
   const { platform } = use(params);
+  const searchParams = useSearchParams();
+  const year = useMemo(() => searchParams.get("year") || null, [searchParams]);
   const [platformInfo, setPlatformInfo] = useState(null);
   const [mainCategories, setMainCategories] = useState([]);
   const [initialProducts, setInitialProducts] = useState([]);
@@ -20,7 +23,7 @@ export default function PlatformPage({ params }) {
         setLoading(true);
         setError(null);
         const platformRes = await fetch(
-          `/api/platform-by-slug?platform=${encodeURIComponent(platform)}`
+          `/api/platform-by-slug?platform=${encodeURIComponent(platform)}`,
         );
         const platformData = await platformRes.json();
 
@@ -30,7 +33,7 @@ export default function PlatformPage({ params }) {
           setError(
             platformData?.message ||
               platformData?.error ||
-              "Platform not found"
+              "Platform not found",
           );
           return;
         }
@@ -38,9 +41,15 @@ export default function PlatformPage({ params }) {
         setPlatformInfo(platformData.platformInfo ?? null);
         setMainCategories(platformData.mainCategories || []);
 
+        const productsUrl = new URLSearchParams({
+          page: "1",
+          limit: "8",
+          platform: platform,
+        });
+        if (year) productsUrl.set("year", year);
         const productsRes = await fetch(
-          `/api/products?page=1&limit=8&platform=${encodeURIComponent(platform)}`,
-          { cache: "no-store" }
+          `/api/products?${productsUrl.toString()}`,
+          { cache: "no-store" },
         );
         if (productsRes.ok) {
           const productsData = await productsRes.json();
@@ -54,7 +63,7 @@ export default function PlatformPage({ params }) {
     };
 
     fetchData();
-  }, [platform]);
+  }, [platform, year]);
 
   if (loading) {
     return <div className="text-center py-5">Loading...</div>;
@@ -128,6 +137,7 @@ export default function PlatformPage({ params }) {
             categories={mainCategories}
             selectedMainCatId={null}
             selectedMainCatSlug={null}
+            applicationYear={year}
           />
         </section>
       </div>

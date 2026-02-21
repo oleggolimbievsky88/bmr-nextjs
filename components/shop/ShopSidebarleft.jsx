@@ -13,6 +13,7 @@ export default function ShopSidebarleft({
   selectedMainCatSlug = null,
   selectedCatSlug = null,
   onCategorySelect,
+  applicationYear = null,
 }) {
   // Determine what to show in the sidebar and main content
   const sidebarMainCategories = mainCategories;
@@ -43,6 +44,7 @@ export default function ShopSidebarleft({
                 mainCategory={selectedMainCatSlug ? selectedMainCatSlug : null}
                 categories={[]}
                 products={products}
+                applicationYear={applicationYear}
               />
             </div>
           </div>
