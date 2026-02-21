@@ -52,11 +52,25 @@ export async function GET(request) {
     // Get categories for this main category (including CatSlug)
     const categories = await getCategoriesByMainCatId(mainCategoryId);
 
-    // Get initial products for this main category using the working pagination function
+    // Get initial products for this main category (numeric IDs for multi-platform/category query)
+    const platformId =
+      platformInfo.id != null && Number.isFinite(Number(platformInfo.id))
+        ? Number(platformInfo.id)
+        : null;
+    const mainCatIdNum =
+      mainCategoryId != null && Number.isFinite(Number(mainCategoryId))
+        ? Number(mainCategoryId)
+        : null;
+    if (platformId == null) {
+      return NextResponse.json(
+        { error: "Platform ID invalid" },
+        { status: 500 },
+      );
+    }
     const products = await getFilteredProductsPaginated({
-      platformId: platformInfo.id,
-      mainCategoryId: mainCategoryId,
-      limit: 12, // Load more initially to reduce need for scrolling
+      platformId,
+      mainCategoryId: mainCatIdNum ?? undefined,
+      limit: 12,
       offset: 0,
     });
 
