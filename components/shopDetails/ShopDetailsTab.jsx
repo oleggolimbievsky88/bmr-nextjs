@@ -213,23 +213,43 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                               <table className="table table-striped table-hover">
                                 <thead className="table-dark">
                                   <tr>
+                                    <th scope="col">Year Range</th>
                                     <th scope="col">Make</th>
                                     <th scope="col">Model</th>
-                                    <th scope="col">Year Range</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {vehicles.map((vehicle, index) => (
-                                    <tr key={vehicle.VehicleID ?? index}>
-                                      <td>
-                                        <strong>{vehicle.Make}</strong>
-                                      </td>
-                                      <td>{vehicle.Model}</td>
-                                      <td>
-                                        {vehicle.StartYear} - {vehicle.EndYear}
-                                      </td>
-                                    </tr>
-                                  ))}
+                                  {vehicles.map((vehicle, index) => {
+                                    const startApp = product?.StartAppYear
+                                      ? parseInt(
+                                          String(product.StartAppYear).trim(),
+                                          10,
+                                        )
+                                      : 0;
+                                    const endApp = product?.EndAppYear
+                                      ? parseInt(
+                                          String(product.EndAppYear).trim(),
+                                          10,
+                                        )
+                                      : 0;
+                                    const useProductYears =
+                                      Number.isFinite(startApp) &&
+                                      Number.isFinite(endApp) &&
+                                      startApp > 0 &&
+                                      endApp > 0;
+                                    const yearRange = useProductYears
+                                      ? `${product.StartAppYear} - ${product.EndAppYear}`
+                                      : `${vehicle.StartYear} - ${vehicle.EndYear}`;
+                                    return (
+                                      <tr key={vehicle.VehicleID ?? index}>
+                                        <td>
+                                          <strong>{yearRange}</strong>
+                                        </td>
+                                        <td>{vehicle.Make}</td>
+                                        <td>{vehicle.Model}</td>
+                                      </tr>
+                                    );
+                                  })}
                                 </tbody>
                               </table>
                             </div>

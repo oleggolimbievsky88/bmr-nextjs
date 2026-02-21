@@ -8,6 +8,15 @@ if (assetsBase && assetsBase.startsWith("http")) {
     assetsHostname = new URL(assetsBase).hostname;
   } catch (_) {}
 }
+// Admin product images (e.g. Vercel Blob or production domain when images live there)
+const adminProductImageBase =
+  process.env.NEXT_PUBLIC_ADMIN_PRODUCT_IMAGE_BASE_URL?.trim?.() || "";
+let adminProductImageHostname = null;
+if (adminProductImageBase && adminProductImageBase.startsWith("http")) {
+  try {
+    adminProductImageHostname = new URL(adminProductImageBase).hostname;
+  } catch (_) {}
+}
 const remotePatterns = [
   { protocol: "https", hostname: "bmrsuspension.com" },
   { protocol: "https", hostname: "www.bmrsuspension.com" },
@@ -17,9 +26,16 @@ const remotePatterns = [
   { protocol: "https", hostname: "dev.controlfreaksuspension.com" },
   { protocol: "https", hostname: "controlfreaksuspension.com" },
   { protocol: "https", hostname: "assets.controlfreaksuspension.com" },
+  { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
 ];
 if (assetsHostname) {
   remotePatterns.push({ protocol: "https", hostname: assetsHostname });
+}
+if (adminProductImageHostname) {
+  remotePatterns.push({
+    protocol: "https",
+    hostname: adminProductImageHostname,
+  });
 }
 
 const nextConfig = {
