@@ -48,7 +48,8 @@ export async function GET(request) {
   let platformSlug = platform;
   if (!platformId && platform) {
     const platformObj = await getPlatformBySlug(platform);
-    platformId = platformObj?.id;
+    const rawId = platformObj?.id;
+    platformId = rawId != null ? Number(rawId) : null;
     platformSlug = platform;
   } else if (platformId && !platform) {
     // Legacy params: get platform slug from platformId
@@ -105,9 +106,14 @@ export async function GET(request) {
   }
 
   const products = await getFilteredProductsPaginated({
-    platformId,
-    mainCategoryId,
-    categoryId,
+    platformId: platformId != null ? Number(platformId) : undefined,
+    mainCategoryId: mainCategoryId != null ? Number(mainCategoryId) : undefined,
+    categoryId:
+      categoryId != null
+        ? Array.isArray(categoryId)
+          ? categoryId.map((id) => Number(id))
+          : Number(categoryId)
+        : undefined,
     limit,
     offset,
     applicationYear: Number.isFinite(applicationYear)

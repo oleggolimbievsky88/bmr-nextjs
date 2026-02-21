@@ -72,16 +72,12 @@ export default function ShopLoadmoreOnScroll({
         setLoaded(false);
       }
     } else {
-      // Only fetch if we don't have initial products and have specific filters
-      if (platform && (mainCategory || category)) {
+      // No initial products: fetch when we have platform (main-category page or platform-only page)
+      if (platform) {
         setAllproducts([]);
         setPage(1);
         setLoaded(false);
         fetchProducts(1);
-      } else if (platform && !mainCategory && !category) {
-        // Platform-only page without initial products - don't auto-fetch
-        setAllproducts([]);
-        setLoaded(true);
       }
     }
     // eslint-disable-next-line
