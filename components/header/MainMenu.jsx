@@ -74,6 +74,7 @@ export default function MainMenu({ initialMenuData }) {
   const [activeVehicle, setActiveVehicle] = useState(null);
   const [activePlatform, setActivePlatform] = useState(null);
   const hoverTimeoutRef = useRef(null);
+  const [failedMenuImageKeys, setFailedMenuImageKeys] = useState(new Set());
 
   // Fetch data immediately when component mounts
   useEffect(() => {
@@ -152,11 +153,10 @@ export default function MainMenu({ initialMenuData }) {
     setActiveVehicle(vehicleSlug);
   };
 
-  // Function to handle image error
-  const handleImageError = (e) => {
-    // Replace with fallback image on error
-    e.target.onerror = null; // Prevent infinite loops
-    e.target.src = "/images/logo/BMR-Logo-White.png";
+  // Hide platform thumbnail when image fails to load (no fallback image)
+  const handleMenuImageError = (platform, platformItem) => {
+    const key = `${platform}-${platformItem.bodyId ?? platformItem.slug}`;
+    setFailedMenuImageKeys((prev) => new Set(prev).add(key));
   };
 
   // Render function for the mega menu - simple list with thumbnails
@@ -192,41 +192,48 @@ export default function MainMenu({ initialMenuData }) {
           <div className="mega-menu-container">
             <div className="container">
               <div className="row g-3 px-5">
-                {links.map((platformItem) => (
-                  <div
-                    key={platformItem.slug || platformItem.bodyId}
-                    className="col-12 col-md-6 col-lg-4 mega-menu-platform-col"
-                  >
-                    <Link
-                      href={`/products/${encodeURIComponent(
-                        platformItem.slug,
-                      )}`}
-                      className="platform-menu-item d-flex align-items-center text-decoration-none"
+                {links.map((platformItem) => {
+                  const imageKey = `${platform}-${platformItem.bodyId ?? platformItem.slug}`;
+                  const showImage =
+                    platformItem.image && !failedMenuImageKeys.has(imageKey);
+                  return (
+                    <div
+                      key={platformItem.slug || platformItem.bodyId}
+                      className="col-12 col-md-6 col-lg-4 mega-menu-platform-col"
                     >
-                      {platformItem.image && (
-                        <div className="platform-thumbnail me-3 flex-shrink-0">
-                          <img
-                            src={platformItem.image}
-                            alt={platformItem.heading}
-                            className="img-fluid"
-                            referrerPolicy="no-referrer"
-                            style={{
-                              objectFit: "contain",
-                              maxHeight: "50px",
-                              maxWidth: "80px",
-                              width: "auto",
-                              transition: "transform 0.3s ease",
-                            }}
-                            onError={handleImageError}
-                          />
+                      <Link
+                        href={`/products/${encodeURIComponent(
+                          platformItem.slug,
+                        )}`}
+                        className="platform-menu-item d-flex align-items-center text-decoration-none"
+                      >
+                        {showImage && (
+                          <div className="platform-thumbnail me-3 flex-shrink-0">
+                            <img
+                              src={platformItem.image}
+                              alt={platformItem.heading}
+                              className="img-fluid"
+                              referrerPolicy="no-referrer"
+                              style={{
+                                objectFit: "contain",
+                                maxHeight: "50px",
+                                maxWidth: "80px",
+                                width: "auto",
+                                transition: "transform 0.3s ease",
+                              }}
+                              onError={() =>
+                                handleMenuImageError(platform, platformItem)
+                              }
+                            />
+                          </div>
+                        )}
+                        <div className="text-dark fw-semibold small">
+                          {platformItem.heading}
                         </div>
-                      )}
-                      <div className="text-dark fw-semibold small">
-                        {platformItem.heading}
-                      </div>
-                    </Link>
-                  </div>
-                ))}
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
