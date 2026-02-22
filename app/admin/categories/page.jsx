@@ -479,6 +479,46 @@ export default function AdminCategoriesPage() {
     );
   }, [mainCategories, filterBodyId]);
 
+  // Main categories grouped by platform for the Add/Edit Category form dropdown
+  const mainCategoriesGroupedByPlatform = useMemo(() => {
+    const byBody = new Map();
+    for (const mc of mainCategories) {
+      const bid = mc.BodyID != null ? String(mc.BodyID) : "";
+      if (!byBody.has(bid)) {
+        const label =
+          mc.PlatformName != null
+            ? mc.PlatformStartYear != null && mc.PlatformEndYear != null
+              ? mc.PlatformStartYear === mc.PlatformEndYear
+                ? `${mc.PlatformStartYear} ${mc.PlatformName}`
+                : `${mc.PlatformStartYear}-${mc.PlatformEndYear} ${mc.PlatformName}`
+              : mc.PlatformName
+            : bid
+              ? `Platform ${bid}`
+              : "Other";
+        byBody.set(bid, {
+          bodyId: bid,
+          platformLabel: label,
+          mainCategories: [],
+        });
+      }
+      byBody.get(bid).mainCategories.push(mc);
+    }
+    const groups = Array.from(byBody.values());
+    groups.forEach((g) =>
+      g.mainCategories.sort((a, b) =>
+        (a.MainCatName || "").localeCompare(b.MainCatName || "", undefined, {
+          sensitivity: "base",
+        }),
+      ),
+    );
+    groups.sort((a, b) =>
+      a.platformLabel.localeCompare(b.platformLabel, undefined, {
+        sensitivity: "base",
+      }),
+    );
+    return groups;
+  }, [mainCategories]);
+
   if (loading) {
     return (
       <div className="text-center py-5">
@@ -618,11 +658,17 @@ export default function AdminCategoriesPage() {
                           required
                         >
                           <option value="">Select Main Category</option>
-                          {mainCategories.map((mc) => (
-                            <option key={mc.MainCatID} value={mc.MainCatID}>
-                              {mc.MainCatName}{" "}
-                              {mc.PlatformName ? `(${mc.PlatformName})` : ""}
-                            </option>
+                          {mainCategoriesGroupedByPlatform.map((group) => (
+                            <optgroup
+                              key={group.bodyId || group.platformLabel}
+                              label={group.platformLabel}
+                            >
+                              {group.mainCategories.map((mc) => (
+                                <option key={mc.MainCatID} value={mc.MainCatID}>
+                                  {mc.MainCatName}
+                                </option>
+                              ))}
+                            </optgroup>
                           ))}
                         </select>
                       </div>
@@ -748,18 +794,32 @@ export default function AdminCategoriesPage() {
                         style={{ minWidth: "180px" }}
                       >
                         <option value="">All Main Categories</option>
-                        {mainCategories
-                          .filter(
-                            (mc) =>
-                              !filterBodyId ||
-                              String(mc.BodyID) === String(filterBodyId),
-                          )
-                          .map((mc) => (
-                            <option key={mc.MainCatID} value={mc.MainCatID}>
-                              {mc.MainCatName}{" "}
-                              {mc.PlatformName ? `(${mc.PlatformName})` : ""}
-                            </option>
-                          ))}
+                        {!filterBodyId
+                          ? mainCategoriesGroupedByPlatform.map((group) => (
+                              <optgroup
+                                key={group.bodyId || group.platformLabel}
+                                label={group.platformLabel}
+                              >
+                                {group.mainCategories.map((mc) => (
+                                  <option
+                                    key={mc.MainCatID}
+                                    value={mc.MainCatID}
+                                  >
+                                    {mc.MainCatName}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ))
+                          : mainCategories
+                              .filter(
+                                (mc) =>
+                                  String(mc.BodyID) === String(filterBodyId),
+                              )
+                              .map((mc) => (
+                                <option key={mc.MainCatID} value={mc.MainCatID}>
+                                  {mc.MainCatName}
+                                </option>
+                              ))}
                       </select>
                     </div>
                     {hasActiveFilters && (
