@@ -529,9 +529,44 @@ export default function AdminProductsPage() {
       fetchCategoriesByBody(value);
       newFormData.CatID = "";
       newFormData.BodyIDs = value ? [String(value)] : [];
+      // Auto-fill StartAppYear/EndAppYear from selected platform when creating and years are empty
+      if (
+        value &&
+        (formData.StartAppYear === "" || formData.EndAppYear === "")
+      ) {
+        const body = (bodies || []).find(
+          (b) => String(b.BodyID) === String(value),
+        );
+        if (body && body.StartYear != null && body.EndYear != null) {
+          newFormData.StartAppYear = String(body.StartYear).trim() || "";
+          newFormData.EndAppYear = String(body.EndYear).trim() || "";
+        }
+      }
     }
 
     setFormData(newFormData);
+  };
+
+  // Get application year range from selected platform(s): min StartYear, max EndYear (like BMR: years from platform)
+  const getYearsFromBodyIds = (bodyIds) => {
+    const ids = Array.isArray(bodyIds) ? bodyIds : [];
+    if (ids.length === 0) return { startYear: "", endYear: "" };
+    const selected = (bodies || []).filter((b) =>
+      ids.includes(String(b.BodyID)),
+    );
+    if (selected.length === 0) return { startYear: "", endYear: "" };
+    const starts = selected
+      .map((b) => parseInt(String(b.StartYear || "").trim(), 10))
+      .filter((n) => !Number.isNaN(n) && n > 0);
+    const ends = selected
+      .map((b) => parseInt(String(b.EndYear || "").trim(), 10))
+      .filter((n) => !Number.isNaN(n) && n > 0);
+    if (starts.length === 0 || ends.length === 0)
+      return { startYear: "", endYear: "" };
+    return {
+      startYear: String(Math.min(...starts)),
+      endYear: String(Math.max(...ends)),
+    };
   };
 
   const handlePlatformToggle = (bodyId) => {
@@ -542,6 +577,7 @@ export default function AdminProductsPage() {
       : [...current, id].sort((a, b) => Number(a) - Number(b));
     const prevFirst = current[0];
     const newFirst = next[0];
+    const yearsFromPlatforms = getYearsFromBodyIds(next);
     setFormData((prev) => {
       const nextCatByPlat = { ...(prev.categoryByPlatform || {}) };
       if (!next.includes(id)) delete nextCatByPlat[id];
@@ -549,13 +585,23 @@ export default function AdminProductsPage() {
         newFirst && nextCatByPlat[newFirst] != null
           ? nextCatByPlat[newFirst]
           : prev.CatID;
-      return {
+      const update = {
         ...prev,
         BodyIDs: next,
         BodyID: newFirst || "",
         CatID: next.length === 1 ? nextCatID : (nextCatByPlat[newFirst] ?? ""),
         categoryByPlatform: nextCatByPlat,
       };
+      // Auto-fill StartAppYear/EndAppYear from selected platform(s) when years are empty (like BMR flow)
+      if (
+        (prev.StartAppYear === "" || prev.EndAppYear === "") &&
+        yearsFromPlatforms.startYear &&
+        yearsFromPlatforms.endYear
+      ) {
+        update.StartAppYear = yearsFromPlatforms.startYear;
+        update.EndAppYear = yearsFromPlatforms.endYear;
+      }
+      return update;
     });
     if (newFirst && newFirst !== prevFirst) {
       fetchCategoriesByBody(newFirst);

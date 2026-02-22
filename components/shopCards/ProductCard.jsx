@@ -15,11 +15,13 @@ export const ProductCard = ({
   cardClassName = "",
 }) => {
   const [currentImage, setCurrentImage] = useState(product.imgSrc);
-  const [imageSrc, setImageSrc] = useState(() =>
-    product.ImageSmall
-      ? getProductImageUrl(product.ImageSmall)
-      : getProductImageUrl("noimage.jpg"),
-  );
+  const [imageSrc, setImageSrc] = useState(() => {
+    const url =
+      product.ImageSmall && product.ImageSmall !== "0"
+        ? getProductImageUrl(product.ImageSmall)
+        : getProductImageUrl("noimage.jpg");
+    return url && url.trim() ? url : PLACEHOLDER_PRODUCT;
+  });
   const { setQuickViewItem } = useContextElement();
 
   // Debug logging
@@ -29,11 +31,11 @@ export const ProductCard = ({
 
   useEffect(() => {
     setCurrentImage(product.imgSrc);
-    setImageSrc(
-      product.ImageSmall
+    const url =
+      product.ImageSmall && product.ImageSmall !== "0"
         ? getProductImageUrl(product.ImageSmall)
-        : getProductImageUrl("noimage.jpg"),
-    );
+        : getProductImageUrl("noimage.jpg");
+    setImageSrc(url && url.trim() ? url : PLACEHOLDER_PRODUCT);
   }, [product]);
 
   // Color swatch logic
@@ -63,7 +65,7 @@ export const ProductCard = ({
         <div className="product-img">
           <Image
             className="lazyload img-product"
-            src={imageSrc}
+            src={imageSrc && imageSrc.trim() ? imageSrc : PLACEHOLDER_PRODUCT}
             alt={product.ProductName || "Product image"}
             width={720}
             height={1005}
