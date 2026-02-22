@@ -20,10 +20,29 @@ const ALLOWED_TYPES = [
   "image/webp",
 ];
 
-const UPLOAD_DIRS = {
-  thumbnail: "cars",
-  banner: "platformHeaders",
-};
+const UPLOAD_TYPES = ["thumbnail", "banner"];
+
+/** Path under bucket/public for uploads. Must match frontend (lib/assets.js) so URLs resolve. */
+function getUploadPath(type) {
+  const brand = (
+    process.env.NEXT_PUBLIC_BRAND ||
+    process.env.BRAND ||
+    "bmr"
+  ).toLowerCase();
+  if (type === "thumbnail") {
+    const env = process.env.NEXT_PUBLIC_PLATFORM_IMAGE_PATH?.trim();
+    if (env) return env.replace(/^\//, "");
+    return brand === "controlfreak" ? "cars" : "siteart/cars";
+  }
+  if (type === "banner") {
+    const env = process.env.NEXT_PUBLIC_PLATFORM_BANNER_PATH?.trim();
+    if (env) return env.replace(/^\//, "");
+    return brand === "controlfreak"
+      ? "platformHeaders"
+      : "siteart/platformHeaders";
+  }
+  return type === "thumbnail" ? "siteart/cars" : "siteart/platformHeaders";
+}
 
 function getR2Client() {
   const accountId = process.env.R2_ACCOUNT_ID;
@@ -65,7 +84,7 @@ export async function POST(request) {
       );
     }
 
-    if (!UPLOAD_DIRS[type]) {
+    if (!UPLOAD_TYPES.includes(type)) {
       return NextResponse.json(
         {
           error: `Invalid type. Use "thumbnail" (megamenu) or "banner" (hero)`,
@@ -88,15 +107,15 @@ export async function POST(request) {
       .replace(/\.[^.]+$/, "")
       .replace(/[^a-zA-Z0-9_-]/g, "_");
     const filename = `${baseName}_${Date.now()}.${ext}`;
-    const subdir = UPLOAD_DIRS[type];
+    const uploadPath = getUploadPath(type);
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 1. Cloudflare R2 (siteart/* paths for bmrsuspension.com redirect)
+    // 1. Cloudflare R2 — path from env/brand so it matches frontend URLs
     const r2 = getR2Client();
     if (r2) {
-      const key = `siteart/${subdir}/${filename}`;
+      const key = `${uploadPath}/${filename}`;
       await r2.client.send(
         new PutObjectCommand({
           Bucket: r2.bucketName,
@@ -119,9 +138,9 @@ export async function POST(request) {
       );
     }
 
-    // 3. Local filesystem (dev fallback only)
+    // 3. Local filesystem (dev fallback only) — same path as R2
     try {
-      const uploadDir = join(process.cwd(), "public", "siteart", subdir);
+      const uploadDir = join(process.cwd(), "public", uploadPath);
       await mkdir(uploadDir, { recursive: true });
       const filepath = join(uploadDir, filename);
       await writeFile(filepath, buffer);
