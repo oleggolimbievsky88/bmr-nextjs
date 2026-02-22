@@ -23,6 +23,7 @@ import pool from "@/lib/db";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import GiftCertificateHero from "@/components/header/GiftCertificateHero";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { notFound } from "next/navigation";
 
 // Force dynamic rendering to prevent build-time database access
 export const dynamic = "force-dynamic";
@@ -44,8 +45,16 @@ export default async function ProductPage({ params, searchParams }) {
   console.log("ProductDetailid", id);
   console.log("Color query param:", color);
 
-  // Fetch product details
-  const product = await getProductById(id);
+  // Fetch product details — show 404 page for deleted or invalid product IDs
+  let product;
+  try {
+    product = await getProductById(id);
+  } catch (err) {
+    if (err?.message === "Product not found") {
+      notFound();
+    }
+    throw err;
+  }
 
   // Fetch related products
   const relatedProducts = await getRelatedProducts(id);

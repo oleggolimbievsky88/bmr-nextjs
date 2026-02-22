@@ -14,6 +14,7 @@ export default function PlatformPage({ params }) {
   const [platformInfo, setPlatformInfo] = useState(null);
   const [mainCategories, setMainCategories] = useState([]);
   const [initialProducts, setInitialProducts] = useState([]);
+  const [defaultMainCategory, setDefaultMainCategory] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,6 +31,7 @@ export default function PlatformPage({ params }) {
         if (!platformRes.ok) {
           setPlatformInfo(null);
           setMainCategories([]);
+          setDefaultMainCategory(null);
           setError(
             platformData?.message ||
               platformData?.error ||
@@ -38,8 +40,14 @@ export default function PlatformPage({ params }) {
           return;
         }
 
+        const mainCats = platformData.mainCategories || [];
         setPlatformInfo(platformData.platformInfo ?? null);
-        setMainCategories(platformData.mainCategories || []);
+        setMainCategories(mainCats);
+
+        // When landing from vehicle search (no main category in URL), default to first main category
+        // so products load immediately instead of showing "No items found" until user clicks a category.
+        const firstMain = mainCats.length > 0 ? mainCats[0] : null;
+        setDefaultMainCategory(firstMain);
 
         const productsUrl = new URLSearchParams({
           page: "1",
@@ -47,6 +55,7 @@ export default function PlatformPage({ params }) {
           platform: platform,
         });
         if (year) productsUrl.set("year", year);
+        if (firstMain?.slug) productsUrl.set("mainCategory", firstMain.slug);
         const productsRes = await fetch(
           `/api/products?${productsUrl.toString()}`,
           { cache: "no-store" },
@@ -135,8 +144,8 @@ export default function PlatformPage({ params }) {
             isMainCategory={true}
             mainCategories={mainCategories}
             categories={mainCategories}
-            selectedMainCatId={null}
-            selectedMainCatSlug={null}
+            selectedMainCatId={defaultMainCategory?.id ?? null}
+            selectedMainCatSlug={defaultMainCategory?.slug ?? null}
             applicationYear={year}
           />
         </section>
