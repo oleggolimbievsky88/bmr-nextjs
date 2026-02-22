@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
@@ -42,6 +43,7 @@ export async function POST(request) {
     if (auth) return auth;
     const body = await request.json().catch(() => ({}));
     const id = await createPlatformAdmin(body);
+    revalidatePath("/api/menu");
     return NextResponse.json({ success: true, id });
   } catch (error) {
     console.error("Error creating body:", error);

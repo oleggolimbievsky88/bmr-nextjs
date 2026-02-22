@@ -7,25 +7,47 @@ import { usePathname } from "next/navigation";
 import { useBrand } from "@bmr/ui/brand";
 import { footerLinks, aboutLinks } from "@/data/footerLinks";
 
+// Match MainMenu: defaults and fallbacks for brand-driven nav (Mega menu labels & URLs from platform brands page)
+const defaultNavLabels = {
+  ford: "Ford",
+  gmLateModel: "GM Late Model Cars",
+  gmMidMuscle: "GM Mid Muscle Cars",
+  gmClassicMuscle: "GM Classic Muscle Cars",
+  mopar: "Mopar",
+  installation: "Installation",
+  cart: "Cart",
+};
+const defaultNavUrls = {
+  ford: "/products/ford",
+  gmLateModel: "/products/gm/late-model",
+  gmMidMuscle: "/products/gm/mid-muscle",
+  gmClassicMuscle: "/products/gm/classic-muscle",
+  mopar: "/products/mopar",
+  installation: "/installation",
+  cart: "/view-cart",
+};
+const FALLBACK_SIMPLE_NAV_IDS = ["installation", "cart"];
+const DEFAULT_NAV_ORDER = Object.keys(defaultNavLabels);
+
+function normUrl(url, fallback) {
+  const s = (url || fallback || "").trim();
+  return s ? (s.startsWith("/") ? s : `/${s}`) : fallback || "#";
+}
+
 export default function MobileMenu() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const brand = useBrand();
-  const navLabels = {
-    ford: "Ford",
-    gmLateModel: "GM Late Model Cars",
-    gmMidMuscle: "GM Mid Muscle Cars",
-    gmClassicMuscle: "GM Classic Muscle Cars",
-    mopar: "Mopar",
-    installation: "Installation",
-    cart: "Cart",
-    ...(brand?.navLabels || {}),
-  };
-  const navUrls = {
-    installation: "/installation",
-    cart: "/view-cart",
-    ...(brand?.navUrls || {}),
-  };
+  const navLabels = { ...defaultNavLabels, ...(brand?.navLabels || {}) };
+  const navUrls = { ...defaultNavUrls, ...(brand?.navUrls || {}) };
+  const navOrder =
+    Array.isArray(brand?.navOrder) && brand.navOrder.length > 0
+      ? brand.navOrder
+      : DEFAULT_NAV_ORDER;
+  const platformIds =
+    Array.isArray(brand?.navPlatformIds) && brand.navPlatformIds.length > 0
+      ? brand.navPlatformIds
+      : navOrder.filter((id) => !FALLBACK_SIMPLE_NAV_IDS.includes(id));
   const offcanvasRef = useRef(null);
   const isLoggedIn = status !== "loading" && !!session;
   const accountHref =
@@ -142,7 +164,16 @@ export default function MobileMenu() {
 
     return active;
   };
-  // Create the main navigation items
+  // Products dropdown: brand-specific Mega menu items from navOrder / navPlatformIds (same as desktop MainMenu)
+  const productsLinks = platformIds.map((id) => ({
+    id: id.replace(/\s+/g, "-").toLowerCase(),
+    label: navLabels[id] ?? id,
+    type: "platform",
+    platformData: menuData[`${id}Links`] || [],
+    href: normUrl(navUrls[id], "#"),
+  }));
+
+  // Create the main navigation items (Products uses Mega menu labels & URLs from platform brands page)
   const mainNavItems = [
     {
       id: "home",
@@ -150,49 +181,20 @@ export default function MobileMenu() {
       href: "/",
       type: "link",
     },
-    {
-      id: "products",
-      label: "Products",
-      type: "dropdown",
-      links: [
-        {
-          id: "ford",
-          label: navLabels.ford,
-          type: "platform",
-          platformData: menuData.fordLinks,
-        },
-        {
-          id: "gm-late-model",
-          label: navLabels.gmLateModel,
-          type: "platform",
-          platformData: menuData.gmLateModelLinks,
-        },
-        {
-          id: "gm-mid-muscle",
-          label: navLabels.gmMidMuscle,
-          type: "platform",
-          platformData: menuData.gmMidMuscleLinks,
-        },
-        {
-          id: "gm-classic-muscle",
-          label: navLabels.gmClassicMuscle,
-          type: "platform",
-          platformData: menuData.gmClassicMuscleLinks,
-        },
-        {
-          id: "mopar",
-          label: navLabels.mopar,
-          type: "platform",
-          platformData: menuData.moparLinks,
-        },
-      ],
-    },
+    ...(productsLinks.length > 0
+      ? [
+          {
+            id: "products",
+            label: "Products",
+            type: "dropdown",
+            links: productsLinks,
+          },
+        ]
+      : []),
     {
       id: "installation",
-      label: navLabels.installation,
-      href:
-        (navUrls.installation || "/installation").replace(/^\/*/, "/") ||
-        "/installation",
+      label: navLabels.installation ?? "Installation",
+      href: normUrl(navUrls.installation, "/installation"),
       type: "link",
     },
     {
@@ -209,8 +211,8 @@ export default function MobileMenu() {
     },
     {
       id: "view-cart",
-      label: navLabels.cart,
-      href: (navUrls.cart || "/view-cart").replace(/^\/*/, "/") || "/view-cart",
+      label: navLabels.cart ?? "Cart",
+      href: normUrl(navUrls.cart, "/view-cart"),
       type: "link",
     },
     {

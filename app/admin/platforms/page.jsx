@@ -98,6 +98,8 @@ export default function AdminPlatformsPage() {
   });
   const [failedThumbnailIds, setFailedThumbnailIds] = useState(new Set());
   const [failedBannerIds, setFailedBannerIds] = useState(new Set());
+  const [thumbnailPreviewKey, setThumbnailPreviewKey] = useState(0);
+  const [bannerPreviewKey, setBannerPreviewKey] = useState(0);
 
   // Add-platform form: slug auto-generates from name + years as you type (still editable)
   const [addFormBodyName, setAddFormBodyName] = useState("");
@@ -330,8 +332,10 @@ export default function AdminPlatformsPage() {
       if (!res.ok) throw new Error(data.error || "Upload failed");
       if (type === "thumbnail") {
         setEditingBody((prev) => ({ ...prev, Image: data.filename }));
+        setThumbnailPreviewKey((k) => k + 1);
       } else {
         setEditingBody((prev) => ({ ...prev, HeaderImage: data.filename }));
+        setBannerPreviewKey((k) => k + 1);
       }
       showToast("Image ready. Click Save to apply.", "success");
     } catch (err) {
@@ -1130,10 +1134,15 @@ export default function AdminPlatformsPage() {
                           style={{ width: 80, height: 60 }}
                         >
                           <img
-                            src={getPlatformImageUrl(editingBody.Image)}
+                            src={`${getPlatformImageUrl(editingBody.Image)}${thumbnailPreviewKey ? `?t=${thumbnailPreviewKey}` : ""}`}
                             alt="Thumbnail"
                             className="w-100 h-100 object-fit-contain bg-light"
                             style={{ objectFit: "contain" }}
+                            onError={(e) => {
+                              const fallback = `/siteart/cars/${encodeURIComponent(editingBody.Image)}`;
+                              if (e.target.src !== fallback)
+                                e.target.src = fallback;
+                            }}
                           />
                         </div>
                       )}
@@ -1201,12 +1210,15 @@ export default function AdminPlatformsPage() {
                             style={{ width: 120, height: 60 }}
                           >
                             <img
-                              src={getPlatformBannerUrl(
-                                editingBody.HeaderImage,
-                              )}
+                              src={`${getPlatformBannerUrl(editingBody.HeaderImage)}${bannerPreviewKey ? `?t=${bannerPreviewKey}` : ""}`}
                               alt="Banner"
                               className="w-100 h-100 object-fit-cover bg-light"
                               style={{ objectFit: "cover" }}
+                              onError={(e) => {
+                                const fallback = `/siteart/platformHeaders/${encodeURIComponent(editingBody.HeaderImage)}`;
+                                if (e.target.src !== fallback)
+                                  e.target.src = fallback;
+                              }}
                             />
                           </div>
                         )}
