@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import { getProductImageUrl } from "@/lib/assets";
+import { parsePrice } from "@/lib/display";
 
 const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
 
@@ -56,7 +57,7 @@ export default function ProductCardList({ product, colorsMap = {} }) {
         >
           Part Number: {product.PartNumber}
         </div>
-        <span className="price">${parseFloat(product.Price).toFixed(2)}</span>
+        <span className="price">${parsePrice(product.Price).toFixed(2)}</span>
         {shortDescription && <p className="description">{shortDescription}</p>}
         {productColors.length > 0 && (
           <div className="list-color-product">

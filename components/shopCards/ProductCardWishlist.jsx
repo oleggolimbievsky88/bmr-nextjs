@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import CountdownComponent from "../common/Countdown";
 import { getProductImageUrl } from "@/lib/assets";
+import { parsePrice } from "@/lib/display";
 
 function getProductDisplay(product) {
   const id = product.ProductID ?? product.id;
@@ -18,10 +19,10 @@ function getProductDisplay(product) {
     (product.ImageSmall ? getProductImageUrl(product.ImageSmall) : imgSrc);
   const title = product.ProductName ?? product.title ?? "";
   const price =
-    product.Price != null
-      ? parseFloat(product.Price).toFixed(2)
+    product.Price != null && product.Price !== ""
+      ? parsePrice(product.Price).toFixed(2)
       : product.price != null
-        ? product.price.toFixed(2)
+        ? parsePrice(product.price).toFixed(2)
         : "0.00";
   return { id, imgSrc, imgHoverSrc, title, price };
 }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { parsePrice } from "@/lib/display";
 
 const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
 
@@ -51,7 +52,7 @@ export default function ProductGrid({ products }) {
                   </p>
                   <div className="flex justify-between items-center">
                     <span className="text-xl font-bold">
-                      ${parseFloat(product?.Price).toFixed(2)}
+                      ${parsePrice(product?.Price).toFixed(2)}
                     </span>
                     <span className="text-sm text-gray-500">
                       Part #: {product.PartNumber}

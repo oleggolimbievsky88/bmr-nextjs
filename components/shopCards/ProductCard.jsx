@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import CountdownComponent from "../common/Countdown";
 import { getProductImageUrl } from "@/lib/assets";
+import { parsePrice } from "@/lib/display";
 
 const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
 
@@ -131,7 +132,10 @@ export const ProductCard = ({
               marginBottom: 0,
             }}
           >
-            ${product.Price ? parseFloat(product.Price).toFixed(2) : "0.00"}
+            $
+            {product.Price != null && product.Price !== ""
+              ? parsePrice(product.Price).toFixed(2)
+              : "0.00"}
           </span>
           {productColors.length > 0 && (
             <div
