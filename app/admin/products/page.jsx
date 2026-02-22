@@ -362,7 +362,13 @@ export default function AdminProductsPage() {
       const response = await fetch("/api/admin/manufacturers");
       const data = await response.json();
       if (response.ok) {
-        setManufacturers(data.manufacturers || []);
+        const list = data.manufacturers || [];
+        list.sort((a, b) =>
+          (a.ManName || "").localeCompare(b.ManName || "", undefined, {
+            sensitivity: "base",
+          }),
+        );
+        setManufacturers(list);
       }
     } catch (err) {
       console.error("Error fetching manufacturers:", err);

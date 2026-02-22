@@ -1,5 +1,29 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
+const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
+
+function ProductGridImage({ product }) {
+  const [src, setSrc] = useState(
+    product.ImageSmall
+      ? `/images/products/${product.ImageSmall}`
+      : "/images/placeholder.jpg",
+  );
+  return (
+    <div className="relative h-48 w-full">
+      <Image
+        src={src}
+        alt={product.ProductName}
+        fill
+        className="object-contain"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+        onError={() => setSrc(PLACEHOLDER_PRODUCT)}
+      />
+    </div>
+  );
+}
 
 export default function ProductGrid({ products }) {
   if (!products || products.length === 0) {
@@ -17,19 +41,7 @@ export default function ProductGrid({ products }) {
               className="product-card bg-white rounded-lg shadow-md overflow-hidden"
             >
               <Link href={`/product/${product.ProductID}`}>
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={
-                      product.ImageSmall
-                        ? `/images/products/${product.ImageSmall}`
-                        : "/images/placeholder.jpg"
-                    }
-                    alt={product.ProductName}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                  />
-                </div>
+                <ProductGridImage product={product} />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold mb-2 line-clamp-2">
                     {product.ProductName}
@@ -49,7 +61,7 @@ export default function ProductGrid({ products }) {
               </Link>
             </div>
           )
-        )
+        ),
       )}
     </div>
   );

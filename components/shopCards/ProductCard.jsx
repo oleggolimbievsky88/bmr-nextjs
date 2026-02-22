@@ -5,12 +5,20 @@ import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import CountdownComponent from "../common/Countdown";
 import { getProductImageUrl } from "@/lib/assets";
+
+const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
+
 export const ProductCard = ({
   product,
   colorsMap = {},
   cardClassName = "",
 }) => {
   const [currentImage, setCurrentImage] = useState(product.imgSrc);
+  const [imageSrc, setImageSrc] = useState(() =>
+    product.ImageSmall
+      ? getProductImageUrl(product.ImageSmall)
+      : getProductImageUrl("noimage.jpg"),
+  );
   const { setQuickViewItem } = useContextElement();
 
   // Debug logging
@@ -20,11 +28,12 @@ export const ProductCard = ({
 
   useEffect(() => {
     setCurrentImage(product.imgSrc);
+    setImageSrc(
+      product.ImageSmall
+        ? getProductImageUrl(product.ImageSmall)
+        : getProductImageUrl("noimage.jpg"),
+    );
   }, [product]);
-
-  const imageSrc = product.ImageSmall
-    ? getProductImageUrl(product.ImageSmall)
-    : getProductImageUrl("noimage.jpg");
 
   // Color swatch logic
   const colorIds = product.Color ? product.Color.split(",") : [];
@@ -57,6 +66,7 @@ export const ProductCard = ({
             alt={product.ProductName || "Product image"}
             width={720}
             height={1005}
+            onError={() => setImageSrc(PLACEHOLDER_PRODUCT)}
           />
         </div>
       </div>

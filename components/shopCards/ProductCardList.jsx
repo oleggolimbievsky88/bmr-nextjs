@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useContextElement } from "@/context/Context";
 import { getProductImageUrl } from "@/lib/assets";
 
+const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
+
 export default function ProductCardList({ product, colorsMap = {} }) {
   const {
     addToWishlist,
@@ -13,9 +15,11 @@ export default function ProductCardList({ product, colorsMap = {} }) {
     addToCompareItem,
     isAddedtoCompareItem,
   } = useContextElement();
-  const imageSrc = product.ImageSmall
-    ? getProductImageUrl(product.ImageSmall)
-    : getProductImageUrl("noimage.jpg");
+  const [imageSrc, setImageSrc] = useState(() =>
+    product.ImageSmall
+      ? getProductImageUrl(product.ImageSmall)
+      : getProductImageUrl("noimage.jpg"),
+  );
   const shortDescription =
     product.Description && product.Description.length > 200
       ? product.Description.slice(0, 200) + "..."
@@ -32,6 +36,7 @@ export default function ProductCardList({ product, colorsMap = {} }) {
             alt={product.ProductName || "Product image"}
             width={720}
             height={1005}
+            onError={() => setImageSrc(PLACEHOLDER_PRODUCT)}
           />
         </Link>
       </div>
