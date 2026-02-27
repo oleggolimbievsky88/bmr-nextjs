@@ -184,13 +184,12 @@ export default function AdminPlatformsPage() {
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     const name = e.target.name?.value?.trim() || "New Group";
-    const position = parseInt(e.target.position?.value, 10) || 0;
     setSaving(true);
     try {
       const res = await fetch("/api/admin/platform-groups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, position }),
+        body: JSON.stringify({ name }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
@@ -204,13 +203,13 @@ export default function AdminPlatformsPage() {
     }
   };
 
-  const handleUpdateGroup = async (id, name, position) => {
+  const handleUpdateGroup = async (id, name) => {
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/platform-groups/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, position }),
+        body: JSON.stringify({ name }),
       });
       if (!res.ok) {
         const d = await res.json();
@@ -551,16 +550,6 @@ export default function AdminPlatformsPage() {
                   style={{ width: "180px" }}
                 />
               </div>
-              <div>
-                <label className="form-label small mb-1">Position</label>
-                <input
-                  type="number"
-                  name="position"
-                  placeholder="0"
-                  className="form-control form-control-sm"
-                  style={{ width: "80px" }}
-                />
-              </div>
               <button
                 type="submit"
                 className="btn btn-primary rounded-pill px-4"
@@ -574,7 +563,6 @@ export default function AdminPlatformsPage() {
                 <thead className="table-light">
                   <tr>
                     <th className="border-0 py-3 ps-4">Name</th>
-                    <th className="border-0 py-3">Position</th>
                     <th className="border-0 py-3 pe-4 text-end"></th>
                   </tr>
                 </thead>
@@ -596,33 +584,12 @@ export default function AdminPlatformsPage() {
                               }
                             />
                           </td>
-                          <td>
-                            <input
-                              type="number"
-                              className="form-control form-control-sm"
-                              value={editingGroup.position ?? ""}
-                              onChange={(e) =>
-                                setEditingGroup((prev) => ({
-                                  ...prev,
-                                  position:
-                                    e.target.value === ""
-                                      ? null
-                                      : Number(e.target.value),
-                                }))
-                              }
-                              style={{ width: "70px" }}
-                            />
-                          </td>
                           <td className="pe-4 text-end">
                             <button
                               type="button"
                               className="btn btn-sm btn-success me-1 rounded-pill"
                               onClick={() =>
-                                handleUpdateGroup(
-                                  g.id,
-                                  editingGroup.name,
-                                  editingGroup.position ?? 0,
-                                )
+                                handleUpdateGroup(g.id, editingGroup.name)
                               }
                             >
                               Save
@@ -639,11 +606,6 @@ export default function AdminPlatformsPage() {
                       ) : (
                         <>
                           <td className="ps-4 fw-medium">{g.name}</td>
-                          <td>
-                            <span className="badge bg-light text-dark border">
-                              {g.position}
-                            </span>
-                          </td>
                           <td className="pe-4 text-end">
                             <button
                               type="button"
