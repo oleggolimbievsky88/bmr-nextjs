@@ -27,6 +27,7 @@ if (adminProductImageBase && adminProductImageBase.startsWith("http")) {
 const remotePatterns = [
   { protocol: "https", hostname: "bmrsuspension.com" },
   { protocol: "https", hostname: "www.bmrsuspension.com" },
+  { protocol: "https", hostname: "assets.bmrsuspension.com" },
   { protocol: "https", hostname: "i.ytimg.com" },
   { protocol: "https", hostname: "img.youtube.com" },
   { protocol: "https", hostname: "www.paypalobjects.com" },
