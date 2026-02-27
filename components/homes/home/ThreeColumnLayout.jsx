@@ -3,6 +3,7 @@ import Image from "next/image";
 import SectionHeader from "@/components/common/SectionHeader";
 import styles from "./ShopByMake.module.css";
 import { getBrandConfig } from "@/lib/brandConfig";
+import { getShopByMakeImageUrl } from "@/lib/assets";
 
 export default async function ThreeColumnLayout({ shopByMake }) {
   const brand = await getBrandConfig();
@@ -54,7 +55,9 @@ export default async function ThreeColumnLayout({ shopByMake }) {
               >
                 <div className={styles.makeCard} style={brandVars}>
                   <Image
-                    src={item.imagePath || item.img || ""}
+                    src={getShopByMakeImageUrl(
+                      item.imagePath || item.img || "",
+                    )}
                     alt={item.title || ""}
                     fill
                     className={styles.cardImage}

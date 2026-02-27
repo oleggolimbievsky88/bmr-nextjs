@@ -81,7 +81,7 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 1. Cloudflare R2 (assets.controlfreaksuspension.com) — upload so file actually lives at ASSETS_BASE_URL
+    // 1. Cloudflare R2 — upload to bucket; return URL from the base where R2 is actually served
     const r2 = getR2Client();
     if (r2) {
       const key = `images/${SUBDIR}/${filename}`;
@@ -93,10 +93,20 @@ export async function POST(request) {
           ContentType: file.type,
         }),
       );
-      const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.();
-      const path = assetsBase
-        ? `${assetsBase.replace(/\/$/, "")}/images/${SUBDIR}/${filename}`
-        : `/${key}`;
+      // Use dedicated uploads base when set (R2 public URL); else ASSETS_BASE_URL. Must point to where R2 is served, not the main site.
+      const uploadsBase =
+        process.env.NEXT_PUBLIC_UPLOADS_BASE_URL?.trim?.() ||
+        process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.();
+      if (!uploadsBase) {
+        return NextResponse.json(
+          {
+            error:
+              "When using R2, set NEXT_PUBLIC_UPLOADS_BASE_URL or NEXT_PUBLIC_ASSETS_BASE_URL to your R2 public URL (e.g. https://assets.yoursite.com), not the main site URL, so uploaded image links work.",
+          },
+          { status: 503 },
+        );
+      }
+      const path = `${uploadsBase.replace(/\/$/, "")}/images/${SUBDIR}/${filename}`;
       return NextResponse.json({ success: true, path });
     }
 

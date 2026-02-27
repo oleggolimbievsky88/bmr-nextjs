@@ -2,10 +2,17 @@
 
 // Allow image optimization from NEXT_PUBLIC_ASSETS_BASE_URL (e.g. Shop by Make logos).
 const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL?.trim?.() || "";
+const uploadsBase = process.env.NEXT_PUBLIC_UPLOADS_BASE_URL?.trim?.() || "";
 let assetsHostname = null;
+let uploadsHostname = null;
 if (assetsBase && assetsBase.startsWith("http")) {
   try {
     assetsHostname = new URL(assetsBase).hostname;
+  } catch (_) {}
+}
+if (uploadsBase && uploadsBase.startsWith("http")) {
+  try {
+    uploadsHostname = new URL(uploadsBase).hostname;
   } catch (_) {}
 }
 // Admin product images (e.g. Vercel Blob or production domain when images live there)
@@ -30,6 +37,9 @@ const remotePatterns = [
 ];
 if (assetsHostname) {
   remotePatterns.push({ protocol: "https", hostname: assetsHostname });
+}
+if (uploadsHostname && uploadsHostname !== assetsHostname) {
+  remotePatterns.push({ protocol: "https", hostname: uploadsHostname });
 }
 if (adminProductImageHostname) {
   remotePatterns.push({
