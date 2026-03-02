@@ -3495,6 +3495,513 @@ header[style*="transform:translateY(-"] {
 	color: var(--primary) !important;
 }
 
+/* PLP Sidebar (modern filter UI) */
+.plpSidebarCard {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.plpSidebarTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.plpSidebarKicker {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.plpSidebarTitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--main);
+}
+
+.plpClearBtn {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+}
+
+.plpFacet {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.plpFacetHead {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  text-align: left;
+}
+
+.plpFacetTitle {
+  font-size: 13px;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.plpPillCount {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.plpChevron {
+  margin-left: auto;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(0, 0, 0, 0.55);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.55);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+/* If we also show a pill count, don't let two auto-margins fight */
+.plpPillCount + .plpChevron {
+  margin-left: 8px;
+}
+
+/* Bootstrap collapse: toggler gets .collapsed when closed */
+.plpFacetHead.collapsed .plpChevron {
+  transform: rotate(225deg);
+}
+
+/* Lists */
+.plpList,
+.plpFilterList {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.plpEmpty {
+  padding: 10px 6px;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+}
+
+.plpLinkRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.82);
+  font-weight: 800;
+  font-size: 13px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+  &.is-active {
+    background: rgba(0, 0, 0, 0.06);
+    outline: 2px solid rgba(0, 0, 0, 0.08);
+  }
+}
+
+.plpLinkText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plpCount {
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* === PLP Sidebar sizing === */
+.tf-row-flex {
+  gap: 22px;
+}
+
+.tf-shop-sidebar.plpSidebarCard {
+  width: 340px;
+  min-width: 340px;
+  padding: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  background: #fff;
+}
+
+@media (min-width: 1200px) {
+  .tf-shop-sidebar.plpSidebarCard {
+    width: 380px;
+    min-width: 380px;
+  }
+}
+
+@media (max-width: 991px) {
+  .tf-shop-sidebar.plpSidebarCard {
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+  }
+}
+
+.tf-shop-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* === Facet styles === */
+.plpFacetGroup {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.plpFacetGroupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plpMiniBtn {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.plpFacet {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.plpFacetHead {
+  width: 100%;
+  border: 0;
+  background: #fff;
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.plpFacetTitle {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.plpPillCount {
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.plpChevron {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid rgba(0, 0, 0, 0.5);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  transform: rotate(45deg);
+}
+
+.plpFilterList {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.plpCheckRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  cursor: pointer;
+}
+
+.plpCheckRow input {
+  width: 16px;
+  height: 16px;
+}
+
+.plpCheckLabel {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.plpCount {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.plpCheckRow.is-checked {
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+/* Shipping mini-cards */
+.plpIconList {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.plpIconItem {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.plpIconBubble {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 16px;
+}
+
+.plpIconTitle {
+  font-weight: 900;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.plpIconDesc {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 2px;
+}
+
+/* ===== Summit-style sidebar (flat, clean) ===== */
+.summit-sidebar {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.summit-sidebar .plpFacet {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 0 10px 0 !important;
+  box-shadow: none !important;
+}
+
+.summit-sidebar .plpFacetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.summit-sidebar .plpFacet:first-of-type .plpFacetHead {
+  border-top: 0;
+}
+
+.summit-sidebar .sidebar-section-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.summit-sidebar .plpList,
+.summit-sidebar .plpFilterList {
+  padding: 8px 8px 10px 8px !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
+.summit-sidebar .plpList li,
+.summit-sidebar .plpFilterList li {
+  padding: 6px 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
+.summit-sidebar .plpLinkRow {
+  color: #111;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.summit-sidebar .plpLinkRow.is-active {
+  font-weight: 900;
+}
+
+.summit-sidebar .plpCheckRow input,
+.summit-sidebar input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 0;
+}
+
+.summit-sidebar .plpIconList {
+  padding: 8px 8px 10px 8px !important;
+  margin: 0 !important;
+}
+
+.summit-sidebar .plpIconItem {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.summit-sidebar .plpIconItem:first-child {
+  border-top: 0;
+}
+
+.summit-sidebar .plpIconBubble {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 6px !important;
+  background: rgba(0, 0, 0, 0.04);
+  display: grid;
+  place-items: center;
+  border: 0 !important;
+}
+
+.summit-sidebar .plpIconTitle {
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.summit-sidebar .plpIconDesc {
+  font-size: 12px;
+  opacity: 0.75;
+  margin: 2px 0 0 0;
+}
+
+.tf-shop-sidebar {
+  flex: 0 0 320px;
+  max-width: 320px;
+}
+
+@media (max-width: 991px) {
+  .tf-shop-sidebar {
+    max-width: 100%;
+  }
+}
+
+/* ===== Modern product cards ===== */
+.modern-pcard {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) {
+  .modern-pcard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.modern-pcard .pcard-img {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0));
+  padding: 14px;
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+}
+
+.modern-pcard .pcard-img img {
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.modern-pcard .pcard-body {
+  padding: 12px 12px 14px 12px;
+}
+
+.modern-pcard .pcard-title {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin: 0 0 6px 0;
+}
+
+.modern-pcard .pcard-meta {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-bottom: 8px;
+}
+
+.modern-pcard .pcard-priceRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modern-pcard .pcard-price {
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.modern-pcard .pcard-chip {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
 .mega-menu {
   z-index: 9999999 !important;
   position: fixed !important;

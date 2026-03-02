@@ -18,6 +18,17 @@
  */
 
 const mysql = require("mysql2/promise");
+const path = require("path");
+
+// Load env files when running directly with `node ...`
+// Order: .env.local (developer overrides) -> .env -> local (Vercel CLI export file some setups use)
+try {
+  require("dotenv").config({ path: path.join(__dirname, "..", ".env.local") });
+  require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
+  require("dotenv").config({ path: path.join(__dirname, "..", "local") });
+} catch (e) {
+  // dotenv is optional; env vars may already be set in the shell.
+}
 
 function getDbConfig() {
   const url = process.env.DATABASE_URL;
@@ -56,16 +67,39 @@ function slugFromLabel(label) {
     .slice(0, 100);
 }
 
-async function fetchHtml(url) {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0",
-      Accept: "text/html",
-    },
-  });
+function looksLikeBotBlock(html) {
+  if (!html || typeof html !== "string") return false;
+  const h = html.toLowerCase();
+  return (
+    h.includes("_incapsula_resource") ||
+    h.includes("incapsula") ||
+    h.includes("alarums-exeunter") ||
+    (h.includes("noindex") && h.includes("nofollow") && h.includes("iframe")) ||
+    html.length < 2500
+  );
+}
+
+async function fetchHtml(url, opts = {}) {
+  const headers = {
+    "User-Agent":
+      opts.userAgent ||
+      "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+  };
+  if (opts.cookie) headers.Cookie = opts.cookie;
+
+  const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
-  return res.text();
+  const html = await res.text();
+  if (looksLikeBotBlock(html)) {
+    const hint =
+      "Summit returned an anti-bot page (Incapsula/Imperva), so specs aren't in the HTML. " +
+      'Workarounds: run with `--cookie="..."` copied from a real browser session on summitracing.com, ' +
+      "or switch to a browser-based fetcher (Playwright/Puppeteer).";
+    throw new Error(hint);
+  }
+  return html;
 }
 
 function extractLabelsWithCheerio(html, opts = {}) {
@@ -109,6 +143,8 @@ async function main() {
   let selectorContainer = "";
   let selectorLabel = "";
   let selectorValue = "";
+  let cookie = "";
+  let userAgent = "";
 
   for (const a of args) {
     if (a.startsWith("--attribute-category="))
@@ -121,6 +157,9 @@ async function main() {
       selectorLabel = a.slice("--selector-label=".length).trim();
     else if (a.startsWith("--selector-value="))
       selectorValue = a.slice("--selector-value=".length).trim();
+    else if (a.startsWith("--cookie=")) cookie = a.slice("--cookie=".length);
+    else if (a.startsWith("--user-agent="))
+      userAgent = a.slice("--user-agent=".length);
   }
 
   if (!attributeCategory || !urlsStr) {
@@ -140,6 +179,15 @@ async function main() {
   }
 
   const dbConfig = getDbConfig();
+  if (
+    !process.env.DATABASE_URL &&
+    !process.env.MYSQL_HOST &&
+    !process.env.MYSQL_USER
+  ) {
+    console.warn(
+      "DB env vars not detected. Set DATABASE_URL or MYSQL_HOST/MYSQL_USER/MYSQL_PASSWORD (via shell, .env files, or project 'local' file).",
+    );
+  }
   const pool = mysql.createPool({
     ...dbConfig,
     waitForConnections: true,
@@ -192,7 +240,7 @@ async function main() {
     for (const url of urls) {
       console.log("Fetching:", url);
       try {
-        const html = await fetchHtml(url);
+        const html = await fetchHtml(url, { cookie, userAgent });
         const labels = extractLabelsWithCheerio(html, opts);
         labels.forEach((l) => allLabels.add(l));
         console.log("  Found", labels.length, "attribute labels");

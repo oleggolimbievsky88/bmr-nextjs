@@ -12,7 +12,7 @@ function normalizeValue(attr) {
     if (v === "0" || v === "no" || v === "false") return "No";
     return attr.value;
   }
-  return attr.value;
+  return attr.displayValue ?? attr.value;
 }
 
 export default function ProductSpecsCard({

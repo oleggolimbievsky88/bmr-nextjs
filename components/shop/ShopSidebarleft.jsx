@@ -1,3 +1,8 @@
+/**
+ * Sidebar component for the product page.
+ * Shows the main categories, sub-categories, and products for the selected category.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 import Sidebar from "./Sidebar";
 import ShopLoadmoreOnScroll from "./ShopLoadmoreOnScroll";
@@ -9,6 +14,7 @@ export default function ShopSidebarleft({
   mainCategories,
   isMainCategory,
   platform,
+  platformSlug: platformSlugProp = null,
   selectedMainCatId,
   selectedCatId,
   selectedMainCatSlug = null,
@@ -45,6 +51,7 @@ export default function ShopSidebarleft({
               selectedMainCatId={isMainCategory ? selectedMainCatId : null}
               selectedCatId={selectedCatId}
               platform={platform}
+              platformSlug={platformSlugProp}
               isMainCategory={isMainCategory}
               selectedMainCatSlug={selectedMainCatSlug}
               selectedCatSlug={selectedCatSlug}

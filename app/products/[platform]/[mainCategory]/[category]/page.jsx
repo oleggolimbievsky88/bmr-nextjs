@@ -314,14 +314,7 @@ export default function CategoryPage({ params }) {
 
         {/* Featured Products Section */}
         {featuredProducts && featuredProducts.length > 0 && (
-          <section
-            className="mb-5 mt-10"
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-            }}
-          >
+          <section className="mb-5 mt-10">
             {/* <div className="text-center ">
               <h6 className="position-relative">
                 <div
@@ -344,6 +337,7 @@ export default function CategoryPage({ params }) {
               categories={categories}
               productTypeCategories={productTypeCategories}
               platform={platformInfo}
+              platformSlug={platform}
               isMainCategory={false}
               products={featuredProducts}
               mainCategories={mainCategories}

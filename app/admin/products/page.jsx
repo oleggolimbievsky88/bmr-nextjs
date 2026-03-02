@@ -1970,9 +1970,12 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Attribute set & product attributes */}
-                <div className="row mt-3">
+              {/* Product Attributes */}
+              <div className="admin-form-section rounded-3 border-0 shadow-sm">
+                <h3 className="admin-form-section-title">Product Attributes</h3>
+                <div className="row">
                   <div className="col-12">
                     <div className="admin-form-group">
                       <label>Attribute set</label>
@@ -1997,141 +2000,129 @@ export default function AdminProductsPage() {
                         ))}
                       </select>
                       <small className="text-muted">
-                        Optional. When set, product attribute fields below will
-                        appear and be saved.
+                        Optional. When set, attribute fields below will appear
+                        and be saved.
                       </small>
                     </div>
                   </div>
                 </div>
+
                 {formData.attributeCategoryId &&
                   categoryAttributesForForm.length > 0 && (
-                    <div className="row mt-2">
-                      <div className="col-12">
-                        <h4 className="h6 fw-bold mb-2">Product attributes</h4>
-                        <div className="row g-2">
-                          {categoryAttributesForForm.map((attr) => (
-                            <div key={attr.id} className="col-md-6">
-                              <div className="admin-form-group">
-                                <label>{attr.label}</label>
-                                {attr.type === "boolean" ? (
-                                  <select
-                                    className="form-select"
-                                    value={
-                                      (formData.attributeValues || {})[
-                                        attr.slug
-                                      ] ?? ""
-                                    }
-                                    onChange={(e) =>
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        attributeValues: {
-                                          ...(prev.attributeValues || {}),
-                                          [attr.slug]: e.target.value,
-                                        },
-                                      }))
-                                    }
-                                  >
-                                    <option value="">—</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                  </select>
-                                ) : attr.type === "select" ? (
-                                  <select
-                                    className="form-select"
-                                    value={
-                                      (formData.attributeValues || {})[
-                                        attr.slug
-                                      ] ?? ""
-                                    }
-                                    onChange={(e) =>
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        attributeValues: {
-                                          ...(prev.attributeValues || {}),
-                                          [attr.slug]: e.target.value,
-                                        },
-                                      }))
-                                    }
-                                  >
-                                    <option value="">—</option>
-                                    {getAttributeOptions(attr).map((opt) => (
-                                      <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                      </option>
-                                    ))}
-                                  </select>
-                                ) : attr.type === "multiselect" ? (
-                                  <select
-                                    multiple
-                                    className="form-select"
-                                    size={Math.min(
-                                      Math.max(
-                                        getAttributeOptions(attr).length,
-                                        4,
-                                      ),
-                                      12,
-                                    )}
-                                    style={{ minHeight: "80px" }}
-                                    value={
-                                      (formData.attributeValues || {})[
+                    <div className="row g-2">
+                      {categoryAttributesForForm.map((attr) => (
+                        <div key={attr.id} className="col-md-6">
+                          <div className="admin-form-group">
+                            <label>{attr.label}</label>
+                            {attr.type === "boolean" ? (
+                              <select
+                                className="form-select"
+                                value={
+                                  (formData.attributeValues || {})[attr.slug] ??
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    attributeValues: {
+                                      ...(prev.attributeValues || {}),
+                                      [attr.slug]: e.target.value,
+                                    },
+                                  }))
+                                }
+                              >
+                                <option value="">—</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                              </select>
+                            ) : attr.type === "select" ? (
+                              <select
+                                className="form-select"
+                                value={
+                                  (formData.attributeValues || {})[attr.slug] ??
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    attributeValues: {
+                                      ...(prev.attributeValues || {}),
+                                      [attr.slug]: e.target.value,
+                                    },
+                                  }))
+                                }
+                              >
+                                <option value="">—</option>
+                                {getAttributeOptions(attr).map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : attr.type === "multiselect" ? (
+                              <select
+                                multiple
+                                className="form-select"
+                                size={Math.min(
+                                  Math.max(getAttributeOptions(attr).length, 4),
+                                  12,
+                                )}
+                                style={{ minHeight: "80px" }}
+                                value={
+                                  (formData.attributeValues || {})[attr.slug]
+                                    ? (formData.attributeValues || {})[
                                         attr.slug
                                       ]
-                                        ? (formData.attributeValues || {})[
-                                            attr.slug
-                                          ]
-                                            .split(",")
-                                            .map((s) => s.trim())
-                                            .filter(Boolean)
-                                        : []
-                                    }
-                                    onChange={(e) => {
-                                      const v = Array.from(
-                                        e.target.selectedOptions,
-                                        (o) => o.value,
-                                      )
+                                        .split(",")
+                                        .map((s) => s.trim())
                                         .filter(Boolean)
-                                        .join(",");
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        attributeValues: {
-                                          ...(prev.attributeValues || {}),
-                                          [attr.slug]: v,
-                                        },
-                                      }));
-                                    }}
-                                  >
-                                    {getAttributeOptions(attr).map((opt) => (
-                                      <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                      </option>
-                                    ))}
-                                  </select>
-                                ) : (
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    value={
-                                      (formData.attributeValues || {})[
-                                        attr.slug
-                                      ] ?? ""
-                                    }
-                                    onChange={(e) =>
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        attributeValues: {
-                                          ...(prev.attributeValues || {}),
-                                          [attr.slug]: e.target.value,
-                                        },
-                                      }))
-                                    }
-                                    placeholder={attr.label}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          ))}
+                                    : []
+                                }
+                                onChange={(e) => {
+                                  const v = Array.from(
+                                    e.target.selectedOptions,
+                                    (o) => o.value,
+                                  )
+                                    .filter(Boolean)
+                                    .join(",");
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    attributeValues: {
+                                      ...(prev.attributeValues || {}),
+                                      [attr.slug]: v,
+                                    },
+                                  }));
+                                }}
+                              >
+                                {getAttributeOptions(attr).map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={
+                                  (formData.attributeValues || {})[attr.slug] ??
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    attributeValues: {
+                                      ...(prev.attributeValues || {}),
+                                      [attr.slug]: e.target.value,
+                                    },
+                                  }))
+                                }
+                                placeholder={attr.label}
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
                   )}
               </div>
@@ -2919,6 +2910,24 @@ export default function AdminProductsPage() {
                           </span>
                         </td>
                         <td>
+                          {product?.ProductID ? (
+                            <a
+                              className="btn btn-sm btn-outline-secondary rounded-pill me-1"
+                              href={`/product/${product.ProductID}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              View
+                            </a>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary rounded-pill me-1"
+                              disabled
+                            >
+                              View
+                            </button>
+                          )}
                           <button
                             className="btn btn-sm btn-outline-primary rounded-pill me-1"
                             onClick={() => handleEdit(product)}

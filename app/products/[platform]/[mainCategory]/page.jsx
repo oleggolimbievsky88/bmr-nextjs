@@ -143,18 +143,11 @@ export default function MainCategoryPage({ params }) {
         </section>
 
         {/* Featured Products Section - always show so ShopLoadmoreOnScroll can fetch when initial products are empty */}
-        <section
-          className="mb-5 mt-10"
-          style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "10px",
-            border: "1px solid #ddd",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-          }}
-        >
+        <section className="mb-5 mt-10">
           <ShopSidebarleft
             categories={categories}
             platform={platformInfo}
+            platformSlug={platform}
             isMainCategory={false}
             mainCategories={mainCategories}
             products={products || []}

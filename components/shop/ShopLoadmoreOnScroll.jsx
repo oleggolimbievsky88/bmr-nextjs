@@ -1,3 +1,8 @@
+/**
+ * Component for loading more products on scroll.
+ * Shows a grid of products and a filter sidebar.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ProductGrid from "./ProductGrid";

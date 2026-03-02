@@ -129,23 +129,16 @@ export default function PlatformPage({ params }) {
         </section>
 
         {/* Sidebar and Products */}
-        <section
-          className="mb-5 mt-10"
-          style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "10px",
-            border: "1px solid #ddd",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-          }}
-        >
+        <section className="mb-5 mt-10">
           <ShopSidebarleft
             platform={platformInfo}
+            platformSlug={platform}
             products={initialProducts}
             isMainCategory={true}
             mainCategories={mainCategories}
             categories={mainCategories}
-            selectedMainCatId={defaultMainCategory?.id ?? null}
-            selectedMainCatSlug={defaultMainCategory?.slug ?? null}
+            selectedMainCatId={null}
+            selectedMainCatSlug={null}
             applicationYear={year}
           />
         </section>

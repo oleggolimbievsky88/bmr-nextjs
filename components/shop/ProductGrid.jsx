@@ -1,3 +1,8 @@
+/**
+ * Component for displaying a grid of products.
+ * Shows a grid of products and a filter sidebar.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -118,53 +123,6 @@ export default function ProductGrid({
           ))}
         </div>
       )}
-
-      {/* Categories Grid (commented out for now) */}
-      {/* showCategories && categories.length > 0 && (
-        <div className="row g-4 justify-content-center mt-4">
-          {categories
-            .filter(
-              (cat) =>
-                !selectedMainCategory ||
-                cat.mainCategoryId === selectedMainCategory
-            )
-            .map((category) => (
-              <div key={category.id} className="col-md-3">
-                <Link
-                  href={`/platform/${platformName}/${category.name
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  className="text-decoration-none"
-                >
-                  <div className="card category-card h-100">
-                    {category.CatImage && (
-                      <img
-                        src={`https://www.bmrsuspension.com/siteart/categories/LLK1861R_1024.jpg`}
-                        alt={category.name}
-                        className="card-img-top"
-                      />
-                    )}
-                    <div className="card-body text-center">
-                      <h5 className="card-title">{category.name}</h5>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-        </div>
-      ) */}
-
-      {/* Product Count */}
-      {/* <div
-        style={{
-          width: "fit-content",
-          margin: "0  auto",
-          fontSize: "17px",
-          marginBottom: "24px",
-        }}
-      >
-        {allproducts.length} product(s) found
-      </div> */}
 
       {/* Products Grid (list or grid) */}
       {allproducts && allproducts.length > 0 ? (

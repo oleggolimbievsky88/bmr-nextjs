@@ -48,7 +48,7 @@ export const ProductCard = ({
   return (
     <Link
       href={`/product/${product.ProductID}`}
-      className={`card-product fl-item ${cardClassName}`.trim()}
+      className={`card-product modern-pcard fl-item ${cardClassName}`.trim()}
       key={product.ProductID}
       style={{
         textDecoration: "none",
@@ -61,7 +61,7 @@ export const ProductCard = ({
         borderRadius: "8px",
       }}
     >
-      <div className="card-product-wrapper">
+      <div className="pcard-img card-product-wrapper">
         <div className="product-img">
           <Image
             className="lazyload img-product"
@@ -74,7 +74,7 @@ export const ProductCard = ({
         </div>
       </div>
       <div
-        className="card-product-info"
+        className="pcard-body card-product-info"
         style={{
           flex: 1,
           display: "flex",
@@ -83,13 +83,14 @@ export const ProductCard = ({
           borderRadius: "8px",
         }}
       >
-        <span
-          className="product-title"
+        <div
+          className="pcard-title product-title"
           style={{ fontWeight: "bold", color: "#222", fontSize: "1rem" }}
         >
           {product.ProductName}
-        </span>
+        </div>
         <div
+          className="pcard-meta"
           style={{
             color: "#202020",
             fontSize: "0.95em",
@@ -117,6 +118,7 @@ export const ProductCard = ({
           </div>
         )}
         <div
+          className="pcard-priceRow"
           style={{
             display: "flex",
             alignItems: "center",
@@ -126,7 +128,7 @@ export const ProductCard = ({
           }}
         >
           <span
-            className="price"
+            className="pcard-price price"
             style={{
               color: "#1a1a1a",
               fontWeight: 600,
@@ -139,7 +141,7 @@ export const ProductCard = ({
               ? parsePrice(product.Price).toFixed(2)
               : "0.00"}
           </span>
-          {productColors.length > 0 && (
+          {productColors.length > 0 ? (
             <div
               className="list-color-product"
               onClick={(e) => e.stopPropagation()}
@@ -173,6 +175,8 @@ export const ProductCard = ({
                 </span>
               ))}
             </div>
+          ) : (
+            <span className="pcard-chip">In Stock</span>
           )}
         </div>
       </div>
