@@ -12,8 +12,10 @@ export default function ShopLoadmoreOnScroll({
   platform,
   mainCategory,
   category,
+  includeDescendants = false,
   products: initialProducts = [],
   applicationYear = null,
+  attributeFilters = {},
 }) {
   const [allproducts, setAllproducts] = useState(initialProducts);
   const [page, setPage] = useState(1);
@@ -34,8 +36,14 @@ export default function ShopLoadmoreOnScroll({
       });
       if (platform) params.append("platform", platform);
       if (mainCategory) params.append("mainCategory", mainCategory);
-      if (category) params.append("catid", category); // use category as catid for now
+      if (category) params.append("category", category);
+      if (includeDescendants) params.set("includeDescendants", "true");
       if (applicationYear) params.append("year", String(applicationYear));
+      Object.keys(attributeFilters || {}).forEach((slug) => {
+        const values = attributeFilters[slug];
+        if (values && values.length)
+          params.set(`attr_${slug}`, values.join(","));
+      });
 
       const res = await fetch(`/api/products?${params.toString()}`);
       const data = await res.json();
@@ -81,7 +89,7 @@ export default function ShopLoadmoreOnScroll({
       }
     }
     // eslint-disable-next-line
-  }, [initialProducts, platform, mainCategory, category]);
+  }, [initialProducts, platform, mainCategory, category, attributeFilters]);
 
   // Infinite scroll observer
   useEffect(() => {

@@ -10,7 +10,7 @@
   --brand-text: #000000;
   --main: #000000;
   --white: #ffffff;
-  --text: #dcdcdc;
+  --text: #3f3f3f;
   --text-2: #b5b5b5;
   --text-3: #8c8c8c;
   --line: rgba(255, 255, 255, 0.12);
@@ -56,4 +56,13 @@
 /* Main categories / categories pages: darker yellow for sidebar headings (Categories, Shipping & Delivery) so they’re readable on white */
 [data-brand="controlfreak"] .sidebar-section-title {
   color: var(--brand-primary-text-on-light, #b5a000) !important;
+}
+
+/* Shop sidebar: use same dark text as attribute labels (e.g. Control Arm Style) for Categories and Product Types for readability */
+[data-brand="controlfreak"] .tf-shop-sidebar .sidebar-section-title {
+  color: #1a1a1a !important;
+}
+[data-brand="controlfreak"] .tf-shop-sidebar .list-categoris .cate-item a,
+[data-brand="controlfreak"] .tf-shop-sidebar .list-categoris .cate-item.active > a {
+  color: #1a1a1a !important;
 }

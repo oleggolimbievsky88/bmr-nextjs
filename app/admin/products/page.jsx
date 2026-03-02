@@ -51,6 +51,10 @@ export default function AdminProductsPage() {
   const [instructionsPdfFile, setInstructionsPdfFile] = useState(null);
   const [instructionsDelete, setInstructionsDelete] = useState(false);
   const [categoriesByPlatform, setCategoriesByPlatform] = useState({});
+  const [attributeCategories, setAttributeCategories] = useState([]);
+  const [categoryAttributesForForm, setCategoryAttributesForForm] = useState(
+    [],
+  );
   const [formData, setFormData] = useState({
     PartNumber: "",
     ProductName: "",
@@ -99,6 +103,8 @@ export default function AdminProductsPage() {
     taxexempt: 0,
     couponexempt: 0,
     BlemProduct: 0,
+    attributeCategoryId: "",
+    attributeValues: {},
   });
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
@@ -130,7 +136,44 @@ export default function AdminProductsPage() {
     fetchMainCategories();
     fetchManufacturers();
     fetchProductOptions();
+    fetchAttributeCategories();
   }, []);
+
+  const fetchAttributeCategories = async () => {
+    try {
+      const res = await fetch("/api/admin/attribute-categories");
+      const data = await res.json();
+      if (res.ok && data.attributeCategories) {
+        setAttributeCategories(data.attributeCategories);
+      }
+    } catch (err) {
+      console.error("Error fetching attribute categories:", err);
+    }
+  };
+
+  useEffect(() => {
+    const id = formData.attributeCategoryId;
+    if (!id) {
+      setCategoryAttributesForForm([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(
+      `/api/admin/category-attributes?attributeCategoryId=${encodeURIComponent(id)}`,
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.categoryAttributes) {
+          setCategoryAttributesForForm(data.categoryAttributes);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCategoryAttributesForForm([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [formData.attributeCategoryId]);
 
   useEffect(() => {
     const fetchNewProductsDays = async () => {
@@ -696,6 +739,8 @@ export default function AdminProductsPage() {
       taxexempt: 0,
       couponexempt: 0,
       BlemProduct: 0,
+      attributeCategoryId: "",
+      attributeValues: {},
     });
     setMainImage(null);
     setAdditionalImages([]);
@@ -794,6 +839,18 @@ export default function AdminProductsPage() {
           taxexempt: data.product.taxexempt || 0,
           couponexempt: data.product.couponexempt || 0,
           BlemProduct: data.product.BlemProduct || 0,
+          attributeCategoryId:
+            data.product.AttributeCategoryID != null &&
+            data.product.AttributeCategoryID !== ""
+              ? String(data.product.AttributeCategoryID)
+              : "",
+          attributeValues: (data.product.attributeValues || []).reduce(
+            (acc, a) => {
+              if (a && a.slug != null) acc[a.slug] = a.value ?? "";
+              return acc;
+            },
+            {},
+          ),
         });
         setMainImage(null);
         setAdditionalImages([]);
@@ -857,7 +914,12 @@ export default function AdminProductsPage() {
 
       // Add all form fields (BodyIDs and categoryByPlatform sent separately as JSON)
       Object.keys(formData).forEach((key) => {
-        if (key === "BodyIDs" || key === "categoryByPlatform") return;
+        if (
+          key === "BodyIDs" ||
+          key === "categoryByPlatform" ||
+          key === "attributeValues"
+        )
+          return;
         const val = formData[key];
         submitFormData.append(
           key,
@@ -869,6 +931,14 @@ export default function AdminProductsPage() {
       submitFormData.append(
         "categoryByPlatform",
         JSON.stringify(categoryByPlatform),
+      );
+      submitFormData.append(
+        "attributeCategoryId",
+        formData.attributeCategoryId || "",
+      );
+      submitFormData.append(
+        "attributeValues",
+        JSON.stringify(formData.attributeValues || {}),
       );
 
       // Add main image if selected
@@ -1025,6 +1095,26 @@ export default function AdminProductsPage() {
     filterMultipleBoxes ||
     filterPackage ||
     filterNoManufacturer;
+
+  const getAttributeOptions = (attr) => {
+    if (!attr) return [];
+    if (
+      String(attr.options || "").trim() === "__product_colors__" &&
+      productOptions.colors?.length
+    ) {
+      return productOptions.colors.map((c) => ({
+        value: String(c.ColorID),
+        label: c.ColorName || String(c.ColorID),
+      }));
+    }
+    const raw = String(attr.options || "").trim();
+    if (!raw) return [];
+    return raw
+      .split(/[\n,]/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((v) => ({ value: v, label: v }));
+  };
 
   return (
     <div className="admin-products-page">
@@ -1880,6 +1970,170 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Attribute set & product attributes */}
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <div className="admin-form-group">
+                      <label>Attribute set</label>
+                      <select
+                        name="attributeCategoryId"
+                        className="form-select"
+                        value={formData.attributeCategoryId}
+                        onChange={(e) => {
+                          handleInputChange(e);
+                          setFormData((prev) => ({
+                            ...prev,
+                            attributeCategoryId: e.target.value,
+                            attributeValues: {},
+                          }));
+                        }}
+                      >
+                        <option value="">None</option>
+                        {attributeCategories.map((ac) => (
+                          <option key={ac.id} value={ac.id}>
+                            {ac.name}
+                          </option>
+                        ))}
+                      </select>
+                      <small className="text-muted">
+                        Optional. When set, product attribute fields below will
+                        appear and be saved.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+                {formData.attributeCategoryId &&
+                  categoryAttributesForForm.length > 0 && (
+                    <div className="row mt-2">
+                      <div className="col-12">
+                        <h4 className="h6 fw-bold mb-2">Product attributes</h4>
+                        <div className="row g-2">
+                          {categoryAttributesForForm.map((attr) => (
+                            <div key={attr.id} className="col-md-6">
+                              <div className="admin-form-group">
+                                <label>{attr.label}</label>
+                                {attr.type === "boolean" ? (
+                                  <select
+                                    className="form-select"
+                                    value={
+                                      (formData.attributeValues || {})[
+                                        attr.slug
+                                      ] ?? ""
+                                    }
+                                    onChange={(e) =>
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        attributeValues: {
+                                          ...(prev.attributeValues || {}),
+                                          [attr.slug]: e.target.value,
+                                        },
+                                      }))
+                                    }
+                                  >
+                                    <option value="">—</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                  </select>
+                                ) : attr.type === "select" ? (
+                                  <select
+                                    className="form-select"
+                                    value={
+                                      (formData.attributeValues || {})[
+                                        attr.slug
+                                      ] ?? ""
+                                    }
+                                    onChange={(e) =>
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        attributeValues: {
+                                          ...(prev.attributeValues || {}),
+                                          [attr.slug]: e.target.value,
+                                        },
+                                      }))
+                                    }
+                                  >
+                                    <option value="">—</option>
+                                    {getAttributeOptions(attr).map((opt) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : attr.type === "multiselect" ? (
+                                  <select
+                                    multiple
+                                    className="form-select"
+                                    size={Math.min(
+                                      Math.max(
+                                        getAttributeOptions(attr).length,
+                                        4,
+                                      ),
+                                      12,
+                                    )}
+                                    style={{ minHeight: "80px" }}
+                                    value={
+                                      (formData.attributeValues || {})[
+                                        attr.slug
+                                      ]
+                                        ? (formData.attributeValues || {})[
+                                            attr.slug
+                                          ]
+                                            .split(",")
+                                            .map((s) => s.trim())
+                                            .filter(Boolean)
+                                        : []
+                                    }
+                                    onChange={(e) => {
+                                      const v = Array.from(
+                                        e.target.selectedOptions,
+                                        (o) => o.value,
+                                      )
+                                        .filter(Boolean)
+                                        .join(",");
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        attributeValues: {
+                                          ...(prev.attributeValues || {}),
+                                          [attr.slug]: v,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    {getAttributeOptions(attr).map((opt) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    value={
+                                      (formData.attributeValues || {})[
+                                        attr.slug
+                                      ] ?? ""
+                                    }
+                                    onChange={(e) =>
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        attributeValues: {
+                                          ...(prev.attributeValues || {}),
+                                          [attr.slug]: e.target.value,
+                                        },
+                                      }))
+                                    }
+                                    placeholder={attr.label}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
               </div>
 
               {/* Dimensions & Weight */}
@@ -1981,6 +2235,10 @@ export default function AdminProductsPage() {
                           </option>
                         ))}
                       </select>
+                      <small className="text-muted d-block mt-1">
+                        One part number can have multiple colors (e.g. Red and
+                        Black Hammertone). Select all that apply.
+                      </small>
                     </div>
                   </div>
                   <div className="col-md-6">

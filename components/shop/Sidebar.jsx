@@ -8,6 +8,7 @@ import { socialLinks } from "@/data/socials";
 export default function ({
   mainCategories = [],
   categories = [],
+  productTypeCategories = null,
   products = [],
   platform = "",
   selectedMainCatId = null,
@@ -15,6 +16,9 @@ export default function ({
   selectedCatSlug = null, // NEW
   selectedCatId = null,
   onCategorySelect = () => {}, // NEW
+  attributeFilterOptions = [],
+  selectedAttributeFilters = {},
+  onAttributeFilterChange,
 }) {
   return (
     <aside className="tf-shop-sidebar wrap-sidebar-mobile">
@@ -53,48 +57,122 @@ export default function ({
           </ul>
         </div>
       </div>
-      {/* Only show Product Types if categories are provided and not empty */}
-      {categories &&
-        categories.filter((c) => (c.productCount ?? 0) > 0).length > 0 && (
-          <div className="widget-facet wd-categories">
+      {/* Attribute filters (Summit-style) */}
+      {attributeFilterOptions &&
+        attributeFilterOptions.length > 0 &&
+        onAttributeFilterChange &&
+        (() => {
+          const selectedSet = selectedAttributeFilters || {};
+          return attributeFilterOptions.map((group) => (
             <div
-              className="facet-title"
-              data-bs-target="#product-types"
-              data-bs-toggle="collapse"
-              aria-expanded="true"
-              aria-controls="product-types"
+              key={group.attributeSlug}
+              className="widget-facet wd-categories"
             >
-              <h5 className="sidebar-section-title">Product Types</h5>
-              <span className="icon icon-arrow-up" />
-            </div>
-            <div id="product-types" className="collapse show">
-              <ul className="list-categoris mb_36">
-                {categories
-                  .filter((c) => (c.productCount ?? 0) > 0)
-                  .map((category, index) => {
-                    const catId = category.id || category.CatID;
-                    const catSlug = category.CatSlug || category.slug;
+              <div
+                className="facet-title"
+                data-bs-target={`#attr-${group.attributeSlug}`}
+                data-bs-toggle="collapse"
+                aria-expanded="true"
+                aria-controls={`attr-${group.attributeSlug}`}
+              >
+                <h5 className="sidebar-section-title">
+                  {group.attributeLabel}
+                </h5>
+                <span className="icon icon-arrow-up" />
+              </div>
+              <div id={`attr-${group.attributeSlug}`} className="collapse show">
+                <ul className="list-categoris mb_36">
+                  {(group.values || []).map((item) => {
+                    const checked = (
+                      selectedSet[group.attributeSlug] || []
+                    ).includes(item.value);
                     return (
                       <li
-                        key={catId || index}
-                        className={`cate-item${
-                          selectedCatId === catId ? " active" : ""
-                        }`}
-                        onClick={() => onCategorySelect(catId)}
+                        key={`${group.attributeSlug}-${item.value}`}
+                        className="cate-item"
                       >
-                        <Link
-                          href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
-                        >
-                          <span>{category.name || category.CatName}</span>&nbsp;
-                          <span>({category.productCount || 0})</span>
-                        </Link>
+                        <label className="d-flex align-items-center gap-2 cursor-pointer mb-0">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) =>
+                              onAttributeFilterChange(
+                                group.attributeSlug,
+                                item.value,
+                                e.target.checked,
+                              )
+                            }
+                            className="form-check-input"
+                          />
+                          <span>
+                            {item.value} ({item.count})
+                          </span>
+                        </label>
                       </li>
                     );
                   })}
-              </ul>
+                </ul>
+              </div>
             </div>
-          </div>
-        )}
+          ));
+        })()}
+      {/* Product Types: use productTypeCategories when provided (keeps list visible when a type is selected), else categories */}
+      {(() => {
+        const list =
+          productTypeCategories != null && productTypeCategories.length > 0
+            ? productTypeCategories
+            : categories;
+        const hasProductTypes =
+          list && list.filter((c) => (c.productCount ?? 0) > 0).length > 0;
+        return (
+          hasProductTypes && (
+            <div className="widget-facet wd-categories">
+              <div
+                className="facet-title"
+                data-bs-target="#product-types"
+                data-bs-toggle="collapse"
+                aria-expanded="true"
+                aria-controls="product-types"
+              >
+                <h5 className="sidebar-section-title">Product Types</h5>
+                <span className="icon icon-arrow-up" />
+              </div>
+              <div id="product-types" className="collapse show">
+                <ul className="list-categoris mb_36">
+                  {list
+                    .filter((c) => (c.productCount ?? 0) > 0)
+                    .map((category, index) => {
+                      const catId = category.id || category.CatID;
+                      const catSlug = category.CatSlug || category.slug;
+                      return (
+                        <li
+                          key={catId || index}
+                          className={`cate-item${
+                            selectedCatId === catId ||
+                            selectedCatId === String(catId)
+                              ? " active"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            onCategorySelect && onCategorySelect(catId)
+                          }
+                        >
+                          <Link
+                            href={`/products/${platform.slug}/${selectedMainCatSlug}/${catSlug}`}
+                          >
+                            <span>{category.name || category.CatName}</span>
+                            &nbsp;
+                            <span>({category.productCount || 0})</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            </div>
+          )
+        );
+      })()}
       {/* <div className="widget-facet">
         <div
           className="facet-title"

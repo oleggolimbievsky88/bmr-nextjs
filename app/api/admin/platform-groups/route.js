@@ -6,6 +6,7 @@ import {
   createPlatformGroupAdmin,
 } from "@/lib/queries";
 import { getBrandConfig } from "@/lib/brandConfig";
+import { navIdFromPlatformGroupName } from "@/lib/navPlatformId";
 
 function requireAdmin(session) {
   if (!session || session.user?.role !== "admin") {
@@ -15,20 +16,6 @@ function requireAdmin(session) {
 }
 
 const FALLBACK_SIMPLE_NAV_IDS = ["installation", "cart"];
-
-function navIdFromPlatformGroupName(name) {
-  const n = String(name || "")
-    .trim()
-    .toLowerCase();
-  if (!n) return null;
-  if (n.includes("ford")) return "ford";
-  if (n.includes("mopar")) return "mopar";
-  if (n.includes("amc")) return "amc";
-  if (n.includes("gm") && n.includes("late")) return "gmLateModel";
-  if (n.includes("gm") && n.includes("mid")) return "gmMidMuscle";
-  if (n.includes("gm") && n.includes("classic")) return "gmClassicMuscle";
-  return null;
-}
 
 export async function GET() {
   try {

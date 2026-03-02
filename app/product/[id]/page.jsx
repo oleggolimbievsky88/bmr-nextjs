@@ -18,6 +18,7 @@ import {
   getMainCategoryById,
   getVehiclesForProduct,
   getMerchandiseSizeVariants,
+  getProductAttributeValues,
 } from "@/lib/queries";
 import pool from "@/lib/db";
 import PlatformHeader from "@/components/header/PlatformHeader";
@@ -49,6 +50,8 @@ export default async function ProductPage({ params, searchParams }) {
   let product;
   try {
     product = await getProductById(id);
+    const attributeValues = await getProductAttributeValues(id).catch(() => []);
+    product.attributes = attributeValues;
   } catch (err) {
     if (err?.message === "Product not found") {
       notFound();
@@ -220,6 +223,7 @@ export default async function ProductPage({ params, searchParams }) {
       )}
 
       <div className="container" style={{ paddingTop: "10px" }}>
+        {console.log("product.attributes", product.attributes)}
         <Breadcrumbs items={breadcrumbItems} />
         <TrackView productId={product?.ProductID} />
         <ProductDetails

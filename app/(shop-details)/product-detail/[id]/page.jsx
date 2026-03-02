@@ -9,7 +9,11 @@ import ShopDetailsTab from "@/components/shopDetails/ShopDetailsTab";
 import ProductDetailsOuterZoom from "@/components/shopDetails/ProductDetailsOuterZoom";
 import Link from "next/link";
 import ProductDetails from "@/components/shopDetails/ProductDetails";
-import { getProductById, getRelatedProducts } from "@/lib/queries";
+import {
+  getProductById,
+  getRelatedProducts,
+  getProductAttributeValues,
+} from "@/lib/queries";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +35,8 @@ export default async function ProductPage({ params }) {
   try {
     // Fetch product data directly from database (more efficient than API call)
     product = await getProductById(id);
+    const attributeValues = await getProductAttributeValues(id).catch(() => []);
+    product.attributes = attributeValues;
   } catch (error) {
     console.error("Error loading product detail", { id, error });
     // Surface a generic error to the user but keep details in logs

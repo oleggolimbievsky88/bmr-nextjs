@@ -15,6 +15,7 @@ import Quantity from "./Quantity";
 import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
+import ProductSpecsCard from "@/components/product/ProductSpecsCard";
 
 export default function ProductDetails({
   product,
@@ -423,6 +424,22 @@ export default function ProductDetails({
     });
   };
 
+  const totalPrice = (
+    (Number(product?.Price) || 0) * (quantity || 1) +
+    (currentGrease
+      ? (parseFloat(currentGrease.GreasePrice) || 0) * (quantity || 1)
+      : 0) +
+    (currentAnglefinder
+      ? (parseFloat(currentAnglefinder.AnglePrice) || 0) * (quantity || 1)
+      : 0) +
+    ((selectedHardwarePacks ?? []).length > 0
+      ? (selectedHardwarePacks ?? []).reduce(
+          (sum, p) => sum + (parseFloat(p.Price) || 0) * (quantity || 1),
+          0,
+        )
+      : 0)
+  ).toFixed(2);
+
   if (isLoading) {
     return (
       <section
@@ -601,16 +618,10 @@ export default function ProductDetails({
                     anglefinderOptions.length > 0 ||
                     (product.hardwarePackProducts &&
                       product.hardwarePackProducts.length > 0)) && (
-                    <div
-                      className="tf-product-info-variant-picker"
-                      style={{ borderRadius: "20px", padding: "16px" }}
-                    >
+                    <div className="tf-product-info-variant-picker">
                       {/* Size Selection (merchandise) */}
                       {sizeVariants.length > 1 && (
-                        <div
-                          className="variant-picker-item"
-                          style={{ borderRadius: "20px", marginBottom: "1rem" }}
-                        >
+                        <div className="variant-picker-item">
                           <div className="variant-picker-label">
                             Size:{" "}
                             <span className="fw-6 variant-picker-label-value">
@@ -643,10 +654,7 @@ export default function ProductDetails({
                       )}
                       {/* Color Selection */}
                       {colorOptions.length > 0 && (
-                        <div
-                          className="variant-picker-item"
-                          style={{ borderRadius: "20px" }}
-                        >
+                        <div className="variant-picker-item">
                           <div className="variant-picker-label">
                             Color:{" "}
                             <span className="fw-6 variant-picker-label-value">
@@ -762,10 +770,7 @@ export default function ProductDetails({
 
                       {/* Grease Selection */}
                       {greaseOptions.length > 0 && (
-                        <div
-                          className="variant-picker-item"
-                          style={{ borderRadius: "20px" }}
-                        >
+                        <div className="variant-picker-item">
                           <div className="d-flex justify-content-between align-items-center">
                             <div className="variant-picker-label">
                               Grease:{" "}
@@ -853,10 +858,7 @@ export default function ProductDetails({
 
                       {/* Angle Finder Selection */}
                       {anglefinderOptions.length > 0 && (
-                        <div
-                          className="variant-picker-item"
-                          style={{ borderRadius: "20px" }}
-                        >
+                        <div className="variant-picker-item">
                           <div className="variant-picker-label">
                             Angle Finder:{" "}
                             <span className="fw-6 variant-picker-label-value">
@@ -935,10 +937,7 @@ export default function ProductDetails({
                       {/* Hardware: No Thanks + hardware packs from product.hardwarePackProducts */}
                       {product.hardwarePackProducts &&
                         product.hardwarePackProducts.length > 0 && (
-                          <div
-                            className="variant-picker-item"
-                            style={{ borderRadius: "20px" }}
-                          >
+                          <div className="variant-picker-item">
                             <div className="variant-picker-label">
                               Hardware:{" "}
                               <span className="fw-6 variant-picker-label-value">
@@ -961,10 +960,6 @@ export default function ProductDetails({
                                 className={`style-text ${
                                   errors.hardware ? "error" : ""
                                 }`}
-                                style={{
-                                  cursor: "pointer",
-                                  borderRadius: "20px",
-                                }}
                                 onClick={() => {
                                   setSelectedHardwarePacks([]);
                                   clearError("hardware");
@@ -993,10 +988,6 @@ export default function ProductDetails({
                                     className={`style-text d-flex align-items-center gap-2 ${
                                       errors.hardware ? "error" : ""
                                     }`}
-                                    style={{
-                                      cursor: "pointer",
-                                      borderRadius: "20px",
-                                    }}
                                   >
                                     <input
                                       type="checkbox"
@@ -1031,10 +1022,7 @@ export default function ProductDetails({
                     </div>
                   )}
 
-                  <div
-                    className="tf-product-info-quantity"
-                    style={{ borderRadius: "20px" }}
-                  >
+                  <div className="tf-product-info-quantity">
                     <div className="quantity-title fw-6">Quantity</div>
                     <Quantity
                       value={quantity}
@@ -1048,36 +1036,13 @@ export default function ProductDetails({
                       <button
                         type="submit"
                         className="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn"
-                        style={{ borderRadius: "20px" }}
                         disabled={isBlemOutOfStock}
                       >
                         <span>
                           {isBlemOutOfStock ? "Out of Stock" : "Add to cart -"}
                         </span>
                         {!isBlemOutOfStock && (
-                          <span className="tf-qty-price">
-                            $
-                            {(
-                              (Number(product.Price) || 0) * (quantity || 1) +
-                              (currentGrease
-                                ? (parseFloat(currentGrease.GreasePrice) || 0) *
-                                  (quantity || 1)
-                                : 0) +
-                              (currentAnglefinder
-                                ? (parseFloat(currentAnglefinder.AnglePrice) ||
-                                    0) * (quantity || 1)
-                                : 0) +
-                              ((selectedHardwarePacks ?? []).length > 0
-                                ? (selectedHardwarePacks ?? []).reduce(
-                                    (sum, p) =>
-                                      sum +
-                                      (parseFloat(p.Price) || 0) *
-                                        (quantity || 1),
-                                    0,
-                                  )
-                                : 0)
-                            ).toFixed(2)}
-                          </span>
+                          <span className="tf-qty-price">${totalPrice}</span>
                         )}
                       </button>
                     </form>
@@ -1095,10 +1060,43 @@ export default function ProductDetails({
                       </button>
                     </div> */}
                   </div>
+
+                  {/* Product attributes / Specs */}
+                  {Array.isArray(product?.attributes) &&
+                    product.attributes.length > 0 && (
+                      <ProductSpecsCard
+                        attributes={product.attributes}
+                        title="Specifications"
+                        initialCount={6}
+                      />
+                    )}
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Sticky mobile add-to-cart bar */}
+      <div className={`pdpStickyATC ${isBlemOutOfStock ? "isDisabled" : ""}`}>
+        <div className="pdpStickyATC__inner">
+          <div className="pdpStickyATC__left">
+            <div className="pdpStickyATC__price">${totalPrice}</div>
+            <div className="pdpStickyATC__summary">
+              {currentColor?.ColorName
+                ? `Color: ${currentColor.ColorName}`
+                : "Select options"}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="pdpStickyATC__btn"
+            onClick={(e) => handleAddToCart(e)}
+            disabled={isBlemOutOfStock}
+          >
+            {isBlemOutOfStock ? "Out of Stock" : "Add to cart"}
+          </button>
         </div>
       </div>
     </section>

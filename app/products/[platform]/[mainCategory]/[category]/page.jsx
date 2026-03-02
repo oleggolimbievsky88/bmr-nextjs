@@ -1,3 +1,8 @@
+/**
+ * Product category page for a specific category under a main category.
+ * Shows products for the category and its sub-categories.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 
 import { useEffect, useState, use, useMemo } from "react";
@@ -40,6 +45,9 @@ export default function CategoryPage({ params }) {
   const [parentCategory, setParentCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [attributeFilterOptions, setAttributeFilterOptions] = useState([]);
+  const [selectedAttributeFilters, setSelectedAttributeFilters] = useState({});
+  const [productTypeCategories, setProductTypeCategories] = useState([]);
 
   useEffect(() => {
     setFeaturedProducts([]); // Clear immediately when category changes
@@ -122,6 +130,12 @@ export default function CategoryPage({ params }) {
         );
         setCategories(subCategoriesOfCurrent);
 
+        // Product types for sidebar: direct children of main category (always show when viewing a category under this main)
+        const productTypeCategoriesList = allCategories.filter(
+          (c) => !c.ParentID || Number(c.ParentID) === 0,
+        );
+        setProductTypeCategories(productTypeCategoriesList);
+
         // 4. Fetch products - include descendants when viewing a parent (e.g. Shocks) so we show all products under it
         const includeDescendants = subCategoriesOfCurrent.length > 0;
         const query = new URLSearchParams({
@@ -133,13 +147,18 @@ export default function CategoryPage({ params }) {
           ...(includeDescendants && { includeDescendants: "true" }),
         });
         if (applicationYear) query.set("year", applicationYear);
+        Object.keys(selectedAttributeFilters).forEach((slug) => {
+          const values = selectedAttributeFilters[slug];
+          if (values && values.length) {
+            query.set(`attr_${slug}`, values.join(","));
+          }
+        });
 
         const prodRes = await fetch(`/api/products?${query.toString()}`);
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const products = await prodRes.json();
-        // console.log("API Response:", products);
-        // console.log("Products array:", products.products);
         setFeaturedProducts(products.products || []);
+        setAttributeFilterOptions(products.attributeFilters || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error.message);
@@ -149,7 +168,29 @@ export default function CategoryPage({ params }) {
     }
 
     fetchData();
-  }, [platform, mainCategory, category, applicationYear]);
+  }, [
+    platform,
+    mainCategory,
+    category,
+    applicationYear,
+    selectedAttributeFilters,
+  ]);
+
+  const onAttributeFilterChange = (slug, value, checked) => {
+    setSelectedAttributeFilters((prev) => {
+      const next = { ...prev };
+      const list = next[slug] ? [...next[slug]] : [];
+      if (checked) {
+        if (!list.includes(value)) list.push(value);
+      } else {
+        const i = list.indexOf(value);
+        if (i !== -1) list.splice(i, 1);
+      }
+      if (list.length) next[slug] = list;
+      else delete next[slug];
+      return next;
+    });
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) {
@@ -301,6 +342,7 @@ export default function CategoryPage({ params }) {
 
             <ShopSidebarleft
               categories={categories}
+              productTypeCategories={productTypeCategories}
               platform={platformInfo}
               isMainCategory={false}
               products={featuredProducts}
@@ -311,6 +353,11 @@ export default function CategoryPage({ params }) {
               selectedCatSlug={category}
               selectedCatId={currentCategory?.CatID || currentCategory?.id}
               applicationYear={applicationYear}
+              attributeFilterOptions={attributeFilterOptions}
+              selectedAttributeFilters={selectedAttributeFilters}
+              onAttributeFilterChange={onAttributeFilterChange}
+              categorySlug={category}
+              includeDescendants={categories && categories.length > 0}
             />
           </section>
         )}

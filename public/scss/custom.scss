@@ -3480,6 +3480,21 @@ header[style*="transform:translateY(-"] {
   color: var(--primary);
 }
 
+/* Sidebar: darker text for Categories, Product Types, and attribute filter options (match Shipping & Delivery readability) */
+.tf-shop-sidebar .list-categoris .cate-item a,
+.tf-shop-sidebar .list-categoris .cate-item label,
+.tf-shop-sidebar .list-categoris .cate-item label span {
+	color: #1a1a1a !important;
+}
+.tf-shop-sidebar .list-categoris .cate-item:hover a,
+.tf-shop-sidebar .list-categoris .cate-item label:hover,
+.tf-shop-sidebar .list-categoris .cate-item label:hover span {
+	color: var(--primary) !important;
+}
+.tf-shop-sidebar .list-categoris .cate-item.active > a {
+	color: var(--primary) !important;
+}
+
 .mega-menu {
   z-index: 9999999 !important;
   position: fixed !important;
@@ -6286,4 +6301,175 @@ $signin-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   .wishlist-empty-title {
     font-size: 1.5rem;
   }
+}
+
+/* ========== Product Details: Features showcase ========== */
+.product-features-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.01) 100%);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-feature-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+
+
+.product-feature-icon {
+  flex-shrink: 0;
+  color: var(--primary);
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.product-feature-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* When features are rendered as HTML (ul/li), style them like the showcase */
+.product-features-showcase.product-features-html {
+  padding: 0;
+}
+
+.product-features-showcase.product-features-html ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-features-showcase.product-features-html ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.01) 100%);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a1a1a;
+  font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-features-showcase.product-features-html ul li:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.product-features-showcase.product-features-html ul li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 0.15rem;
+  background-color: var(--primary);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+/* ========== Product Details: Fitment pills & table ========== */
+.fitment-content {
+  padding: 0;
+}
+
+.fitment-platforms-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.fitment-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.fitment-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--brand-primary-button-text, #ffffff);
+  background-color: var(--primary);
+  border: none;
+  border-radius: 9999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.fitment-pill:hover {
+  color: var(--brand-primary-button-text, #ffffff);
+  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.fitment-table-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.fitment-table {
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.fitment-table thead tr {
+  background-color: var(--primary);
+  color: var(--brand-primary-button-text, #ffffff);
+}
+
+.fitment-table thead th {
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+}
+
+.fitment-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.fitment-table tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.fitment-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.fitment-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.95rem;
 }

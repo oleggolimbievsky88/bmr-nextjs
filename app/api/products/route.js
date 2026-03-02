@@ -3,10 +3,12 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import {
   getFilteredProductsPaginated,
+  getAttributeFiltersForCategory,
   getPlatformBySlug,
   getPlatformById,
   getMainCategoryIdBySlugAndPlatform,
   getCategoryIdsBySlugAndMainCat,
+  getCategoryIdsBySlugAndMainCatDirectChild,
   getCategoryIdsWithDescendants,
 } from "@/lib/queries";
 
@@ -36,6 +38,20 @@ export async function GET(request) {
     const brands = searchParams.get("brands"); // e.g. "BMR Suspension,Qa1"
     const yearParam = searchParams.get("year");
     const applicationYear = yearParam ? parseInt(yearParam, 10) : null;
+
+    // Attribute filters: attr_slug=value1,value2 (e.g. attr_control_arm_color=Black,Red)
+    const attributeFilters = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key.startsWith("attr_") && value) {
+        const slug = key.slice(5);
+        if (slug) {
+          attributeFilters[slug] = value
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean);
+        }
+      }
+    }
 
     let platformId, mainCategoryId, categoryId;
 
@@ -83,9 +99,25 @@ export async function GET(request) {
       searchParams.get("includeDescendants") === "true" ||
       searchParams.get("includeDescendants") === "1";
     if (!categoryId && category && mainCategoryId) {
-      const categoryIds = includeDescendants
-        ? await getCategoryIdsWithDescendants(mainCategoryId, category)
-        : await getCategoryIdsBySlugAndMainCat(mainCategoryId, category);
+      let categoryIds;
+      if (includeDescendants) {
+        categoryIds = await getCategoryIdsWithDescendants(
+          mainCategoryId,
+          category,
+        );
+      } else {
+        // Product-type page: resolve to exact category only (direct child of main when possible)
+        categoryIds = await getCategoryIdsBySlugAndMainCatDirectChild(
+          mainCategoryId,
+          category,
+        );
+        if (categoryIds.length === 0) {
+          categoryIds = await getCategoryIdsBySlugAndMainCat(
+            mainCategoryId,
+            category,
+          );
+        }
+      }
       categoryId =
         categoryIds.length === 1
           ? categoryIds[0]
@@ -104,7 +136,7 @@ export async function GET(request) {
       mainCategoryId = null;
     }
 
-    const products = await getFilteredProductsPaginated({
+    const productListParams = {
       platformId,
       mainCategoryId:
         mainCategoryId != null && Number.isFinite(Number(mainCategoryId))
@@ -127,8 +159,45 @@ export async function GET(request) {
         : undefined,
       colors: colors ? colors.split(",").filter(Boolean) : [],
       brands: brands ? brands.split(",").filter(Boolean) : [],
-    });
-    return NextResponse.json({ products: products || [] }, { status: 200 });
+      attributeFilters: Object.keys(attributeFilters).length
+        ? attributeFilters
+        : undefined,
+    };
+
+    const products = await getFilteredProductsPaginated(productListParams);
+
+    // For category pages, return attribute filter options (counts from unfiltered category set)
+    let attributeFilterOptions = [];
+    if (hasCategoryFilter && categoryId != null && categoryId !== "") {
+      try {
+        attributeFilterOptions = await getAttributeFiltersForCategory({
+          platformId,
+          mainCategoryId:
+            mainCategoryId != null && Number.isFinite(Number(mainCategoryId))
+              ? Number(mainCategoryId)
+              : undefined,
+          categoryId: productListParams.categoryId,
+          applicationYear: productListParams.applicationYear,
+          colors: productListParams.colors,
+          brands: productListParams.brands,
+        });
+      } catch (e) {
+        console.error(
+          "[api/products] getAttributeFiltersForCategory error:",
+          e,
+        );
+      }
+    }
+
+    return NextResponse.json(
+      {
+        products: products || [],
+        ...(attributeFilterOptions.length > 0
+          ? { attributeFilters: attributeFilterOptions }
+          : {}),
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("[api/products] GET error:", error);
     return NextResponse.json(

@@ -3,14 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useBrand } from "@bmr/ui/brand";
 
-// Provide a default structure to show immediately
-const defaultMenuData = {
-  fordLinks: [],
-  moparLinks: [],
-  gmLateModelLinks: [],
-  gmMidMuscleLinks: [],
-  gmClassicMuscleLinks: [],
-};
+// Menu data keys are dynamic from API: { [navId + 'Links']: [...] } for each nav item with Dropdown checked in admin
+const defaultMenuData = {};
 
 const defaultNavLabels = {
   ford: "Ford",
@@ -18,6 +12,7 @@ const defaultNavLabels = {
   gmMidMuscle: "GM Mid Muscle Cars",
   gmClassicMuscle: "GM Classic Muscle Cars",
   mopar: "Mopar",
+  amc: "AMC",
   installation: "Installation",
   cart: "Cart",
 };
@@ -27,6 +22,7 @@ const defaultNavUrls = {
   gmMidMuscle: "/products/gm/mid-muscle",
   gmClassicMuscle: "/products/gm/classic-muscle",
   mopar: "/products/mopar",
+  amc: "/products/amc",
   installation: "/installation",
   cart: "/view-cart",
 };

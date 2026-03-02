@@ -1,8 +1,6 @@
-// app/api/product-by-id/route.js
-
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { getProductById } from "@/lib/queries";
+import { getProductById, getProductAttributeValues } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +19,11 @@ export async function GET(request) {
     try {
       const product = await getProductById(id);
       // product already includes images and hardwarePackProducts from getProductById
+
+      const attributeValues = await getProductAttributeValues(id).catch(
+        () => [],
+      );
+      product.attributes = attributeValues;
 
       // When product has exactly one color, set defaultColorName for cart/checkout
       const colorIds = (product.Color || "")

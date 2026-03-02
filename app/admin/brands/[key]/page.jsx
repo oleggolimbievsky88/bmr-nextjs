@@ -56,6 +56,32 @@ const ASSURANCE_BAR_ICON_OPTIONS = [
   { value: "__custom__", label: "Custom…" },
 ];
 
+/** Section ids for nav and scroll; order matches the form. */
+const BRAND_SECTIONS = [
+  { id: "identity", label: "Identity" },
+  { id: "media", label: "Logos & Media" },
+  { id: "theme", label: "Theme" },
+  { id: "contact", label: "Contact" },
+  { id: "social", label: "Social" },
+  { id: "assurance", label: "Assurance Bar" },
+  { id: "shop-make", label: "Shop by Make" },
+  { id: "shop-category", label: "Shop by Category" },
+  { id: "nav", label: "Navigation" },
+  { id: "about", label: "About" },
+  { id: "faqs", label: "FAQs" },
+  { id: "seo", label: "SEO" },
+  { id: "active", label: "Active" },
+];
+
+/** Default FAQ section titles when sections are derived from existing FAQ data. */
+const DEFAULT_FAQ_SECTION_TITLES = {
+  shopping: "Shopping & product information",
+  payment: "Payment",
+  shipping: "Shipping",
+  returns: "Returns & warranty",
+  general: "General",
+};
+
 export default function AdminBrandEditPage() {
   const params = useParams();
   const router = useRouter();
@@ -66,6 +92,9 @@ export default function AdminBrandEditPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [activeSection, setActiveSection] = useState(
+    BRAND_SECTIONS[0]?.id || "identity",
+  );
 
   const fetchBrand = useCallback(async () => {
     if (!key) return;
@@ -158,6 +187,45 @@ export default function AdminBrandEditPage() {
         navPlatformIds: Array.isArray(data.navPlatformIds)
           ? data.navPlatformIds
           : [],
+        faqs: Array.isArray(data.faqs)
+          ? data.faqs.map((f) => ({
+              id: f.id,
+              question: f.question || "",
+              answer: f.answer || "",
+              sortOrder: f.sortOrder ?? 0,
+              section: f.section || "",
+            }))
+          : [],
+        faqSections: (() => {
+          const fromApi = Array.isArray(data.faqSections)
+            ? data.faqSections.map((s) => ({
+                sectionKey: s.sectionKey || "",
+                title: s.title || "",
+                sortOrder: s.sortOrder ?? 0,
+              }))
+            : [];
+          if (fromApi.length > 0) return fromApi;
+          const sectionKeysFromFaqs = [
+            ...new Set(
+              (data.faqs || [])
+                .map((f) => (f.section || "").trim())
+                .filter(Boolean),
+            ),
+          ];
+          if (sectionKeysFromFaqs.length === 0) return [];
+          const order = ["shopping", "payment", "shipping", "returns"];
+          const ordered = [
+            ...order.filter((k) => sectionKeysFromFaqs.includes(k)),
+            ...sectionKeysFromFaqs.filter((k) => !order.includes(k)),
+          ];
+          return ordered.map((sectionKey, i) => ({
+            sectionKey,
+            title:
+              DEFAULT_FAQ_SECTION_TITLES[sectionKey] ||
+              sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1),
+            sortOrder: i,
+          }));
+        })(),
       });
     } catch (err) {
       setError(err.message);
@@ -170,6 +238,33 @@ export default function AdminBrandEditPage() {
   useEffect(() => {
     fetchBrand();
   }, [fetchBrand]);
+
+  // Scroll spy: set activeSection when a section scrolls into view
+  useEffect(() => {
+    if (!brand) return;
+    const sections = BRAND_SECTIONS.map((s) => ({
+      id: s.id,
+      el: document.getElementById(`section-${s.id}`),
+    })).filter((s) => s.el);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const id = entry.target.id.replace("section-", "");
+          setActiveSection(id);
+          break;
+        }
+      },
+      { rootMargin: "-20% 0px -70% 0px", threshold: 0 },
+    );
+    sections.forEach((s) => s.el && observer.observe(s.el));
+    return () => observer.disconnect();
+  }, [brand]);
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(`section-${id}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const updateForm = (path, value) => {
     const parts = path.split(".");
@@ -435,6 +530,91 @@ export default function AdminBrandEditPage() {
     });
   };
 
+  const faqs = form.faqs || [];
+  const faqSections = form.faqSections || [];
+  const addFaq = () => {
+    const firstSectionKey =
+      faqSections.length > 0 ? faqSections[0].sectionKey : null;
+    setForm((prev) => ({
+      ...prev,
+      faqs: [
+        ...(prev.faqs || []),
+        {
+          question: "",
+          answer: "",
+          sortOrder: (prev.faqs || []).length,
+          section: firstSectionKey || "",
+        },
+      ],
+    }));
+  };
+  const updateFaq = (index, field, value) => {
+    setForm((prev) => {
+      const list = [...(prev.faqs || [])];
+      list[index] = { ...(list[index] || {}), [field]: value };
+      return { ...prev, faqs: list };
+    });
+  };
+  const removeFaq = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      faqs: (prev.faqs || []).filter((_, i) => i !== index),
+    }));
+  };
+  const moveFaq = (index, direction) => {
+    setForm((prev) => {
+      const list = [...(prev.faqs || [])];
+      if (direction === "up" && index === 0) return prev;
+      if (direction === "down" && index === list.length - 1) return prev;
+      const swap = direction === "up" ? index - 1 : index + 1;
+      [list[index], list[swap]] = [list[swap], list[index]];
+      return { ...prev, faqs: list };
+    });
+  };
+
+  const addFaqSection = () => {
+    setForm((prev) => {
+      const list = prev.faqSections || [];
+      const nextKey = `section-${list.length + 1}`;
+      return {
+        ...prev,
+        faqSections: [
+          ...list,
+          { sectionKey: nextKey, title: "New section", sortOrder: list.length },
+        ],
+      };
+    });
+  };
+  const updateFaqSection = (index, field, value) => {
+    setForm((prev) => {
+      const list = [...(prev.faqSections || [])];
+      list[index] = { ...(list[index] || {}), [field]: value };
+      return { ...prev, faqSections: list };
+    });
+  };
+  const removeFaqSection = (index) => {
+    setForm((prev) => {
+      const list = (prev.faqSections || []).filter((_, i) => i !== index);
+      const removedKey = (prev.faqSections || [])[index]?.sectionKey;
+      const faqs = (prev.faqs || []).map((f) =>
+        f.section === removedKey
+          ? { ...f, section: list[0]?.sectionKey || "" }
+          : f,
+      );
+      return { ...prev, faqSections: list, faqs };
+    });
+  };
+  const moveFaqSection = (index, direction) => {
+    setForm((prev) => {
+      const list = [...(prev.faqSections || [])];
+      if (direction === "up" && index === 0) return prev;
+      if (direction === "down" && index === list.length - 1) return prev;
+      const swap = direction === "up" ? index - 1 : index + 1;
+      [list[index], list[swap]] = [list[swap], list[index]];
+      return { ...prev, faqSections: list };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -470,6 +650,17 @@ export default function AdminBrandEditPage() {
         navPlatformIds: Array.isArray(form.navPlatformIds)
           ? form.navPlatformIds
           : [],
+        faqs: (form.faqs || []).map((f, i) => ({
+          question: f.question || "",
+          answer: f.answer || "",
+          sortOrder: i,
+          section: (f.section || "").trim() || null,
+        })),
+        faqSections: (form.faqSections || []).map((s, i) => ({
+          sectionKey: (s.sectionKey || "").trim() || `section-${i + 1}`,
+          title: (s.title || "").trim() || "Section",
+          sortOrder: i,
+        })),
       };
 
       const res = await fetch(`/api/admin/brands/${encodeURIComponent(key)}`, {
@@ -560,1118 +751,1419 @@ export default function AdminBrandEditPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Identity</span>
-                Brand Identity
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={form.name || ""}
-                    onChange={(e) => updateForm("name", e.target.value)}
-                    placeholder="BMR Suspension"
-                  />
+          <div className="admin-brand-edit-layout">
+            <nav
+              className="admin-brand-edit-nav"
+              aria-label="Section navigation"
+            >
+              <ul className="admin-brand-edit-nav-list">
+                {BRAND_SECTIONS.map((section) => (
+                  <li key={section.id}>
+                    <button
+                      type="button"
+                      className={`admin-brand-edit-nav-link ${activeSection === section.id ? "active" : ""}`}
+                      onClick={() => scrollToSection(section.id)}
+                    >
+                      {section.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="admin-brand-edit-main">
+              <div className="admin-brand-card" id="section-identity">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Identity</span>
+                    Brand Identity
+                  </h2>
                 </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Company Name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={form.companyName || ""}
-                    onChange={(e) => updateForm("companyName", e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Company Name Short</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={form.companyNameShort || ""}
-                    onChange={(e) =>
-                      updateForm("companyNameShort", e.target.value)
-                    }
-                    placeholder="BMR"
-                  />
-                </div>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Copyright Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={form.copyrightName || ""}
-                  onChange={(e) => updateForm("copyrightName", e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Media</span>
-                Logos & Media
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="mb-3">
-                <label className="form-label">Header Logo Path</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={logo.headerPath || ""}
-                  onChange={(e) =>
-                    updateForm("logo", { ...logo, headerPath: e.target.value })
-                  }
-                  placeholder="/brands/bmr/images/logo/..."
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Footer Logo Path</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={logo.footerPath || ""}
-                  onChange={(e) =>
-                    updateForm("logo", { ...logo, footerPath: e.target.value })
-                  }
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Favicon Path</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={form.faviconPath || ""}
-                  onChange={(e) => updateForm("faviconPath", e.target.value)}
-                  placeholder="/brands/bmr/favicons/favicon.svg"
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">OG Image Path</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={form.ogImagePath || ""}
-                  onChange={(e) => updateForm("ogImagePath", e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Default OG Image Path</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={form.defaultOgImagePath || ""}
-                  onChange={(e) =>
-                    updateForm("defaultOgImagePath", e.target.value)
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Theme</span>
-                Theme Colors
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="row">
-                <div className="col-md-6">
-                  <ColorInput
-                    id="themeColor"
-                    label="Primary Color"
-                    value={form.themeColor}
-                    onChange={(v) => updateForm("themeColor", v)}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <ColorInput
-                    id="buttonBadgeColor"
-                    label="Button Badge Color"
-                    value={form.buttonBadgeColor}
-                    onChange={(v) => updateForm("buttonBadgeColor", v)}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <ColorInput
-                    id="buttonBadgeTextColor"
-                    label="Button Badge Text Color"
-                    value={form.buttonBadgeTextColor}
-                    onChange={(v) => updateForm("buttonBadgeTextColor", v)}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <ColorInput
-                    id="primaryButtonTextColor"
-                    label="Primary Button Text Color"
-                    value={form.primaryButtonTextColor}
-                    onChange={(v) => updateForm("primaryButtonTextColor", v)}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <ColorInput
-                    id="assuranceBarBg"
-                    label="Assurance Bar Background"
-                    value={form.assuranceBarBackgroundColor}
-                    onChange={(v) =>
-                      updateForm("assuranceBarBackgroundColor", v)
-                    }
-                  />
-                </div>
-                <div className="col-md-6">
-                  <ColorInput
-                    id="assuranceBarText"
-                    label="Assurance Bar Text Color"
-                    value={form.assuranceBarTextColor}
-                    onChange={(v) => updateForm("assuranceBarTextColor", v)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Contact</span>
-                Contact
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="mb-3">
-                <label className="form-label">
-                  Address (one line per address line)
-                </label>
-                <textarea
-                  className="form-control"
-                  rows={2}
-                  value={(contact.addressLines || []).join("\n")}
-                  onChange={(e) =>
-                    updateForm("contact", {
-                      ...contact,
-                      addressLines: e.target.value
-                        .split("\n")
-                        .map((s) => s.trim())
-                        .filter(Boolean),
-                    })
-                  }
-                  placeholder="1033 Pine Chase Ave&#10;Lakeland, FL 33815"
-                />
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={contact.email || ""}
-                    onChange={(e) =>
-                      updateForm("contact", {
-                        ...contact,
-                        email: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Phone (Display)</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={contact.phoneDisplay || ""}
-                    onChange={(e) =>
-                      updateForm("contact", {
-                        ...contact,
-                        phoneDisplay: e.target.value,
-                      })
-                    }
-                    placeholder="(813) 986-9302"
-                  />
-                </div>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">
-                  Phone (tel link, digits only)
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={contact.phoneTel || ""}
-                  onChange={(e) =>
-                    updateForm("contact", {
-                      ...contact,
-                      phoneTel: e.target.value,
-                    })
-                  }
-                  placeholder="8139869302"
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Hours</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={contact.hours || ""}
-                  onChange={(e) =>
-                    updateForm("contact", {
-                      ...contact,
-                      hours: e.target.value,
-                    })
-                  }
-                  placeholder="Mon - Fri 8:30am - 5:30pm EST"
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Map embed URL (optional)</label>
-                <input
-                  type="url"
-                  className="form-control"
-                  value={contact.mapEmbedUrl || ""}
-                  onChange={(e) =>
-                    updateForm("contact", {
-                      ...contact,
-                      mapEmbedUrl: e.target.value.trim() || undefined,
-                    })
-                  }
-                  placeholder="https://www.google.com/maps/embed?pb=..."
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">
-                  Departments (one per line: Label — email@example.com)
-                </label>
-                <textarea
-                  className="form-control"
-                  rows={5}
-                  value={(contact.departments || [])
-                    .map((d) => `${d.label || ""} — ${d.email || ""}`.trim())
-                    .join("\n")}
-                  onChange={(e) => {
-                    const lines = e.target.value.split("\n").filter(Boolean);
-                    const departments = lines.map((line) => {
-                      const sep = line.indexOf(" — ");
-                      if (sep >= 0) {
-                        return {
-                          label: line.slice(0, sep).trim(),
-                          email: line.slice(sep + 3).trim(),
-                        };
-                      }
-                      return { label: line.trim(), email: "" };
-                    });
-                    updateForm("contact", { ...contact, departments });
-                  }}
-                  placeholder="GM Tech — GMTech@bmrsuspension.com"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Social</span>
-                Social Links
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="row">
-                {[
-                  "facebook",
-                  "instagram",
-                  "youtube",
-                  "tiktok",
-                  "x",
-                  "linkedin",
-                ].map((platform) => (
-                  <div className="col-md-6 mb-3" key={platform}>
-                    <label className="form-label text-capitalize">
-                      {platform === "x" ? "X (Twitter)" : platform}
-                    </label>
+                <div className="admin-brand-card-body">
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={form.name || ""}
+                        onChange={(e) => updateForm("name", e.target.value)}
+                        placeholder="BMR Suspension"
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Company Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={form.companyName || ""}
+                        onChange={(e) =>
+                          updateForm("companyName", e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Company Name Short</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={form.companyNameShort || ""}
+                        onChange={(e) =>
+                          updateForm("companyNameShort", e.target.value)
+                        }
+                        placeholder="BMR"
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Copyright Name</label>
                     <input
-                      type="url"
+                      type="text"
                       className="form-control"
-                      value={social[platform] || ""}
+                      value={form.copyrightName || ""}
                       onChange={(e) =>
-                        updateForm("social", {
-                          ...social,
-                          [platform]: e.target.value,
+                        updateForm("copyrightName", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-media">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Media</span>
+                    Logos & Media
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="mb-3">
+                    <label className="form-label">Header Logo Path</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={logo.headerPath || ""}
+                      onChange={(e) =>
+                        updateForm("logo", {
+                          ...logo,
+                          headerPath: e.target.value,
+                        })
+                      }
+                      placeholder="/brands/bmr/images/logo/..."
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Footer Logo Path</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={logo.footerPath || ""}
+                      onChange={(e) =>
+                        updateForm("logo", {
+                          ...logo,
+                          footerPath: e.target.value,
                         })
                       }
                     />
                   </div>
-                ))}
+                  <div className="mb-3">
+                    <label className="form-label">Favicon Path</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={form.faviconPath || ""}
+                      onChange={(e) =>
+                        updateForm("faviconPath", e.target.value)
+                      }
+                      placeholder="/brands/bmr/favicons/favicon.svg"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">OG Image Path</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={form.ogImagePath || ""}
+                      onChange={(e) =>
+                        updateForm("ogImagePath", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Default OG Image Path</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={form.defaultOgImagePath || ""}
+                      onChange={(e) =>
+                        updateForm("defaultOgImagePath", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Footer Bar</span>
-                Assurance Bar Items (Homepage above footer)
-              </h2>
-              <button
-                type="button"
-                className="admin-brand-btn-add"
-                onClick={addAssuranceItem}
-              >
-                + Add
-              </button>
-            </div>
-            <div className="admin-brand-card-body">
-              {(form.assuranceBarItems || []).map((item, idx) => (
-                <div key={idx} className="admin-brand-list-item">
-                  <span className="admin-brand-list-item-badge">{idx + 1}</span>
-                  <div className="admin-brand-list-item-fields">
-                    <div className="mb-2">
-                      <label
-                        htmlFor={`assurance-icon-${idx}`}
-                        className="form-label small mb-1"
-                      >
-                        Icon
-                      </label>
-                      {(() => {
-                        const iconClass = item.iconClass || "";
-                        const matchingPreset = ASSURANCE_BAR_ICON_OPTIONS.find(
-                          (o) =>
-                            o.value !== "__custom__" && o.value === iconClass,
-                        );
-                        const isCustom = !matchingPreset;
-                        return (
-                          <div className="d-flex align-items-center gap-2 flex-wrap">
-                            <select
-                              id={`assurance-icon-${idx}`}
-                              className="form-select form-select-sm"
-                              style={{ maxWidth: "220px" }}
-                              value={
-                                matchingPreset
-                                  ? matchingPreset.value
-                                  : "__custom__"
-                              }
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                updateAssuranceItem(
-                                  idx,
-                                  "iconClass",
-                                  v === "__custom__" ? "" : v,
-                                );
-                              }}
-                            >
-                              {ASSURANCE_BAR_ICON_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
-                            </select>
-                            {isCustom && (
+              <div className="admin-brand-card" id="section-theme">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Theme</span>
+                    Theme Colors
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <ColorInput
+                        id="themeColor"
+                        label="Primary Color"
+                        value={form.themeColor}
+                        onChange={(v) => updateForm("themeColor", v)}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <ColorInput
+                        id="buttonBadgeColor"
+                        label="Button Badge Color"
+                        value={form.buttonBadgeColor}
+                        onChange={(v) => updateForm("buttonBadgeColor", v)}
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <ColorInput
+                        id="buttonBadgeTextColor"
+                        label="Button Badge Text Color"
+                        value={form.buttonBadgeTextColor}
+                        onChange={(v) => updateForm("buttonBadgeTextColor", v)}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <ColorInput
+                        id="primaryButtonTextColor"
+                        label="Primary Button Text Color"
+                        value={form.primaryButtonTextColor}
+                        onChange={(v) =>
+                          updateForm("primaryButtonTextColor", v)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <ColorInput
+                        id="assuranceBarBg"
+                        label="Assurance Bar Background"
+                        value={form.assuranceBarBackgroundColor}
+                        onChange={(v) =>
+                          updateForm("assuranceBarBackgroundColor", v)
+                        }
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <ColorInput
+                        id="assuranceBarText"
+                        label="Assurance Bar Text Color"
+                        value={form.assuranceBarTextColor}
+                        onChange={(v) => updateForm("assuranceBarTextColor", v)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-contact">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Contact</span>
+                    Contact
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Address (one line per address line)
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={2}
+                      value={(contact.addressLines || []).join("\n")}
+                      onChange={(e) =>
+                        updateForm("contact", {
+                          ...contact,
+                          addressLines: e.target.value
+                            .split("\n")
+                            .map((s) => s.trim())
+                            .filter(Boolean),
+                        })
+                      }
+                      placeholder="1033 Pine Chase Ave&#10;Lakeland, FL 33815"
+                    />
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Email</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        value={contact.email || ""}
+                        onChange={(e) =>
+                          updateForm("contact", {
+                            ...contact,
+                            email: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Phone (Display)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={contact.phoneDisplay || ""}
+                        onChange={(e) =>
+                          updateForm("contact", {
+                            ...contact,
+                            phoneDisplay: e.target.value,
+                          })
+                        }
+                        placeholder="(813) 986-9302"
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Phone (tel link, digits only)
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={contact.phoneTel || ""}
+                      onChange={(e) =>
+                        updateForm("contact", {
+                          ...contact,
+                          phoneTel: e.target.value,
+                        })
+                      }
+                      placeholder="8139869302"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Hours</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={contact.hours || ""}
+                      onChange={(e) =>
+                        updateForm("contact", {
+                          ...contact,
+                          hours: e.target.value,
+                        })
+                      }
+                      placeholder="Mon - Fri 8:30am - 5:30pm EST"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Map embed URL (optional)
+                    </label>
+                    <input
+                      type="url"
+                      className="form-control"
+                      value={contact.mapEmbedUrl || ""}
+                      onChange={(e) =>
+                        updateForm("contact", {
+                          ...contact,
+                          mapEmbedUrl: e.target.value.trim() || undefined,
+                        })
+                      }
+                      placeholder="https://www.google.com/maps/embed?pb=..."
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Departments (one per line: Label — email@example.com)
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={5}
+                      value={(contact.departments || [])
+                        .map((d) =>
+                          `${d.label || ""} — ${d.email || ""}`.trim(),
+                        )
+                        .join("\n")}
+                      onChange={(e) => {
+                        const lines = e.target.value
+                          .split("\n")
+                          .filter(Boolean);
+                        const departments = lines.map((line) => {
+                          const sep = line.indexOf(" — ");
+                          if (sep >= 0) {
+                            return {
+                              label: line.slice(0, sep).trim(),
+                              email: line.slice(sep + 3).trim(),
+                            };
+                          }
+                          return { label: line.trim(), email: "" };
+                        });
+                        updateForm("contact", { ...contact, departments });
+                      }}
+                      placeholder="GM Tech — GMTech@bmrsuspension.com"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-social">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Social</span>
+                    Social Links
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="row">
+                    {[
+                      "facebook",
+                      "instagram",
+                      "youtube",
+                      "tiktok",
+                      "x",
+                      "linkedin",
+                    ].map((platform) => (
+                      <div className="col-md-6 mb-3" key={platform}>
+                        <label className="form-label text-capitalize">
+                          {platform === "x" ? "X (Twitter)" : platform}
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          value={social[platform] || ""}
+                          onChange={(e) =>
+                            updateForm("social", {
+                              ...social,
+                              [platform]: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-assurance">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">
+                      Footer Bar
+                    </span>
+                    Assurance Bar Items (Homepage above footer)
+                  </h2>
+                  <button
+                    type="button"
+                    className="admin-brand-btn-add"
+                    onClick={addAssuranceItem}
+                  >
+                    + Add
+                  </button>
+                </div>
+                <div className="admin-brand-card-body">
+                  {(form.assuranceBarItems || []).map((item, idx) => (
+                    <div key={idx} className="admin-brand-list-item">
+                      <span className="admin-brand-list-item-badge">
+                        {idx + 1}
+                      </span>
+                      <div className="admin-brand-list-item-fields">
+                        <div className="mb-2">
+                          <label
+                            htmlFor={`assurance-icon-${idx}`}
+                            className="form-label small mb-1"
+                          >
+                            Icon
+                          </label>
+                          {(() => {
+                            const iconClass = item.iconClass || "";
+                            const matchingPreset =
+                              ASSURANCE_BAR_ICON_OPTIONS.find(
+                                (o) =>
+                                  o.value !== "__custom__" &&
+                                  o.value === iconClass,
+                              );
+                            const isCustom = !matchingPreset;
+                            return (
+                              <div className="d-flex align-items-center gap-2 flex-wrap">
+                                <select
+                                  id={`assurance-icon-${idx}`}
+                                  className="form-select form-select-sm"
+                                  style={{ maxWidth: "220px" }}
+                                  value={
+                                    matchingPreset
+                                      ? matchingPreset.value
+                                      : "__custom__"
+                                  }
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    updateAssuranceItem(
+                                      idx,
+                                      "iconClass",
+                                      v === "__custom__" ? "" : v,
+                                    );
+                                  }}
+                                >
+                                  {ASSURANCE_BAR_ICON_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                      {opt.label}
+                                    </option>
+                                  ))}
+                                </select>
+                                {isCustom && (
+                                  <input
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    style={{ minWidth: "160px" }}
+                                    placeholder="e.g. icon-shipping fs-22"
+                                    value={iconClass}
+                                    onChange={(e) =>
+                                      updateAssuranceItem(
+                                        idx,
+                                        "iconClass",
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                )}
+                                {iconClass && (
+                                  <span
+                                    className="d-inline-flex align-items-center justify-content-center rounded bg-light border"
+                                    style={{
+                                      width: 28,
+                                      height: 28,
+                                      fontSize: "1rem",
+                                    }}
+                                    title={iconClass}
+                                  >
+                                    <i className={iconClass} />
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                        <div className="mb-2">
+                          <label
+                            htmlFor={`assurance-title-${idx}`}
+                            className="form-label small mb-1"
+                          >
+                            Title
+                          </label>
+                          <input
+                            type="text"
+                            id={`assurance-title-${idx}`}
+                            className="form-control form-control-sm"
+                            placeholder="e.g. Free Shipping"
+                            value={item.title || ""}
+                            onChange={(e) =>
+                              updateAssuranceItem(idx, "title", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="mb-0">
+                          <label
+                            htmlFor={`assurance-desc-${idx}`}
+                            className="form-label small mb-1"
+                          >
+                            Description
+                          </label>
+                          <input
+                            type="text"
+                            id={`assurance-desc-${idx}`}
+                            className="form-control form-control-sm"
+                            placeholder="e.g. Free shipping to the 48 states"
+                            value={item.description || ""}
+                            onChange={(e) =>
+                              updateAssuranceItem(
+                                idx,
+                                "description",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="admin-brand-list-item-actions">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeAssuranceItem(idx)}
+                          aria-label="Remove"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-shop-make">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Home</span>
+                    Shop By Make (homepage section)
+                  </h2>
+                  <button
+                    type="button"
+                    className="admin-brand-btn-add"
+                    onClick={addShopByMakeItem}
+                  >
+                    + Add section
+                  </button>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Section title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={shopByMake.sectionTitle || ""}
+                        onChange={(e) =>
+                          updateShopByMake("sectionTitle", e.target.value)
+                        }
+                        placeholder="Shop by Make"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Section subtitle</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={shopByMake.sectionSubtitle || ""}
+                        onChange={(e) =>
+                          updateShopByMake("sectionSubtitle", e.target.value)
+                        }
+                        placeholder="Find parts for Ford, GM, and Dodge platforms."
+                      />
+                    </div>
+                  </div>
+                  {(shopByMake.items || []).map((item, idx) => (
+                    <div key={`make-${idx}`} className="admin-brand-list-item">
+                      <span className="admin-brand-list-item-badge">
+                        {idx + 1}
+                      </span>
+                      <div className="admin-brand-list-item-fields">
+                        <div className="row">
+                          <div className="col-12 mb-2">
+                            <label className="form-label small mb-1">
+                              Image (path or upload from PC)
+                            </label>
+                            <div className="d-flex gap-2 flex-wrap align-items-center">
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
-                                style={{ minWidth: "160px" }}
-                                placeholder="e.g. icon-shipping fs-22"
-                                value={iconClass}
+                                style={{ minWidth: "200px" }}
+                                placeholder="/images/logo/Ford_Logo.png"
+                                value={item.imagePath || ""}
                                 onChange={(e) =>
-                                  updateAssuranceItem(
+                                  updateShopByMakeItem(
                                     idx,
-                                    "iconClass",
+                                    "imagePath",
                                     e.target.value,
                                   )
                                 }
                               />
+                              <label className="btn btn-sm btn-outline-primary mb-0">
+                                <input
+                                  type="file"
+                                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                  className="visually-hidden"
+                                  onChange={(e) =>
+                                    handleShopByMakeImageUpload(e, idx)
+                                  }
+                                  disabled={
+                                    uploadingShopByMakeImage !== null &&
+                                    uploadingShopByMakeImage !== idx
+                                  }
+                                />
+                                {uploadingShopByMakeImage === idx
+                                  ? "Uploading…"
+                                  : "Browse / Upload"}
+                              </label>
+                            </div>
+                            {(item.imagePath || "").startsWith("http") && (
+                              <div className="mt-1">
+                                <img
+                                  src={item.imagePath}
+                                  alt=""
+                                  style={{
+                                    maxHeight: 48,
+                                    objectFit: "contain",
+                                    borderRadius: 4,
+                                  }}
+                                />
+                              </div>
                             )}
-                            {iconClass && (
-                              <span
-                                className="d-inline-flex align-items-center justify-content-center rounded bg-light border"
-                                style={{
-                                  width: 28,
-                                  height: 28,
-                                  fontSize: "1rem",
-                                }}
-                                title={iconClass}
-                              >
-                                <i className={iconClass} />
-                              </span>
+                            {(item.imagePath || "").startsWith("/") && (
+                              <div className="mt-1">
+                                <img
+                                  src={item.imagePath}
+                                  alt=""
+                                  style={{
+                                    maxHeight: 48,
+                                    objectFit: "contain",
+                                    borderRadius: 4,
+                                  }}
+                                  onError={(e) => {
+                                    e.target.style.display = "none";
+                                  }}
+                                />
+                              </div>
                             )}
                           </div>
-                        );
-                      })()}
+                          <div className="col-md-6 mb-2">
+                            <label className="form-label small mb-1">
+                              Title
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="FORD"
+                              value={item.title || ""}
+                              onChange={(e) =>
+                                updateShopByMakeItem(
+                                  idx,
+                                  "title",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <label className="form-label small mb-1">
+                              Link (path)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="products/ford"
+                              value={item.link || ""}
+                              onChange={(e) =>
+                                updateShopByMakeItem(
+                                  idx,
+                                  "link",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <label className="form-label small mb-1">
+                              Shop Now label
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="SHOP NOW"
+                              value={item.shopNowLabel || ""}
+                              onChange={(e) =>
+                                updateShopByMakeItem(
+                                  idx,
+                                  "shopNowLabel",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="admin-brand-list-item-actions">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeShopByMakeItem(idx)}
+                          aria-label="Remove"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
-                    <div className="mb-2">
-                      <label
-                        htmlFor={`assurance-title-${idx}`}
-                        className="form-label small mb-1"
-                      >
-                        Title
-                      </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-shop-category">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Home</span>
+                    Shop by Category (homepage cards)
+                  </h2>
+                  <button
+                    type="button"
+                    className="admin-brand-btn-add"
+                    onClick={addShopByCategoryItem}
+                  >
+                    + Add card
+                  </button>
+                </div>
+                <div className="admin-brand-card-body">
+                  <p className="admin-brand-nav-intro mb-3">
+                    Full-bleed image tiles on the homepage. Upload an image or
+                    enter a path. Order is preserved.
+                  </p>
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Section title</label>
                       <input
                         type="text"
-                        id={`assurance-title-${idx}`}
-                        className="form-control form-control-sm"
-                        placeholder="e.g. Free Shipping"
-                        value={item.title || ""}
+                        className="form-control"
+                        value={shopByCategory.sectionTitle || ""}
                         onChange={(e) =>
-                          updateAssuranceItem(idx, "title", e.target.value)
+                          updateShopByCategory("sectionTitle", e.target.value)
                         }
+                        placeholder="Shop by Category"
                       />
                     </div>
-                    <div className="mb-0">
-                      <label
-                        htmlFor={`assurance-desc-${idx}`}
-                        className="form-label small mb-1"
-                      >
-                        Description
-                      </label>
+                    <div className="col-md-6">
+                      <label className="form-label">Section subtitle</label>
                       <input
                         type="text"
-                        id={`assurance-desc-${idx}`}
-                        className="form-control form-control-sm"
-                        placeholder="e.g. Free shipping to the 48 states"
-                        value={item.description || ""}
+                        className="form-control"
+                        value={shopByCategory.sectionSubtitle || ""}
                         onChange={(e) =>
-                          updateAssuranceItem(
-                            idx,
-                            "description",
+                          updateShopByCategory(
+                            "sectionSubtitle",
                             e.target.value,
                           )
                         }
+                        placeholder="Browse our New Products, Merchandise, and Gift Cards."
                       />
                     </div>
                   </div>
-                  <div className="admin-brand-list-item-actions">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => removeAssuranceItem(idx)}
-                      aria-label="Remove"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Home</span>
-                Shop By Make (homepage section)
-              </h2>
-              <button
-                type="button"
-                className="admin-brand-btn-add"
-                onClick={addShopByMakeItem}
-              >
-                + Add section
-              </button>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <label className="form-label">Section title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={shopByMake.sectionTitle || ""}
-                    onChange={(e) =>
-                      updateShopByMake("sectionTitle", e.target.value)
-                    }
-                    placeholder="Shop by Make"
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Section subtitle</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={shopByMake.sectionSubtitle || ""}
-                    onChange={(e) =>
-                      updateShopByMake("sectionSubtitle", e.target.value)
-                    }
-                    placeholder="Find parts for Ford, GM, and Dodge platforms."
-                  />
+                  {(shopByCategory.items || []).map((item, idx) => (
+                    <div key={`cat-${idx}`} className="admin-brand-list-item">
+                      <span className="admin-brand-list-item-badge">
+                        {idx + 1}
+                      </span>
+                      <div className="admin-brand-list-item-fields">
+                        <div className="row">
+                          <div className="col-12 mb-2">
+                            <label className="form-label small mb-1">
+                              Image (path or upload from PC)
+                            </label>
+                            <div className="d-flex gap-2 flex-wrap align-items-center">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm flex-grow-1"
+                                style={{ minWidth: "200px" }}
+                                placeholder="/images/shop-categories/MyImage.jpg"
+                                value={item.img || ""}
+                                onChange={(e) =>
+                                  updateShopByCategoryItem(
+                                    idx,
+                                    "img",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                              <label className="btn btn-sm btn-outline-primary mb-0">
+                                <input
+                                  type="file"
+                                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                  className="visually-hidden"
+                                  onChange={(e) =>
+                                    handleShopCategoryImageUpload(e, idx)
+                                  }
+                                  disabled={
+                                    uploadingShopCategoryImage !== null &&
+                                    uploadingShopCategoryImage !== idx
+                                  }
+                                />
+                                {uploadingShopCategoryImage === idx
+                                  ? "Uploading…"
+                                  : "Browse / Upload"}
+                              </label>
+                            </div>
+                            {(item.img || "").startsWith("http") && (
+                              <div className="mt-1">
+                                <img
+                                  src={item.img}
+                                  alt=""
+                                  style={{
+                                    maxHeight: 48,
+                                    objectFit: "contain",
+                                    borderRadius: 4,
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {(item.img || "").startsWith("/") &&
+                              !item.img.startsWith("http") && (
+                                <div className="mt-1">
+                                  <img
+                                    src={item.img}
+                                    alt=""
+                                    style={{
+                                      maxHeight: 48,
+                                      objectFit: "contain",
+                                      borderRadius: 4,
+                                    }}
+                                    onError={(e) => {
+                                      e.target.style.display = "none";
+                                    }}
+                                  />
+                                </div>
+                              )}
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <label className="form-label small mb-1">
+                              Title
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="New Products"
+                              value={item.title || ""}
+                              onChange={(e) =>
+                                updateShopByCategoryItem(
+                                  idx,
+                                  "title",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <label className="form-label small mb-1">
+                              Subtitle
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="Latest releases"
+                              value={item.subtitle || ""}
+                              onChange={(e) =>
+                                updateShopByCategoryItem(
+                                  idx,
+                                  "subtitle",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <label className="form-label small mb-1">
+                              Link (path)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="/products/new"
+                              value={item.href || ""}
+                              onChange={(e) =>
+                                updateShopByCategoryItem(
+                                  idx,
+                                  "href",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="admin-brand-list-item-actions">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeShopByCategoryItem(idx)}
+                          aria-label="Remove"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              {(shopByMake.items || []).map((item, idx) => (
-                <div key={`make-${idx}`} className="admin-brand-list-item">
-                  <span className="admin-brand-list-item-badge">{idx + 1}</span>
-                  <div className="admin-brand-list-item-fields">
-                    <div className="row">
-                      <div className="col-12 mb-2">
-                        <label className="form-label small mb-1">
-                          Image (path or upload from PC)
-                        </label>
-                        <div className="d-flex gap-2 flex-wrap align-items-center">
+
+              <div className="admin-brand-card" id="section-nav">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Nav</span>
+                    Mega menu labels &amp; URLs
+                  </h2>
+                  <button
+                    type="button"
+                    className="admin-brand-btn-add"
+                    onClick={addNavLink}
+                  >
+                    + Add link
+                  </button>
+                </div>
+                <div className="admin-brand-card-body">
+                  <p className="admin-brand-nav-intro">
+                    Label and URL for each main navigation link. Order matches
+                    the menu. Check &quot;Dropdown&quot; for items that show a
+                    mega menu (e.g. Ford, Mopar). Leave unchecked for plain
+                    links (e.g. Installation, Cart).
+                  </p>
+                  {navOrder.map((k, index) => {
+                    const place = DEFAULT_NAV_PLACEHOLDERS[k] || {
+                      label: "New link",
+                      url: "/",
+                    };
+                    const isPlatform = (form.navPlatformIds || []).includes(k);
+                    const canMoveUp = index > 0;
+                    const canMoveDown = index < navOrder.length - 1;
+                    return (
+                      <div key={k} className="admin-brand-nav-row">
+                        <span className="admin-brand-nav-order">
+                          {index + 1}
+                        </span>
+                        <div className="admin-brand-nav-move">
+                          <button
+                            type="button"
+                            onClick={() => moveNavLink(k, "up")}
+                            disabled={!canMoveUp}
+                            aria-label="Move up"
+                            title="Move up"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveNavLink(k, "down")}
+                            disabled={!canMoveDown}
+                            aria-label="Move down"
+                            title="Move down"
+                          >
+                            ↓
+                          </button>
+                        </div>
+                        <div className="admin-brand-nav-fields">
+                          <div className="admin-brand-nav-field">
+                            <label>Label</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              value={form.navLabels?.[k] ?? ""}
+                              onChange={(e) =>
+                                updateForm("navLabels", {
+                                  ...(form.navLabels || {}),
+                                  [k]: e.target.value,
+                                })
+                              }
+                              placeholder={place.label}
+                            />
+                          </div>
+                          <div className="admin-brand-nav-field">
+                            <label>URL</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              value={form.navUrls?.[k] ?? ""}
+                              onChange={(e) =>
+                                updateForm("navUrls", {
+                                  ...(form.navUrls || {}),
+                                  [k]: e.target.value,
+                                })
+                              }
+                              placeholder={place.url}
+                            />
+                          </div>
+                        </div>
+                        <div className="admin-brand-nav-delete">
+                          <button
+                            type="button"
+                            onClick={() => removeNavLink(k)}
+                            aria-label="Delete"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <div className="w-100">
+                          <div className="admin-brand-nav-dropdown-wrap">
+                            <label className="admin-brand-nav-dropdown-badge">
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                id={`nav-platform-${k}`}
+                                checked={isPlatform}
+                                onChange={() => toggleNavPlatform(k)}
+                              />
+                              Dropdown (mega menu)
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-about">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">About</span>
+                    About Brand
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="mb-3">
+                    <label className="form-label">Heading</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={aboutBrand.heading || ""}
+                      onChange={(e) =>
+                        updateForm("aboutBrand", {
+                          ...aboutBrand,
+                          heading: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Paragraphs (one per line)
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={5}
+                      value={(aboutBrand.paragraphs || []).join("\n\n")}
+                      onChange={(e) =>
+                        updateForm("aboutBrand", {
+                          ...aboutBrand,
+                          paragraphs: e.target.value
+                            .split(/\n\n+/)
+                            .map((s) => s.trim())
+                            .filter(Boolean),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">CTA Label</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={aboutBrand.ctaLabel || ""}
+                        onChange={(e) =>
+                          updateForm("aboutBrand", {
+                            ...aboutBrand,
+                            ctaLabel: e.target.value,
+                          })
+                        }
+                        placeholder="Contact Support"
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">CTA Href</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={aboutBrand.ctaHref || ""}
+                        onChange={(e) =>
+                          updateForm("aboutBrand", {
+                            ...aboutBrand,
+                            ctaHref: e.target.value,
+                          })
+                        }
+                        placeholder="/contact"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-faqs">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">FAQs</span>
+                    Brand FAQs
+                  </h2>
+                  <button
+                    type="button"
+                    className="admin-brand-btn-add"
+                    onClick={addFaq}
+                  >
+                    + Add FAQ
+                  </button>
+                </div>
+                <div className="admin-brand-card-body">
+                  <p className="admin-brand-nav-intro mb-3">
+                    Questions and answers shown on the brand&apos;s FAQ page or
+                    support area. Define section headings below; then assign
+                    each FAQ to a section. Order is preserved.
+                  </p>
+                  {faqSections.length > 0 && (
+                    <div className="mb-4">
+                      <label className="form-label small fw-semibold">
+                        Section headings (shown on the FAQ page)
+                      </label>
+                      {faqSections.map((sec, secIdx) => (
+                        <div
+                          key={secIdx}
+                          className="admin-brand-list-item mb-2"
+                          style={{ maxWidth: "32rem" }}
+                        >
+                          <span className="admin-brand-list-item-badge">
+                            {secIdx + 1}
+                          </span>
+                          <div className="admin-brand-list-item-fields flex-grow-1">
+                            <div className="mb-1">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="Section key (e.g. shopping)"
+                                value={sec.sectionKey || ""}
+                                onChange={(e) =>
+                                  updateFaqSection(
+                                    secIdx,
+                                    "sectionKey",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="mb-0">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="Section title (e.g. Shopping & product information)"
+                                value={sec.title || ""}
+                                onChange={(e) =>
+                                  updateFaqSection(
+                                    secIdx,
+                                    "title",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="admin-brand-list-item-actions d-flex flex-column gap-1">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => moveFaqSection(secIdx, "up")}
+                              disabled={secIdx === 0}
+                              aria-label="Move section up"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => moveFaqSection(secIdx, "down")}
+                              disabled={secIdx === faqSections.length - 1}
+                              aria-label="Move section down"
+                            >
+                              ↓
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => removeFaqSection(secIdx)}
+                              aria-label="Remove section"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary mt-1"
+                        onClick={addFaqSection}
+                      >
+                        + Add section
+                      </button>
+                    </div>
+                  )}
+                  {faqSections.length === 0 && (
+                    <p className="text-muted small mb-2">
+                      Add at least one section so FAQs can be grouped on the FAQ
+                      page.
+                    </p>
+                  )}
+                  {faqSections.length === 0 && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary mb-3"
+                      onClick={addFaqSection}
+                    >
+                      + Add section
+                    </button>
+                  )}
+                  <label className="form-label small fw-semibold d-block mt-3 mb-2">
+                    FAQs
+                  </label>
+                  {faqs.map((faq, idx) => (
+                    <div key={idx} className="admin-brand-list-item">
+                      <span className="admin-brand-list-item-badge">
+                        {idx + 1}
+                      </span>
+                      <div className="admin-brand-list-item-fields">
+                        {faqSections.length > 0 && (
+                          <div className="mb-2">
+                            <label className="form-label small mb-1">
+                              Section
+                            </label>
+                            <select
+                              className="form-select form-select-sm"
+                              value={faq.section || ""}
+                              onChange={(e) =>
+                                updateFaq(idx, "section", e.target.value)
+                              }
+                            >
+                              <option value="">— Select section —</option>
+                              {faqSections.map((sec, i) => (
+                                <option key={i} value={sec.sectionKey || ""}>
+                                  {sec.title ||
+                                    sec.sectionKey ||
+                                    `Section ${i + 1}`}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        <div className="mb-2">
+                          <label className="form-label small mb-1">
+                            Question
+                          </label>
                           <input
                             type="text"
                             className="form-control form-control-sm"
-                            style={{ minWidth: "200px" }}
-                            placeholder="/images/logo/Ford_Logo.png"
-                            value={item.imagePath || ""}
+                            placeholder="e.g. What is your return policy?"
+                            value={faq.question || ""}
                             onChange={(e) =>
-                              updateShopByMakeItem(
-                                idx,
-                                "imagePath",
-                                e.target.value,
-                              )
+                              updateFaq(idx, "question", e.target.value)
                             }
                           />
-                          <label className="btn btn-sm btn-outline-primary mb-0">
-                            <input
-                              type="file"
-                              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                              className="visually-hidden"
-                              onChange={(e) =>
-                                handleShopByMakeImageUpload(e, idx)
-                              }
-                              disabled={
-                                uploadingShopByMakeImage !== null &&
-                                uploadingShopByMakeImage !== idx
-                              }
-                            />
-                            {uploadingShopByMakeImage === idx
-                              ? "Uploading…"
-                              : "Browse / Upload"}
-                          </label>
                         </div>
-                        {(item.imagePath || "").startsWith("http") && (
-                          <div className="mt-1">
-                            <img
-                              src={item.imagePath}
-                              alt=""
-                              style={{
-                                maxHeight: 48,
-                                objectFit: "contain",
-                                borderRadius: 4,
-                              }}
-                            />
-                          </div>
-                        )}
-                        {(item.imagePath || "").startsWith("/") && (
-                          <div className="mt-1">
-                            <img
-                              src={item.imagePath}
-                              alt=""
-                              style={{
-                                maxHeight: 48,
-                                objectFit: "contain",
-                                borderRadius: 4,
-                              }}
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <label className="form-label small mb-1">Title</label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="FORD"
-                          value={item.title || ""}
-                          onChange={(e) =>
-                            updateShopByMakeItem(idx, "title", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <label className="form-label small mb-1">
-                          Link (path)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="products/ford"
-                          value={item.link || ""}
-                          onChange={(e) =>
-                            updateShopByMakeItem(idx, "link", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <label className="form-label small mb-1">
-                          Shop Now label
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="SHOP NOW"
-                          value={item.shopNowLabel || ""}
-                          onChange={(e) =>
-                            updateShopByMakeItem(
-                              idx,
-                              "shopNowLabel",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="admin-brand-list-item-actions">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => removeShopByMakeItem(idx)}
-                      aria-label="Remove"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Home</span>
-                Shop by Category (homepage cards)
-              </h2>
-              <button
-                type="button"
-                className="admin-brand-btn-add"
-                onClick={addShopByCategoryItem}
-              >
-                + Add card
-              </button>
-            </div>
-            <div className="admin-brand-card-body">
-              <p className="admin-brand-nav-intro mb-3">
-                Full-bleed image tiles on the homepage. Upload an image or enter
-                a path. Order is preserved.
-              </p>
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <label className="form-label">Section title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={shopByCategory.sectionTitle || ""}
-                    onChange={(e) =>
-                      updateShopByCategory("sectionTitle", e.target.value)
-                    }
-                    placeholder="Shop by Category"
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Section subtitle</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={shopByCategory.sectionSubtitle || ""}
-                    onChange={(e) =>
-                      updateShopByCategory("sectionSubtitle", e.target.value)
-                    }
-                    placeholder="Browse our New Products, Merchandise, and Gift Cards."
-                  />
-                </div>
-              </div>
-              {(shopByCategory.items || []).map((item, idx) => (
-                <div key={`cat-${idx}`} className="admin-brand-list-item">
-                  <span className="admin-brand-list-item-badge">{idx + 1}</span>
-                  <div className="admin-brand-list-item-fields">
-                    <div className="row">
-                      <div className="col-12 mb-2">
-                        <label className="form-label small mb-1">
-                          Image (path or upload from PC)
-                        </label>
-                        <div className="d-flex gap-2 flex-wrap align-items-center">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm flex-grow-1"
-                            style={{ minWidth: "200px" }}
-                            placeholder="/images/shop-categories/MyImage.jpg"
-                            value={item.img || ""}
+                        <div className="mb-0">
+                          <label className="form-label small mb-1">
+                            Answer
+                          </label>
+                          <textarea
+                            className="form-control form-control-sm"
+                            rows={3}
+                            placeholder="e.g. We offer 90-day returns..."
+                            value={faq.answer || ""}
                             onChange={(e) =>
-                              updateShopByCategoryItem(
-                                idx,
-                                "img",
-                                e.target.value,
-                              )
+                              updateFaq(idx, "answer", e.target.value)
                             }
                           />
-                          <label className="btn btn-sm btn-outline-primary mb-0">
-                            <input
-                              type="file"
-                              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                              className="visually-hidden"
-                              onChange={(e) =>
-                                handleShopCategoryImageUpload(e, idx)
-                              }
-                              disabled={
-                                uploadingShopCategoryImage !== null &&
-                                uploadingShopCategoryImage !== idx
-                              }
-                            />
-                            {uploadingShopCategoryImage === idx
-                              ? "Uploading…"
-                              : "Browse / Upload"}
-                          </label>
                         </div>
-                        {(item.img || "").startsWith("http") && (
-                          <div className="mt-1">
-                            <img
-                              src={item.img}
-                              alt=""
-                              style={{
-                                maxHeight: 48,
-                                objectFit: "contain",
-                                borderRadius: 4,
-                              }}
-                            />
-                          </div>
-                        )}
-                        {(item.img || "").startsWith("/") &&
-                          !item.img.startsWith("http") && (
-                            <div className="mt-1">
-                              <img
-                                src={item.img}
-                                alt=""
-                                style={{
-                                  maxHeight: 48,
-                                  objectFit: "contain",
-                                  borderRadius: 4,
-                                }}
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
-                              />
-                            </div>
-                          )}
                       </div>
-                      <div className="col-md-6 mb-2">
-                        <label className="form-label small mb-1">Title</label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="New Products"
-                          value={item.title || ""}
-                          onChange={(e) =>
-                            updateShopByCategoryItem(
-                              idx,
-                              "title",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <label className="form-label small mb-1">
-                          Subtitle
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="Latest releases"
-                          value={item.subtitle || ""}
-                          onChange={(e) =>
-                            updateShopByCategoryItem(
-                              idx,
-                              "subtitle",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <label className="form-label small mb-1">
-                          Link (path)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          placeholder="/products/new"
-                          value={item.href || ""}
-                          onChange={(e) =>
-                            updateShopByCategoryItem(
-                              idx,
-                              "href",
-                              e.target.value,
-                            )
-                          }
-                        />
+                      <div className="admin-brand-list-item-actions d-flex flex-column gap-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => moveFaq(idx, "up")}
+                          disabled={idx === 0}
+                          aria-label="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => moveFaq(idx, "down")}
+                          disabled={idx === faqs.length - 1}
+                          aria-label="Move down"
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeFaq(idx)}
+                          aria-label="Remove"
+                        >
+                          Remove
+                        </button>
                       </div>
                     </div>
+                  ))}
+                  {faqs.length === 0 && (
+                    <p className="text-muted small mb-0">
+                      No FAQs yet. Click &quot;+ Add FAQ&quot; to add one.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-seo">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">SEO</span>
+                    SEO
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <div className="mb-3">
+                    <label className="form-label">Default Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={form.defaultTitle || ""}
+                      onChange={(e) =>
+                        updateForm("defaultTitle", e.target.value)
+                      }
+                    />
                   </div>
-                  <div className="admin-brand-list-item-actions">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => removeShopByCategoryItem(idx)}
-                      aria-label="Remove"
-                    >
-                      Remove
-                    </button>
+                  <div className="mb-3">
+                    <label className="form-label">Default Description</label>
+                    <textarea
+                      className="form-control"
+                      rows={3}
+                      value={form.defaultDescription || ""}
+                      onChange={(e) =>
+                        updateForm("defaultDescription", e.target.value)
+                      }
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">Nav</span>
-                Mega menu labels &amp; URLs
-              </h2>
-              <button
-                type="button"
-                className="admin-brand-btn-add"
-                onClick={addNavLink}
-              >
-                + Add link
-              </button>
-            </div>
-            <div className="admin-brand-card-body">
-              <p className="admin-brand-nav-intro">
-                Label and URL for each main navigation link. Order matches the
-                menu. Check &quot;Dropdown&quot; for items that show a mega menu
-                (e.g. Ford, Mopar). Leave unchecked for plain links (e.g.
-                Installation, Cart).
-              </p>
-              {navOrder.map((k, index) => {
-                const place = DEFAULT_NAV_PLACEHOLDERS[k] || {
-                  label: "New link",
-                  url: "/",
-                };
-                const isPlatform = (form.navPlatformIds || []).includes(k);
-                const canMoveUp = index > 0;
-                const canMoveDown = index < navOrder.length - 1;
-                return (
-                  <div key={k} className="admin-brand-nav-row">
-                    <span className="admin-brand-nav-order">{index + 1}</span>
-                    <div className="admin-brand-nav-move">
-                      <button
-                        type="button"
-                        onClick={() => moveNavLink(k, "up")}
-                        disabled={!canMoveUp}
-                        aria-label="Move up"
-                        title="Move up"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveNavLink(k, "down")}
-                        disabled={!canMoveDown}
-                        aria-label="Move down"
-                        title="Move down"
-                      >
-                        ↓
-                      </button>
-                    </div>
-                    <div className="admin-brand-nav-fields">
-                      <div className="admin-brand-nav-field">
-                        <label>Label</label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          value={form.navLabels?.[k] ?? ""}
-                          onChange={(e) =>
-                            updateForm("navLabels", {
-                              ...(form.navLabels || {}),
-                              [k]: e.target.value,
-                            })
-                          }
-                          placeholder={place.label}
-                        />
-                      </div>
-                      <div className="admin-brand-nav-field">
-                        <label>URL</label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          value={form.navUrls?.[k] ?? ""}
-                          onChange={(e) =>
-                            updateForm("navUrls", {
-                              ...(form.navUrls || {}),
-                              [k]: e.target.value,
-                            })
-                          }
-                          placeholder={place.url}
-                        />
-                      </div>
-                    </div>
-                    <div className="admin-brand-nav-delete">
-                      <button
-                        type="button"
-                        onClick={() => removeNavLink(k)}
-                        aria-label="Delete"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                    <div className="w-100">
-                      <div className="admin-brand-nav-dropdown-wrap">
-                        <label className="admin-brand-nav-dropdown-badge">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id={`nav-platform-${k}`}
-                            checked={isPlatform}
-                            onChange={() => toggleNavPlatform(k)}
-                          />
-                          Dropdown (mega menu)
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">About</span>
-                About Brand
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="mb-3">
-                <label className="form-label">Heading</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={aboutBrand.heading || ""}
-                  onChange={(e) =>
-                    updateForm("aboutBrand", {
-                      ...aboutBrand,
-                      heading: e.target.value,
-                    })
-                  }
-                />
               </div>
-              <div className="mb-3">
-                <label className="form-label">Paragraphs (one per line)</label>
-                <textarea
-                  className="form-control"
-                  rows={5}
-                  value={(aboutBrand.paragraphs || []).join("\n\n")}
-                  onChange={(e) =>
-                    updateForm("aboutBrand", {
-                      ...aboutBrand,
-                      paragraphs: e.target.value
-                        .split(/\n\n+/)
-                        .map((s) => s.trim())
-                        .filter(Boolean),
-                    })
-                  }
-                />
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">CTA Label</label>
+
+              <div className="admin-brand-active-card" id="section-active">
+                <span className="admin-brand-active-label">
+                  Brand is live on the site
+                </span>
+                <div className="form-check form-switch mb-0">
                   <input
-                    type="text"
-                    className="form-control"
-                    value={aboutBrand.ctaLabel || ""}
-                    onChange={(e) =>
-                      updateForm("aboutBrand", {
-                        ...aboutBrand,
-                        ctaLabel: e.target.value,
-                      })
-                    }
-                    placeholder="Contact Support"
+                    type="checkbox"
+                    className="form-check-input"
+                    id="isActive"
+                    checked={form.isActive}
+                    onChange={(e) => updateForm("isActive", e.target.checked)}
                   />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">CTA Href</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={aboutBrand.ctaHref || ""}
-                    onChange={(e) =>
-                      updateForm("aboutBrand", {
-                        ...aboutBrand,
-                        ctaHref: e.target.value,
-                      })
-                    }
-                    placeholder="/contact"
-                  />
+                  <label className="form-check-label" htmlFor="isActive">
+                    Active
+                  </label>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="admin-brand-card">
-            <div className="admin-brand-card-header">
-              <h2 className="admin-brand-card-title">
-                <span className="admin-brand-section-badge">SEO</span>
-                SEO
-              </h2>
-            </div>
-            <div className="admin-brand-card-body">
-              <div className="mb-3">
-                <label className="form-label">Default Title</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={form.defaultTitle || ""}
-                  onChange={(e) => updateForm("defaultTitle", e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Default Description</label>
-                <textarea
-                  className="form-control"
-                  rows={3}
-                  value={form.defaultDescription || ""}
-                  onChange={(e) =>
-                    updateForm("defaultDescription", e.target.value)
-                  }
-                />
+              <div className="admin-brand-form-actions">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={saving}
+                >
+                  {saving ? "Saving…" : "Save brand"}
+                </button>
+                <Link
+                  href="/admin/brands"
+                  className="btn btn-outline-secondary"
+                >
+                  Cancel
+                </Link>
               </div>
             </div>
-          </div>
-
-          <div className="admin-brand-active-card">
-            <span className="admin-brand-active-label">
-              Brand is live on the site
-            </span>
-            <div className="form-check form-switch mb-0">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="isActive"
-                checked={form.isActive}
-                onChange={(e) => updateForm("isActive", e.target.checked)}
-              />
-              <label className="form-check-label" htmlFor="isActive">
-                Active
-              </label>
-            </div>
-          </div>
-
-          <div className="admin-brand-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? "Saving…" : "Save brand"}
-            </button>
-            <Link href="/admin/brands" className="btn btn-outline-secondary">
-              Cancel
-            </Link>
           </div>
         </form>
       </div>

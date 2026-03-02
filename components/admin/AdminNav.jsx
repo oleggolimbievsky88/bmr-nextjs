@@ -9,19 +9,20 @@ export default function AdminNav({ user }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: "/admin", label: "Dashboard" },
-    { href: "/admin/brands", label: "Brands" },
-    { href: "/admin/topbar", label: "Topbar" },
     { href: "/admin/banner", label: "Banners" },
-    { href: "/admin/platforms", label: "Platforms" },
-    { href: "/admin/products", label: "Products" },
+    { href: "/admin/brands", label: "Brands" },
     { href: "/admin/categories", label: "Categories" },
-    { href: "/admin/orders", label: "Orders" },
-    { href: "/admin/dealer-pos", label: "Dealer POs" },
     { href: "/admin/coupons", label: "Coupons" },
-    { href: "/admin/dealer-tiers", label: "Dealer Tiers" },
     { href: "/admin/customers", label: "Customers" },
+    { href: "/admin", label: "Dashboard" },
+    { href: "/admin/dealer-pos", label: "Dealer POs" },
+    { href: "/admin/dealer-tiers", label: "Dealer Tiers" },
     { href: "/admin/import", label: "Import ACES/PIES" },
+    { href: "/admin/orders", label: "Orders" },
+    { href: "/admin/platforms", label: "Platforms" },
+    { href: "/admin/attribute-categories", label: "Product Attributes" },
+    { href: "/admin/products", label: "Products" },
+    { href: "/admin/topbar", label: "Topbar" },
   ];
 
   const handleLogout = () => {

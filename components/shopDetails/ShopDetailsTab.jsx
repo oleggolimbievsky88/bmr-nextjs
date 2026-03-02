@@ -4,6 +4,50 @@ import { useState } from "react";
 import Link from "next/link";
 import { getInstallUrl } from "@/lib/assets";
 
+function FeatureCards({ items }) {
+  if (!items) return null;
+
+  let list = [];
+  if (Array.isArray(items)) {
+    list = items.map((x) => String(x || "").trim()).filter(Boolean);
+  } else if (typeof items === "string") {
+    const str = items.trim();
+    if (!str) return null;
+
+    if (str.includes("<li")) {
+      return (
+        <div
+          className="pdpFeatureCards pdpFeatureCards--html"
+          dangerouslySetInnerHTML={{ __html: str }}
+        />
+      );
+    }
+
+    list = str
+      .replace(/\r/g, "")
+      .split(/\n|•|- |\u2022/g)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
+  if (!list.length) return null;
+
+  return (
+    <div className="pdpFeatureCards">
+      <div className="pdpFeatureCards__grid">
+        {list.slice(0, 24).map((text, idx) => (
+          <div className="pdpFeatureCards__card" key={`${idx}-${text}`}>
+            <div className="pdpFeatureCards__icon" aria-hidden="true">
+              ✓
+            </div>
+            <div className="pdpFeatureCards__text">{text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ShopDetailsTab({ product, vehicles = [] }) {
   const descHtml = product?.Description || "";
   const lines = descHtml.split(/\r?\n/);
@@ -20,9 +64,40 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
     descPart = descHtml;
   }
 
-  const hasFeatures =
-    featuresArr.length > 0 ||
-    (product?.Features && String(product.Features).trim() !== "");
+  // Try to normalize features into an array (works for HTML <ul><li>, newline bullets, etc.)
+  const normalizeFeatures = (input) => {
+    if (!input) return [];
+    if (Array.isArray(input)) return input.filter(Boolean);
+
+    const str = String(input);
+
+    // 1) If it's HTML, try to pull <li>...</li>
+    if (/<li[\s>]/i.test(str)) {
+      const liMatches = [...str.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)];
+      const cleaned = liMatches
+        .map((m) =>
+          m[1]
+            .replace(/<[^>]+>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim(),
+        )
+        .filter(Boolean);
+      if (cleaned.length) return cleaned;
+    }
+
+    // 2) Split by new lines and strip common bullet prefixes
+    return str
+      .split(/\r?\n/)
+      .map((l) => l.replace(/^\s*[-•*]\s+/, "").trim())
+      .filter(Boolean);
+  };
+
+  const featuresList =
+    normalizeFeatures(product?.Features).length > 0
+      ? normalizeFeatures(product?.Features)
+      : normalizeFeatures(featuresArr);
+
+  const hasFeatures = featuresList.length > 0;
   const hasPlatforms =
     Array.isArray(product?.platforms) && product.platforms.length > 0;
   const hasFitment =
@@ -40,10 +115,6 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
   ];
 
   const [currentTab, setCurrentTab] = useState(tabs[0]?.id || "description");
-
-  const featuresContent = product?.Features?.trim()
-    ? product.Features
-    : featuresArr;
 
   return (
     <section
@@ -80,92 +151,79 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                         }}
                       />
                       {featuresArr.length > 0 && (
-                        <div className="tf-product-des-demo">
-                          <div className="right">
-                            <ul className="tf-product-features-list">
-                              {featuresArr.map((feature, idx) => (
-                                <li
-                                  key={idx}
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "20px !important",
-                                    color: "black !important",
-                                  }}
-                                >
-                                  {feature}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
+                        <>
+                          <div className="pdpSectionDivider" />
+                          <h4 className="pdpSectionTitle">Key Features</h4>
+                          <FeatureCards items={featuresArr} />
+                        </>
                       )}
                     </div>
                   </div>
                 )}
                 {currentTab === "features" && hasFeatures && (
                   <div className="widget-content-inner active">
-                    {typeof featuresContent === "string" ? (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: featuresContent }}
-                        style={{
-                          fontSize: "15px",
-                          lineHeight: "20px",
-                          color: "black",
-                        }}
-                      />
-                    ) : (
-                      Array.isArray(featuresContent) &&
-                      featuresContent.length > 0 && (
-                        <div className="tf-product-des-demo">
-                          <div className="right">
-                            <ul className="tf-product-features-list">
-                              {featuresContent.map((feature, idx) => (
-                                <li
-                                  key={idx}
-                                  style={{
-                                    fontSize: "15px",
-                                    color: "black !important",
-                                    lineHeight: "20px !important",
-                                  }}
-                                >
-                                  {feature}
-                                </li>
-                              ))}
-                            </ul>
+                    <div className="pdpFeatures">
+                      <div className="pdpFeatures__header">
+                        <h4 className="pdpFeatures__title">Key Features</h4>
+                        <p className="pdpFeatures__subtitle">
+                          Quick highlights for this part.
+                        </p>
+                      </div>
+
+                      <div className="pdpFeatures__grid">
+                        {featuresList.map((feature, idx) => (
+                          <div key={idx} className="pdpFeatures__item">
+                            <span className="pdpFeatures__icon" aria-hidden>
+                              <i className="bi bi-check2" />
+                            </span>
+                            <span className="pdpFeatures__text">{feature}</span>
                           </div>
-                        </div>
-                      )
-                    )}
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
                 {currentTab === "installation" && hasInstallation && (
                   <div className="widget-content-inner active">
-                    <div>
-                      <a
-                        href={getInstallUrl(product.Instructions)}
-                        className="btn btn-danger install-btn"
-                        style={{
-                          backgroundColor: "var(--primary) !important",
-                          color: "white !important",
-                        }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View / Download {product?.PartNumber} Installation
-                        Instructions
-                      </a>
+                    <div className="pdpInstall">
+                      <div className="pdpInstall__card">
+                        <div className="pdpInstall__left">
+                          <div className="pdpInstall__icon" aria-hidden>
+                            <i className="bi bi-file-earmark-pdf" />
+                          </div>
+                          <div className="pdpInstall__text">
+                            <h4 className="pdpInstall__title">
+                              Installation Instructions
+                            </h4>
+                            <p className="pdpInstall__subtitle">
+                              PDF instructions for{" "}
+                              <strong>{product?.PartNumber}</strong>.
+                            </p>
+                          </div>
+                        </div>
+
+                        <a
+                          href={getInstallUrl(product.Instructions)}
+                          className="pdpInstall__btn text-decoration-none"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View / Download PDF{" "}
+                          <i className="bi bi-arrow-up-right" />
+                        </a>
+                      </div>
                     </div>
                   </div>
                 )}
                 {currentTab === "fitment" && hasFitment && (
                   <div className="widget-content-inner active">
-                    <div>
+                    <div className="fitment-content">
                       {hasPlatforms && (
-                        <div className="mb-4">
-                          <p className="mb-2 fw-semibold">
+                        <div className="fitment-platforms mb-4">
+                          <p className="fitment-platforms-title">
                             Fits these platforms:
                           </p>
-                          <div className="d-flex flex-wrap gap-2">
+                          <div className="fitment-pills">
                             {product.platforms.map((pl) => {
                               const slug =
                                 pl.slug ||
@@ -193,11 +251,7 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                                 <Link
                                   key={pl.bodyId ?? pl.BodyID ?? pl.name}
                                   href={`/products/${slug}`}
-                                  className="badge bg-secondary text-decoration-none px-3 py-2"
-                                  style={{
-                                    fontSize: "0.9rem",
-                                    fontWeight: 500,
-                                  }}
+                                  className="fitment-pill text-decoration-none"
                                 >
                                   {label.trim() || slug}
                                 </Link>
@@ -209,9 +263,9 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                       {Array.isArray(vehicles) && vehicles.length > 0 && (
                         <div className="row">
                           <div className="col-12">
-                            <div className="table-responsive">
-                              <table className="table table-striped table-hover">
-                                <thead className="table-dark">
+                            <div className="table-responsive fitment-table-wrap">
+                              <table className="table fitment-table">
+                                <thead>
                                   <tr>
                                     <th scope="col">Year Range</th>
                                     <th scope="col">Make</th>

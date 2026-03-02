@@ -5,6 +5,7 @@ import {
   getAllProductsAdmin,
   getProductsCountAdmin,
   createProductAdmin,
+  setProductAttributeValues,
 } from "@/lib/queries";
 import { getNewProductsDays } from "@/lib/settings";
 import { uploadProductImage } from "@/lib/upload-product-images";
@@ -324,7 +325,42 @@ export async function POST(request) {
       }
     }
 
+    // Attribute set and attribute values
+    const attributeCategoryIdRaw = formData.get("attributeCategoryId");
+    if (
+      attributeCategoryIdRaw !== null &&
+      attributeCategoryIdRaw !== undefined
+    ) {
+      const v = String(attributeCategoryIdRaw).trim();
+      productData.AttributeCategoryID = v === "" ? null : v;
+    }
+    let attributeValues = {};
+    const attributeValuesRaw = formData.get("attributeValues");
+    if (attributeValuesRaw !== null && attributeValuesRaw !== undefined) {
+      try {
+        attributeValues =
+          typeof attributeValuesRaw === "string"
+            ? JSON.parse(attributeValuesRaw)
+            : attributeValuesRaw;
+      } catch {
+        attributeValues = {};
+      }
+    }
+
     const productId = await createProductAdmin(productData);
+    const attrCatId =
+      productData.AttributeCategoryID != null &&
+      productData.AttributeCategoryID !== ""
+        ? Number(productData.AttributeCategoryID)
+        : null;
+    if (
+      productId &&
+      attrCatId &&
+      typeof attributeValues === "object" &&
+      Object.keys(attributeValues).length > 0
+    ) {
+      await setProductAttributeValues(productId, attrCatId, attributeValues);
+    }
     return NextResponse.json({ success: true, productId });
   } catch (error) {
     console.error("Error creating product:", error);

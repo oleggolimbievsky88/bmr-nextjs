@@ -1,10 +1,10 @@
 @use "../abstracts/variable" as *;
 @use "../abstracts/mixin" as *;
 
-// FAQ page – BMR red accents, modern layout, mobile responsive
+// FAQ page – brand-specific accent (BMR red, Control Freak darkened yellow on white)
 .faq-page {
-  --faq-red: var(--bmr-red, #db1215);
-  --faq-red-hover: #b80e11;
+  --faq-accent: var(--brand-button-badge, var(--primary, #db1215));
+  --faq-accent-hover: color-mix(in srgb, var(--faq-accent) 85%, black);
   --faq-border: #e8e8e8;
   --faq-bg: #fff;
   --faq-bg-alt: #fafafa;
@@ -13,6 +13,12 @@
   @media (min-width: 992px) {
     padding: 1rem 0 5rem;
   }
+}
+
+/* Control Freak: use darkened yellow on white for section titles and buttons so text is readable */
+[data-brand="controlfreak"] .faq-page {
+  --faq-accent: var(--brand-primary-text-on-light, #b5a000);
+  --faq-accent-hover: #9a8a00;
 }
 
 .faq-page__container {
@@ -51,8 +57,8 @@
 .faq-page__section-title {
   font-size: 1.375rem;
   font-weight: 700;
-  color: var(--faq-red);
-  border-bottom: 3px solid var(--faq-red);
+  color: var(--faq-accent);
+  border-bottom: 3px solid var(--faq-accent);
   letter-spacing: 0.02em;
   margin-bottom: 0px !important;
   text-transform: uppercase;
@@ -106,14 +112,14 @@
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  background: var(--faq-red);
+  background: var(--faq-accent);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 
   &:hover {
-    background: var(--faq-red-hover);
+    background: var(--faq-accent-hover);
     color: #fff;
   }
 
@@ -172,12 +178,12 @@
   gap: 0.75rem;
 
   &:hover {
-    color: var(--faq-red);
+    color: var(--faq-accent);
   }
 
   &.not-collapsed,
   &[aria-expanded="true"] {
-    color: var(--faq-red);
+    color: var(--faq-accent);
     background: var(--faq-bg-alt);
   }
 

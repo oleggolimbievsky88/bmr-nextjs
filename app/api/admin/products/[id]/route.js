@@ -5,6 +5,8 @@ import {
   getProductByIdAdmin,
   updateProductAdmin,
   deleteProductAdmin,
+  getProductAttributeValues,
+  setProductAttributeValues,
 } from "@/lib/queries";
 import { uploadProductImage } from "@/lib/upload-product-images";
 import { put } from "@vercel/blob";
@@ -25,6 +27,9 @@ export async function GET(request, context) {
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+
+    const attributeValues = await getProductAttributeValues(id).catch(() => []);
+    product.attributeValues = attributeValues;
 
     return NextResponse.json({ product });
   } catch (error) {
@@ -305,9 +310,46 @@ export async function PUT(request, context) {
       }
     }
 
+    // Attribute set and attribute values
+    const attributeCategoryIdRaw = formData.get("attributeCategoryId");
+    if (
+      attributeCategoryIdRaw !== null &&
+      attributeCategoryIdRaw !== undefined
+    ) {
+      const v = String(attributeCategoryIdRaw).trim();
+      productData.AttributeCategoryID = v === "" ? null : v;
+    }
+    let attributeValues = {};
+    const attributeValuesRaw = formData.get("attributeValues");
+    if (attributeValuesRaw !== null && attributeValuesRaw !== undefined) {
+      try {
+        attributeValues =
+          typeof attributeValuesRaw === "string"
+            ? JSON.parse(attributeValuesRaw)
+            : attributeValuesRaw;
+      } catch {
+        attributeValues = {};
+      }
+    }
+
     const success = await updateProductAdmin(id, productData);
     if (!success) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    const attrCatId =
+      productData.AttributeCategoryID != null &&
+      productData.AttributeCategoryID !== ""
+        ? Number(productData.AttributeCategoryID)
+        : null;
+    if (
+      attrCatId &&
+      typeof attributeValues === "object" &&
+      Object.keys(attributeValues).length > 0
+    ) {
+      await setProductAttributeValues(id, attrCatId, attributeValues);
+    } else if (attrCatId) {
+      await setProductAttributeValues(id, attrCatId, {});
     }
 
     return NextResponse.json({ success: true });

@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getBrandByKeyAdmin, updateBrand } from "@/lib/brandQueries";
+import {
+  getBrandByKeyAdmin,
+  updateBrand,
+  getBrandFaqs,
+  updateBrandFaqs,
+  getBrandFaqSections,
+  updateBrandFaqSections,
+} from "@/lib/brandQueries";
 import { defaultBrands } from "@bmr/core/brand";
 
 function requireAdmin(session) {
@@ -33,6 +40,11 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Brand not found" }, { status: 404 });
     }
 
+    const faqs = await getBrandFaqs(key);
+    const faqSections = await getBrandFaqSections(key);
+    brand.faqs = faqs;
+    brand.faqSections = faqSections;
+
     return NextResponse.json(brand);
   } catch (error) {
     console.error("Error fetching brand:", error);
@@ -58,6 +70,13 @@ export async function PATCH(request, { params }) {
 
     const body = await request.json().catch(() => ({}));
     await updateBrand(key, body);
+
+    if (Array.isArray(body.faqs)) {
+      await updateBrandFaqs(key, body.faqs);
+    }
+    if (Array.isArray(body.faqSections)) {
+      await updateBrandFaqSections(key, body.faqSections);
+    }
 
     // Invalidate homepage so Shop by Make and other brand-dependent content updates in production
     revalidatePath("/");

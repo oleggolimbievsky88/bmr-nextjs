@@ -1,3 +1,8 @@
+/**
+ * Product main category page for a specific platform and main category.
+ * Shows all sub-categories and products for the main category.
+ * Uses the same layout as the platform page but with the main category name in the title.
+ */
 "use client";
 import { useEffect, useState, use } from "react";
 import CategoryGrid from "@/components/shop/CategoryGrid";

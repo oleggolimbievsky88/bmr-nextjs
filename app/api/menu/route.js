@@ -1,21 +1,17 @@
 import { getMenuData } from "@/lib/queries";
+import { getBrandConfig } from "@/lib/brandConfig";
 import { NextResponse } from "next/server";
 
 // Cache the menu data for 1 hour (3600 seconds)
 export const revalidate = 3600;
 
 // Empty menu shape so nav still works when DB is unavailable (e.g. DATABASE_URL missing in prod)
-const emptyMenuData = {
-  fordLinks: [],
-  moparLinks: [],
-  gmLateModelLinks: [],
-  gmMidMuscleLinks: [],
-  gmClassicMuscleLinks: [],
-};
+const emptyMenuData = {};
 
 export async function GET() {
   try {
-    const menuData = await getMenuData();
+    const brand = await getBrandConfig();
+    const menuData = await getMenuData(brand);
     return NextResponse.json(menuData, {
       headers: {
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
