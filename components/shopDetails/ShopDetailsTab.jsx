@@ -150,11 +150,11 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                           lineHeight: "25px !important",
                         }}
                       />
-                      {featuresArr.length > 0 && (
+                      {hasFeatures && (
                         <>
                           <div className="pdpSectionDivider" />
                           <h4 className="pdpSectionTitle">Key Features</h4>
-                          <FeatureCards items={featuresArr} />
+                          <FeatureCards items={featuresList} />
                         </>
                       )}
                     </div>
