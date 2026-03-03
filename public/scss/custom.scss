@@ -3594,7 +3594,7 @@ header[style*="transform:translateY(-"] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 5px 10px;
+  padding: 5px 0px 5px 0px;
   border-radius: 12px;
   text-decoration: none;
   color: rgba(0, 0, 0, 0.82);
@@ -3846,7 +3846,12 @@ header[style*="transform:translateY(-"] {
   border: 0 !important;
 }
 
-.summit-sidebar .plpList li,
+.summit-sidebar .plpList li {
+  padding: 2px 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
 .summit-sidebar .plpFilterList li {
   padding: 6px 0 !important;
   margin: 0 !important;
@@ -3857,6 +3862,19 @@ header[style*="transform:translateY(-"] {
   color: #111;
   text-decoration: none;
   font-size: 14px;
+  padding: 4px 6px;
+}
+
+.summit-sidebar .plpLinkRow .plpCount {
+  background: var(--primary, #db1215);
+  border: 1px solid var(--primary, #db1215);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-primary-button-text, #fff);
+  min-width: 24px;
+  text-align: center;
 }
 
 .summit-sidebar .plpLinkRow.is-active {
