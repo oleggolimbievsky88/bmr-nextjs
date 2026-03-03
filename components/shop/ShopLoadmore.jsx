@@ -75,7 +75,7 @@ export default function ShopLoadmoreOnScroll({
           setPage((prev) => prev + 1);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     if (sentinelRef.current) observer.observe(sentinelRef.current);
     return () => {
