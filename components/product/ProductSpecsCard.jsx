@@ -1,3 +1,8 @@
+/**
+ * Component for displaying the product specifications (product attributes) card.
+ * Shows the product specifications in a card format.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 
 import React, { useMemo, useState } from "react";

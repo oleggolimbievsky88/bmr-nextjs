@@ -1,3 +1,8 @@
+/**
+ * Component for displaying a product card.
+ * Shows a product card with a image, title, price, and color swatches.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";

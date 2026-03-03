@@ -1,3 +1,8 @@
+/**
+ * Component for displaying the product details page.
+ * Shows the product image, title, price, and other details.
+ * Uses the same layout as the main category page but with the category name in the title.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import Slider2 from "./sliders/Slider2";
@@ -1060,19 +1065,20 @@ export default function ProductDetails({
                       </button>
                     </div> */}
                   </div>
-
-                  {/* Product attributes / Specs */}
-                  {Array.isArray(product?.attributes) &&
-                    product.attributes.length > 0 && (
-                      <ProductSpecsCard
-                        attributes={product.attributes}
-                        title="Specifications"
-                        initialCount={6}
-                      />
-                    )}
                 </div>
               </div>
             </div>
+            {/* Product attributes / Specs */}
+            {Array.isArray(product?.attributes) &&
+              product.attributes.length > 0 && (
+                <div className="col-12">
+                  <ProductSpecsCard
+                    attributes={product.attributes}
+                    title="Specifications"
+                    initialCount={6}
+                  />
+                </div>
+              )}
           </div>
         </div>
       </div>

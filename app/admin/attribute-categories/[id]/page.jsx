@@ -21,6 +21,8 @@ export default function AdminAttributeCategoryAttributesPage() {
     options: "",
     sort_order: 0,
   });
+  const [manualOptions, setManualOptions] = useState("");
+  const [useProductColors, setUseProductColors] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -64,12 +66,17 @@ export default function AdminAttributeCategoryAttributesPage() {
       options: "",
       sort_order: 0,
     });
+    setManualOptions("");
+    setUseProductColors(false);
     setEditingItem(null);
     setShowForm(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "options") {
+      setManualOptions(value);
+    }
     setFormData((prev) => ({
       ...prev,
       [name]:
@@ -88,15 +95,28 @@ export default function AdminAttributeCategoryAttributesPage() {
     }
   };
 
+  const handleUseProductColorsChange = (e) => {
+    const checked = e.target.checked;
+    setUseProductColors(checked);
+    setFormData((prev) => ({
+      ...prev,
+      options: checked ? "__product_colors__" : manualOptions,
+    }));
+  };
+
   const handleEdit = (attr) => {
+    const optionsValue = attr.options != null ? String(attr.options) : "";
+    const usingProductColors = optionsValue.trim() === "__product_colors__";
     setEditingItem(attr);
     setFormData({
       slug: attr.slug || "",
       label: attr.label || "",
       type: attr.type || "text",
-      options: attr.options != null ? String(attr.options) : "",
+      options: optionsValue,
       sort_order: attr.sort_order != null ? attr.sort_order : 0,
     });
+    setManualOptions(usingProductColors ? "" : optionsValue);
+    setUseProductColors(usingProductColors);
     setShowForm(true);
   };
 
@@ -315,18 +335,33 @@ export default function AdminAttributeCategoryAttributesPage() {
                   <div className="col-12">
                     <div className="admin-form-group">
                       <label>Options</label>
+                      <div className="form-check mb-2">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="useProductColors"
+                          checked={useProductColors}
+                          onChange={handleUseProductColorsChange}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="useProductColors"
+                        >
+                          Use product color list
+                        </label>
+                      </div>
                       <textarea
                         name="options"
                         className="form-control font-monospace"
                         rows={4}
-                        value={formData.options}
+                        value={useProductColors ? "" : manualOptions}
                         onChange={handleInputChange}
-                        placeholder="One option per line, or comma-separated. Use __product_colors__ to use the same color list as the product Options (e.g. for Control Arm Color)."
+                        placeholder="One option per line, or comma-separated."
+                        disabled={useProductColors}
                       />
                       <small className="text-muted d-block mt-1">
-                        One per line or comma-separated. Special:{" "}
-                        <code>__product_colors__</code> = use product color
-                        list.
+                        One per line or comma-separated. Use the checkbox to
+                        pull the product color list.
                       </small>
                     </div>
                   </div>

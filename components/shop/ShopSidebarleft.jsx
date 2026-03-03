@@ -38,7 +38,7 @@ export default function ShopSidebarleft({
   return (
     <>
       <section className="flat-spacing-1">
-        <div className="container">
+        <div className="container m-0 p-0">
           <div className="tf-shop-control grid-3 align-items-center">
             <div className="tf-control-filter"></div>
           </div>

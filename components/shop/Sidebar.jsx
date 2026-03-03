@@ -56,7 +56,6 @@ export default function Sidebar({
       {/* Header row */}
       <div className="plpSidebarTop">
         <div>
-          <div className="plpSidebarKicker">Browse</div>
           <div className="plpSidebarTitle">Filters</div>
         </div>
 
@@ -113,6 +112,56 @@ export default function Sidebar({
           </ul>
         </div>
       </div>
+
+      {/* Product Types */}
+      {productTypesWithCount.length > 0 && (
+        <div className="plpFacet">
+          <button
+            className="plpFacetHead"
+            type="button"
+            data-bs-target="#product-types"
+            data-bs-toggle="collapse"
+            aria-expanded="true"
+            aria-controls="product-types"
+          >
+            <span className="plpFacetTitle">Product Types</span>
+            <span className="plpChevron" aria-hidden />
+          </button>
+
+          <div id="product-types" className="collapse show">
+            <ul className="plpList">
+              {productTypesWithCount.map((c, index) => {
+                const catId = c.id || c.CatID;
+                const catName = c.name || c.CatName || "";
+                const catSlug =
+                  c.CatSlug ||
+                  c.slug ||
+                  c.CatNameSlug ||
+                  (catName && catName.toLowerCase().replace(/\s+/g, "-"));
+                const isActive =
+                  selectedCatId === catId || selectedCatId === String(catId);
+                // Product type page URL: /products/{platform}/{mainCategory}/{categorySlug}
+                const productTypeHref =
+                  platformSlug && selectedMainCatSlug && catSlug
+                    ? `/products/${platformSlug}/${selectedMainCatSlug}/${catSlug}`
+                    : null;
+
+                return (
+                  <li key={catId || index}>
+                    <Link
+                      href={productTypeHref || "#"}
+                      className={`plpLinkRow ${isActive ? "is-active" : ""}`}
+                    >
+                      <span className="plpLinkText">{c.name || c.CatName}</span>
+                      <span className="plpCount">{c.productCount || 0}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Attribute filters */}
       {attributeFilterOptions?.length > 0 &&
@@ -214,56 +263,6 @@ export default function Sidebar({
             </div>
           );
         })()}
-
-      {/* Product Types */}
-      {productTypesWithCount.length > 0 && (
-        <div className="plpFacet">
-          <button
-            className="plpFacetHead"
-            type="button"
-            data-bs-target="#product-types"
-            data-bs-toggle="collapse"
-            aria-expanded="true"
-            aria-controls="product-types"
-          >
-            <span className="plpFacetTitle">Product Types</span>
-            <span className="plpChevron" aria-hidden />
-          </button>
-
-          <div id="product-types" className="collapse show">
-            <ul className="plpList">
-              {productTypesWithCount.map((c, index) => {
-                const catId = c.id || c.CatID;
-                const catName = c.name || c.CatName || "";
-                const catSlug =
-                  c.CatSlug ||
-                  c.slug ||
-                  c.CatNameSlug ||
-                  (catName && catName.toLowerCase().replace(/\s+/g, "-"));
-                const isActive =
-                  selectedCatId === catId || selectedCatId === String(catId);
-                // Product type page URL: /products/{platform}/{mainCategory}/{categorySlug}
-                const productTypeHref =
-                  platformSlug && selectedMainCatSlug && catSlug
-                    ? `/products/${platformSlug}/${selectedMainCatSlug}/${catSlug}`
-                    : null;
-
-                return (
-                  <li key={catId || index}>
-                    <Link
-                      href={productTypeHref || "#"}
-                      className={`plpLinkRow ${isActive ? "is-active" : ""}`}
-                    >
-                      <span className="plpLinkText">{c.name || c.CatName}</span>
-                      <span className="plpCount">{c.productCount || 0}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-      )}
 
       {/* Shipping & Delivery */}
       <div className="plpFacet">

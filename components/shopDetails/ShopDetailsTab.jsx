@@ -124,7 +124,7 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
       <div className="container">
         <div className="row">
           <div className="col-12">
-            <div className="widget-tabs style-has-border">
+            <div className="widget-tabs style-has-border pdpDetailsTabs">
               <ul className="widget-menu-tab">
                 {tabs.map((tab) => (
                   <li

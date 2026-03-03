@@ -4,6 +4,50 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { getProductImageUrl, getInstallUrl } from "@/lib/assets";
 import { showToast } from "@/utlis/showToast";
 
+const parseSummitAttributes = (input) => {
+  if (!input || typeof input !== "string") return [];
+  const lines = input.replace(/\r\n/g, "\n").split("\n");
+  const items = [];
+  let pendingLabel = "";
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const colonIndex = trimmed.indexOf(":");
+    if (colonIndex !== -1) {
+      const label = trimmed.slice(0, colonIndex).trim();
+      const value = trimmed.slice(colonIndex + 1).trim();
+      if (label) {
+        if (value) {
+          items.push({ label, value });
+          pendingLabel = "";
+        } else {
+          pendingLabel = label;
+        }
+        continue;
+      }
+    }
+    if (pendingLabel) {
+      items.push({ label: pendingLabel, value: trimmed });
+      pendingLabel = "";
+    } else if (items.length > 0) {
+      items[items.length - 1].value =
+        `${items[items.length - 1].value} ${trimmed}`;
+    }
+  }
+
+  const deduped = new Map();
+  for (const item of items) {
+    const label = String(item.label || "")
+      .trim()
+      .replace(/:$/, "");
+    const value = String(item.value || "").trim();
+    if (!label || !value) continue;
+    deduped.set(label.toLowerCase(), { label, value });
+  }
+  return Array.from(deduped.values());
+};
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [bodies, setBodies] = useState([]);
@@ -109,6 +153,16 @@ export default function AdminProductsPage() {
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
   const [imageSizeWarning, setImageSizeWarning] = useState(null);
+  const [summitPasteText, setSummitPasteText] = useState("");
+  const [summitPasteError, setSummitPasteError] = useState("");
+  const [summitPasteSuccess, setSummitPasteSuccess] = useState("");
+  const [summitPasteApplying, setSummitPasteApplying] = useState(false);
+  const [summitPromoteTextToSelect, setSummitPromoteTextToSelect] =
+    useState(true);
+  const summitParsed = useMemo(
+    () => parseSummitAttributes(summitPasteText),
+    [summitPasteText],
+  );
 
   // Image size limits (to avoid "payload too large" errors)
   const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB per image
@@ -750,6 +804,10 @@ export default function AdminProductsPage() {
     setEditingProduct(null);
     setAvailableCategories([]);
     setShowForm(false);
+    setSummitPasteText("");
+    setSummitPasteError("");
+    setSummitPasteSuccess("");
+    setSummitPasteApplying(false);
   };
 
   const handleEdit = async (product) => {
@@ -857,6 +915,10 @@ export default function AdminProductsPage() {
         setInstructionsPdfFile(null);
         setInstructionsDelete(false);
         setShowForm(true);
+        setSummitPasteText("");
+        setSummitPasteError("");
+        setSummitPasteSuccess("");
+        setSummitPasteApplying(false);
       }
     } catch (err) {
       setError("Failed to load product: " + err.message);
@@ -992,17 +1054,18 @@ export default function AdminProductsPage() {
         throw new Error(msg);
       }
 
-      showToast(
-        editingProduct
-          ? "Product updated successfully!"
-          : "Product created successfully!",
-        "success",
-      );
-      setSuccess(
-        editingProduct
-          ? "Product updated successfully!"
-          : "Product created successfully!",
-      );
+      const partNumberRaw =
+        data?.product?.PartNumber ||
+        formData.PartNumber ||
+        editingProduct?.PartNumber ||
+        "";
+      const partNumber = String(partNumberRaw).trim();
+      const partNumberSuffix = partNumber ? ` (PartNumber: ${partNumber})` : "";
+      const successMessage = editingProduct
+        ? `Product updated successfully${partNumberSuffix}!`
+        : `Product created successfully${partNumberSuffix}!`;
+      showToast(successMessage, "success");
+      setSuccess(successMessage);
       resetForm();
       fetchProducts();
 
@@ -1114,6 +1177,60 @@ export default function AdminProductsPage() {
       .map((s) => s.trim())
       .filter(Boolean)
       .map((v) => ({ value: v, label: v }));
+  };
+
+  const handleApplySummitAttributes = async () => {
+    setSummitPasteError("");
+    setSummitPasteSuccess("");
+    if (!formData.attributeCategoryId) {
+      const msg = "Select an attribute set before pasting Summit attributes.";
+      setSummitPasteError(msg);
+      showToast(msg, "error");
+      return;
+    }
+    if (summitParsed.length === 0) {
+      const msg = "No attributes detected in the pasted text.";
+      setSummitPasteError(msg);
+      showToast(msg, "error");
+      return;
+    }
+    setSummitPasteApplying(true);
+    try {
+      const res = await fetch("/api/admin/category-attributes/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          attributeCategoryId: formData.attributeCategoryId,
+          items: summitParsed,
+          promoteTextToSelect: summitPromoteTextToSelect,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Paste failed");
+      if (data.categoryAttributes) {
+        setCategoryAttributesForForm(data.categoryAttributes);
+      }
+      if (data.attributeValues) {
+        setFormData((prev) => ({
+          ...prev,
+          attributeValues: {
+            ...(prev.attributeValues || {}),
+            ...data.attributeValues,
+          },
+        }));
+      }
+      const appliedCount = Object.keys(data.attributeValues || {}).length;
+      const msg = appliedCount
+        ? `Applied ${appliedCount} attribute values. Save product to persist.`
+        : "Attributes processed. Save product to persist.";
+      setSummitPasteSuccess(msg);
+      showToast(msg, "success");
+    } catch (err) {
+      setSummitPasteError(err.message);
+      showToast(err.message, "error");
+    } finally {
+      setSummitPasteApplying(false);
+    }
   };
 
   return (
@@ -2006,6 +2123,73 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
                 </div>
+
+                {formData.attributeCategoryId && (
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <div className="admin-form-group">
+                        <label>Paste Summit attributes</label>
+                        <textarea
+                          className="form-control font-monospace"
+                          rows={6}
+                          value={summitPasteText}
+                          onChange={(e) => setSummitPasteText(e.target.value)}
+                          placeholder={`Brand:\nBMR Suspension\nManufacturer's Part Number:\nAA001R`}
+                        />
+                        <small className="text-muted d-block mt-1">
+                          Paste the attribute list copied from Summit Racing.
+                          Supports &quot;Label: Value&quot; or label + next line
+                          value formats.
+                        </small>
+                      </div>
+                      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary rounded-pill px-4"
+                          onClick={handleApplySummitAttributes}
+                          disabled={
+                            summitPasteApplying || summitParsed.length === 0
+                          }
+                        >
+                          {summitPasteApplying ? "Applying..." : "Apply"}
+                        </button>
+                        <div className="form-check ms-md-1">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="summit-promote-select"
+                            checked={summitPromoteTextToSelect}
+                            onChange={(e) =>
+                              setSummitPromoteTextToSelect(e.target.checked)
+                            }
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="summit-promote-select"
+                          >
+                            Convert text attributes to selects when new values
+                            are found
+                          </label>
+                        </div>
+                        {summitParsed.length > 0 && (
+                          <span className="text-muted small">
+                            {summitParsed.length} attributes detected
+                          </span>
+                        )}
+                      </div>
+                      {summitPasteError && (
+                        <div className="text-danger small mt-2">
+                          {summitPasteError}
+                        </div>
+                      )}
+                      {summitPasteSuccess && (
+                        <div className="text-success small mt-2">
+                          {summitPasteSuccess}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {formData.attributeCategoryId &&
                   categoryAttributesForForm.length > 0 && (

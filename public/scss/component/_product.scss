@@ -2738,7 +2738,7 @@
 .variant-picker-item .variant-picker-values label.style-text p,
 .variant-picker-item .variant-picker-values label.style-text span {
   margin: 0;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 13px;
   line-height: 1;
   opacity: 0.92;
@@ -2997,7 +2997,12 @@
    ========================= */
 
 .pdpSpecsCard {
-  margin-top: 24px;
+  margin-top: 35px;
+  margin-bottom: 35px;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #ffffff;
@@ -3006,9 +3011,10 @@
 }
 
 .pdpSpecsCard__header {
-  padding: 16px 18px;
+  padding: 5px 0px 5px 25px;
   background: #ffffff !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  color: black !important;
 }
 
 .pdpSpecsCard__title {
@@ -3023,30 +3029,34 @@
 .pdpSpecsCard__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 10px;
   padding: 16px 18px 18px;
 }
 
 .pdpSpecItem {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: #f7f7f7;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  min-height: 58px;
 }
 
 .pdpSpecItem__label {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.65);
   margin-bottom: 4px;
+  line-height: 1.2;
 }
 
 .pdpSpecItem__value {
   font-size: 14px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.85);
+  font-weight: 700;
+  color: #111111;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 @media (min-width: 768px) {
@@ -3209,6 +3219,67 @@
 
   .pdpInstall__btn {
     justify-content: center;
+  }
+}
+
+/* =========================================================
+   PDP Product Details Tabs (Description, Features, etc.)
+   Rounded card to match specifications block — mobile first
+========================================================= */
+.widget-tabs.style-has-border.pdpDetailsTabs {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+  background: #fff;
+
+  .widget-menu-tab {
+    margin: 0 16px;
+    padding: 0 4px;
+    gap: 10px 24px;
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+
+    .item-title {
+      padding: 14px 0;
+      font-size: 15px;
+      font-weight: 600;
+      min-width: max-content;
+
+      &.active {
+        color: var(--main);
+      }
+    }
+  }
+
+  .widget-content-tab {
+    background: #fff;
+  }
+
+  .widget-content-inner {
+    padding: 20px 18px 24px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: rgba(0, 0, 0, 0.88);
+  }
+}
+
+@media (min-width: 768px) {
+  .widget-tabs.style-has-border.pdpDetailsTabs {
+    .widget-menu-tab {
+      margin: 0 24px;
+      gap: 10px 40px;
+    }
+    .widget-content-inner {
+      padding: 28px 28px 32px;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .widget-tabs.style-has-border.pdpDetailsTabs {
+    .widget-menu-tab {
+      margin: 0 38px;
+    }
   }
 }
 
