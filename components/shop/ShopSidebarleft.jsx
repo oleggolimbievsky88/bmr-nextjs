@@ -39,11 +39,6 @@ export default function ShopSidebarleft({
     <>
       <section className="flat-spacing-1">
         <div className="container m-0 p-0">
-          <div className="grid-3 align-items-center">
-            <div style={{ width: "100%", height: "20px" }}>
-              <br />
-            </div>
-          </div>
           <div className="tf-row-flex">
             <Sidebar
               mainCategories={sidebarMainCategories}
