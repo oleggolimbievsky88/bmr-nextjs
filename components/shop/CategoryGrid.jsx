@@ -42,6 +42,7 @@ export default function CategoryGrid({
                 <div className="bm-catHero__grain" />
 
                 <div className="bm-catHero__overlay" />
+                <div className="bm-catHero__vignette" />
                 <div className="bm-catHero__carbon" />
 
                 <div className="bm-catHero__top">

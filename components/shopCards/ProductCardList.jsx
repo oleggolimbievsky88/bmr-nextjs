@@ -87,7 +87,7 @@ export default function ProductCardList({ product, colorsMap = {} }) {
         )}
         <Link
           href={`/product/${product.ProductID}`}
-          className="btn btn-outline-danger btn-view-more-details mt-2"
+          className="btn btn-outline-danger btn-view-more-details mt-2 mb-2"
           style={{ alignSelf: "flex-start" }}
         >
           View details
