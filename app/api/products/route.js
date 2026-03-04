@@ -36,6 +36,7 @@ export async function GET(request) {
     const category = searchParams.get("category");
     const colors = searchParams.get("colors"); // e.g. "Red,Black Hammertone"
     const brands = searchParams.get("brands"); // e.g. "BMR Suspension,Qa1"
+    const sort = searchParams.get("sort") || "default";
     const yearParam = searchParams.get("year");
     const applicationYear = yearParam ? parseInt(yearParam, 10) : null;
 
@@ -162,6 +163,7 @@ export async function GET(request) {
       attributeFilters: Object.keys(attributeFilters).length
         ? attributeFilters
         : undefined,
+      sort,
     };
 
     const products = await getFilteredProductsPaginated(productListParams);

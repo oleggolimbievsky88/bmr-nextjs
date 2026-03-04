@@ -53,20 +53,10 @@ export const ProductCard = ({
   return (
     <Link
       href={`/product/${product.ProductID}`}
-      className={`card-product modern-pcard fl-item ${cardClassName}`.trim()}
+      className={`bm-card card-product modern-pcard fl-item ${cardClassName}`.trim()}
       key={product.ProductID}
-      style={{
-        textDecoration: "none",
-        color: "inherit",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        minHeight: 220,
-        borderRadius: "8px",
-      }}
     >
-      <div className="pcard-img card-product-wrapper">
+      <div className="bm-card__img pcard-img card-product-wrapper">
         <div className="product-img">
           <Image
             className="lazyload img-product"
@@ -78,35 +68,16 @@ export const ProductCard = ({
           />
         </div>
       </div>
-      <div
-        className="pcard-body card-product-info"
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          borderRadius: "8px",
-        }}
-      >
-        <div
-          className="pcard-title product-title"
-          style={{ fontWeight: "bold", color: "#222", fontSize: "1rem" }}
-        >
+      <div className="bm-card__body pcard-body card-product-info">
+        <div className="bm-card__title pcard-title product-title">
           {product.ProductName}
         </div>
-        <div
-          className="pcard-meta"
-          style={{
-            color: "#202020",
-            fontSize: "0.95em",
-            margin: "2px 0 2px 0",
-            lineHeight: 1,
-          }}
-        >
+        <div className="bm-card__meta pcard-meta">
           Part Number: {product.PartNumber}
         </div>
         {product.PlatformName && (
           <div
+            className="bm-card__meta"
             style={{
               color: "#333",
               fontSize: "0.85em",
@@ -122,25 +93,8 @@ export const ProductCard = ({
               : product.PlatformName}
           </div>
         )}
-        <div
-          className="pcard-priceRow"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginTop: 2,
-            justifyContent: "space-between",
-          }}
-        >
-          <span
-            className="pcard-price price"
-            style={{
-              color: "#1a1a1a",
-              fontWeight: 600,
-              fontSize: "1.1em",
-              marginBottom: 0,
-            }}
-          >
+        <div className="bm-card__row pcard-priceRow">
+          <span className="bm-card__price pcard-price price">
             $
             {product.Price != null && product.Price !== ""
               ? parsePrice(product.Price).toFixed(2)

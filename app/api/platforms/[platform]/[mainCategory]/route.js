@@ -8,6 +8,8 @@ import {
 export async function GET(request, { params }) {
   try {
     const { platform, mainCategory } = await params;
+    const { searchParams } = new URL(request.url);
+    const sort = searchParams.get("sort") || "default";
 
     // Get platform info
     const platformInfo = await getPlatformBySlug(platform);
@@ -18,12 +20,12 @@ export async function GET(request, { params }) {
     // Get main category ID using the correct function
     const mainCategoryId = await getMainCategoryIdBySlugAndPlatform(
       platform,
-      mainCategory
+      mainCategory,
     );
     if (!mainCategoryId) {
       return Response.json(
         { error: "Main category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,6 +38,7 @@ export async function GET(request, { params }) {
       mainCategoryId: mainCategoryId,
       limit: 12, // Load more initially to reduce need for scrolling
       offset: 0,
+      sort,
     });
 
     return Response.json({

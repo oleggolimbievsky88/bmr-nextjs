@@ -1,3 +1,7 @@
+/**
+ * Loading skeleton for the product main category page.
+ * Shows a skeleton for the platform header, breadcrumbs, and categories.
+ */
 "use client";
 
 export default function Loading() {

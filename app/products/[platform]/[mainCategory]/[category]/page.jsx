@@ -11,9 +11,7 @@ import Link from "next/link";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
 import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
-import Header2 from "@/components/header/Header";
 import PlatformHeader from "@/components/header/PlatformHeader";
-import Footer1 from "@/components/footer/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 // Sanitize slug by removing/replacing special characters
@@ -48,6 +46,8 @@ export default function CategoryPage({ params }) {
   const [attributeFilterOptions, setAttributeFilterOptions] = useState([]);
   const [selectedAttributeFilters, setSelectedAttributeFilters] = useState({});
   const [productTypeCategories, setProductTypeCategories] = useState([]);
+  const [sort, setSort] = useState("default");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     setFeaturedProducts([]); // Clear immediately when category changes
@@ -144,6 +144,7 @@ export default function CategoryPage({ params }) {
           category: decodedCategory,
           page: 1,
           limit: 12,
+          sort,
           ...(includeDescendants && { includeDescendants: "true" }),
         });
         if (applicationYear) query.set("year", applicationYear);
@@ -174,6 +175,7 @@ export default function CategoryPage({ params }) {
     category,
     applicationYear,
     selectedAttributeFilters,
+    sort,
   ]);
 
   const onAttributeFilterChange = (slug, value, checked) => {
@@ -352,6 +354,10 @@ export default function CategoryPage({ params }) {
               onAttributeFilterChange={onAttributeFilterChange}
               categorySlug={category}
               includeDescendants={categories && categories.length > 0}
+              sort={sort}
+              onSortChange={setSort}
+              filtersOpen={filtersOpen}
+              setFiltersOpen={setFiltersOpen}
             />
           </section>
         )}

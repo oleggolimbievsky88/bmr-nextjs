@@ -26,6 +26,10 @@ export default function ShopSidebarleft({
   onAttributeFilterChange,
   categorySlug = null,
   includeDescendants = false,
+  sort = "default",
+  onSortChange,
+  filtersOpen = false,
+  setFiltersOpen = () => {},
 }) {
   // Determine what to show in the sidebar and main content
   const sidebarMainCategories = mainCategories;
@@ -40,23 +44,41 @@ export default function ShopSidebarleft({
       <section className="flat-spacing-1">
         <div className="container m-0 p-0">
           <div className="tf-row-flex">
-            <Sidebar
-              mainCategories={sidebarMainCategories}
-              categories={sidebarCategories}
-              productTypeCategories={sidebarProductTypes}
-              products={products}
-              selectedMainCatId={isMainCategory ? selectedMainCatId : null}
-              selectedCatId={selectedCatId}
-              platform={platform}
-              platformSlug={platformSlugProp}
-              isMainCategory={isMainCategory}
-              selectedMainCatSlug={selectedMainCatSlug}
-              selectedCatSlug={selectedCatSlug}
-              onCategorySelect={onCategorySelect}
-              attributeFilterOptions={attributeFilterOptions}
-              selectedAttributeFilters={selectedAttributeFilters}
-              onAttributeFilterChange={onAttributeFilterChange}
-            />
+            <div className={`bm-offcanvas ${filtersOpen ? "is-open" : ""}`}>
+              <div
+                className="bm-offcanvas__backdrop d-lg-none"
+                onClick={() => setFiltersOpen(false)}
+              />
+              <div className="bm-offcanvas__panel">
+                <div className="bm-offcanvas__header d-lg-none">
+                  <div className="bm-offcanvas__title">Filters</div>
+                  <button
+                    className="bm-btn"
+                    type="button"
+                    onClick={() => setFiltersOpen(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+                <Sidebar
+                  mainCategories={sidebarMainCategories}
+                  categories={sidebarCategories}
+                  productTypeCategories={sidebarProductTypes}
+                  products={products}
+                  selectedMainCatId={isMainCategory ? selectedMainCatId : null}
+                  selectedCatId={selectedCatId}
+                  platform={platform}
+                  platformSlug={platformSlugProp}
+                  isMainCategory={isMainCategory}
+                  selectedMainCatSlug={selectedMainCatSlug}
+                  selectedCatSlug={selectedCatSlug}
+                  onCategorySelect={onCategorySelect}
+                  attributeFilterOptions={attributeFilterOptions}
+                  selectedAttributeFilters={selectedAttributeFilters}
+                  onAttributeFilterChange={onAttributeFilterChange}
+                />
+              </div>
+            </div>
             <div className="tf-shop-content">
               <ShopLoadmoreOnScroll
                 platform={platform?.slug || platform}
@@ -67,6 +89,9 @@ export default function ShopSidebarleft({
                 products={products}
                 applicationYear={applicationYear}
                 attributeFilters={selectedAttributeFilters}
+                sort={sort}
+                onSortChange={onSortChange}
+                onOpenFilters={() => setFiltersOpen(true)}
               />
             </div>
           </div>

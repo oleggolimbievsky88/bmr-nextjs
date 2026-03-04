@@ -13,6 +13,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const platform = searchParams.get("platform");
     let mainCategory = searchParams.get("mainCategory");
+    const sort = searchParams.get("sort") || "default";
     if (mainCategory && typeof mainCategory === "string") {
       try {
         mainCategory = decodeURIComponent(mainCategory);
@@ -72,6 +73,7 @@ export async function GET(request) {
       mainCategoryId: mainCatIdNum ?? undefined,
       limit: 12,
       offset: 0,
+      sort,
     });
 
     return NextResponse.json({

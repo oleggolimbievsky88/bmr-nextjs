@@ -17,6 +17,8 @@ export default function PlatformPage({ params }) {
   const [defaultMainCategory, setDefaultMainCategory] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState("default");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +55,7 @@ export default function PlatformPage({ params }) {
           page: "1",
           limit: "8",
           platform: platform,
+          sort,
         });
         if (year) productsUrl.set("year", year);
         if (firstMain?.slug) productsUrl.set("mainCategory", firstMain.slug);
@@ -72,7 +75,7 @@ export default function PlatformPage({ params }) {
     };
 
     fetchData();
-  }, [platform, year]);
+  }, [platform, year, sort]);
 
   if (loading) {
     return <div className="text-center py-5">Loading...</div>;
@@ -140,6 +143,10 @@ export default function PlatformPage({ params }) {
             selectedMainCatId={null}
             selectedMainCatSlug={null}
             applicationYear={year}
+            sort={sort}
+            onSortChange={setSort}
+            filtersOpen={filtersOpen}
+            setFiltersOpen={setFiltersOpen}
           />
         </section>
       </div>

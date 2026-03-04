@@ -21,6 +21,11 @@ export default function CategoryGrid({
           const categoryName = category.name || category.CatName;
           const categoryId = category.id || category.CatID;
           const categoryImage = category.image || category.CatImage;
+          const productCount =
+            category.productCount ??
+            category.ProductCount ??
+            category.CatProductCount ??
+            0;
           const categorySlug =
             category.slug ||
             category.CatSlug ||
@@ -37,39 +42,28 @@ export default function CategoryGrid({
             return null;
           }
 
+          const imageUrl = categoryImage
+            ? getCategoryImageUrl(categoryImage)
+            : null;
+
           return (
             <div
               key={categoryId || index}
               className="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 mb-4"
             >
-              <div className="card category-card flex-row align-items-center rounded-4 w-100 p-2">
-                <Link
-                  href={href}
-                  className="d-flex align-items-center text-decoration-none"
-                >
-                  {categoryImage &&
-                    (() => {
-                      const imageUrl = getCategoryImageUrl(categoryImage);
-                      return imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt={categoryName}
-                          width={100}
-                          height={90}
-                          className="category-card-img flex-shrink-0 me-3"
-                          style={{
-                            objectFit: "contain",
-                            width: "100px",
-                            height: "90px",
-                            borderRadius: "0.75rem",
-                            background: "#ffffff",
-                          }}
-                        />
-                      ) : null;
-                    })()}
-                  <span className="category-title">{categoryName}</span>
-                </Link>
-              </div>
+              <Link href={href} className="bm-catTile">
+                <div className="bm-catTile__icon">
+                  {imageUrl ? (
+                    <img src={imageUrl} alt={categoryName} />
+                  ) : (
+                    <span aria-hidden>{categoryName?.[0] ?? ""}</span>
+                  )}
+                </div>
+                <div className="bm-catTile__content">
+                  <div className="bm-catTile__title">{categoryName}</div>
+                  <div className="bm-catTile__meta">{productCount} items</div>
+                </div>
+              </Link>
             </div>
           );
         })}

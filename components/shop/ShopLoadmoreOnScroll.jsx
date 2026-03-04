@@ -6,10 +6,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ProductGrid from "./ProductGrid";
-import ShopFilter from "./ShopFilter";
-import Sorting from "./Sorting";
-import { layouts } from "@/data/shop";
 import { useShopGridItems } from "@/hooks/useShopGridItems";
+import ProductListToolbar from "./ProductListToolbar";
 
 const PAGE_SIZE = 8;
 
@@ -21,13 +19,15 @@ export default function ShopLoadmoreOnScroll({
   products: initialProducts = [],
   applicationYear = null,
   attributeFilters = {},
+  sort = "default",
+  onSortChange,
+  onOpenFilters,
 }) {
   const [allproducts, setAllproducts] = useState(initialProducts);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [gridItems, setGridItems] = useShopGridItems(4);
-  const [finalSorted, setFinalSorted] = useState([]);
   const sentinelRef = useRef(null);
 
   // Fetch products with optional filters
@@ -44,6 +44,7 @@ export default function ShopLoadmoreOnScroll({
       if (category) params.append("category", category);
       if (includeDescendants) params.set("includeDescendants", "true");
       if (applicationYear) params.append("year", String(applicationYear));
+      if (sort) params.set("sort", sort);
       Object.keys(attributeFilters || {}).forEach((slug) => {
         const values = attributeFilters[slug];
         if (values && values.length)
@@ -94,7 +95,14 @@ export default function ShopLoadmoreOnScroll({
       }
     }
     // eslint-disable-next-line
-  }, [initialProducts, platform, mainCategory, category, attributeFilters]);
+  }, [
+    initialProducts,
+    platform,
+    mainCategory,
+    category,
+    attributeFilters,
+    sort,
+  ]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -124,54 +132,22 @@ export default function ShopLoadmoreOnScroll({
     <>
       <section className="flat-spacing-2">
         <div className="container">
-          <div className="tf-shop-control grid-3 align-items-center">
-            <div className="tf-control-filter">
-              <a
-                href="#filterShop"
-                data-bs-toggle="offcanvas"
-                aria-controls="offcanvasLeft"
-                className="tf-btn-filter d-block d-md-none"
-              >
-                <span className="icon icon-filter" />
-                <span className="text">Filter</span>
-              </a>
-            </div>
-            <ul className="tf-control-layout d-flex justify-content-center">
-              {layouts.map((layout, index) => (
-                <li
-                  key={index}
-                  className={`tf-view-layout-switch ${layout.className} ${
-                    gridItems === layout.dataValueGrid ? "active" : ""
-                  }`}
-                  onClick={() => setGridItems(layout.dataValueGrid)}
-                >
-                  <div className="item">
-                    <span className={`icon ${layout.iconClass}`} />
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="tf-control-sorting d-flex justify-content-end">
-              <div className="tf-dropdown-sort" data-bs-toggle="dropdown">
-                <Sorting
-                  setFinalSorted={setFinalSorted}
-                  products={allproducts}
-                />
-              </div>
-            </div>
-          </div>
           <div className="wrapper-control-shop">
             <div className="meta-filter-shop" />
-            <ProductGrid
-              allproducts={finalSorted.length ? finalSorted : allproducts}
+            <ProductListToolbar
+              total={allproducts.length}
+              sortValue={sort}
+              onSortChange={onSortChange}
+              onOpenFilters={onOpenFilters}
               gridItems={gridItems}
+              onGridChange={setGridItems}
             />
+            <ProductGrid allproducts={allproducts} gridItems={gridItems} />
             <div ref={sentinelRef} style={{ height: 1 }} />
             {loading && <div className="text-center">Loading...</div>}
           </div>
         </div>
       </section>
-      <ShopFilter products={allproducts} setProducts={setAllproducts} />
     </>
   );
 }

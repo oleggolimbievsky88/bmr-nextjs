@@ -6,11 +6,9 @@
 "use client";
 import { useEffect, useState, use } from "react";
 import CategoryGrid from "@/components/shop/CategoryGrid";
-import ProductGrid from "@/components/shop/ProductGrid";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
-import ShopLoadmoreOnScroll from "@/components/shop/ShopLoadmoreOnScroll";
 
 // Sanitize slug by removing/replacing special characters
 const sanitizeSlug = (slug) => {
@@ -35,6 +33,8 @@ export default function MainCategoryPage({ params }) {
   const [currentMainCategory, setCurrentMainCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sort, setSort] = useState("default");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +61,11 @@ export default function MainCategoryPage({ params }) {
 
         // Fetch subcategories and products for the selected main category
         const res = await fetch(
-          `/api/platform-maincategory?platform=${encodeURIComponent(platform)}&mainCategory=${encodeURIComponent(mainCategory)}`,
+          `/api/platform-maincategory?platform=${encodeURIComponent(
+            platform,
+          )}&mainCategory=${encodeURIComponent(
+            mainCategory,
+          )}&sort=${encodeURIComponent(sort)}`,
         );
         if (!res.ok) {
           throw new Error("Failed to fetch data");
@@ -82,7 +86,7 @@ export default function MainCategoryPage({ params }) {
     };
 
     fetchData();
-  }, [platform, mainCategory]);
+  }, [platform, mainCategory, sort]);
 
   if (loading) {
     return <div className="text-center py-5">Loading...</div>;
@@ -154,6 +158,10 @@ export default function MainCategoryPage({ params }) {
             selectedMainCatId={mainCategory}
             selectedProductType={products?.catId}
             selectedMainCatSlug={mainCategory}
+            sort={sort}
+            onSortChange={setSort}
+            filtersOpen={filtersOpen}
+            setFiltersOpen={setFiltersOpen}
           />
         </section>
       </div>

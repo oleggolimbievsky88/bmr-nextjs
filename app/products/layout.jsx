@@ -1,5 +1,4 @@
 import Footer1 from "@/components/footer/Footer";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import PlatformHeader from "@/components/header/PlatformHeader";
 import Header from "@/components/header/Header";
 import Topbar4 from "@/components/header/Topbar4";
