@@ -13,58 +13,51 @@ export default function CategoryGrid({
     (c) => !hideEmpty || (c.productCount ?? 0) > 0,
   );
   return (
-    <div className="container m-0 p-0">
-      <div className="row m-0 p-0">
-        {safeCategories.map((category, index) => {
-          // For main categories, use name property
-          // For subcategories, use CatName or name property
-          const categoryName = category.name || category.CatName;
-          const categoryId = category.id || category.CatID;
-          const categoryImage = category.image || category.CatImage;
-          const productCount =
-            category.productCount ??
-            category.ProductCount ??
-            category.CatProductCount ??
-            0;
+    <div className="m-0 p-0">
+      <div className="bm-catGrid">
+        {safeCategories.map((cat, index) => {
+          const name = cat.CatName || cat.name || "Category";
+          const count = cat.productCount ?? cat.count ?? 0;
+          const imgSrc = cat.image ? getCategoryImageUrl(cat.image) : "";
+          const categoryId = cat.id || cat.CatID || index;
           const categorySlug =
-            category.slug ||
-            category.CatSlug ||
-            category.CatNameSlug ||
-            categoryName.toLowerCase().replace(/\s+/g, "-");
+            cat.slug ||
+            cat.CatSlug ||
+            cat.CatNameSlug ||
+            name.toLowerCase().replace(/\s+/g, "-");
           const href = isSubCategory
             ? `/products/${platform}/${mainCategory}/${categorySlug}`
             : mainCategory
               ? `/products/${platform}/${mainCategory}/${categoryId}`
               : `/products/${platform}/${categorySlug}`;
 
-          if (!categoryName) {
-            console.warn(`⚠️ Skipping category at index ${index}:`, category);
-            return null;
-          }
-
-          const imageUrl = categoryImage
-            ? getCategoryImageUrl(categoryImage)
-            : null;
-
           return (
-            <div
-              key={categoryId || index}
-              className="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 mb-4"
-            >
-              <Link href={href} className="bm-catTile">
-                <div className="bm-catTile__icon">
-                  {imageUrl ? (
-                    <img src={imageUrl} alt={categoryName} />
-                  ) : (
-                    <span aria-hidden>{categoryName?.[0] ?? ""}</span>
-                  )}
+            <Link key={categoryId} href={href} className="bm-catHero">
+              <div className="bm-catHero__media">
+                {imgSrc ? (
+                  <img src={imgSrc} alt={name} className="bm-catHero__img" />
+                ) : null}
+
+                <div className="bm-catHero__sweep" />
+                <div className="bm-catHero__grain" />
+
+                <div className="bm-catHero__overlay" />
+                <div className="bm-catHero__carbon" />
+
+                <div className="bm-catHero__top">
+                  <span className="bm-catHero__pill">{count} items</span>
                 </div>
-                <div className="bm-catTile__content">
-                  <div className="bm-catTile__title">{categoryName}</div>
-                  <div className="bm-catTile__meta">{productCount} items</div>
+
+                <div className="bm-catHero__bottom">
+                  <div className="bm-catHero__title">{name}</div>
+                  <div className="bm-catHero__cta">
+                    Shop <span aria-hidden="true">→</span>
+                  </div>
                 </div>
-              </Link>
-            </div>
+
+                <div className="bm-catHero__accent" />
+              </div>
+            </Link>
           );
         })}
       </div>
