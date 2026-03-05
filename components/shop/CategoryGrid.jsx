@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCategoryImageUrl } from "@/lib/assets";
+import { getCategoryImageUrl, getProductImageUrl } from "@/lib/assets";
 
 export default function CategoryGrid({
   categories = [],
@@ -18,7 +18,11 @@ export default function CategoryGrid({
         {safeCategories.map((cat, index) => {
           const name = cat.CatName || cat.name || "Category";
           const count = cat.productCount ?? cat.count ?? 0;
-          const imgSrc = cat.image ? getCategoryImageUrl(cat.image) : "";
+          const imgSrc = cat.image
+            ? getCategoryImageUrl(cat.image)
+            : cat.heroImage
+              ? getProductImageUrl(cat.heroImage)
+              : "";
           const categoryId = cat.id || cat.CatID || index;
           const categorySlug =
             cat.slug ||
@@ -39,7 +43,6 @@ export default function CategoryGrid({
                 ) : null}
 
                 <div className="bm-catHero__sweep" />
-                <div className="bm-catHero__grain" />
 
                 <div className="bm-catHero__overlay" />
                 <div className="bm-catHero__vignette" />
