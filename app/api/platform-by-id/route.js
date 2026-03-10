@@ -17,7 +17,7 @@ export async function GET(request) {
       console.log("❌ No bodyId provided");
       return NextResponse.json(
         { error: "Platform bodyId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function GET(request) {
       console.log("❌ Invalid bodyId format");
       return NextResponse.json(
         { error: "Invalid bodyId format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -41,13 +41,13 @@ export async function GET(request) {
       console.log("❌ Platform not found");
       return NextResponse.json(
         { error: "Platform not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     console.log("🔍 Fetching main categories by BodyID");
     const mainCategories = await getMainCategoriesWithProductCountByBodyId(
-      parseInt(bodyId)
+      parseInt(bodyId),
     );
     console.log("🔍 Main categories result:", mainCategories);
 
@@ -58,6 +58,7 @@ export async function GET(request) {
       image: cat.image,
       slug: cat.slug,
       productCount: cat.productCount,
+      heroImage: cat.heroImage ?? null,
       link: `/products/${bodyId}/${cat.slug}`,
     }));
 
@@ -71,13 +72,13 @@ export async function GET(request) {
         platformInfo: platform,
         mainCategories: transformedMainCategories,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("❌ Error in Platform API:", error);
     return NextResponse.json(
       { error: "Failed to fetch platform data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

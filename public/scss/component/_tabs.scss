@@ -12,7 +12,7 @@
                 &::after {
                     position: absolute;
                     content: "";
-                    background-color: var(--main);
+                    background-color: var(--primary);
                     @include transition3;
                 }
             }
@@ -179,7 +179,7 @@
             }
         }
     }
-    
+
 }
 
 .widget-tab-4 {
@@ -221,7 +221,7 @@
                 display: block;
             }
         }
-        
+
     }
 }
 .widget-tab-5{

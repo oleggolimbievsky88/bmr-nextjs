@@ -24,7 +24,7 @@ export async function GET(request, { params }) {
       console.log("❌ No ID provided");
       return NextResponse.json(
         { error: "Platform ID or slug is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function GET(request, { params }) {
       if (platform) {
         console.log("🔍 Fetching main categories by BodyID");
         mainCategories = await getMainCategoriesWithProductCountByBodyId(
-          parseInt(id)
+          parseInt(id),
         );
         console.log("🔍 Main categories result:", mainCategories);
       }
@@ -63,7 +63,7 @@ export async function GET(request, { params }) {
       console.log("❌ Platform not found");
       return NextResponse.json(
         { error: "Platform not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -74,6 +74,7 @@ export async function GET(request, { params }) {
       image: cat.image,
       slug: cat.slug,
       productCount: cat.productCount,
+      heroImage: cat.heroImage ?? null,
       link: `/products/${id}/${cat.slug}`,
     }));
 
@@ -87,13 +88,13 @@ export async function GET(request, { params }) {
         platformInfo: platform,
         mainCategories: transformedMainCategories,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("❌ Error in API:", error);
     return NextResponse.json(
       { error: "Failed to fetch platform data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

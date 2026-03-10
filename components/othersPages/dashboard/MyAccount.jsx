@@ -182,8 +182,11 @@ export default function MyAccount() {
         const updateData = { ...formData };
         delete updateData.confirmPassword;
 
-        if (!updateData.password) {
+        if (updateData.password) {
+          updateData.password_a = updateData.password;
+        } else {
           delete updateData.password;
+          delete updateData.password_a;
         }
 
         const response = await fetch("/api/auth/update-profile", {
@@ -255,7 +258,9 @@ export default function MyAccount() {
   const ordersCount = orders.length;
   const rawDate = profile?.createdAt || profile?.datecreated;
   const memberSince =
-    formatDate(rawDate) !== "N/A" ? formatDate(rawDate) : formatDate(new Date());
+    formatDate(rawDate) !== "N/A"
+      ? formatDate(rawDate)
+      : formatDate(new Date());
   const billingLines = buildAddressLines(profile, "billing");
   const shippingLines = buildAddressLines(profile, "shipping");
 

@@ -153,7 +153,6 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                       {hasFeatures && (
                         <>
                           <div className="pdpSectionDivider" />
-                          <h4 className="pdpSectionTitle">Key Features</h4>
                           <FeatureCards items={featuresList} />
                         </>
                       )}
@@ -164,7 +163,6 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                   <div className="widget-content-inner active">
                     <div className="pdpFeatures">
                       <div className="pdpFeatures__header">
-                        <h4 className="pdpFeatures__title">Key Features</h4>
                         <p className="pdpFeatures__subtitle">
                           Quick highlights for this part.
                         </p>

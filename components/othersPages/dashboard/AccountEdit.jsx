@@ -101,8 +101,11 @@ export default function AccountEdit() {
         const updateData = { ...formData };
         delete updateData.confirmPassword;
 
-        if (!updateData.password) {
+        if (updateData.password) {
+          updateData.password_a = updateData.password;
+        } else {
           delete updateData.password;
+          delete updateData.password_a;
         }
 
         const response = await fetch("/api/auth/update-profile", {

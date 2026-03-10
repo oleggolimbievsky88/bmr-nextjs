@@ -91,6 +91,7 @@ export async function GET(request) {
         name: cat.CatName,
         slug: cat.CatSlug ?? cat.CatNameSlug,
         image: cat.CatImage,
+        heroImage: cat.heroImage ?? null,
       })),
       products: products || [],
       totalProducts: products?.length || 0,

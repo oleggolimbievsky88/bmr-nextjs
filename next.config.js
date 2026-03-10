@@ -72,6 +72,30 @@ const nextConfig = {
       { source: "/contact-1", destination: "/contact", permanent: true },
       { source: "/faq-1", destination: "/faq", permanent: true },
       { source: "/faq-2", destination: "/faq", permanent: true },
+      {
+        source: "/index.cfm",
+        has: [
+          {
+            type: "query",
+            key: "page",
+            value: "disclaimer",
+          },
+        ],
+        destination: "/terms-conditions",
+        permanent: true,
+      },
+      {
+        source: "/index.cfm",
+        has: [
+          {
+            type: "query",
+            key: "page",
+            value: "technical",
+          },
+        ],
+        destination: "/installation",
+        permanent: true,
+      },
     ];
   },
 

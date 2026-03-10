@@ -49,6 +49,10 @@ export default async function ShopCategories() {
   const sectionSubtitle =
     section.sectionSubtitle?.trim() ||
     `Browse our New Products, ${brand.companyNameShort || brand.name || "our"} Merchandise, and Gift Cards.`;
+  const brandLabel = brand.companyNameShort || brand.name || "Our";
+  const rawCtaLabel = section.ctaLabel?.trim();
+  const ctaLabel = rawCtaLabel || `Shop ${brandLabel}`;
+  const ctaText = ctaLabel.endsWith("→") ? ctaLabel : `${ctaLabel} →`;
   const cards =
     Array.isArray(section.items) && section.items.length > 0
       ? section.items
@@ -79,7 +83,7 @@ export default async function ShopCategories() {
                       <h3 className={styles.title}>{c.title}</h3>
                       <p className={styles.subtitle}>{c.subtitle}</p>
                     </div>
-                    <span className={styles.cta}>Shop now →</span>
+                    <span className={styles.cta}>{ctaText}</span>
                   </div>
                   <div className={styles.accentBar} />
                 </div>

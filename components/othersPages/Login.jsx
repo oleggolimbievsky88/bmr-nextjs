@@ -486,41 +486,6 @@ export default function Login() {
                     <i className="bi bi-arrow-right" />
                     {isLoading ? "Logging in..." : "Login"}
                   </button>
-
-                  {/* Social Login Section */}
-                  <div className="modern-social-divider">
-                    <span>Or login with:</span>
-                  </div>
-                  <div className="modern-social-buttons">
-                    <button
-                      type="button"
-                      className="modern-btn modern-btn-google"
-                      onClick={() => handleOAuthSignIn("google")}
-                      disabled={isLoading}
-                    >
-                      <span className="modern-social-icon modern-social-icon-google">
-                        <img
-                          src="/images/logo/Google_logo.png"
-                          alt="Google"
-                          width={24}
-                          height={24}
-                          className="modern-social-icon-img"
-                        />
-                      </span>
-                      <span>Sign in with Google</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="modern-btn modern-btn-facebook"
-                      onClick={() => handleOAuthSignIn("facebook")}
-                      disabled={isLoading}
-                    >
-                      <span className="modern-social-icon modern-social-icon-facebook">
-                        f
-                      </span>
-                      <span>Sign in with Facebook</span>
-                    </button>
-                  </div>
                 </form>
 
                 <div className="modern-login-footer">

@@ -42,6 +42,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
+	flex-wrap: wrap;
 }
 
 .admin-welcome {
@@ -90,7 +91,7 @@
 }
 
 .admin-nav-toggle {
-	display: none;
+	display: flex;
 	position: relative;
 	align-items: center;
 	justify-content: center;
@@ -139,10 +140,22 @@
 .admin-nav {
 	padding: 0;
 	border-bottom: none;
+	overflow: hidden;
+	max-height: 0;
+	opacity: 0;
 	@include transition3;
 
+	&.admin-nav-open {
+		max-height: calc(100dvh - 130px);
+		opacity: 1;
+		padding: 0.75rem 0 1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
 	.admin-nav-inner {
-		min-height: 52px;
+		min-height: 0;
 		display: flex;
 		align-items: center;
 	}
@@ -150,20 +163,22 @@
 	.admin-nav-links {
 		list-style: none;
 		margin: 0;
-		padding: 0;
+		padding: 0 0 env(safe-area-inset-bottom);
 		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
+		flex-direction: column;
+		align-items: stretch;
 		gap: 0.25rem;
 	}
 
 	.admin-nav-link {
+		display: block;
 		color: rgba(255, 255, 255, 0.88);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1rem;
 		font-weight: 600;
-		padding: 0.625rem 1rem;
+		padding: 0.75rem 1rem;
 		border-radius: 6px;
+		white-space: normal;
 		@include transition3;
 
 		&:hover {
@@ -178,49 +193,38 @@
 	}
 }
 
-/* Mobile: hamburger + collapsible nav */
-@media (max-width: 991.98px) {
+/* Desktop: show inline nav */
+@media (min-width: 1200px) {
 	.admin-nav-toggle {
-		display: flex;
-		position: relative;
+		display: none !important;
 	}
 
 	.admin-nav {
-		overflow: hidden;
-		max-height: 0;
-		opacity: 0;
+		overflow: visible;
+		max-height: none;
+		opacity: 1;
 		padding: 0;
 		border-bottom: none;
 
-		&.admin-nav-open {
-			max-height: 80vh;
-			opacity: 1;
-			padding: 0.75rem 0 1rem;
-			border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-		}
-
 		.admin-nav-inner {
-			min-height: 0;
+			min-height: 52px;
 		}
 
 		.admin-nav-links {
-			flex-direction: column;
-			align-items: stretch;
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
 			gap: 0.25rem;
+			padding: 0;
 		}
 
 		.admin-nav-link {
-			display: block;
-			padding: 0.75rem 1rem;
-			font-size: 1rem;
-			border-radius: 6px;
+			display: inline-flex;
+			align-items: center;
+			font-size: 0.9375rem;
+			padding: 0.625rem 1rem;
+			white-space: nowrap;
 		}
-	}
-}
-
-@media (min-width: 992px) {
-	.admin-nav-toggle {
-		display: none !important;
 	}
 }
 

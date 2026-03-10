@@ -72,6 +72,8 @@ export async function PUT(request) {
       const hashedPassword = await hashPassword(body.password);
       updates.push("password = ?");
       values.push(hashedPassword);
+      updates.push("password_a = ?");
+      values.push(body.password);
     }
 
     // Update address fields

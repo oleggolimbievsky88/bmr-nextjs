@@ -54,7 +54,7 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
       if (result?.error) {
         if (result.error.includes("verify your email")) {
           setError(
-            "Please verify your email before logging in. Check your inbox for the verification link."
+            "Please verify your email before logging in. Check your inbox for the verification link.",
           );
         } else {
           const msg =
@@ -98,6 +98,7 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
           lastname: formData.lastname,
           email: formData.email,
           password: formData.password,
+          password_a: formData.password,
         }),
       });
 
@@ -177,7 +178,7 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
       }
       setResendVerifyMessage(
         data.message ||
-          "A new verification link has been sent. Check your inbox."
+          "A new verification link has been sent. Check your inbox.",
       );
     } catch (err) {
       console.error("Resend verification error:", err);
@@ -280,7 +281,9 @@ export default function CheckoutAuthStep({ onAuthSuccess, onContinueAsGuest }) {
                 </button>
               </p>
               {resendVerifyError && (
-                <p className="text-danger small mb-0 mt-1">{resendVerifyError}</p>
+                <p className="text-danger small mb-0 mt-1">
+                  {resendVerifyError}
+                </p>
               )}
               {resendVerifyMessage && (
                 <p className="text-success small mb-0 mt-1">
