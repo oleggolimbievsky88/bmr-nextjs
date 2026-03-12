@@ -8,18 +8,6 @@
     "MYSQL_SSL": "false"
   },
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
-    {
-      "source": "/index.cfm?page=disclaimer",
-      "destination": "/terms-conditions",
-      "permanent": true
-    },
-    {
-      "source": "/index.cfm?page=technical",
-      "destination": "/installation",
-      "permanent": true
-    }
-  ],
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build",
   "framework": "nextjs"
