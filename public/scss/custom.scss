@@ -3424,9 +3424,6 @@ header[style*="transform:translateY(-"] {
   z-index: 1030 !important; /* Adjusted from 1100 */
 }
 
-.three-column-layout {
-  /* Spacing provided by homepage-section wrapper */
-}
 .three-column-card {
   margin-bottom: 10px;
   text-align: center;
@@ -5236,6 +5233,7 @@ header[style*="transform:translateY(-"] {
 	margin: 0;
 	line-height: 1.35;
 	display: -webkit-box;
+  line-clamp: 2;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
