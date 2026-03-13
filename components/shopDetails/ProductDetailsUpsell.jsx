@@ -110,25 +110,6 @@ export default function ProductDetailsUpsell() {
                       </div>
                     </div>
                   </div>
-                  <div className="tf-product-inventory">
-                    <div className="d-flex align-items-center gap-5">
-                      <svg width={15} height={15} aria-hidden="true">
-                        <circle cx="7.5" cy="7.5" r="7.5" fill="currentColor" />
-                        <circle
-                          cx="7.5"
-                          cy="7.5"
-                          r={5}
-                          stroke="rgb(255, 255, 255)"
-                          strokeWidth={1}
-                          fill="currentColor"
-                        />
-                      </svg>
-                      <div className="fw-6">300 in stock</div>
-                    </div>
-                    <div className="tf-progress-bar mt_5">
-                      <span style={{ width: "30%" }} />
-                    </div>
-                  </div>
                   <div className="tf-product-info-variant-picker">
                     <div className="variant-picker-item">
                       <div className="variant-picker-label">

@@ -81,22 +81,6 @@ export default function Compare() {
                 </div>
               ))}
             </div>
-            <div className="tf-compare-row tf-compare-grid">
-              <div className="tf-compare-col tf-compare-field d-md-block d-none">
-                <h6>Availability</h6>
-              </div>
-              {items.map((elm, i) => (
-                <div
-                  className="tf-compare-col tf-compare-field tf-compare-stock"
-                  style={{ flex: 1 }}
-                >
-                  <div className="icon">
-                    <i className="icon-check" />
-                  </div>
-                  <span className="fw-5">In Stock</span>
-                </div>
-              ))}
-            </div>
             <div className="tf-compare-row">
               <div className="tf-compare-col tf-compare-field d-md-block d-none">
                 <h6>Vendor</h6>

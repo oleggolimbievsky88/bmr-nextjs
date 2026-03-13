@@ -134,9 +134,7 @@ export const ProductCard = ({
                 </span>
               ))}
             </div>
-          ) : (
-            <span className="pcard-chip">In Stock</span>
-          )}
+          ) : null}
         </div>
       </div>
     </Link>

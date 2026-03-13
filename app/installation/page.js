@@ -9,6 +9,8 @@ import { getInstallUrl } from "@/lib/assets";
 
 const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/@BMRSuspension";
 
+export const dynamic = "force-dynamic";
+
 export default function InstallationPage() {
   const brand = useBrand();
   const searchParams = useSearchParams();
