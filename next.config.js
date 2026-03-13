@@ -96,6 +96,7 @@ const nextConfig = {
         destination: "/installation",
         permanent: true,
       },
+      { source: "/index.cfm", destination: "/", permanent: true },
     ];
   },
 

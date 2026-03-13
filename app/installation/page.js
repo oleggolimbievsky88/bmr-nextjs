@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { useBrand } from "@bmr/ui/brand";
 import Topbar4 from "@/components/header/Topbar4";
 import Header from "@/components/header/Header";
@@ -10,6 +11,8 @@ const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/@BMRSuspension";
 
 export default function InstallationPage() {
   const brand = useBrand();
+  const searchParams = useSearchParams();
+  const lastQueryPartRef = useRef("");
   const [partNumber, setPartNumber] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -74,16 +77,10 @@ export default function InstallationPage() {
     }
   }, [selectedPlatform]);
 
-  useEffect(() => {
-    if (partNumber) {
-      setHasPartNumberSearched(false);
-    }
-  }, [partNumber]);
-
   // Handle part number search
-  const handlePartNumberSearch = async (e) => {
-    e.preventDefault();
-    if (!partNumber.trim()) return;
+  const runPartNumberSearch = useCallback(async (value) => {
+    const normalized = (value || "").trim();
+    if (!normalized) return;
 
     setLoading(true);
     setSelectedPlatform(""); // Clear platform selection when searching by part number
@@ -92,7 +89,7 @@ export default function InstallationPage() {
     setHasPlatformSearched(false);
     try {
       const res = await fetch(
-        `/api/installation/search?partNumber=${encodeURIComponent(partNumber.trim())}`,
+        `/api/installation/search?partNumber=${encodeURIComponent(normalized)}`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -114,6 +111,11 @@ export default function InstallationPage() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const handlePartNumberSearch = async (e) => {
+    e.preventDefault();
+    await runPartNumberSearch(partNumber);
   };
 
   // Handle platform/category search
@@ -156,6 +158,28 @@ export default function InstallationPage() {
     handlePlatformCategorySearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPlatform, selectedCategory]);
+
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const raw =
+      searchParams.get("part") ||
+      searchParams.get("partNumber") ||
+      searchParams.get("partnumber") ||
+      searchParams.get("partno") ||
+      searchParams.get("part_no") ||
+      searchParams.get("pn") ||
+      "";
+    const normalized = raw.trim().replace(/\.pdf$/i, "");
+    if (!normalized) return;
+
+    const normalizedKey = normalized.toLowerCase();
+    if (lastQueryPartRef.current === normalizedKey) return;
+    lastQueryPartRef.current = normalizedKey;
+
+    setPartNumber(normalized);
+    runPartNumberSearch(normalized);
+  }, [searchParams, runPartNumberSearch]);
 
   const shouldShowNoResults =
     !loading &&
@@ -209,7 +233,10 @@ export default function InstallationPage() {
                       className="form-control"
                       placeholder="Type here..."
                       value={partNumber}
-                      onChange={(e) => setPartNumber(e.target.value)}
+                      onChange={(e) => {
+                        setPartNumber(e.target.value);
+                        setHasPartNumberSearched(false);
+                      }}
                       disabled={loading}
                     />
                     <button
