@@ -12,11 +12,16 @@ const DEFAULT_DURATION = 3000;
 
 export default function Topbar4() {
   const brand = useBrand();
+  const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState([]);
   const phoneDisplay =
     brand?.contact?.phoneDisplay || brand?.contact?.phoneTel || "";
   const phoneTel = brand?.contact?.phoneTel || "";
   const email = brand?.contact?.email || "";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     fetch("/api/topbar-messages", { cache: "no-store" })
@@ -31,6 +36,26 @@ export default function Topbar4() {
       })
       .catch(() => setMessages([]));
   }, []);
+
+  if (!mounted) {
+    return (
+      <div className="tf-top-bar text-white bg_black">
+        <div className="px_15 lg-px_40">
+          <div className="tf-top-bar_left">
+            <div className="tf-top-bar_wrap grid-3 gap-30 align-items-center">
+              <div className="tf-top-bar_left">
+                <div className="d-flex gap-30 align-items-center flex-wrap" />
+              </div>
+              <div className="text-center overflow-hidden xs-hidden" />
+              <div className="top-bar-language tf-cur justify-content-end">
+                <ul className="d-flex gap-20" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const slides =
     messages.length > 0

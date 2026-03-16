@@ -32,7 +32,8 @@ export default function AdminLayoutClient({ children }) {
       const cb =
         pathname && pathname.startsWith("/admin") ? pathname : "/admin";
       const id = setTimeout(
-        () => router.replace(`/login?callbackUrl=${encodeURIComponent(cb)}`),
+        () =>
+          router.replace(`/auth/login?callbackUrl=${encodeURIComponent(cb)}`),
         0,
       );
       return () => clearTimeout(id);

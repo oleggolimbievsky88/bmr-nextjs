@@ -50,9 +50,6 @@ export async function GET(request) {
       );
     }
 
-    // Get categories for this main category (including CatSlug)
-    const categories = await getCategoriesByMainCatId(mainCategoryId);
-
     // Get initial products for this main category (numeric IDs for multi-platform/category query)
     const platformId =
       platformInfo.id != null && Number.isFinite(Number(platformInfo.id))
@@ -68,6 +65,12 @@ export async function GET(request) {
         { status: 500 },
       );
     }
+    // Get categories for this main category (including CatSlug)
+    const categories = await getCategoriesByMainCatId(
+      mainCategoryId,
+      platformId,
+    );
+
     const products = await getFilteredProductsPaginated({
       platformId,
       mainCategoryId: mainCatIdNum ?? undefined,

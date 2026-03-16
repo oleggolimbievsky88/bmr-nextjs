@@ -29,12 +29,20 @@ export async function GET(request, { params }) {
       );
     }
 
+    const platformId =
+      platformInfo.id != null && Number.isFinite(Number(platformInfo.id))
+        ? Number(platformInfo.id)
+        : null;
+
     // Get categories for this main category (including CatSlug)
-    const categories = await getCategoriesByMainCatId(mainCategoryId);
+    const categories = await getCategoriesByMainCatId(
+      mainCategoryId,
+      platformId,
+    );
 
     // Get initial products for this main category using the working pagination function
     const products = await getFilteredProductsPaginated({
-      platformId: platformInfo.id,
+      platformId: platformId,
       mainCategoryId: mainCategoryId,
       limit: 12, // Load more initially to reduce need for scrolling
       offset: 0,

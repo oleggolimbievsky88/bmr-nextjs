@@ -32,7 +32,7 @@ export default function TopbarUserMenu() {
   if (status === "loading") {
     return (
       <li>
-        <Link href="/my-account" className="text-white nav-text">
+        <Link href="/login" className="text-white nav-text">
           Account
         </Link>
       </li>
@@ -41,7 +41,7 @@ export default function TopbarUserMenu() {
   if (!session) {
     return (
       <li>
-        <Link href="/login" className="text-white nav-text">
+        <Link href="/auth/login" className="text-white nav-text">
           My Account
         </Link>
       </li>

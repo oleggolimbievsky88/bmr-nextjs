@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { getInstallUrl } from "@/lib/assets";
 
@@ -115,6 +115,136 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
   ];
 
   const [currentTab, setCurrentTab] = useState(tabs[0]?.id || "description");
+  const [fitmentYear, setFitmentYear] = useState("");
+  const [fitmentMake, setFitmentMake] = useState("");
+  const [fitmentModel, setFitmentModel] = useState("");
+  const [fitmentSubModel, setFitmentSubModel] = useState("");
+
+  const normalizedVehicles = useMemo(() => {
+    if (!Array.isArray(vehicles)) return [];
+    return vehicles.map((v) => {
+      const start = parseInt(String(v?.StartYear ?? "").trim(), 10);
+      const end = parseInt(String(v?.EndYear ?? "").trim(), 10);
+      const make = String(v?.Make ?? "").trim();
+      const model = String(v?.Model ?? "").trim();
+      const subModel = v?.SubModel != null ? String(v.SubModel).trim() : "";
+      return {
+        ...v,
+        _start: Number.isFinite(start) ? start : null,
+        _end: Number.isFinite(end) ? end : null,
+        _make: make,
+        _makeLower: make.toLowerCase(),
+        _model: model,
+        _modelLower: model.toLowerCase(),
+        _subModel: subModel,
+      };
+    });
+  }, [vehicles]);
+
+  const selectedYear = fitmentYear ? parseInt(fitmentYear, 10) : null;
+  const selectedMakeLower = fitmentMake.toLowerCase();
+  const selectedModelLower = fitmentModel.toLowerCase();
+
+  const matchesYear = (vehicle) => {
+    if (!selectedYear) return true;
+    if (!Number.isFinite(selectedYear)) return false;
+    if (!Number.isFinite(vehicle._start) || !Number.isFinite(vehicle._end)) {
+      return false;
+    }
+    return selectedYear >= vehicle._start && selectedYear <= vehicle._end;
+  };
+
+  const yearOptions = useMemo(() => {
+    const years = new Set();
+    normalizedVehicles.forEach((v) => {
+      if (!Number.isFinite(v._start) || !Number.isFinite(v._end)) return;
+      const start = Math.min(v._start, v._end);
+      const end = Math.max(v._start, v._end);
+      for (let y = start; y <= end; y += 1) {
+        years.add(y);
+      }
+    });
+    return [...years].sort((a, b) => b - a);
+  }, [normalizedVehicles]);
+
+  const makeOptions = useMemo(() => {
+    const makes = new Set();
+    normalizedVehicles.forEach((v) => {
+      if (!matchesYear(v)) return;
+      if (v._make) makes.add(v._make);
+    });
+    return [...makes].sort((a, b) => a.localeCompare(b));
+  }, [normalizedVehicles, selectedYear]);
+
+  const modelOptions = useMemo(() => {
+    if (!fitmentMake) return [];
+    const models = new Set();
+    normalizedVehicles.forEach((v) => {
+      if (!matchesYear(v)) return;
+      if (v._makeLower !== selectedMakeLower) return;
+      if (v._model) models.add(v._model);
+    });
+    return [...models].sort((a, b) => a.localeCompare(b));
+  }, [normalizedVehicles, selectedYear, selectedMakeLower, fitmentMake]);
+
+  const subModelOptions = useMemo(() => {
+    if (!fitmentMake || !fitmentModel) return [];
+    const subModels = new Set();
+    normalizedVehicles.forEach((v) => {
+      if (!matchesYear(v)) return;
+      if (v._makeLower !== selectedMakeLower) return;
+      if (v._modelLower !== selectedModelLower) return;
+      if (v._subModel) subModels.add(v._subModel);
+    });
+    return [...subModels].sort((a, b) => a.localeCompare(b));
+  }, [
+    normalizedVehicles,
+    selectedYear,
+    selectedMakeLower,
+    selectedModelLower,
+    fitmentMake,
+    fitmentModel,
+  ]);
+
+  const filteredVehicles = useMemo(() => {
+    return normalizedVehicles.filter((v) => {
+      if (!matchesYear(v)) return false;
+      if (fitmentMake && v._makeLower !== selectedMakeLower) return false;
+      if (fitmentModel && v._modelLower !== selectedModelLower) return false;
+      if (fitmentSubModel && v._subModel !== fitmentSubModel) return false;
+      return true;
+    });
+  }, [
+    normalizedVehicles,
+    selectedYear,
+    selectedMakeLower,
+    selectedModelLower,
+    fitmentMake,
+    fitmentModel,
+    fitmentSubModel,
+  ]);
+
+  const handleFitmentYearChange = (event) => {
+    setFitmentYear(event.target.value);
+    setFitmentMake("");
+    setFitmentModel("");
+    setFitmentSubModel("");
+  };
+
+  const handleFitmentMakeChange = (event) => {
+    setFitmentMake(event.target.value);
+    setFitmentModel("");
+    setFitmentSubModel("");
+  };
+
+  const handleFitmentModelChange = (event) => {
+    setFitmentModel(event.target.value);
+    setFitmentSubModel("");
+  };
+
+  const handleFitmentSubModelChange = (event) => {
+    setFitmentSubModel(event.target.value);
+  };
 
   return (
     <section
@@ -261,6 +391,71 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                       {Array.isArray(vehicles) && vehicles.length > 0 && (
                         <div className="row">
                           <div className="col-12">
+                            <div className="fitment-filters mb-3">
+                              <div className="row g-2">
+                                <div className="col-12 col-md-3">
+                                  <select
+                                    className="form-select"
+                                    value={fitmentYear}
+                                    onChange={handleFitmentYearChange}
+                                  >
+                                    <option value="">Year</option>
+                                    {yearOptions.map((year) => (
+                                      <option key={year} value={year}>
+                                        {year}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="col-12 col-md-3">
+                                  <select
+                                    className="form-select"
+                                    value={fitmentMake}
+                                    onChange={handleFitmentMakeChange}
+                                    disabled={!fitmentYear}
+                                  >
+                                    <option value="">Make</option>
+                                    {makeOptions.map((make) => (
+                                      <option key={make} value={make}>
+                                        {make}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="col-12 col-md-3">
+                                  <select
+                                    className="form-select"
+                                    value={fitmentModel}
+                                    onChange={handleFitmentModelChange}
+                                    disabled={!fitmentMake}
+                                  >
+                                    <option value="">Model</option>
+                                    {modelOptions.map((model) => (
+                                      <option key={model} value={model}>
+                                        {model}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="col-12 col-md-3">
+                                  <select
+                                    className="form-select"
+                                    value={fitmentSubModel}
+                                    onChange={handleFitmentSubModelChange}
+                                    disabled={!fitmentModel}
+                                  >
+                                    <option value="">
+                                      Sub Model (optional)
+                                    </option>
+                                    {subModelOptions.map((subModel) => (
+                                      <option key={subModel} value={subModel}>
+                                        {subModel}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
                             <div className="table-responsive fitment-table-wrap">
                               <table className="table fitment-table">
                                 <thead>
@@ -268,10 +463,18 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                                     <th scope="col">Year Range</th>
                                     <th scope="col">Make</th>
                                     <th scope="col">Model</th>
+                                    <th scope="col">Sub Model</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {vehicles.map((vehicle, index) => {
+                                  {filteredVehicles.length === 0 && (
+                                    <tr>
+                                      <td colSpan={4}>
+                                        No fitment matches your filters.
+                                      </td>
+                                    </tr>
+                                  )}
+                                  {filteredVehicles.map((vehicle, index) => {
                                     const startApp = product?.StartAppYear
                                       ? parseInt(
                                           String(product.StartAppYear).trim(),
@@ -292,6 +495,10 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                                     const yearRange = useProductYears
                                       ? `${product.StartAppYear} - ${product.EndAppYear}`
                                       : `${vehicle.StartYear} - ${vehicle.EndYear}`;
+                                    const subModel =
+                                      vehicle?.SubModel != null
+                                        ? String(vehicle.SubModel).trim()
+                                        : "";
                                     return (
                                       <tr key={vehicle.VehicleID ?? index}>
                                         <td>
@@ -299,6 +506,7 @@ export default function ShopDetailsTab({ product, vehicles = [] }) {
                                         </td>
                                         <td>{vehicle.Make}</td>
                                         <td>{vehicle.Model}</td>
+                                        <td>{subModel || "—"}</td>
                                       </tr>
                                     );
                                   })}

@@ -242,8 +242,8 @@ export default function Login() {
     router.replace(url, { scroll: false });
   }, [callbackUrl, router]);
 
-  // Don't show form while checking session or redirecting logged-in user
-  if (status === "loading" || status === "authenticated") {
+  // Don't show form while redirecting logged-in user
+  if (status === "authenticated") {
     return (
       <section className="flat-spacing-10">
         <div className="container">

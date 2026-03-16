@@ -69,6 +69,7 @@ const nextConfig = {
   // Redirect old URLs to current pages
   async redirects() {
     return [
+      { source: "/login", destination: "/auth/login", permanent: false },
       { source: "/contact-1", destination: "/contact", permanent: true },
       { source: "/faq-1", destination: "/faq", permanent: true },
       { source: "/faq-2", destination: "/faq", permanent: true },

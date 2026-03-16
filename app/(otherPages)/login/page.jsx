@@ -1,61 +1,30 @@
-import Footer1 from "@/components/footer/Footer";
-import Header from "@/components/header/Header";
-import PageHeader from "@/components/header/PageHeader";
-import Topbar4 from "@/components/header/Topbar4";
-import Login from "@/components/othersPages/Login";
-import { pageMeta } from "@bmr/core/seo";
-import { getBrandConfig } from "@/lib/brandConfig";
-import React, { Suspense } from "react";
+"use client";
 
-export async function generateMetadata() {
-  const brand = await getBrandConfig();
-  const title = `Login | ${brand.companyName} - Performance Racing Suspension & Chassis Parts`;
-  const description = `Log in to your ${brand.companyName} account. Manage orders, addresses, and wishlist. Performance suspension and chassis parts for Mustang, Camaro, GM, Mopar.`;
-  const { openGraph, twitter } = pageMeta({
-    brand,
-    path: "/login",
-    title,
-    description,
-  });
-  return { title, description, openGraph, twitter };
-}
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-function LoginFallback() {
+export default function LoginRedirectPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl");
+    const recover = searchParams.get("recover");
+    if (callbackUrl) params.set("callbackUrl", callbackUrl);
+    if (recover) params.set("recover", recover);
+    const query = params.toString();
+    router.replace(`/auth/login${query ? `?${query}` : ""}`);
+  }, [router, searchParams]);
+
   return (
-    <section className="flat-spacing-10">
-      <div className="container">
-        <div className="text-center py-5">
-          <div
-            className="spinner-border text-danger"
-            role="status"
-            aria-hidden="true"
-          />
-          <p className="mt-2 mb-0">Loading...</p>
+    <div className="min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
         </div>
+        <p className="mt-3 mb-0">Redirecting to login...</p>
       </div>
-    </section>
-  );
-}
-
-export default async function page({ searchParams }) {
-  const params =
-    typeof searchParams?.then === "function"
-      ? await searchParams
-      : searchParams || {};
-  const callbackUrl = params?.callbackUrl || "";
-  const isDealerPortal =
-    typeof callbackUrl === "string" && callbackUrl.includes("/dealers-portal");
-  const pageTitle = isDealerPortal ? "DEALER PORTAL" : "LOGIN";
-
-  return (
-    <>
-      <Topbar4 />
-      <Header showVehicleSearch={false} />
-      <PageHeader title={pageTitle} />
-      <Suspense fallback={<LoginFallback />}>
-        <Login />
-      </Suspense>
-      <Footer1 />
-    </>
+    </div>
   );
 }

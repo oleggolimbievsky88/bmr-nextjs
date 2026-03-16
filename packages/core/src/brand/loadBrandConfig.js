@@ -3,6 +3,25 @@ import { getBrandKey, defaultBrands, deepMerge } from "./brands.js";
 
 let dbFetcher = null;
 const CACHE_TTL_MS = (Number(process.env.BRAND_CACHE_TTL_SECONDS) || 60) * 1000;
+const DB_FETCH_TIMEOUT_MS =
+  (Number(process.env.BRAND_DB_FETCH_TIMEOUT_MS) || 1500) * 1;
+
+function withTimeout(promise, timeoutMs, label) {
+  if (!timeoutMs || timeoutMs <= 0) return promise;
+  let timerId = null;
+  const timeout = new Promise((_, reject) => {
+    timerId = setTimeout(() => {
+      const err = new Error(
+        `${label || "Operation"} timed out after ${timeoutMs}ms`,
+      );
+      err.code = "ETIMEDOUT";
+      reject(err);
+    }, timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timerId) clearTimeout(timerId);
+  });
+}
 const cache = new Map();
 
 /**
@@ -31,7 +50,11 @@ export async function getBrandConfig() {
   let dbConfig = null;
   if (dbFetcher) {
     try {
-      dbConfig = await dbFetcher(key);
+      dbConfig = await withTimeout(
+        dbFetcher(key),
+        DB_FETCH_TIMEOUT_MS,
+        "Brand DB fetch",
+      );
     } catch (err) {
       console.error("loadBrandConfig: DB fetch failed:", err);
     }
@@ -67,7 +90,11 @@ export async function getBrandConfigByKey(key) {
   let dbConfig = null;
   if (dbFetcher) {
     try {
-      dbConfig = await dbFetcher(effectiveKey);
+      dbConfig = await withTimeout(
+        dbFetcher(effectiveKey),
+        DB_FETCH_TIMEOUT_MS,
+        "Brand DB fetch",
+      );
     } catch (err) {
       console.error("loadBrandConfig: DB fetch failed:", err);
     }

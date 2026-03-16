@@ -18,6 +18,7 @@ export default function AdminNav({ user }) {
     { href: "/admin/dealer-pos", label: "Dealer POs" },
     { href: "/admin/dealer-tiers", label: "Dealer Tiers" },
     { href: "/admin/import", label: "Import ACES/PIES" },
+    { href: "/admin/manufacturers", label: "Manufacturers" },
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/platforms", label: "Platforms" },
     { href: "/admin/attribute-categories", label: "Product Attributes" },

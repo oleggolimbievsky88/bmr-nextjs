@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/login?callbackUrl=/admin");
+    router.replace("/auth/login?callbackUrl=/admin");
   }, [router]);
 
   return (

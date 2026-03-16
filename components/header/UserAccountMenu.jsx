@@ -30,12 +30,12 @@ export default function UserAccountMenu() {
     window.location.href = "/api/auth/logout?callbackUrl=/";
   };
 
-  // While session is loading, link to account page (so logged-in users aren't sent to login)
+  // While session is loading, treat as unauthenticated for navigation
   if (status === "loading") {
     return (
       <li className="nav-account tf-md-hidden">
         <Link
-          href="/my-account"
+          href="/login"
           className="nav-icon-item align-items-center gap-10 text-decoration-none"
         >
           <i className="icon icon-account" />

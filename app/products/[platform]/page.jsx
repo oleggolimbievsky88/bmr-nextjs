@@ -6,6 +6,7 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CategoryGrid from "@/components/shop/CategoryGrid";
 import ShopSidebarleft from "@/components/shop/ShopSidebarleft";
+import { platformFallbacks } from "@/data/platformFallbacks";
 
 export default function PlatformPage({ params }) {
   const { platform } = use(params);
@@ -19,18 +20,39 @@ export default function PlatformPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("default");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isFallbackPlatform, setIsFallbackPlatform] = useState(false);
+  const [fallbackDescription, setFallbackDescription] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
+        setIsFallbackPlatform(false);
+        setFallbackDescription("");
         const platformRes = await fetch(
           `/api/platform-by-slug?platform=${encodeURIComponent(platform)}`,
         );
         const platformData = await platformRes.json();
 
         if (!platformRes.ok) {
+          const fallback = platformFallbacks[platform];
+          if (fallback) {
+            setPlatformInfo({
+              name: fallback.name,
+              startYear: fallback.startYear,
+              endYear: fallback.endYear,
+              slug: fallback.slug,
+              headerImage: fallback.headerImage || null,
+              image: fallback.image || null,
+            });
+            setMainCategories([]);
+            setDefaultMainCategory(null);
+            setInitialProducts([]);
+            setIsFallbackPlatform(true);
+            setFallbackDescription(fallback.description || "");
+            return;
+          }
           setPlatformInfo(null);
           setMainCategories([]);
           setDefaultMainCategory(null);
@@ -115,40 +137,66 @@ export default function PlatformPage({ params }) {
             { label: "Home", href: "/" },
             {
               label: platformInfo
-                ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                ? platformInfo.startYear && platformInfo.endYear
+                  ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                  : platformInfo.name || platform
                 : platform,
               href: `/products/${platform}`,
             },
           ]}
         />
 
+        {isFallbackPlatform && (
+          <section className="mb-5">
+            <div className="text-center py-4">
+              <h2 className="mb-3">Platform page coming soon</h2>
+              <p className="text-muted mb-4">
+                {fallbackDescription ||
+                  "We’re still building this platform. Try Search by Vehicle or browse all platforms."}
+              </p>
+              <div className="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/products" className="btn btn-primary">
+                  Browse all platforms
+                </a>
+                <a href="/contact" className="btn btn-outline-secondary">
+                  Contact support
+                </a>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Categories Section */}
-        <section className="mb-3">
-          <CategoryGrid
-            categories={mainCategories}
-            platform={platform}
-            isMainCategory={true}
-          />
-        </section>
+        {!isFallbackPlatform && (
+          <section className="mb-3">
+            <CategoryGrid
+              categories={mainCategories}
+              platform={platform}
+              isMainCategory={true}
+            />
+          </section>
+        )}
 
         {/* Sidebar and Products */}
-        <section className="mb-5 mt-10">
-          <ShopSidebarleft
-            platform={platformInfo}
-            platformSlug={platform}
-            products={initialProducts}
-            isMainCategory={true}
-            mainCategories={mainCategories}
-            categories={mainCategories}
-            selectedMainCatId={null}
-            selectedMainCatSlug={null}
-            applicationYear={year}
-            sort={sort}
-            onSortChange={setSort}
-            filtersOpen={filtersOpen}
-            setFiltersOpen={setFiltersOpen}
-          />
-        </section>
+        {!isFallbackPlatform && (
+          <section className="mb-5 mt-10">
+            <ShopSidebarleft
+              platform={platformInfo}
+              platformSlug={platform}
+              products={initialProducts}
+              isMainCategory={true}
+              mainCategories={mainCategories}
+              categories={mainCategories}
+              selectedMainCatId={null}
+              selectedMainCatSlug={null}
+              applicationYear={year}
+              sort={sort}
+              onSortChange={setSort}
+              filtersOpen={filtersOpen}
+              setFiltersOpen={setFiltersOpen}
+            />
+          </section>
+        )}
       </div>
     </div>
   );
