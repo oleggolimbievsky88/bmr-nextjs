@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useBrand } from "@bmr/ui/brand";
 import Topbar4 from "@/components/header/Topbar4";
@@ -12,6 +12,29 @@ const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/@BMRSuspension";
 export const dynamic = "force-dynamic";
 
 export default function InstallationPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="flat-spacing-10">
+          <div className="container">
+            <div className="text-center py-5">
+              <div
+                className="spinner-border text-danger"
+                role="status"
+                aria-hidden="true"
+              />
+              <p className="mt-2 mb-0">Loading...</p>
+            </div>
+          </div>
+        </section>
+      }
+    >
+      <InstallationContent />
+    </Suspense>
+  );
+}
+
+function InstallationContent() {
   const brand = useBrand();
   const searchParams = useSearchParams();
   const lastQueryPartRef = useRef("");
