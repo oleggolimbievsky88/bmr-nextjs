@@ -1,5 +1,4 @@
-"use client";
-
+import { Suspense } from "react";
 import Footer1 from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import PageHeader from "@/components/header/PageHeader";
@@ -12,7 +11,24 @@ export default function AuthLoginPage() {
       <Topbar4 />
       <Header showVehicleSearch={false} />
       <PageHeader title="LOGIN" />
-      <Login />
+      <Suspense
+        fallback={
+          <section className="flat-spacing-10">
+            <div className="container">
+              <div className="text-center py-5">
+                <div
+                  className="spinner-border text-danger"
+                  role="status"
+                  aria-hidden="true"
+                />
+                <p className="mt-2 mb-0">Loading...</p>
+              </div>
+            </div>
+          </section>
+        }
+      >
+        <Login />
+      </Suspense>
       <Footer1 />
     </>
   );
