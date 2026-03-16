@@ -1,22 +1,15 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import LoginRedirectClient from "./LoginRedirectClient";
 
 export default function LoginRedirectPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  return (
+    <Suspense fallback={<LoginRedirectFallback />}>
+      <LoginRedirectClient />
+    </Suspense>
+  );
+}
 
-  useEffect(() => {
-    const params = new URLSearchParams();
-    const callbackUrl = searchParams.get("callbackUrl");
-    const recover = searchParams.get("recover");
-    if (callbackUrl) params.set("callbackUrl", callbackUrl);
-    if (recover) params.set("recover", recover);
-    const query = params.toString();
-    router.replace(`/auth/login${query ? `?${query}` : ""}`);
-  }, [router, searchParams]);
-
+function LoginRedirectFallback() {
   return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center">
       <div className="text-center">
