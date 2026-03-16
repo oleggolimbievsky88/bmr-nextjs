@@ -129,10 +129,9 @@ export async function GET(request) {
 
     // If we have a specific category (either by ID or slug), don't use mainCategoryId
     const hasCategoryFilter =
-      (categoryId != null &&
-        categoryId !== "" &&
-        (Array.isArray(categoryId) ? categoryId.length > 0 : true)) ||
-      category;
+      categoryId != null &&
+      categoryId !== "" &&
+      (Array.isArray(categoryId) ? categoryId.length > 0 : true);
     if (hasCategoryFilter) {
       mainCategoryId = null;
     }
