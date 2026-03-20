@@ -1,6 +1,7 @@
 "use client";
 import { useContextElement } from "@/context/Context";
 import { showToast } from "@/utlis/showToast";
+import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
 import Image from "next/image";
 import { getProductImageUrl } from "@/lib/assets";
 import Link from "next/link";
@@ -478,6 +479,10 @@ export default function CartNew() {
                                 addOnPrice += parseFloat(pack.Price || 0);
                               });
                             }
+                            addOnPrice += getAcPanelPowderCoatUnitPrice(
+                              elm.selectedColor,
+                              elm.PartNumber,
+                            );
                             return (
                               (basePrice + addOnPrice) *
                               elm.quantity
@@ -488,19 +493,40 @@ export default function CartNew() {
                               return null;
                             let lineIdx = 0;
                             for (let k = 0; k < i; k++) {
+                              const row = cartProducts[k];
+                              const pow =
+                                getAcPanelPowderCoatUnitPrice(
+                                  row.selectedColor,
+                                  row.PartNumber,
+                                ) > 0
+                                  ? 1
+                                  : 0;
                               lineIdx +=
                                 1 +
-                                (cartProducts[k].selectedHardwarePacks
-                                  ?.length || 0);
+                                pow +
+                                (row.selectedHardwarePacks?.length || 0);
                             }
                             let itemDiscount =
                               appliedCoupon.lineItemDiscounts[lineIdx] ?? 0;
+                            const powderExtra =
+                              getAcPanelPowderCoatUnitPrice(
+                                elm.selectedColor,
+                                elm.PartNumber,
+                              ) > 0
+                                ? 1
+                                : 0;
+                            if (powderExtra) {
+                              itemDiscount +=
+                                appliedCoupon.lineItemDiscounts[lineIdx + 1] ??
+                                0;
+                            }
                             const packs =
                               elm.selectedHardwarePacks?.length || 0;
-                            for (let j = 1; j <= packs; j++) {
+                            for (let j = 0; j < packs; j++) {
                               itemDiscount +=
-                                appliedCoupon.lineItemDiscounts[lineIdx + j] ??
-                                0;
+                                appliedCoupon.lineItemDiscounts[
+                                  lineIdx + 1 + powderExtra + j
+                                ] ?? 0;
                             }
                             if (itemDiscount <= 0) return null;
                             return (

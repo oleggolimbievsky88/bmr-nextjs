@@ -3293,6 +3293,41 @@ header[style*="transform:translateY(-"] {
 
 	.search-input-container {
 		margin-top: 10px;
+		flex: 1 1 auto;
+		min-width: 0;
+		max-width: min(750px, 100%);
+	}
+
+	.search-input-wrapper {
+		width: 100%;
+	}
+
+	.search-input-inner {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: 100%;
+	}
+
+	.search-input-inner .search-input-field {
+		flex: 1 1 auto;
+		min-width: 0;
+		width: 100%;
+		padding-right: 48px;
+	}
+
+	.search-input-inner .search-btn-inside {
+		position: absolute;
+		top: 50%;
+		right: 6px;
+		transform: translateY(-50%);
+		z-index: 2;
+	}
+
+	@media (min-width: 992px) {
+		.search-input-container {
+			margin-top: 0;
+		}
 	}
 
   @media (max-width: 770px) {

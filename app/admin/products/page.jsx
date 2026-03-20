@@ -159,6 +159,7 @@ export default function AdminProductsPage() {
   const [summitPasteApplying, setSummitPasteApplying] = useState(false);
   const [summitPromoteTextToSelect, setSummitPromoteTextToSelect] =
     useState(true);
+  const [summitParseSummary, setSummitParseSummary] = useState(null);
   const summitParsed = useMemo(
     () => parseSummitAttributes(summitPasteText),
     [summitPasteText],
@@ -807,6 +808,7 @@ export default function AdminProductsPage() {
     setSummitPasteText("");
     setSummitPasteError("");
     setSummitPasteSuccess("");
+    setSummitParseSummary(null);
     setSummitPasteApplying(false);
   };
 
@@ -918,6 +920,7 @@ export default function AdminProductsPage() {
         setSummitPasteText("");
         setSummitPasteError("");
         setSummitPasteSuccess("");
+        setSummitParseSummary(null);
         setSummitPasteApplying(false);
       }
     } catch (err) {
@@ -1179,15 +1182,22 @@ export default function AdminProductsPage() {
       .map((v) => ({ value: v, label: v }));
   };
 
+  const getSelectedCategoryName = () => {
+    const selectedId = formData.CatID;
+    if (!selectedId) return "";
+    const listCandidates = [availableCategories, categories];
+    for (const list of listCandidates) {
+      const match = (list || []).find(
+        (item) => String(item.CatID) === String(selectedId),
+      );
+      if (match?.CatName) return match.CatName;
+    }
+    return "";
+  };
+
   const handleApplySummitAttributes = async () => {
     setSummitPasteError("");
     setSummitPasteSuccess("");
-    if (!formData.attributeCategoryId) {
-      const msg = "Select an attribute set before pasting Summit attributes.";
-      setSummitPasteError(msg);
-      showToast(msg, "error");
-      return;
-    }
     if (summitParsed.length === 0) {
       const msg = "No attributes detected in the pasted text.";
       setSummitPasteError(msg);
@@ -1196,17 +1206,31 @@ export default function AdminProductsPage() {
     }
     setSummitPasteApplying(true);
     try {
-      const res = await fetch("/api/admin/category-attributes/import", {
+      const res = await fetch("/api/admin/summit-parser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          attributeCategoryId: formData.attributeCategoryId,
+          attributeCategoryId: formData.attributeCategoryId || null,
           items: summitParsed,
           promoteTextToSelect: summitPromoteTextToSelect,
+          productContext: {
+            productName: formData.ProductName,
+            partNumber: formData.PartNumber,
+            categoryName: getSelectedCategoryName(),
+          },
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Paste failed");
+      if (data.attributeCategoryId) {
+        setFormData((prev) => ({
+          ...prev,
+          attributeCategoryId: String(data.attributeCategoryId),
+        }));
+      }
+      if (data.attributeCategoryCreated) {
+        fetchAttributeCategories();
+      }
       if (data.categoryAttributes) {
         setCategoryAttributesForForm(data.categoryAttributes);
       }
@@ -1219,10 +1243,16 @@ export default function AdminProductsPage() {
           },
         }));
       }
+      if (data.summary) {
+        setSummitParseSummary(data.summary);
+      }
       const appliedCount = Object.keys(data.attributeValues || {}).length;
+      const setName = data.attributeCategoryName
+        ? `Attribute set: ${data.attributeCategoryName}. `
+        : "";
       const msg = appliedCount
-        ? `Applied ${appliedCount} attribute values. Save product to persist.`
-        : "Attributes processed. Save product to persist.";
+        ? `${setName}Applied ${appliedCount} attribute values. Save product to persist.`
+        : `${setName}Attributes processed. Save product to persist.`;
       setSummitPasteSuccess(msg);
       showToast(msg, "success");
     } catch (err) {
@@ -2107,6 +2137,7 @@ export default function AdminProductsPage() {
                             attributeCategoryId: e.target.value,
                             attributeValues: {},
                           }));
+                          setSummitParseSummary(null);
                         }}
                       >
                         <option value="">None</option>
@@ -2124,72 +2155,148 @@ export default function AdminProductsPage() {
                   </div>
                 </div>
 
-                {formData.attributeCategoryId && (
-                  <div className="row mt-3">
-                    <div className="col-12">
-                      <div className="admin-form-group">
-                        <label>Paste Summit attributes</label>
-                        <textarea
-                          className="form-control font-monospace"
-                          rows={6}
-                          value={summitPasteText}
-                          onChange={(e) => setSummitPasteText(e.target.value)}
-                          placeholder={`Brand:\nBMR Suspension\nManufacturer's Part Number:\nAA001R`}
-                        />
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <div className="admin-form-group">
+                      <label>Paste Summit attributes</label>
+                      <textarea
+                        className="form-control font-monospace"
+                        rows={6}
+                        value={summitPasteText}
+                        onChange={(e) => setSummitPasteText(e.target.value)}
+                        placeholder={`Brand:\nBMR Suspension\nManufacturer's Part Number:\nAA001R`}
+                      />
+                      <small className="text-muted d-block mt-1">
+                        Paste the attribute list copied from Summit Racing.
+                        Supports &quot;Label: Value&quot; or label + next line
+                        value formats.
+                      </small>
+                      {!formData.attributeCategoryId && (
                         <small className="text-muted d-block mt-1">
-                          Paste the attribute list copied from Summit Racing.
-                          Supports &quot;Label: Value&quot; or label + next line
-                          value formats.
+                          No attribute set selected. The parser will create one
+                          automatically using Part Type or Product Line.
                         </small>
-                      </div>
-                      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
-                        <button
-                          type="button"
-                          className="btn btn-outline-primary rounded-pill px-4"
-                          onClick={handleApplySummitAttributes}
-                          disabled={
-                            summitPasteApplying || summitParsed.length === 0
-                          }
-                        >
-                          {summitPasteApplying ? "Applying..." : "Apply"}
-                        </button>
-                        <div className="form-check ms-md-1">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="summit-promote-select"
-                            checked={summitPromoteTextToSelect}
-                            onChange={(e) =>
-                              setSummitPromoteTextToSelect(e.target.checked)
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="summit-promote-select"
-                          >
-                            Convert text attributes to selects when new values
-                            are found
-                          </label>
-                        </div>
-                        {summitParsed.length > 0 && (
-                          <span className="text-muted small">
-                            {summitParsed.length} attributes detected
-                          </span>
-                        )}
-                      </div>
-                      {summitPasteError && (
-                        <div className="text-danger small mt-2">
-                          {summitPasteError}
-                        </div>
-                      )}
-                      {summitPasteSuccess && (
-                        <div className="text-success small mt-2">
-                          {summitPasteSuccess}
-                        </div>
                       )}
                     </div>
+                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary rounded-pill px-4"
+                        onClick={handleApplySummitAttributes}
+                        disabled={
+                          summitPasteApplying || summitParsed.length === 0
+                        }
+                      >
+                        {summitPasteApplying ? "Applying..." : "Apply"}
+                      </button>
+                      <div className="form-check ms-md-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="summit-promote-select"
+                          checked={summitPromoteTextToSelect}
+                          onChange={(e) =>
+                            setSummitPromoteTextToSelect(e.target.checked)
+                          }
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="summit-promote-select"
+                        >
+                          Convert text attributes to selects when new values are
+                          found
+                        </label>
+                      </div>
+                      {summitParsed.length > 0 && (
+                        <span className="text-muted small">
+                          {summitParsed.length} attributes detected
+                        </span>
+                      )}
+                    </div>
+                    {summitPasteError && (
+                      <div className="text-danger small mt-2">
+                        {summitPasteError}
+                      </div>
+                    )}
+                    {summitPasteSuccess && (
+                      <div className="text-success small mt-2">
+                        {summitPasteSuccess}
+                      </div>
+                    )}
+                    {summitParseSummary && (
+                      <div className="mt-3 rounded-4 border bg-light p-3">
+                        <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                          <div className="fw-semibold">
+                            Summit Parser Results
+                          </div>
+                          {summitParseSummary.attributeCategoryName && (
+                            <span className="badge text-bg-dark rounded-pill">
+                              Attribute set:{" "}
+                              {summitParseSummary.attributeCategoryName}
+                              {summitParseSummary.attributeCategoryCreated
+                                ? " (created)"
+                                : ""}
+                            </span>
+                          )}
+                        </div>
+                        <div className="row g-3">
+                          <div className="col-12 col-md-4">
+                            <div className="small text-muted text-uppercase fw-semibold mb-1">
+                              Existing Categories Found
+                            </div>
+                            <ul className="list-unstyled mb-0 small">
+                              {(summitParseSummary.existingCategories || [])
+                                .length > 0 ? (
+                                summitParseSummary.existingCategories.map(
+                                  (item) => <li key={item}>{item}</li>,
+                                )
+                              ) : (
+                                <li className="text-muted">None</li>
+                              )}
+                            </ul>
+                          </div>
+                          <div className="col-12 col-md-4">
+                            <div className="small text-muted text-uppercase fw-semibold mb-1">
+                              New Categories Created
+                            </div>
+                            <ul className="list-unstyled mb-0 small">
+                              {(summitParseSummary.newCategories || []).length >
+                              0 ? (
+                                summitParseSummary.newCategories.map((item) => (
+                                  <li key={item}>{item}</li>
+                                ))
+                              ) : (
+                                <li className="text-muted">None</li>
+                              )}
+                            </ul>
+                          </div>
+                          <div className="col-12 col-md-4">
+                            <div className="small text-muted text-uppercase fw-semibold mb-1">
+                              Values Added To Product
+                            </div>
+                            <ul className="list-unstyled mb-0 small">
+                              {(summitParseSummary.valuesAttached || [])
+                                .length > 0 ? (
+                                summitParseSummary.valuesAttached.map(
+                                  (item, idx) => (
+                                    <li key={`${item.label}-${idx}`}>
+                                      {item.label}: {item.value}
+                                    </li>
+                                  ),
+                                )
+                              ) : (
+                                <li className="text-muted">None</li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="small text-muted mt-2">
+                          Review the summary before saving the product.
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
 
                 {formData.attributeCategoryId &&
                   categoryAttributesForForm.length > 0 && (

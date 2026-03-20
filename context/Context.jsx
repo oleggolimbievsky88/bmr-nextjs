@@ -2,6 +2,7 @@
 import { openCartModal } from "@/utlis/openCartModal";
 import { showToast } from "@/utlis/showToast";
 import { useSession } from "next-auth/react";
+import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
 //import { openCart } from "@/utlis/toggleCart";
 import React, { useEffect, useRef } from "react";
 import { useContext, useState } from "react";
@@ -97,6 +98,11 @@ export default function Context({ children }) {
         });
       }
 
+      addOnPrice += getAcPanelPowderCoatUnitPrice(
+        product.selectedColor,
+        product.PartNumber,
+      );
+
       const totalItemPrice = (basePrice + addOnPrice) * quantity;
 
       console.log(
@@ -124,12 +130,14 @@ export default function Context({ children }) {
         const productData = await response.json();
         console.log("Product data from API:", productData);
 
-        // Single-color product: use defaultColorName when no color was selected (e.g. add from card)
+        // Single-color product: use full default color row when available (ColorPrice for FP panels)
         const selectedColor =
           options.selectedColor ||
-          (productData.product.defaultColorName
-            ? { ColorName: productData.product.defaultColorName }
-            : null);
+          (productData.product.defaultColor
+            ? productData.product.defaultColor
+            : productData.product.defaultColorName
+              ? { ColorName: productData.product.defaultColorName }
+              : null);
 
         const selectedHardwarePacks = options.selectedHardwarePacks || [];
         const selectedSize = options.selectedSize || null;

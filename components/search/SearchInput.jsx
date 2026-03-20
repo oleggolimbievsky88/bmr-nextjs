@@ -91,7 +91,7 @@ export default function SearchInput({ initialQuery = "" }) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < allItems.length - 1 ? prev + 1 : prev
+          prev < allItems.length - 1 ? prev + 1 : prev,
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -119,7 +119,7 @@ export default function SearchInput({ initialQuery = "" }) {
   const handleSearch = async (searchQuery = query) => {
     if (searchQuery.trim()) {
       const params = new URLSearchParams(
-        typeof window !== "undefined" ? window.location.search : ""
+        typeof window !== "undefined" ? window.location.search : "",
       );
       params.set("q", searchQuery.trim());
       router.push(`/homes/home-search?${params.toString()}`);
@@ -145,7 +145,7 @@ export default function SearchInput({ initialQuery = "" }) {
     setIsLoading(true);
     try {
       const results = await fetch(
-        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`
+        `/api/search/suggestions?q=${encodeURIComponent(searchValue.trim())}`,
       );
       const data = await results.json();
       setGrouped(
@@ -155,7 +155,7 @@ export default function SearchInput({ initialQuery = "" }) {
           vehicles: [],
           brands: [],
           platforms: [],
-        }
+        },
       );
       setShowSuggestions(true);
       setSelectedIndex(-1);
@@ -224,7 +224,7 @@ export default function SearchInput({ initialQuery = "" }) {
         const categorySlug =
           item.CatSlug || item.CatName.toLowerCase().replace(/\s+/g, "-");
         router.push(
-          `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`
+          `/products/${item.PlatformSlug}/${item.MainCatSlug}/${categorySlug}`,
         );
       } else {
         setQuery(item.CatName);
@@ -266,7 +266,10 @@ export default function SearchInput({ initialQuery = "" }) {
   };
 
   return (
-    <div className="search-input-container" ref={containerRef}>
+    <div
+      className="search-input-container flex-grow-1 min-w-0"
+      ref={containerRef}
+    >
       <form onSubmit={handleFormSubmit} className="search-input-wrapper">
         <div className="search-input-inner">
           <input

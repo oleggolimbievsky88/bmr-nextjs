@@ -33,11 +33,12 @@ export async function GET(request) {
         .filter((s) => s !== "" && s !== "0");
       if (colorIds.length === 1) {
         const [colorRows] = await pool.query(
-          "SELECT ColorName FROM colors WHERE ColorID = ? LIMIT 1",
+          "SELECT ColorID, ColorName, ColorPrice, ColorImg FROM colors WHERE ColorID = ? LIMIT 1",
           [colorIds[0]],
         );
         if (colorRows[0]) {
           product.defaultColorName = colorRows[0].ColorName;
+          product.defaultColor = colorRows[0];
         }
       }
 

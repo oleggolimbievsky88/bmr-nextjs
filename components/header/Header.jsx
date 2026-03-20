@@ -57,7 +57,7 @@ export default function Header({
     >
       <div className="main-header bg_black">
         <div className="container">
-          <div className="d-flex align-items-center justify-content-between flex-wrap">
+          <div className="d-flex align-items-center justify-content-between flex-wrap flex-lg-nowrap gap-2 gap-lg-3">
             <div className="d-flex align-items-center gap-3">
               <a
                 href="#mobileMenu"

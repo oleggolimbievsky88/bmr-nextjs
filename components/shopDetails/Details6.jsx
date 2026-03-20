@@ -14,6 +14,7 @@ import Quantity from "./Quantity";
 import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
+import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
 
 export default function Details({
   product,
@@ -1008,7 +1009,12 @@ export default function Details({
                                         (quantity || 1),
                                     0,
                                   )
-                                : 0)
+                                : 0) +
+                              getAcPanelPowderCoatUnitPrice(
+                                currentColor,
+                                displayProduct?.PartNumber,
+                              ) *
+                                (quantity || 1)
                             ).toFixed(2)}
                           </span>
                         )}

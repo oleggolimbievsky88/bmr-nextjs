@@ -18,7 +18,8 @@ import CheckoutAuthStep from "@/components/othersPages/CheckoutAuthStep";
 import { getTaxAmount } from "@/lib/tax";
 import { countries, canadianProvinces } from "@/lib/countryCodes";
 import { mustUsePayPal, canUseCreditCard } from "@/lib/paymentRules";
-import { isGiftCertificateProduct } from "@/lib/giftCardUtils";
+import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
+import { buildOrderItemsFromCart } from "@/lib/checkoutOrderItems";
 
 export default function Checkout() {
   const router = useRouter();
@@ -137,7 +138,14 @@ export default function Checkout() {
             quantity: i.quantity ?? 1,
             Price: i.unit_price,
             defaultColorName: i.color_name || "Default",
-            selectedColor: i.color_name ? { ColorName: i.color_name } : null,
+            selectedColor:
+              i.color_name || i.color_id != null
+                ? {
+                    ColorID: i.color_id,
+                    ColorName: i.color_name || "",
+                    ColorPrice: i.color_price,
+                  }
+                : null,
             PlatformName: "",
             YearRange: "",
             images: [],
@@ -611,31 +619,10 @@ export default function Checkout() {
       setIsSubmitting(true);
       setSubmitError("");
       try {
-        const orderItems = effectiveCartProducts.map((product) => {
-          const isGiftCert = isGiftCertificateProduct({
-            partNumber: product.PartNumber,
-            name: product.ProductName,
-          });
-          return {
-            productId: product.ProductID,
-            name: product.ProductName,
-            partNumber: product.PartNumber,
-            quantity: product.quantity,
-            price: product.Price,
-            color: isGiftCert
-              ? ""
-              : product.selectedColor?.ColorName ||
-                product.defaultColorName ||
-                "Default",
-            size: product.selectedSize || "",
-            platform: product.PlatformName,
-            yearRange: product.YearRange,
-            image: product.images?.[0]?.imgSrc || product.ImageLarge || "",
-            Package: product.Package ?? 0,
-            LowMargin: product.LowMargin ?? 0,
-            ManufacturerName: product.ManufacturerName ?? "",
-          };
-        });
+        const orderItems = buildOrderItemsFromCart(
+          effectiveCartProducts,
+          appliedCoupon,
+        );
         const subtotal = orderItems.reduce(
           (t, i) => t + parseFloat(i.price || 0) * (i.quantity || 1),
           0,
@@ -835,102 +822,11 @@ export default function Checkout() {
       // Store cart products before clearing (needed for confirmation)
       const cartProductsForConfirmation = [...effectiveCartProducts];
 
-      // Prepare order items for API (main product lines + hardware pack add-on lines)
-      // lineItemDiscounts is expanded: one entry per main line + one per hardware pack, same order
-      const orderItems = [];
-      let lineDiscountIndex = 0;
-      for (let i = 0; i < cartProductsForConfirmation.length; i++) {
-        const product = cartProductsForConfirmation[i];
-        const lineDiscount =
-          (appliedCoupon?.lineItemDiscounts?.[lineDiscountIndex] ?? 0) || 0;
-        lineDiscountIndex += 1;
-        let productImage = null;
-        if (
-          product.selectedColor &&
-          product.images &&
-          product.images.length > 0
-        ) {
-          let imageIndex = 0;
-          if (product.selectedColor.ColorID === 1) {
-            imageIndex = Math.min(1, product.images.length - 1);
-          } else if (product.selectedColor.ColorID === 2) {
-            imageIndex = 0;
-          }
-          const colorImageSrc =
-            product.images[imageIndex]?.imgSrc || product.images[0]?.imgSrc;
-          if (colorImageSrc && colorImageSrc.trim() !== "") {
-            productImage = colorImageSrc;
-          }
-        }
-        if (
-          !productImage &&
-          product.images?.[0]?.imgSrc &&
-          product.images[0].imgSrc.trim() !== ""
-        ) {
-          productImage = product.images[0].imgSrc;
-        }
-        if (
-          !productImage &&
-          product.ImageLarge &&
-          product.ImageLarge.trim() !== ""
-        ) {
-          productImage = product.ImageLarge;
-        }
-
-        const isGiftCert = isGiftCertificateProduct({
-          partNumber: product.PartNumber,
-          name: product.ProductName,
-        });
-        orderItems.push({
-          productId: product.ProductID,
-          name: product.ProductName,
-          partNumber: product.PartNumber,
-          quantity: product.quantity,
-          price: product.Price,
-          color: isGiftCert
-            ? ""
-            : product.selectedColor?.ColorName ||
-              product.defaultColorName ||
-              "Default",
-          size: product.selectedSize || "",
-          platform: product.PlatformName,
-          yearRange: product.YearRange,
-          image: productImage,
-          Package: product.Package ?? 0,
-          LowMargin: product.LowMargin ?? 0,
-          ManufacturerName: product.ManufacturerName ?? "",
-          lineDiscount,
-        });
-
-        // Add one order line per selected hardware pack (same quantity as main product)
-        if (
-          product.selectedHardwarePacks &&
-          Array.isArray(product.selectedHardwarePacks) &&
-          product.selectedHardwarePacks.length > 0
-        ) {
-          for (const pack of product.selectedHardwarePacks) {
-            const packLineDiscount =
-              (appliedCoupon?.lineItemDiscounts?.[lineDiscountIndex] ?? 0) || 0;
-            lineDiscountIndex += 1;
-            orderItems.push({
-              productId: pack.ProductID,
-              name: pack.ProductName,
-              partNumber: pack.PartNumber || "",
-              quantity: product.quantity,
-              price: pack.Price || "0",
-              color: "",
-              size: "",
-              platform: product.PlatformName || "",
-              yearRange: product.YearRange || "",
-              image: null,
-              Package: 0,
-              LowMargin: 0,
-              ManufacturerName: product.ManufacturerName ?? "",
-              lineDiscount: packLineDiscount,
-            });
-          }
-        }
-      }
+      // Main + FP powder-coat lines + hardware packs (matches coupon lineItemDiscounts)
+      const orderItems = buildOrderItemsFromCart(
+        cartProductsForConfirmation,
+        appliedCoupon,
+      );
 
       // Create order in database first
       let orderId = null;
@@ -1260,6 +1156,11 @@ export default function Checkout() {
           addOnPrice += parseFloat(pack.Price || 0);
         });
       }
+
+      addOnPrice += getAcPanelPowderCoatUnitPrice(
+        item.selectedColor,
+        item.PartNumber,
+      );
 
       return total + (basePrice + addOnPrice) * quantity;
     }, 0);
@@ -2646,6 +2547,10 @@ export default function Checkout() {
                               addOnPrice += parseFloat(pack.Price || 0);
                             });
                           }
+                          addOnPrice += getAcPanelPowderCoatUnitPrice(
+                            item.selectedColor,
+                            item.PartNumber,
+                          );
                           return (
                             (basePrice + addOnPrice) *
                             item.quantity
@@ -2656,17 +2561,36 @@ export default function Checkout() {
                             return null;
                           let lineIdx = 0;
                           for (let i = 0; i < index; i++) {
+                            const p = effectiveCartProducts[i];
+                            const pow =
+                              getAcPanelPowderCoatUnitPrice(
+                                p.selectedColor,
+                                p.PartNumber,
+                              ) > 0
+                                ? 1
+                                : 0;
                             lineIdx +=
-                              1 +
-                              (effectiveCartProducts[i].selectedHardwarePacks
-                                ?.length || 0);
+                              1 + pow + (p.selectedHardwarePacks?.length || 0);
                           }
                           let itemDiscount =
                             appliedCoupon.lineItemDiscounts[lineIdx] ?? 0;
-                          const packs = item.selectedHardwarePacks?.length || 0;
-                          for (let j = 1; j <= packs; j++) {
+                          const powderExtra =
+                            getAcPanelPowderCoatUnitPrice(
+                              item.selectedColor,
+                              item.PartNumber,
+                            ) > 0
+                              ? 1
+                              : 0;
+                          if (powderExtra) {
                             itemDiscount +=
-                              appliedCoupon.lineItemDiscounts[lineIdx + j] ?? 0;
+                              appliedCoupon.lineItemDiscounts[lineIdx + 1] ?? 0;
+                          }
+                          const packs = item.selectedHardwarePacks?.length || 0;
+                          for (let j = 0; j < packs; j++) {
+                            itemDiscount +=
+                              appliedCoupon.lineItemDiscounts[
+                                lineIdx + 1 + powderExtra + j
+                              ] ?? 0;
                           }
                           if (itemDiscount <= 0) return null;
                           return (

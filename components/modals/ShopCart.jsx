@@ -1,4 +1,5 @@
 "use client";
+import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
 import { useContextElement } from "@/context/Context";
 import { showToast } from "@/utlis/showToast";
 import Image from "next/image";
@@ -384,6 +385,10 @@ export default function ShopCart() {
                                   addOnPrice += parseFloat(pack.Price || 0);
                                 });
                               }
+                              addOnPrice += getAcPanelPowderCoatUnitPrice(
+                                elm.selectedColor,
+                                elm.PartNumber,
+                              );
 
                               const totalItemPrice =
                                 (basePrice + addOnPrice) * elm.quantity;

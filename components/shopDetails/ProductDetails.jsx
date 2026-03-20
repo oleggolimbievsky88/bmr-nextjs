@@ -21,6 +21,7 @@ import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 import ProductSpecsCard from "@/components/product/ProductSpecsCard";
+import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
 
 export default function ProductDetails({
   product,
@@ -442,7 +443,9 @@ export default function ProductDetails({
           (sum, p) => sum + (parseFloat(p.Price) || 0) * (quantity || 1),
           0,
         )
-      : 0)
+      : 0) +
+    getAcPanelPowderCoatUnitPrice(currentColor, displayProduct?.PartNumber) *
+      (quantity || 1)
   ).toFixed(2);
 
   if (isLoading) {
