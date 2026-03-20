@@ -728,14 +728,25 @@ export default function AdminProductsPage() {
     }
   };
 
+  const parseStoredImages = (imagesString) => {
+    if (!imagesString || typeof imagesString !== "string") return [];
+    return imagesString
+      .split(/[,;]/)
+      .map((s) => s.trim())
+      .filter((s) => s && s !== "0");
+  };
+
   const MAX_ADDITIONAL_IMAGES = 6;
 
   const handleAdditionalImagesChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
+      const existingCount = parseStoredImages(formData.Images).length;
       setAdditionalImages((prev) => {
-        const combined = [...prev, ...newFiles];
-        return combined.slice(0, MAX_ADDITIONAL_IMAGES);
+        const remaining = MAX_ADDITIONAL_IMAGES - (existingCount + prev.length);
+        if (remaining <= 0) return prev;
+        const toAdd = newFiles.slice(0, remaining);
+        return [...prev, ...toAdd];
       });
       e.target.value = "";
     }
@@ -743,6 +754,41 @@ export default function AdminProductsPage() {
 
   const removeAdditionalImage = (index) => {
     setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingAdditionalImage = (imagePath) => {
+    setFormData((prev) => {
+      const existing = parseStoredImages(prev.Images);
+      const next = existing.filter((p) => p !== imagePath);
+      return { ...prev, Images: next.length ? next.join(",") : "" };
+    });
+  };
+
+  const removeMainImage = () => {
+    setFormData((prev) => {
+      const hasImageLarge =
+        prev.ImageLarge &&
+        prev.ImageLarge.trim() !== "" &&
+        prev.ImageLarge !== "0";
+
+      if (hasImageLarge) {
+        const mainPath = prev.ImageLarge;
+        const existing = parseStoredImages(prev.Images);
+        const next = existing.filter((p) => p !== mainPath);
+        return {
+          ...prev,
+          ImageSmall: "0",
+          ImageLarge: "0",
+          Images: next.length ? next.join(",") : "",
+        };
+      }
+
+      // Legacy case: no ImageLarge, main photo is the first item in Images.
+      const existing = parseStoredImages(prev.Images);
+      const next = existing.slice(1);
+      return { ...prev, Images: next.length ? next.join(",") : "" };
+    });
+    setMainImage(null);
   };
 
   const resetForm = () => {
@@ -1747,9 +1793,11 @@ export default function AdminProductsPage() {
                           className="form-control form-control-sm mb-2"
                         />
                         {(mainImage ||
-                          (formData.ImageLarge &&
-                            formData.ImageLarge !== "0" &&
-                            !mainImage)) && (
+                          (!mainImage &&
+                            ((formData.ImageLarge &&
+                              formData.ImageLarge !== "0") ||
+                              parseStoredImages(formData.Images).length >
+                                0))) && (
                           <div className="mt-2">
                             {mainImage ? (
                               <img
@@ -1764,7 +1812,12 @@ export default function AdminProductsPage() {
                               />
                             ) : (
                               <img
-                                src={getImageUrl(formData.ImageLarge)}
+                                src={getImageUrl(
+                                  formData.ImageLarge &&
+                                    formData.ImageLarge !== "0"
+                                    ? formData.ImageLarge
+                                    : parseStoredImages(formData.Images)[0],
+                                )}
                                 alt="Current main"
                                 className="img-fluid rounded"
                                 style={{
@@ -1777,6 +1830,20 @@ export default function AdminProductsPage() {
                                 }}
                               />
                             )}
+
+                            {!mainImage &&
+                              ((formData.ImageLarge &&
+                                formData.ImageLarge !== "0") ||
+                                parseStoredImages(formData.Images).length >
+                                  0) && (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-danger mt-2"
+                                  onClick={removeMainImage}
+                                >
+                                  Remove main image
+                                </button>
+                              )}
                           </div>
                         )}
                       </div>
@@ -1790,9 +1857,14 @@ export default function AdminProductsPage() {
                         </label>
                         <p className="text-muted small mb-2">
                           Select multiple at once or add more in separate
-                          selections. {additionalImages.length}/6 selected.
+                          selections.{" "}
+                          {parseStoredImages(formData.Images).length +
+                            additionalImages.length}
+                          /6 selected.
                         </p>
-                        {additionalImages.length < MAX_ADDITIONAL_IMAGES && (
+                        {parseStoredImages(formData.Images).length +
+                          additionalImages.length <
+                          MAX_ADDITIONAL_IMAGES && (
                           <input
                             type="file"
                             accept="image/*"
@@ -1802,64 +1874,76 @@ export default function AdminProductsPage() {
                           />
                         )}
                         <div className="d-flex flex-wrap gap-2 align-items-start">
-                          {additionalImages.length > 0
-                            ? additionalImages.map((file, idx) => (
-                                <div
-                                  key={idx}
-                                  className="position-relative d-inline-block"
+                          {parseStoredImages(formData.Images).map(
+                            (img, idx) => (
+                              <div
+                                key={`existing-${idx}-${img}`}
+                                className="position-relative d-inline-block"
+                              >
+                                <img
+                                  src={getImageUrl(img)}
+                                  alt={`Additional ${idx + 1}`}
+                                  className="rounded border"
+                                  style={{
+                                    maxWidth: "80px",
+                                    maxHeight: "80px",
+                                    objectFit: "contain",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.style.display = "none";
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle rounded-circle p-0"
+                                  style={{
+                                    width: "22px",
+                                    height: "22px",
+                                    fontSize: "14px",
+                                    lineHeight: "1",
+                                  }}
+                                  onClick={() =>
+                                    removeExistingAdditionalImage(img)
+                                  }
+                                  aria-label={`Remove existing image ${idx + 1}`}
                                 >
-                                  <img
-                                    src={URL.createObjectURL(file)}
-                                    alt={`Additional ${idx + 1}`}
-                                    className="rounded border"
-                                    style={{
-                                      maxWidth: "80px",
-                                      maxHeight: "80px",
-                                      objectFit: "contain",
-                                    }}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle rounded-circle p-0"
-                                    style={{
-                                      width: "22px",
-                                      height: "22px",
-                                      fontSize: "14px",
-                                      lineHeight: "1",
-                                    }}
-                                    onClick={() => removeAdditionalImage(idx)}
-                                    aria-label={`Remove image ${idx + 1}`}
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))
-                            : formData.Images &&
-                              formData.Images !== "0" &&
-                              formData.Images.split(",")
-                                .filter(
-                                  (img) =>
-                                    img && img.trim() !== "" && img !== "0",
-                                )
-                                .map((img, idx) => {
-                                  const imgSrc = img.trim();
-                                  return (
-                                    <img
-                                      key={idx}
-                                      src={getImageUrl(imgSrc)}
-                                      alt={`Additional ${idx + 1}`}
-                                      className="rounded border"
-                                      style={{
-                                        maxWidth: "80px",
-                                        maxHeight: "80px",
-                                        objectFit: "contain",
-                                      }}
-                                      onError={(e) => {
-                                        e.target.style.display = "none";
-                                      }}
-                                    />
-                                  );
-                                })}
+                                  ×
+                                </button>
+                              </div>
+                            ),
+                          )}
+
+                          {additionalImages.map((file, idx) => (
+                            <div
+                              key={`new-${idx}-${file.name}`}
+                              className="position-relative d-inline-block"
+                            >
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={`Additional ${idx + 1} (new)`}
+                                className="rounded border"
+                                style={{
+                                  maxWidth: "80px",
+                                  maxHeight: "80px",
+                                  objectFit: "contain",
+                                }}
+                              />
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle rounded-circle p-0"
+                                style={{
+                                  width: "22px",
+                                  height: "22px",
+                                  fontSize: "14px",
+                                  lineHeight: "1",
+                                }}
+                                onClick={() => removeAdditionalImage(idx)}
+                                aria-label={`Remove new image ${idx + 1}`}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
