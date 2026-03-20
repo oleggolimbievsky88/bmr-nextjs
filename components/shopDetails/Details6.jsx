@@ -14,7 +14,10 @@ import Quantity from "./Quantity";
 import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
-import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
+import {
+  getAcPanelPowderCoatUnitPrice,
+  formatFpColorPriceSuffix,
+} from "@/lib/acPanelPowderCoat";
 
 export default function Details({
   product,
@@ -585,7 +588,7 @@ export default function Details({
                             Color:{" "}
                             <span className="fw-6 variant-picker-label-value">
                               {currentColor
-                                ? currentColor.ColorName || currentColor.value
+                                ? `${currentColor.ColorName || currentColor.value}${formatFpColorPriceSuffix(currentColor, displayProduct?.PartNumber)}`
                                 : "Please select"}
                             </span>
                             {errors.color && (
@@ -615,9 +618,21 @@ export default function Details({
                                 "Is this color selected?",
                                 isSelected,
                               );
+                              const fpColorPriceSuffix =
+                                formatFpColorPriceSuffix(
+                                  color,
+                                  displayProduct?.PartNumber,
+                                );
                               return (
                                 <React.Fragment key={color.ColorID || color.id}>
-                                  {color.ColorName}
+                                  <span className="tf-color-option-label">
+                                    {color.ColorName}
+                                    {fpColorPriceSuffix ? (
+                                      <span className="tf-fp-color-price-suffix text-muted small ms-1">
+                                        {fpColorPriceSuffix}
+                                      </span>
+                                    ) : null}
+                                  </span>
                                   <input
                                     type="radio"
                                     name="color"

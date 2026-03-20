@@ -21,7 +21,11 @@ import Slider3BottomThumbs from "./sliders/Slider3BottomThumbs";
 import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 import ProductSpecsCard from "@/components/product/ProductSpecsCard";
-import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
+import {
+  getAcPanelPowderCoatUnitPrice,
+  formatFpColorPriceSuffix,
+} from "@/lib/acPanelPowderCoat";
+import { getProductFitmentRangeText } from "@/lib/fitmentLabel";
 
 export default function ProductDetails({
   product,
@@ -448,6 +452,8 @@ export default function ProductDetails({
       (quantity || 1)
   ).toFixed(2);
 
+  const fitmentRangeLabel = getProductFitmentRangeText(product);
+
   if (isLoading) {
     return (
       <section
@@ -472,26 +478,19 @@ export default function ProductDetails({
                   <div className="tf-product-info-list">
                     <div className="tf-product-info-title">
                       <h5>{product?.ProductName}</h5>
-                      {product?.StartAppYear &&
-                        product?.EndAppYear &&
-                        String(product.StartAppYear).trim() !== "" &&
-                        String(product.EndAppYear).trim() !== "" && (
-                          <span
-                            className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
-                            style={{
-                              fontSize: "0.8rem",
-                              letterSpacing: "0.04em",
-                              backgroundColor:
-                                "var(--tf-theme-primary, #e8b923)",
-                              color: "#1a1a1a",
-                            }}
-                          >
-                            Fits:{" "}
-                            {product.StartAppYear === product.EndAppYear
-                              ? product.StartAppYear
-                              : `${product.StartAppYear} – ${product.EndAppYear}`}
-                          </span>
-                        )}
+                      {fitmentRangeLabel && (
+                        <span
+                          className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
+                          style={{
+                            fontSize: "0.8rem",
+                            letterSpacing: "0.04em",
+                            backgroundColor: "var(--tf-theme-primary, #e8b923)",
+                            color: "#1a1a1a",
+                          }}
+                        >
+                          Fits: {fitmentRangeLabel}
+                        </span>
+                      )}
                     </div>
                     <div className="tf-product-info-price">
                       <div className="price-on-sale">
@@ -548,52 +547,19 @@ export default function ProductDetails({
                     <h5>
                       {displayProduct?.ProductName || product?.ProductName}
                     </h5>
-                    {(() => {
-                      const p = product || {};
-                      const hasProductYears =
-                        p.StartAppYear &&
-                        String(p.StartAppYear).trim() !== "" &&
-                        parseInt(p.StartAppYear, 10) > 0 &&
-                        p.EndAppYear &&
-                        String(p.EndAppYear).trim() !== "" &&
-                        parseInt(p.EndAppYear, 10) > 0;
-                      const startYear = hasProductYears
-                        ? String(p.StartAppYear).trim()
-                        : (Array.isArray(p.platforms) && p.platforms[0]
-                            ? String(p.platforms[0].startYear || "").trim()
-                            : null) ||
-                          (p.YearRange
-                            ? String(p.YearRange).split("-")[0]?.trim()
-                            : null);
-                      const endYear = hasProductYears
-                        ? String(p.EndAppYear).trim()
-                        : (Array.isArray(p.platforms) && p.platforms[0]
-                            ? String(p.platforms[0].endYear || "").trim()
-                            : null) ||
-                          (p.YearRange
-                            ? String(p.YearRange).split("-")[1]?.trim()
-                            : null);
-                      if (!startYear && !endYear) return null;
-                      const label =
-                        startYear && endYear
-                          ? startYear === endYear
-                            ? startYear
-                            : `${startYear} – ${endYear}`
-                          : startYear || endYear;
-                      return (
-                        <span
-                          className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
-                          style={{
-                            fontSize: "0.8rem",
-                            letterSpacing: "0.04em",
-                            backgroundColor: "var(--tf-theme-primary, #e8b923)",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          Fits: {label}
-                        </span>
-                      );
-                    })()}
+                    {fitmentRangeLabel && (
+                      <span
+                        className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
+                        style={{
+                          fontSize: "0.8rem",
+                          letterSpacing: "0.04em",
+                          backgroundColor: "var(--tf-theme-primary, #e8b923)",
+                          color: "#1a1a1a",
+                        }}
+                      >
+                        Fits: {fitmentRangeLabel}
+                      </span>
+                    )}
                   </div>
                   <div className="tf-breadcrumb-list">
                     <span>
@@ -667,7 +633,7 @@ export default function ProductDetails({
                             Color:{" "}
                             <span className="fw-6 variant-picker-label-value">
                               {currentColor
-                                ? currentColor.ColorName || currentColor.value
+                                ? `${currentColor.ColorName || currentColor.value}${formatFpColorPriceSuffix(currentColor, displayProduct?.PartNumber)}`
                                 : "Please select"}
                             </span>
                             {errors.color && (
@@ -697,9 +663,21 @@ export default function ProductDetails({
                                 "Is this color selected?",
                                 isSelected,
                               );
+                              const fpColorPriceSuffix =
+                                formatFpColorPriceSuffix(
+                                  color,
+                                  displayProduct?.PartNumber,
+                                );
                               return (
                                 <React.Fragment key={color.ColorID || color.id}>
-                                  {color.ColorName}
+                                  <span className="tf-color-option-label">
+                                    {color.ColorName}
+                                    {fpColorPriceSuffix ? (
+                                      <span className="tf-fp-color-price-suffix text-muted small ms-1">
+                                        {fpColorPriceSuffix}
+                                      </span>
+                                    ) : null}
+                                  </span>
                                   <input
                                     type="radio"
                                     name="color"

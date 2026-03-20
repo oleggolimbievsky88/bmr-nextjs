@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getProductImageUrl } from "@/lib/assets";
+import { getProductFitmentRangeText } from "@/lib/fitmentLabel";
 import { parsePrice } from "@/lib/display";
 
 const PLACEHOLDER_PRODUCT = "/brands/bmr/images/placeholder-product.jpg";
@@ -31,18 +32,8 @@ export const ProductCard = ({
   const colorIds = product.Color ? product.Color.split(",") : [];
   const productColors = colorIds.map((id) => colorsMap[id]).filter(Boolean);
 
-  const fitmentStart =
-    product.PlatformStartYear ||
-    product.platformStartYear ||
-    product.platform_start_year;
-
-  const fitmentEnd =
-    product.PlatformEndYear ||
-    product.platformEndYear ||
-    product.platform_end_year;
-
-  const fitmentLabel =
-    fitmentStart && fitmentEnd ? `Fits: ${fitmentStart}-${fitmentEnd}` : null;
+  const fitmentRange = getProductFitmentRangeText(product);
+  const fitmentLabel = fitmentRange ? `Fits: ${fitmentRange}` : null;
 
   return (
     <Link
