@@ -4,34 +4,39 @@ import { useEffect } from "react";
 
 export default function AdminError({ error }) {
   useEffect(() => {
-    // Redirect to login on any admin error - typically caused by expired session
-    // after long inactivity (DOM errors, fetch failures, etc.)
-    if (typeof window !== "undefined") {
-      const callbackUrl = encodeURIComponent(
-        window.location.pathname + window.location.search,
-      );
-      window.location.href = `/login?callbackUrl=${callbackUrl}`;
-    }
+    // Only auto-redirect for *auth* failures.
+    // Redirecting on any runtime/UI error creates redirect loops (e.g. DOM removeChild errors).
+    const msg = String(error?.message || "");
+    const looksLikeAuth =
+      /unauthorized|jwt|token|session|signin|callback/i.test(msg);
+    if (!looksLikeAuth) return;
+    const callbackUrl = encodeURIComponent(
+      window.location.pathname + window.location.search,
+    );
+    window.location.href = `/login?callbackUrl=${callbackUrl}`;
   }, [error]);
+
+  const message = String(error?.message || "");
 
   return (
     <div className="container text-center py-5">
-      <h2>Session expired</h2>
-      <p>Redirecting to login...</p>
-      <p className="text-muted small">
-        If you are not redirected, <a href="/login">click here to log in</a>.
+      <h2>Something went wrong</h2>
+      <p className="text-muted">
+        {message ? message : "An unexpected error occurred on this admin page."}
       </p>
       <button
         onClick={() => {
-          const cb = encodeURIComponent(
-            window.location.pathname + window.location.search,
-          );
-          window.location.href = `/login?callbackUrl=${cb}`;
+          window.location.reload();
         }}
-        className="btn btn-primary mt-3"
+        className="btn btn-outline-dark mt-3"
       >
-        Go to login
+        Reload page
       </button>
+      <div className="mt-3">
+        <a href="/login" className="btn btn-primary">
+          Go to login
+        </a>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { showToast } from "@/utlis/showToast";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 function ColorInput({ value, onChange, label, id }) {
   return (
@@ -69,6 +70,7 @@ const BRAND_SECTIONS = [
   { id: "nav", label: "Navigation" },
   { id: "about", label: "About" },
   { id: "faqs", label: "FAQs" },
+  { id: "legal", label: "Privacy & Terms" },
   { id: "seo", label: "SEO" },
   { id: "active", label: "Active" },
 ];
@@ -108,6 +110,7 @@ export default function AdminBrandEditPage() {
       }
       const data = await res.json();
       setBrand(data);
+      const legal = data.legal || {};
       setForm({
         name: data.name || "",
         companyName: data.companyName || "",
@@ -131,6 +134,10 @@ export default function AdminBrandEditPage() {
           ? data.assuranceBarItems
           : [],
         aboutBrand: data.aboutBrand || null,
+        legal: {
+          privacyPolicyHtml: legal.privacyPolicyHtml || "",
+          termsConditionsHtml: legal.termsConditionsHtml || "",
+        },
         isActive: data.isActive !== false,
         shopByMake: data.shopByMake || {
           sectionTitle: "",
@@ -279,6 +286,16 @@ export default function AdminBrandEditPage() {
       cur[parts[parts.length - 1]] = value;
       return next;
     });
+  };
+
+  const updateLegalField = (field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      legal: {
+        ...(prev.legal || {}),
+        [field]: value,
+      },
+    }));
   };
 
   const updateAssuranceItem = (index, field, value) => {
@@ -641,6 +658,7 @@ export default function AdminBrandEditPage() {
         social: form.social,
         assuranceBarItems: form.assuranceBarItems,
         aboutBrand: form.aboutBrand,
+        legal: form.legal,
         isActive: form.isActive,
         shopByMake: form.shopByMake,
         shopByCategory: form.shopByCategory,
@@ -709,6 +727,7 @@ export default function AdminBrandEditPage() {
   const social = form.social || {};
   const logo = form.logo || {};
   const aboutBrand = form.aboutBrand || {};
+  const legal = form.legal || {};
 
   const displayName = form.companyNameShort?.trim() || form.name?.trim() || key;
   const accent = form.buttonBadgeColor || form.themeColor || "#db1215";
@@ -2094,6 +2113,46 @@ export default function AdminBrandEditPage() {
                       No FAQs yet. Click &quot;+ Add FAQ&quot; to add one.
                     </p>
                   )}
+                </div>
+              </div>
+
+              <div className="admin-brand-card" id="section-legal">
+                <div className="admin-brand-card-header">
+                  <h2 className="admin-brand-card-title">
+                    <span className="admin-brand-section-badge">Legal</span>
+                    Privacy Policy &amp; Terms
+                  </h2>
+                </div>
+                <div className="admin-brand-card-body">
+                  <p className="admin-brand-nav-intro mb-3">
+                    This content is shown on <code>/privacy-policy</code> and{" "}
+                    <code>/terms-conditions</code> for this brand. Leave blank
+                    to keep the default site copy.
+                  </p>
+
+                  <div className="mb-4">
+                    <label className="form-label">Privacy Policy</label>
+                    <RichTextEditor
+                      ariaLabel="Privacy policy editor"
+                      value={legal.privacyPolicyHtml || ""}
+                      onChange={(html) =>
+                        updateLegalField("privacyPolicyHtml", html)
+                      }
+                      placeholder="Add privacy policy content…"
+                    />
+                  </div>
+
+                  <div className="mb-0">
+                    <label className="form-label">Terms &amp; Conditions</label>
+                    <RichTextEditor
+                      ariaLabel="Terms and conditions editor"
+                      value={legal.termsConditionsHtml || ""}
+                      onChange={(html) =>
+                        updateLegalField("termsConditionsHtml", html)
+                      }
+                      placeholder="Add terms & conditions content…"
+                    />
+                  </div>
                 </div>
               </div>
 

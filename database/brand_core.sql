@@ -32,9 +32,12 @@ CREATE TABLE IF NOT EXISTS `brands` (
   `about_brand` json DEFAULT NULL,
   `same_as` json DEFAULT NULL,
   `shop_by_make` json DEFAULT NULL,
+  `shop_by_category` json DEFAULT NULL,
+  `legal` json DEFAULT NULL,
   `nav_labels` json DEFAULT NULL,
   `nav_urls` json DEFAULT NULL,
   `nav_order` json DEFAULT NULL,
+  `nav_platform_ids` json DEFAULT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

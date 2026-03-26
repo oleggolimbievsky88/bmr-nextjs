@@ -2259,6 +2259,41 @@
 	border: 1px solid #fecaca;
 }
 
+/* Rich text editor (ReactQuill) inside admin forms */
+.admin-richtext {
+	.ql-toolbar.ql-snow,
+	.ql-container.ql-snow {
+		border-color: #e5e7eb;
+	}
+
+	.ql-toolbar.ql-snow {
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
+		background: #fff;
+	}
+
+	.ql-container.ql-snow {
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+		background: #fff;
+	}
+
+	.ql-editor {
+		min-height: 180px;
+		font-size: 1rem;
+		color: #111827;
+		direction: ltr;
+		unicode-bidi: isolate;
+		text-align: left;
+	}
+
+	.ql-editor p,
+	.ql-editor li {
+		direction: ltr;
+		text-align: left;
+	}
+}
+
 /* Mobile: stack and touch-friendly */
 @media (max-width: 767.98px) {
 	.admin-brand-edit .admin-page-header-modern {

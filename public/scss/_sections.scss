@@ -2069,6 +2069,32 @@
             }
         }
     }
+
+    .privacy-policy-page__rich,
+    .terms-conditions-page__rich {
+        color: var(--ppp-text, #374151);
+        font-size: clamp(0.9375rem, 1.5vw, 1rem);
+        line-height: 1.65;
+
+        p {
+            margin: 0 0 0.75rem;
+        }
+
+        ul,
+        ol {
+            margin: 0 0 0.75rem;
+            padding-left: 1.25rem;
+        }
+
+        li {
+            margin: 0.25rem 0;
+        }
+
+        a {
+            color: var(--ppp-accent, var(--main, #c8102e));
+            text-decoration: underline;
+        }
+    }
 }
 
 .images-group-item {

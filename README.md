@@ -22,6 +22,58 @@ This is a Next.js application built with the App Router for BMR Suspension.
 
 The app loads **products, platforms, and menu data from MySQL**. For production to work, the database must be reachable from Vercel’s servers.
 
+## Vendor Downloads Portal (Vercel + Cloudflare R2)
+
+This repo includes a vendor file-explorer portal intended to replace FTP downloads.
+
+### Domains
+
+Add these domains to the same Vercel project:
+
+- `vendors.bmrsuspension.com`
+- `vendors.controlfreaksuspension.com`
+
+Then set DNS for each domain as instructed by Vercel (typically a CNAME to Vercel’s target).
+
+### Cloudflare R2 storage layout
+
+Use **one R2 bucket** and store files under prefixes:
+
+- `bmr/...`
+- `controlfreak/...`
+
+The portal enforces brand separation by hostname → prefix mapping.
+
+### Required environment variables (Vercel)
+
+**Portal auth**
+
+- `VENDOR_PORTAL_USER`
+- `VENDOR_PORTAL_PASS`
+- `VENDOR_PORTAL_COOKIE_SECRET` (any random string; used to sign the session cookie)
+
+**Cloudflare R2 (S3-compatible)**
+
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET_NAME`
+- Optional (defaults shown):
+  - `R2_PREFIX_BMR=bmr/`
+  - `R2_PREFIX_CONTROLFREAK=controlfreak/`
+  - `R2_ENDPOINT=https://<accountId>.r2.cloudflarestorage.com`
+
+### Routes
+
+- UI: `/vendor-portal` (the `vendors.*` subdomains rewrite `/` to this route)
+- Auth:
+  - `POST /api/vendor-auth/login`
+  - `POST /api/vendor-auth/logout`
+  - `GET /api/vendor-auth/session`
+- Files (requires vendor session cookie):
+  - `GET /api/vendor-files/list?path=...`
+  - `GET /api/vendor-files/download?key=...`
+
 ### Required: `DATABASE_URL`
 
 In Vercel, set **`DATABASE_URL`** (the app does **not** use `MYSQL_HOST` / `MYSQL_USER` / etc.):
