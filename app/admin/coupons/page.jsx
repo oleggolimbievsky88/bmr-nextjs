@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { showToast } from "@/utlis/showToast";
 
 export default function AdminCouponsPage() {
+  const searchParams = useSearchParams();
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -86,6 +88,23 @@ export default function AdminCouponsPage() {
   useEffect(() => {
     fetchCoupons();
   }, [fetchCoupons]);
+
+  useEffect(() => {
+    const createMode =
+      searchParams.get("create") === "1" ||
+      searchParams.get("new") === "1" ||
+      searchParams.get("add") === "1";
+    if (createMode) {
+      setEditingCoupon(null);
+      setShowForm(true);
+      setTimeout(() => {
+        formCardRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [searchParams]);
 
   // Filter-as-you-type: debounce search input into searchQuery
   useEffect(() => {
@@ -216,7 +235,7 @@ export default function AdminCouponsPage() {
         editingCoupon
           ? "Coupon updated successfully!"
           : "Coupon created successfully!",
-        "success"
+        "success",
       );
     } catch (err) {
       setError(err.message);
@@ -254,7 +273,7 @@ export default function AdminCouponsPage() {
   const handleDelete = async (couponId) => {
     if (
       !confirm(
-        "Are you sure you want to delete this coupon? This cannot be undone."
+        "Are you sure you want to delete this coupon? This cannot be undone.",
       )
     ) {
       return;
@@ -293,7 +312,7 @@ export default function AdminCouponsPage() {
       await fetchCoupons();
       showToast(
         data.message || `${data.count} expired coupon(s) deactivated.`,
-        "success"
+        "success",
       );
     } catch (err) {
       setError(err.message);
@@ -430,7 +449,7 @@ export default function AdminCouponsPage() {
                         {p}
                       </button>
                     </li>
-                  )
+                  ),
                 );
               })()}
               <li
@@ -862,8 +881,8 @@ export default function AdminCouponsPage() {
                         {togglingId === coupon.id
                           ? "..."
                           : coupon.is_active === 1 || coupon.is_active === true
-                          ? "Disable"
-                          : "Enable"}
+                            ? "Disable"
+                            : "Enable"}
                       </button>
                       <button
                         type="button"

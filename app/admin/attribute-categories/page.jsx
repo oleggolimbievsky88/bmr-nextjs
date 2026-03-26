@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function AdminAttributeCategoriesPage() {
+  const searchParams = useSearchParams();
   const [attributeCategories, setAttributeCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,6 +39,18 @@ export default function AdminAttributeCategoriesPage() {
   useEffect(() => {
     fetchList();
   }, []);
+
+  useEffect(() => {
+    const createMode =
+      searchParams.get("create") === "1" ||
+      searchParams.get("new") === "1" ||
+      searchParams.get("add") === "1";
+    if (createMode) {
+      setEditingItem(null);
+      setFormData({ name: "", slug: "", sort_order: 0 });
+      setShowForm(true);
+    }
+  }, [searchParams]);
 
   const resetForm = () => {
     setFormData({ name: "", slug: "", sort_order: 0 });

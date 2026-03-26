@@ -1,112 +1,245 @@
-"use client";
-
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-
-const stats = [
-  {
-    title: "New Orders",
-    value: 12,
-    subtext: "Need review",
-    icon: "🛒",
-    border: "primary",
-  },
-  {
-    title: "Pending Orders",
-    value: 5,
-    subtext: "Awaiting action",
-    icon: "⏳",
-    border: "warning",
-  },
-  {
-    title: "Orders Today",
-    value: 8,
-    subtext: "Placed today",
-    icon: "📦",
-    border: "info",
-  },
-  {
-    title: "Orders This Week",
-    value: 34,
-    subtext: "Last 7 days",
-    icon: "📈",
-    border: "success",
-  },
-  {
-    title: "Total Products",
-    value: 742,
-    subtext: "Published products",
-    icon: "🏷️",
-    border: "dark",
-  },
-  {
-    title: "Attribute Categories",
-    value: 28,
-    subtext: "Available to use",
-    icon: "⚙️",
-    border: "secondary",
-  },
-  {
-    title: "Active Coupons",
-    value: 50,
-    subtext: "Currently enabled",
-    icon: "🎟️",
-    border: "success",
-  },
-];
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { query } from "@/lib/db";
 
 const quickActions = [
-  { label: "Add Product", href: "/admin/products", icon: "➕" },
+  { label: "Create Product", href: "/admin/products?create=1", icon: "➕" },
   {
-    label: "Add Attribute Category",
-    href: "/admin/attribute-categories",
+    label: "Create Attribute Category",
+    href: "/admin/attribute-categories?create=1",
     icon: "⚙️",
   },
   {
-    label: "Add Attribute Value",
+    label: "Manage Attribute Values",
     href: "/admin/attribute-categories",
     icon: "🔧",
   },
   {
-    label: "Manage Attributes",
+    label: "Manage Attribute Categories",
     href: "/admin/attribute-categories",
     icon: "🧩",
   },
-  { label: "Summit Parser", href: "/admin/products", icon: "📋" },
-  { label: "Create Coupon", href: "/admin/coupons", icon: "🎟️" },
+  {
+    label: "Open Summit Attribute Parser",
+    href: "/admin/summit-attribute-parser",
+    icon: "📋",
+  },
+  { label: "Create Coupon", href: "/admin/coupons?create=1", icon: "🎟️" },
   { label: "Add Platform", href: "/admin/platforms", icon: "🚗" },
 ];
 
-const recentOrders = [
-  { id: 10425, customer: "John Smith", status: "Pending", total: "$329.95" },
-  { id: 10424, customer: "Summit Racing", status: "Paid", total: "$1,249.00" },
-  {
-    id: 10423,
-    customer: "Mike Johnson",
-    status: "Processing",
-    total: "$214.99",
-  },
-  {
-    id: 10422,
-    customer: "Lethal Performance",
-    status: "Pending",
-    total: "$789.00",
-  },
-];
+function toDisplayStatus(status) {
+  const raw = String(status || "")
+    .trim()
+    .toLowerCase();
+  if (!raw) return "Unknown";
+  if (raw === "paid") return "Paid";
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
+}
 
-const recentProducts = [
-  { sku: "AA001", name: "Front Control Arm" },
-  { sku: "AA002", name: "Rear Control Arm" },
-  { sku: "AA010", name: "Adjustable Toe Rod" },
-  { sku: "CB005", name: "Sway Bar Kit" },
-];
+function formatCurrency(value) {
+  const amount = Number(value || 0);
+  return amount.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
 
-const recentAttributeCategories = [
-  { name: "Bushing Material", values: 3 },
-  { name: "Control Arm Style", values: 4 },
-  { name: "Finish", values: 2 },
-  { name: "Rod End Type", values: 5 },
-];
+async function getDashboardData() {
+  try {
+    const [
+      newOrdersRows,
+      pendingOrdersRows,
+      ordersTodayRows,
+      ordersWeekRows,
+      totalProductsRows,
+      productAttributesRows,
+      recentOrdersRows,
+      recentProductsRows,
+      recentAttributeCategoriesRows,
+    ] = await Promise.all([
+      query(
+        `SELECT COUNT(*) AS total
+         FROM new_orders
+         WHERE order_date >= DATE_SUB(NOW(), INTERVAL 24 HOUR)`,
+      ),
+      query(
+        `SELECT COUNT(*) AS total
+         FROM new_orders
+         WHERE LOWER(status) = 'pending'`,
+      ),
+      query(
+        `SELECT COUNT(*) AS total
+         FROM new_orders
+         WHERE order_date >= CURDATE()`,
+      ),
+      query(
+        `SELECT COUNT(*) AS total
+         FROM new_orders
+         WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)`,
+      ),
+      query(`SELECT COUNT(*) AS total FROM products`),
+      query(`SELECT COUNT(*) AS total FROM category_attributes`),
+      query(
+        `SELECT
+           new_order_id,
+           order_number,
+           billing_first_name,
+           billing_last_name,
+           status,
+           total
+         FROM new_orders
+         ORDER BY order_date DESC
+         LIMIT 6`,
+      ),
+      query(
+        `SELECT ProductID, PartNumber, ProductName
+         FROM products
+         ORDER BY ProductID DESC
+         LIMIT 6`,
+      ),
+      query(
+        `SELECT
+           ac.id,
+           ac.name,
+           COUNT(ca.id) AS values_count
+         FROM attribute_categories ac
+         LEFT JOIN category_attributes ca
+           ON ca.attribute_category_id = ac.id
+         GROUP BY ac.id, ac.name
+         ORDER BY ac.id DESC
+         LIMIT 6`,
+      ),
+    ]);
+
+    const stats = [
+      {
+        title: "New Orders",
+        value: Number(newOrdersRows?.[0]?.total || 0),
+        subtext: "Placed in last 24 hours",
+        icon: "🛒",
+        border: "primary",
+      },
+      {
+        title: "Pending Orders",
+        value: Number(pendingOrdersRows?.[0]?.total || 0),
+        subtext: "Awaiting action",
+        icon: "⏳",
+        border: "warning",
+      },
+      {
+        title: "Orders Today",
+        value: Number(ordersTodayRows?.[0]?.total || 0),
+        subtext: "Placed today",
+        icon: "📦",
+        border: "info",
+      },
+      {
+        title: "Orders This Week",
+        value: Number(ordersWeekRows?.[0]?.total || 0),
+        subtext: "Last 7 days",
+        icon: "📈",
+        border: "success",
+      },
+      {
+        title: "Total Products",
+        value: Number(totalProductsRows?.[0]?.total || 0),
+        subtext: "Products in catalog",
+        icon: "🏷️",
+        border: "dark",
+      },
+      {
+        title: "Product Attributes",
+        value: Number(productAttributesRows?.[0]?.total || 0),
+        subtext: "Fields defined across attribute sets",
+        icon: "🧩",
+        border: "secondary",
+      },
+    ];
+
+    const recentOrders = (recentOrdersRows || []).map((order) => {
+      const orderRef = order.order_number || order.new_order_id;
+      return {
+        id: orderRef,
+        orderId: order.new_order_id,
+        customer: `${order.billing_first_name || ""} ${
+          order.billing_last_name || ""
+        }`.trim(),
+        status: toDisplayStatus(order.status),
+        total: formatCurrency(order.total),
+      };
+    });
+
+    const recentProducts = (recentProductsRows || []).map((product) => ({
+      id: product.ProductID,
+      sku: product.PartNumber || `#${product.ProductID}`,
+      name: product.ProductName || "Untitled product",
+    }));
+
+    const recentAttributeCategories = (recentAttributeCategoriesRows || []).map(
+      (item) => ({
+        id: item.id,
+        name: item.name,
+        values: Number(item.values_count || 0),
+      }),
+    );
+
+    return { stats, recentOrders, recentProducts, recentAttributeCategories };
+  } catch (error) {
+    console.error("Error loading admin dashboard data:", error);
+    const fallbackStats = [
+      {
+        title: "New Orders",
+        value: 0,
+        subtext: "Placed in last 24 hours",
+        icon: "🛒",
+        border: "primary",
+      },
+      {
+        title: "Pending Orders",
+        value: 0,
+        subtext: "Awaiting action",
+        icon: "⏳",
+        border: "warning",
+      },
+      {
+        title: "Orders Today",
+        value: 0,
+        subtext: "Placed today",
+        icon: "📦",
+        border: "info",
+      },
+      {
+        title: "Orders This Week",
+        value: 0,
+        subtext: "Last 7 days",
+        icon: "📈",
+        border: "success",
+      },
+      {
+        title: "Total Products",
+        value: 0,
+        subtext: "Products in catalog",
+        icon: "🏷️",
+        border: "dark",
+      },
+      {
+        title: "Product Attributes",
+        value: 0,
+        subtext: "Fields defined across attribute sets",
+        icon: "🧩",
+        border: "secondary",
+      },
+    ];
+    return {
+      stats: fallbackStats,
+      recentOrders: [],
+      recentProducts: [],
+      recentAttributeCategories: [],
+    };
+  }
+}
 
 function StatusBadge({ status }) {
   const map = {
@@ -126,7 +259,7 @@ function StatusBadge({ status }) {
 
 function StatCard({ title, value, subtext, icon, border }) {
   return (
-    <div className="col-12 col-sm-6 col-xl-3">
+    <div className="col-12 col-sm-6 col-lg-4">
       <div
         className={`card h-100 shadow-sm border-0 border-start border-4 border-${border}`}
       >
@@ -173,9 +306,14 @@ function SectionCard({ title, actionLabel, actionHref, children }) {
   );
 }
 
-export default function AdminPage() {
-  const { data: session } = useSession();
+export default async function AdminPage() {
+  const [session, dashboard] = await Promise.all([
+    getServerSession(authOptions),
+    getDashboardData(),
+  ]);
   const displayName = session?.user?.name || session?.user?.email || "Admin";
+  const { stats, recentOrders, recentProducts, recentAttributeCategories } =
+    dashboard;
 
   return (
     <div className="container-fluid py-4 px-3 px-md-4">
@@ -190,13 +328,13 @@ export default function AdminPage() {
 
         <div className="d-flex gap-2 flex-wrap">
           <Link
-            href="/admin/products"
+            href="/admin/products?create=1"
             className="btn btn-dark rounded-pill px-3"
           >
             + Add Product
           </Link>
           <Link
-            href="/admin/attribute-categories"
+            href="/admin/attribute-categories?create=1"
             className="btn btn-warning rounded-pill px-3"
           >
             + Attribute Category
@@ -266,7 +404,16 @@ export default function AdminPage() {
                 <tbody>
                   {recentOrders.map((order) => (
                     <tr key={order.id}>
-                      <td className="fw-semibold">#{order.id}</td>
+                      <td className="fw-semibold">
+                        <Link
+                          href={`/admin/orders?orderId=${encodeURIComponent(
+                            String(order.orderId ?? ""),
+                          )}`}
+                          className="text-decoration-none"
+                        >
+                          #{order.id}
+                        </Link>
+                      </td>
                       <td>{order.customer}</td>
                       <td>
                         <StatusBadge status={order.status} />
@@ -286,7 +433,7 @@ export default function AdminPage() {
               <SectionCard
                 title="Summit Attribute Parser"
                 actionLabel="Open Parser"
-                actionHref="/admin/products"
+                actionHref="/admin/summit-attribute-parser"
               >
                 <div className="d-flex flex-column gap-3">
                   <p className="text-muted mb-0">
@@ -309,7 +456,7 @@ export default function AdminPage() {
 
                   <div className="d-flex flex-wrap gap-2">
                     <Link
-                      href="/admin/products"
+                      href="/admin/summit-attribute-parser"
                       className="btn btn-dark rounded-pill"
                     >
                       Launch Parser
@@ -333,9 +480,10 @@ export default function AdminPage() {
               >
                 <div className="list-group list-group-flush">
                   {recentAttributeCategories.map((item) => (
-                    <div
-                      key={item.name}
-                      className="list-group-item px-0 d-flex justify-content-between align-items-center"
+                    <Link
+                      key={item.id ?? item.name}
+                      href={`/admin/attribute-categories/${item.id}`}
+                      className="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center"
                     >
                       <div>
                         <div className="fw-semibold">{item.name}</div>
@@ -346,7 +494,7 @@ export default function AdminPage() {
                       <span className="badge text-bg-light border">
                         {item.values}
                       </span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </SectionCard>
@@ -363,7 +511,7 @@ export default function AdminPage() {
             <div className="list-group list-group-flush">
               {recentProducts.map((product) => (
                 <div
-                  key={product.sku}
+                  key={product.id ?? product.sku}
                   className="list-group-item px-0 d-flex justify-content-between align-items-center"
                 >
                   <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { getProductImageUrl, getInstallUrl } from "@/lib/assets";
 import { showToast } from "@/utlis/showToast";
 
@@ -49,6 +50,7 @@ const parseSummitAttributes = (input) => {
 };
 
 export default function AdminProductsPage() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [bodies, setBodies] = useState([]);
   const [platformGroups, setPlatformGroups] = useState([]);
@@ -193,6 +195,17 @@ export default function AdminProductsPage() {
     fetchProductOptions();
     fetchAttributeCategories();
   }, []);
+
+  useEffect(() => {
+    const createMode =
+      searchParams.get("create") === "1" ||
+      searchParams.get("new") === "1" ||
+      searchParams.get("add") === "1";
+    if (createMode) {
+      setEditingProduct(null);
+      setShowForm(true);
+    }
+  }, [searchParams]);
 
   const fetchAttributeCategories = async () => {
     try {
@@ -971,6 +984,125 @@ export default function AdminProductsPage() {
       }
     } catch (err) {
       setError("Failed to load product: " + err.message);
+    }
+  };
+
+  const handleCopy = async (product) => {
+    try {
+      const response = await fetch(`/api/admin/products/${product.ProductID}`);
+      const data = await response.json();
+      if (response.ok) {
+        setEditingProduct(null);
+        const bodyIds = Array.isArray(data.product.BodyIDs)
+          ? data.product.BodyIDs.map(String)
+          : data.product.BodyID
+            ? [String(data.product.BodyID)]
+            : [];
+        const bodyId = bodyIds[0] || data.product.BodyID || "";
+        const categoryByPlatform = data.product.categoryByPlatform || {};
+        const catId =
+          bodyId && categoryByPlatform[bodyId] != null
+            ? categoryByPlatform[bodyId]
+            : data.product.CatID || "";
+
+        if (bodyId) {
+          await fetchCategoriesByBody(bodyId);
+        }
+
+        setFormData({
+          PartNumber: data.product.PartNumber || "",
+          ProductName: `copy - ${data.product.ProductName || ""}`,
+          Description: data.product.Description || "",
+          Retail: data.product.Retail || "",
+          Price: data.product.Price || "",
+          ImageSmall: data.product.ImageSmall || "",
+          Qty: data.product.Qty || 0,
+          BodyID: bodyId,
+          BodyIDs: bodyIds,
+          CatID: catId,
+          categoryByPlatform,
+          ImageLarge: data.product.ImageLarge || "",
+          Features: data.product.Features || "",
+          Instructions: data.product.Instructions || "",
+          Blength: data.product.Blength || 0,
+          Bheight: data.product.Bheight || 0,
+          Bwidth: data.product.Bwidth || 0,
+          Bweight: data.product.Bweight || 0,
+          Color: data.product.Color || "",
+          Hardware:
+            data.product.Hardware && data.product.Hardware !== "0"
+              ? String(data.product.Hardware)
+              : "",
+          Grease:
+            data.product.Grease && data.product.Grease !== "0"
+              ? String(data.product.Grease)
+              : "",
+          Images: data.product.Images || "",
+          NewPart: data.product.NewPart || 0,
+          NewPartDate:
+            data.product.NewPartDate && data.product.NewPartDate !== "0"
+              ? data.product.NewPartDate
+              : "",
+          PackagePartnumbers: data.product.PackagePartnumbers || "",
+          FreeShipping:
+            data.product.FreeShipping == 1 || data.product.FreeShipping === "1"
+              ? "1"
+              : "0",
+          Display:
+            data.product.Display !== undefined ? data.product.Display : 1,
+          PackagePartnumbersQty: data.product.PackagePartnumbersQty || "",
+          Package: data.product.Package || 0,
+          StartAppYear: data.product.StartAppYear || "",
+          EndAppYear: data.product.EndAppYear || "",
+          UsaMade:
+            data.product.UsaMade !== undefined ? data.product.UsaMade : 1,
+          fproduct: data.product.fproduct || 0,
+          CrossRef: data.product.CrossRef || "",
+          ManID: data.product.ManID || "",
+          LowMargin: data.product.LowMargin || 0,
+          mbox: data.product.mbox || "",
+          flatrate: data.product.flatrate || "",
+          AngleFinder:
+            data.product.AngleFinder && data.product.AngleFinder !== "0"
+              ? String(data.product.AngleFinder)
+              : "",
+          endproduct: data.product.endproduct || "",
+          domhandling: data.product.domhandling || "",
+          hardwarepack: data.product.hardwarepack || 0,
+          hardwarepacks: data.product.hardwarepacks || "",
+          video: data.product.video || "",
+          taxexempt: data.product.taxexempt || 0,
+          couponexempt: data.product.couponexempt || 0,
+          BlemProduct: data.product.BlemProduct || 0,
+          attributeCategoryId:
+            data.product.AttributeCategoryID != null &&
+            data.product.AttributeCategoryID !== ""
+              ? String(data.product.AttributeCategoryID)
+              : "",
+          attributeValues: (data.product.attributeValues || []).reduce(
+            (acc, a) => {
+              if (a && a.slug != null) acc[a.slug] = a.value ?? "";
+              return acc;
+            },
+            {},
+          ),
+        });
+        setMainImage(null);
+        setAdditionalImages([]);
+        setInstructionsPdfFile(null);
+        setInstructionsDelete(false);
+        setShowForm(true);
+        setSummitPasteText("");
+        setSummitPasteError("");
+        setSummitPasteSuccess("");
+        setSummitParseSummary(null);
+        setSummitPasteApplying(false);
+      } else {
+        throw new Error(data.error || "Failed to load product");
+      }
+    } catch (err) {
+      setError("Failed to copy product: " + err.message);
+      showToast("Failed to copy product: " + err.message, "error");
     }
   };
 
@@ -3217,7 +3349,7 @@ export default function AdminProductsPage() {
                     <SortableTh column="Price" label="Price" />
                     <SortableTh column="Qty" label="Qty" />
                     <SortableTh column="Display" label="Display" />
-                    <th>Actions</th>
+                    <th style={{ minWidth: "260px" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -3284,37 +3416,45 @@ export default function AdminProductsPage() {
                             {product.Display === 1 ? "Yes" : "No"}
                           </span>
                         </td>
-                        <td>
-                          {product?.ProductID ? (
-                            <a
-                              className="btn btn-sm btn-outline-secondary rounded-pill me-1"
-                              href={`/product/${product.ProductID}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              View
-                            </a>
-                          ) : (
+                        <td style={{ whiteSpace: "nowrap" }}>
+                          <div className="d-inline-flex align-items-center flex-nowrap gap-1">
+                            {product?.ProductID ? (
+                              <a
+                                className="btn btn-sm btn-light border rounded-pill px-2"
+                                href={`/product/${product.ProductID}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                View
+                              </a>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-light border rounded-pill px-2"
+                                disabled
+                              >
+                                View
+                              </button>
+                            )}
                             <button
-                              type="button"
-                              className="btn btn-sm btn-outline-secondary rounded-pill me-1"
-                              disabled
+                              className="btn btn-sm btn-outline-primary rounded-pill px-2"
+                              onClick={() => handleEdit(product)}
                             >
-                              View
+                              Edit
                             </button>
-                          )}
-                          <button
-                            className="btn btn-sm btn-outline-primary rounded-pill me-1"
-                            onClick={() => handleEdit(product)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger rounded-pill"
-                            onClick={() => handleDelete(product.ProductID)}
-                          >
-                            Delete
-                          </button>
+                            <button
+                              className="btn btn-sm btn-outline-secondary rounded-pill px-2"
+                              onClick={() => handleCopy(product)}
+                            >
+                              Copy
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-danger rounded-pill px-2"
+                              onClick={() => handleDelete(product.ProductID)}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

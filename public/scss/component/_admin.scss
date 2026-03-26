@@ -191,10 +191,43 @@
 			background: var(--primary);
 		}
 	}
+
+	/* Dashboard first: subtle “home” treatment without competing with active state */
+	.admin-nav-link-dashboard:not(.active) {
+		color: rgba(255, 255, 255, 0.95);
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.14);
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.14);
+			border-color: rgba(255, 255, 255, 0.22);
+		}
+	}
+
+	.admin-nav-separator {
+		list-style: none;
+		margin: 0;
+		padding: 0.5rem 0;
+		align-self: stretch;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&::before {
+			content: "";
+			display: block;
+			width: 100%;
+			max-width: 100%;
+			height: 1px;
+			/* Light grey divider (reads clearly on dark admin nav bar) */
+			background: #d1d5db;
+			border-radius: 1px;
+		}
+	}
 }
 
-/* Desktop: show inline nav */
-@media (min-width: 1200px) {
+/* Tablet+ : tighter nav that can wrap (no scrollbars) */
+@media (min-width: 768px) {
 	.admin-nav-toggle {
 		display: none !important;
 	}
@@ -214,16 +247,36 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 			align-items: center;
-			gap: 0.25rem;
+			column-gap: 0.25rem;
+			row-gap: 0.25rem;
 			padding: 0;
 		}
 
 		.admin-nav-link {
 			display: inline-flex;
 			align-items: center;
-			font-size: 0.9375rem;
-			padding: 0.625rem 1rem;
+			font-size: 0.875rem;
+			padding: 0.45rem 0.65rem;
 			white-space: nowrap;
+			flex: 0 0 auto;
+		}
+
+		.admin-nav-item-dashboard {
+			flex-shrink: 0;
+		}
+
+		.admin-nav-separator {
+			padding: 0 0.35rem;
+			align-self: stretch;
+			width: auto;
+			flex: 0 0 auto;
+
+			&::before {
+				width: 1px;
+				height: 22px;
+				max-width: none;
+				background: #d1d5db;
+			}
 		}
 	}
 }

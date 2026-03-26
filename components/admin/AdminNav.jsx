@@ -14,7 +14,6 @@ export default function AdminNav({ user }) {
     { href: "/admin/categories", label: "Categories" },
     { href: "/admin/coupons", label: "Coupons" },
     { href: "/admin/customers", label: "Customers" },
-    { href: "/admin", label: "Dashboard" },
     { href: "/admin/dealer-pos", label: "Dealer POs" },
     { href: "/admin/dealer-tiers", label: "Dealer Tiers" },
     { href: "/admin/import", label: "Import ACES/PIES" },
@@ -22,6 +21,7 @@ export default function AdminNav({ user }) {
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/platforms", label: "Platforms" },
     { href: "/admin/attribute-categories", label: "Product Attributes" },
+    { href: "/admin/summit-attribute-parser", label: "Summit Parser" },
     { href: "/admin/products", label: "Products" },
     { href: "/admin/topbar", label: "Topbar" },
   ];
@@ -84,6 +84,18 @@ export default function AdminNav({ user }) {
         <div className="container-wide">
           <div className="admin-nav-inner">
             <ul id="admin-nav-menu" className="admin-nav-links" role="list">
+              <li className="admin-nav-item-dashboard">
+                <Link
+                  href="/admin"
+                  className={`admin-nav-link admin-nav-link-dashboard ${
+                    pathname === "/admin" ? "active" : ""
+                  }`}
+                  onClick={closeMobileMenu}
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li className="admin-nav-separator" aria-hidden="true" />
               {navLinks.map(({ href, label }) => {
                 const isActive =
                   href === "/admin"
