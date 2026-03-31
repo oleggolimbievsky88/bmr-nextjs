@@ -11,6 +11,7 @@ import {
   getCategoryIdsBySlugAndMainCatDirectChild,
   getCategoryIdsWithDescendants,
 } from "@/lib/queries";
+import { withComputedBadges } from "@/lib/productBadges";
 
 export async function GET(request) {
   try {
@@ -166,6 +167,7 @@ export async function GET(request) {
     };
 
     const products = await getFilteredProductsPaginated(productListParams);
+    const productsWithBadges = await withComputedBadges(products || []);
 
     // For category pages, return attribute filter options (counts from unfiltered category set)
     let attributeFilterOptions = [];
@@ -192,7 +194,7 @@ export async function GET(request) {
 
     return NextResponse.json(
       {
-        products: products || [],
+        products: productsWithBadges || [],
         ...(attributeFilterOptions.length > 0
           ? { attributeFilters: attributeFilterOptions }
           : {}),

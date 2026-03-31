@@ -257,34 +257,7 @@ function NewProductsSection({
   const useGridLayout = itemCount < 4;
 
   if (!products.length) {
-    return (
-      <section className="homepage-section" ref={sectionRef}>
-        <div className="container">
-          <SectionHeader title={title} subtitle={description} />
-          <div
-            className="text-center p-5"
-            style={{
-              minHeight: "400px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div className="text-muted">
-              <i
-                className="bi bi-box"
-                style={{
-                  fontSize: "3rem",
-                  marginBottom: "1rem",
-                  display: "block",
-                }}
-              ></i>
-              No {title.toLowerCase()} found.
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   const productCard = (product, { featured = false } = {}) => {
@@ -301,10 +274,8 @@ function NewProductsSection({
             aria-label={product?.ProductName || "View product"}
           >
             <div className="brandCard__badges">
-              {featured && (
-                <span className="brandBadge brandBadge--featured">
-                  Featured
-                </span>
+              {!isScratchDent && (
+                <span className="brandBadge brandBadge--new">New Product</span>
               )}
               {product?.ScratchDent === "1" && (
                 <span className="brandBadge brandBadge--warn">

@@ -31,8 +31,8 @@ const remotePatterns = [
   { protocol: "https", hostname: "i.ytimg.com" },
   { protocol: "https", hostname: "img.youtube.com" },
   { protocol: "https", hostname: "www.paypalobjects.com" },
-  { protocol: "https", hostname: "dev.controlfreaksuspension.com" },
   { protocol: "https", hostname: "controlfreaksuspension.com" },
+  { protocol: "https", hostname: "www.controlfreaksuspension.com" },
   { protocol: "https", hostname: "assets.controlfreaksuspension.com" },
   { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
 ];

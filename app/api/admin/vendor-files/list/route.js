@@ -1,39 +1,34 @@
 import { NextResponse } from "next/server";
 import { getR2Client, r2List } from "@/lib/vendorPortal/r2";
-import { requireVendorSession } from "@/lib/vendorPortal/auth";
+import { requireAdminApi } from "@/lib/vendorPortal/adminAuth";
+import {
+  normalizeRelPath,
+  resolveVendorBrandKeyFromQuery,
+} from "@/lib/vendorPortal/paths";
+import { getBrandR2Prefix } from "@/lib/vendorPortal/brand";
 import { mapR2ListToExplorer } from "@/lib/vendorPortal/listing";
 
-function normalizePath(path) {
-  const p = String(path || "")
-    .replace(/^\/+/, "")
-    .replace(/\.\./g, "")
-    .trim();
-  return p;
-}
-
 export async function GET(request) {
-  try {
-    const auth = requireVendorSession(request);
-    if (!auth.ok) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
-    }
+  const admin = await requireAdminApi();
+  if (!admin.ok) return admin.response;
 
+  try {
     const r2 = getR2Client();
     if (!r2) {
       return NextResponse.json({ error: "R2 not configured" }, { status: 503 });
     }
 
     const { searchParams } = new URL(request.url);
-    const relPath = normalizePath(searchParams.get("path") || "");
-    const basePrefix = auth.prefix; // always ends with /
-    const fullPrefix = relPath
-      ? `${basePrefix}${relPath.replace(/\/+$/, "")}/`
-      : basePrefix;
+    const brandKey = resolveVendorBrandKeyFromQuery(searchParams.get("brand"));
+    const basePrefix = getBrandR2Prefix(brandKey);
+    const relPath = normalizeRelPath(searchParams.get("path") || "");
 
     const data = await r2List({
       bucketName: r2.bucketName,
       client: r2.client,
-      prefix: fullPrefix,
+      prefix: relPath
+        ? `${basePrefix}${relPath.replace(/\/+$/, "")}/`
+        : basePrefix,
       delimiter: "/",
     });
 
@@ -45,13 +40,13 @@ export async function GET(request) {
 
     return NextResponse.json({
       success: true,
-      brandKey: auth.brand.key,
+      brandKey,
       prefix: relPath,
       folders,
       files,
     });
   } catch (err) {
-    console.error("vendor-files/list failed:", err);
+    console.error("admin vendor-files list:", err);
     return NextResponse.json(
       { error: "Failed to list files" },
       { status: 500 },

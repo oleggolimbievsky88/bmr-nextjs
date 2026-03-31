@@ -25,6 +25,7 @@ import PlatformHeader from "@/components/header/PlatformHeader";
 import GiftCertificateHero from "@/components/header/GiftCertificateHero";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { notFound } from "next/navigation";
+import { withComputedBadges } from "@/lib/productBadges";
 
 // Force dynamic rendering to prevent build-time database access
 export const dynamic = "force-dynamic";
@@ -52,6 +53,7 @@ export default async function ProductPage({ params, searchParams }) {
     product = await getProductById(id);
     const attributeValues = await getProductAttributeValues(id).catch(() => []);
     product.attributes = attributeValues;
+    product = await withComputedBadges(product);
   } catch (err) {
     if (err?.message === "Product not found") {
       notFound();

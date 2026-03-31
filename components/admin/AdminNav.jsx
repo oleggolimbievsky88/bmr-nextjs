@@ -24,6 +24,7 @@ export default function AdminNav({ user }) {
     { href: "/admin/summit-attribute-parser", label: "Summit Parser" },
     { href: "/admin/products", label: "Products" },
     { href: "/admin/topbar", label: "Topbar" },
+    { href: "/admin/vendor-files", label: "Vendor files" },
   ];
 
   const handleLogout = () => {

@@ -453,6 +453,8 @@ export default function ProductDetails({
   ).toFixed(2);
 
   const fitmentRangeLabel = getProductFitmentRangeText(product);
+  const showNew = Boolean(product?.isNewProduct);
+  const showScratchDent = String(product?.BlemProduct) === "1";
 
   if (isLoading) {
     return (
@@ -547,18 +549,36 @@ export default function ProductDetails({
                     <h5>
                       {displayProduct?.ProductName || product?.ProductName}
                     </h5>
-                    {fitmentRangeLabel && (
-                      <span
-                        className="d-inline-block mt-2 px-3 py-1 rounded-pill fw-semibold"
-                        style={{
-                          fontSize: "0.8rem",
-                          letterSpacing: "0.04em",
-                          backgroundColor: "var(--tf-theme-primary, #e8b923)",
-                          color: "#1a1a1a",
-                        }}
+                    {(showNew || showScratchDent || fitmentRangeLabel) && (
+                      <div
+                        className="d-flex flex-wrap gap-2 mt-2"
+                        style={{ alignItems: "center" }}
                       >
-                        Fits: {fitmentRangeLabel}
-                      </span>
+                        {showNew && (
+                          <span className="brandBadge brandBadge--new">
+                            New Product
+                          </span>
+                        )}
+                        {showScratchDent && (
+                          <span className="brandBadge brandBadge--warn">
+                            Scratch & Dent
+                          </span>
+                        )}
+                        {fitmentRangeLabel && (
+                          <span
+                            className="d-inline-block px-3 py-1 rounded-pill fw-semibold"
+                            style={{
+                              fontSize: "0.8rem",
+                              letterSpacing: "0.04em",
+                              backgroundColor:
+                                "var(--tf-theme-primary, #e8b923)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            Fits: {fitmentRangeLabel}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className="tf-breadcrumb-list">

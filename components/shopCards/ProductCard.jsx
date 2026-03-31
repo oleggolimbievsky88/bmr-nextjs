@@ -34,6 +34,10 @@ export const ProductCard = ({
 
   const fitmentRange = getProductFitmentRangeText(product);
   const fitmentLabel = fitmentRange ? `Fits: ${fitmentRange}` : null;
+  const showScratchDent =
+    String(product?.BlemProduct) === "1" ||
+    String(product?.ScratchDent) === "1";
+  const showNew = Boolean(product?.isNewProduct);
 
   return (
     <Link
@@ -41,6 +45,18 @@ export const ProductCard = ({
       className={`bm-card card-product modern-pcard fl-item ${cardClassName}`.trim()}
     >
       <div className="bm-card__img pcard-img card-product-wrapper">
+        {(showNew || showScratchDent) && (
+          <div className="productBadges">
+            {showNew && (
+              <span className="brandBadge brandBadge--new">New Product</span>
+            )}
+            {showScratchDent && (
+              <span className="brandBadge brandBadge--warn">
+                Scratch & Dent
+              </span>
+            )}
+          </div>
+        )}
         <div className="product-img">
           <Image
             className="lazyload img-product"

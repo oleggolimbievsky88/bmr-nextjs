@@ -27,9 +27,25 @@ export default function ProductCardList({ product, colorsMap = {} }) {
       : product.Description;
   const colorIds = product.Color ? product.Color.split(",") : [];
   const productColors = colorIds.map((id) => colorsMap[id]).filter(Boolean);
+  const showScratchDent =
+    String(product?.BlemProduct) === "1" ||
+    String(product?.ScratchDent) === "1";
+  const showNew = Boolean(product?.isNewProduct);
   return (
     <div className="card-product list-layout">
-      <div className="card-product-wrapper">
+      <div className="card-product-wrapper" style={{ position: "relative" }}>
+        {(showNew || showScratchDent) && (
+          <div className="productBadges">
+            {showNew && (
+              <span className="brandBadge brandBadge--new">New Product</span>
+            )}
+            {showScratchDent && (
+              <span className="brandBadge brandBadge--warn">
+                Scratch & Dent
+              </span>
+            )}
+          </div>
+        )}
         <Link href={`/product/${product.ProductID}`} className="product-img">
           <Image
             className="lazyload img-product"

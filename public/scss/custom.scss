@@ -901,7 +901,8 @@ section.tf-slideshow,
 				transition: color 0.3s ease;
 
 				&:hover {
-					color: var(--primary);
+					/* Darker accent on light mega-menu panels (e.g. Control Freak yellow) */
+					color: var(--brand-primary-text-on-light, var(--primary));
 				}
 			}
 
@@ -953,7 +954,7 @@ section.tf-slideshow,
 		}
 
 		.text-dark {
-			color: var(--primary) !important;
+			color: var(--brand-primary-text-on-light, var(--primary)) !important;
 		}
 	}
 

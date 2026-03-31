@@ -74,6 +74,39 @@ The portal enforces brand separation by hostname → prefix mapping.
   - `GET /api/vendor-files/list?path=...`
   - `GET /api/vendor-files/download?key=...`
 
+### Migrating from FTP to R2 (checklist)
+
+1. **Create the R2 bucket** in Cloudflare (same account you use for other assets if you prefer).
+2. **Create S3 API credentials** (R2 → Manage R2 API Tokens) with read/write on that bucket; put `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, and `R2_BUCKET_NAME` in Vercel.
+3. **Mirror folder structure** into object keys:
+   - Everything for BMR vendors → under `bmr/` (or your `R2_PREFIX_BMR`).
+   - Everything for Control Freak vendors → under `controlfreak/` (or `R2_PREFIX_CONTROLFREAK`).
+4. **Upload tools** (pick one):
+   - **Cloudflare dashboard** — upload files and create “folders” by using `/` in object names.
+   - **rclone** — `rclone sync /local/ftp-mirror/bmr r2:your-bucket/bmr` (and similarly for `controlfreak`).
+   - **AWS CLI** configured for the R2 endpoint — `aws s3 sync` with `--endpoint-url`.
+5. **Do a spot check** — open the vendor portal on each subdomain, sign in, and confirm folders and downloads match what FTP had.
+6. **Cut over** — send vendors the new URLs; keep FTP read-only for a short window if you want a rollback path.
+
+### Admin: manage vendor files in the dashboard
+
+Signed-in **admin** users can open **`/admin/vendor-files`** (also linked in the admin nav as **Vendor files**) to:
+
+- Switch between **BMR** and **Control Freak** (R2 prefix roots).
+- **Create folders**, **upload** files, **rename** files/folders, **delete** files or entire folders (recursive delete in R2).
+- **Download** a file via a short-lived signed URL (for verification).
+
+Admin API routes (require admin session):
+
+- `GET /api/admin/vendor-files/list?brand=bmr|controlfreak&path=...`
+- `POST /api/admin/vendor-files/upload` (multipart: `brand`, `path`, `file`)
+- `POST /api/admin/vendor-files/mkdir` (JSON: `brand`, `path`, `name`)
+- `POST /api/admin/vendor-files/delete` (JSON: `brand`, `type`: `file` \| `folder`, plus `key` or `path`)
+- `POST /api/admin/vendor-files/rename` (JSON: `brand`, `kind`: `file` \| `folder`, plus `fromKey`/`toKey` or `fromPath`/`toPath`)
+- `GET /api/admin/vendor-files/download?brand=&key=`
+
+**Note:** Very large uploads may hit platform body-size limits on serverless; for bulk migrations prefer rclone or the Cloudflare dashboard, and use the admin UI for day-to-day changes.
+
 ### Required: `DATABASE_URL`
 
 In Vercel, set **`DATABASE_URL`** (the app does **not** use `MYSQL_HOST` / `MYSQL_USER` / etc.):
