@@ -18,7 +18,11 @@ function absoluteUrl(base, maybePath) {
 function getBrandLogoUrl(brand, SITE_URL) {
   const assetsBaseUrl = brand?.assetsBaseUrl || "";
   const headerPath = brand?.logo?.headerPath || "";
-  const resolved = resolveAssetUrl({ assetsBaseUrl, path: headerPath });
+  const resolved = resolveAssetUrl({
+    assetsBaseUrl,
+    path: headerPath,
+    siteUrl: SITE_URL,
+  });
   return absoluteUrl(SITE_URL, resolved);
 }
 

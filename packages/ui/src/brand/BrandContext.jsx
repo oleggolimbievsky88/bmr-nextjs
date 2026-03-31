@@ -10,13 +10,16 @@ export function BrandProvider({ brand, children }) {
     if (!brand) return null;
 
     const assetsBaseUrl = brand.assetsBaseUrl || "";
+    const siteUrl = brand.siteUrl || "";
     const headerLogoUrl = resolveAssetUrl({
       assetsBaseUrl,
       path: brand.logo?.headerPath,
+      siteUrl,
     });
     const footerLogoUrl = resolveAssetUrl({
       assetsBaseUrl,
       path: brand.logo?.footerPath || brand.logo?.headerPath,
+      siteUrl,
     });
 
     return {

@@ -1,4 +1,5 @@
 import { getSiteUrl } from "../url/getSiteUrl.js";
+import { effectiveAssetsBaseUrl } from "./resolveAssetUrl.js";
 import { getBrandKey, defaultBrands, deepMerge } from "./brands.js";
 
 let dbFetcher = null;
@@ -64,9 +65,29 @@ export async function getBrandConfig() {
     deepMerge(merged, dbConfig);
   }
 
-  merged.siteUrl = getSiteUrl();
+  const siteUrl = getSiteUrl();
+  merged.siteUrl = siteUrl;
+
+  // Env logo overrides must win even when the DB has stale absolute URLs
+  // (e.g. dev subdomain saved in brand.logo.*).
+  const envHeaderLogo =
+    typeof process.env.NEXT_PUBLIC_HEADER_LOGO === "string"
+      ? process.env.NEXT_PUBLIC_HEADER_LOGO.trim()
+      : "";
+  const envFooterLogo =
+    typeof process.env.NEXT_PUBLIC_FOOTER_LOGO === "string"
+      ? process.env.NEXT_PUBLIC_FOOTER_LOGO.trim()
+      : "";
+  if (!merged.logo || typeof merged.logo !== "object") merged.logo = {};
+  if (envHeaderLogo) merged.logo.headerPath = envHeaderLogo;
+  if (envFooterLogo) merged.logo.footerPath = envFooterLogo;
+
+  const envAssets =
+    (typeof process.env.NEXT_PUBLIC_ASSETS_BASE_URL === "string" &&
+      process.env.NEXT_PUBLIC_ASSETS_BASE_URL.trim()) ||
+    "";
   merged.assetsBaseUrl =
-    process.env.NEXT_PUBLIC_ASSETS_BASE_URL || merged.assetsBaseUrl || "";
+    envAssets || effectiveAssetsBaseUrl(merged.assetsBaseUrl, siteUrl);
 
   cache.set(key, { config: merged, expiresAt: now + CACHE_TTL_MS });
   return merged;
@@ -104,9 +125,28 @@ export async function getBrandConfigByKey(key) {
     deepMerge(merged, dbConfig);
   }
 
-  merged.siteUrl = getSiteUrl();
+  const siteUrl = getSiteUrl();
+  merged.siteUrl = siteUrl;
+
+  // Same env override behavior as getBrandConfig().
+  const envHeaderLogo =
+    typeof process.env.NEXT_PUBLIC_HEADER_LOGO === "string"
+      ? process.env.NEXT_PUBLIC_HEADER_LOGO.trim()
+      : "";
+  const envFooterLogo =
+    typeof process.env.NEXT_PUBLIC_FOOTER_LOGO === "string"
+      ? process.env.NEXT_PUBLIC_FOOTER_LOGO.trim()
+      : "";
+  if (!merged.logo || typeof merged.logo !== "object") merged.logo = {};
+  if (envHeaderLogo) merged.logo.headerPath = envHeaderLogo;
+  if (envFooterLogo) merged.logo.footerPath = envFooterLogo;
+
+  const envAssets =
+    (typeof process.env.NEXT_PUBLIC_ASSETS_BASE_URL === "string" &&
+      process.env.NEXT_PUBLIC_ASSETS_BASE_URL.trim()) ||
+    "";
   merged.assetsBaseUrl =
-    process.env.NEXT_PUBLIC_ASSETS_BASE_URL || merged.assetsBaseUrl || "";
+    envAssets || effectiveAssetsBaseUrl(merged.assetsBaseUrl, siteUrl);
 
   cache.set(effectiveKey, { config: merged, expiresAt: now + CACHE_TTL_MS });
   return merged;
