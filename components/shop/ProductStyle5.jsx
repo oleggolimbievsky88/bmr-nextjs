@@ -24,7 +24,7 @@ export default function ProductStyle5() {
                 className="tf-btn-filter"
               >
                 <span className="icon icon-filter" />
-                <span className="text">Filter</span>
+                <span className="text">Filters</span>
               </a>
             </div>
             <ul className="tf-control-layout d-flex justify-content-center">
