@@ -18,6 +18,7 @@ export default function Header({
   isArrow = true,
   Linkfs = "",
   showVehicleSearch = true,
+  logoHref,
 }) {
   // Keep legacy props in signature to avoid breaking imports,
   // but they are unused (unified site header).
@@ -29,6 +30,11 @@ export default function Header({
 
   const brand = useBrand();
   const [menuData, setMenuData] = useState(null);
+
+  const resolvedLogoHref = logoHref || `/`;
+  const isExternalLogoHref =
+    typeof resolvedLogoHref === "string" &&
+    /^https?:\/\//i.test(resolvedLogoHref);
 
   useEffect(() => {
     // Prefetch menu data immediately on mount with caching
@@ -78,23 +84,51 @@ export default function Header({
                   />
                 </svg>
               </a>
-              <Link href={`/`} className="logo-header">
-                <Image
-                  alt={brand.logo?.alt || `${brand.companyName} Logo`}
-                  className="logo"
-                  src={brand.logo?.headerUrl || "/images/logo/logo-white.png"}
-                  width={300}
-                  height={100}
-                  style={{
-                    width: "auto",
-                    height: "auto",
-                    objectFit: "contain",
-                    ...brand.logo?.headerMaxSize,
-                  }}
-                  priority
-                  unoptimized={!(brand.logo?.headerUrl || "/").startsWith("/")}
-                />
-              </Link>
+              {isExternalLogoHref ? (
+                <a
+                  href={resolvedLogoHref}
+                  className="logo-header"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    alt={brand.logo?.alt || `${brand.companyName} Logo`}
+                    className="logo"
+                    src={brand.logo?.headerUrl || "/images/logo/logo-white.png"}
+                    width={300}
+                    height={100}
+                    style={{
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      ...brand.logo?.headerMaxSize,
+                    }}
+                    priority
+                    unoptimized={
+                      !(brand.logo?.headerUrl || "/").startsWith("/")
+                    }
+                  />
+                </a>
+              ) : (
+                <Link href={resolvedLogoHref} className="logo-header">
+                  <Image
+                    alt={brand.logo?.alt || `${brand.companyName} Logo`}
+                    className="logo"
+                    src={brand.logo?.headerUrl || "/images/logo/logo-white.png"}
+                    width={300}
+                    height={100}
+                    style={{
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      ...brand.logo?.headerMaxSize,
+                    }}
+                    priority
+                    unoptimized={
+                      !(brand.logo?.headerUrl || "/").startsWith("/")
+                    }
+                  />
+                </Link>
+              )}
             </div>
             <SearchInput />
             <ul className="nav-icon d-flex align-items-center gap-20">

@@ -1,8 +1,32 @@
 
+@use "sass:map";
+
 @mixin flex($alignItem, $justifyContent) {
     display: flex;
     align-items: $alignItem;
     justify-content: $justifyContent;
+}
+
+// Standard responsive breakpoints (Bootstrap-aligned).
+// Usage: @include breakpoint(md) { ... }
+$breakpoints: (
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px
+);
+
+@mixin breakpoint($name) {
+    $min: map.get($breakpoints, $name);
+
+    @if $min == null {
+        @error "Unknown breakpoint `#{$name}`. Expected one of: #{map.keys($breakpoints)}.";
+    }
+
+    @media (min-width: $min) {
+        @content;
+    }
 }
 @mixin grid($loop, $num) {
     display: grid;

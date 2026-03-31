@@ -1,6 +1,7 @@
 @use "sass:color";
 @use "component/order-confirmation";
 @use "component/search";
+@use "component/vendor-portal";
 
 :root{
   --cat-accent-rgb: var(--brand-primary-rgb, 225,29,42);
@@ -7719,6 +7720,7 @@ a.card-product.modern-pcard {
   color: #111;
   margin: 0 0 8px;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;

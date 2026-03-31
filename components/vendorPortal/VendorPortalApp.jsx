@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+function cx(...values) {
+  return values.filter(Boolean).join(" ");
+}
+
 function formatBytes(bytes) {
   const n = Number(bytes || 0);
   if (!Number.isFinite(n) || n <= 0) return "—";
@@ -137,6 +141,9 @@ export default function VendorPortalApp({ brand }) {
     window.open(data.url, "_blank", "noopener,noreferrer");
   }
 
+  const brandName = brand?.name || "Vendor Portal";
+  const brandLogoAlt = `${brandName} logo`;
+
   if (auth.loading) {
     return (
       <div className="text-center py-5">
@@ -147,67 +154,76 @@ export default function VendorPortalApp({ brand }) {
   }
 
   return (
-    <section className="flat-spacing-10">
-      <div className="container" style={{ maxWidth: 1100 }}>
-        <div className="d-flex align-items-center justify-content-between gap-3 mb-4">
-          <div className="d-flex align-items-center gap-3">
+    <section className="flat-spacing-10 vendor-portal">
+      <div className="container vendor-portal__container">
+        <div className="vendor-portal__topbar">
+          <div className="vendor-portal__brand">
             {brand?.logoPath ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={brand.logoPath}
-                alt={`${brand?.name || "Brand"} logo`}
-                style={{ height: 44, width: "auto" }}
+                alt={brandLogoAlt}
+                className="vendor-portal__brandLogo"
               />
-            ) : null}
-            <div>
-              <div className="fw-6" style={{ fontSize: 18 }}>
-                Vendor Downloads
+            ) : (
+              <div className="vendor-portal__brandMark" aria-hidden="true">
+                <span />
               </div>
-              <div className="text-muted small">{brand?.name || "Portal"}</div>
+            )}
+            <div className="vendor-portal__brandText">
+              <div className="vendor-portal__title">Vendor Downloads</div>
+              <div className="vendor-portal__subtitle">{brandName}</div>
             </div>
           </div>
 
           {auth.authenticated ? (
-            <button
-              className="tf-btn btn-outline rounded-0"
-              type="button"
-              onClick={onLogout}
-            >
-              Sign out
-            </button>
+            <div className="vendor-portal__topActions">
+              <button
+                className="tf-btn btn-outline vendor-portal__btn"
+                type="button"
+                onClick={onLogout}
+              >
+                Sign out
+              </button>
+            </div>
           ) : null}
         </div>
 
         {!auth.authenticated ? (
           <div className="row justify-content-center">
             <div className="col-12 col-md-8 col-lg-6">
-              <div className="dashboard-card p-4">
-                <h5 className="fw-6 mb-2">Sign in</h5>
-                <p className="text-muted mb-3">
-                  Enter the shared vendor portal login.
-                </p>
+              <div className="vendor-portal__card vendor-portal__card--login">
+                <div className="vendor-portal__cardHeader">
+                  <h5 className="vendor-portal__cardTitle mb-1">Sign in</h5>
+                  <p className="vendor-portal__cardSub mb-0">
+                    Use the shared vendor portal credentials.
+                  </p>
+                </div>
+
                 {login.error ? (
-                  <div className="alert alert-danger mb-3" role="alert">
+                  <div className="alert alert-danger mt-3 mb-0" role="alert">
                     {login.error}
                   </div>
                 ) : null}
-                <form onSubmit={onSubmitLogin}>
+
+                <form onSubmit={onSubmitLogin} className="vendor-portal__form">
                   <div className="mb-3">
                     <label className="form-label">Username</label>
                     <input
-                      className="form-control"
+                      className="form-control vendor-portal__input"
                       value={login.username}
                       onChange={(e) =>
                         setLogin((s) => ({ ...s, username: e.target.value }))
                       }
                       autoComplete="username"
+                      inputMode="text"
                       required
                     />
                   </div>
                   <div className="mb-3">
                     <label className="form-label">Password</label>
                     <input
-                      className="form-control"
+                      className="form-control vendor-portal__input"
                       type="password"
                       value={login.password}
                       onChange={(e) =>
@@ -218,7 +234,7 @@ export default function VendorPortalApp({ brand }) {
                     />
                   </div>
                   <button
-                    className="tf-btn btn-fill rounded-0 w-100"
+                    className="tf-btn btn-fill w-100 vendor-portal__btn vendor-portal__btn--primary"
                     type="submit"
                     disabled={login.submitting}
                   >
@@ -229,14 +245,17 @@ export default function VendorPortalApp({ brand }) {
             </div>
           </div>
         ) : (
-          <div className="dashboard-card p-4">
-            <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-              <nav aria-label="breadcrumb">
+          <div className="vendor-portal__card vendor-portal__card--files">
+            <div className="vendor-portal__filesHeader">
+              <nav aria-label="breadcrumb" className="vendor-portal__crumbs">
                 <ol className="breadcrumb mb-0">
                   {breadcrumbs.map((c, idx) => (
                     <li
                       key={c.path || "root"}
-                      className={`breadcrumb-item ${idx === breadcrumbs.length - 1 ? "active" : ""}`}
+                      className={cx(
+                        "breadcrumb-item",
+                        idx === breadcrumbs.length - 1 && "active",
+                      )}
                     >
                       {idx === breadcrumbs.length - 1 ? (
                         c.label
@@ -256,18 +275,20 @@ export default function VendorPortalApp({ brand }) {
                 </ol>
               </nav>
 
-              <button
-                className="tf-btn btn-outline rounded-0"
-                type="button"
-                onClick={() => loadList(path).catch(() => {})}
-                disabled={listing.loading}
-              >
-                Refresh
-              </button>
+              <div className="vendor-portal__filesActions">
+                <button
+                  className="tf-btn btn-outline vendor-portal__btn"
+                  type="button"
+                  onClick={() => loadList(path).catch(() => {})}
+                  disabled={listing.loading}
+                >
+                  Refresh
+                </button>
+              </div>
             </div>
 
             {listing.error ? (
-              <div className="alert alert-danger mb-3" role="alert">
+              <div className="alert alert-danger mt-3 mb-0" role="alert">
                 {listing.error}
               </div>
             ) : null}
@@ -277,80 +298,155 @@ export default function VendorPortalApp({ brand }) {
                 <div className="spinner-border text-primary" role="status" />
               </div>
             ) : (
-              <div className="table-responsive">
-                <table className="table align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th style={{ width: "55%" }}>Name</th>
-                      <th style={{ width: "15%" }}>Type</th>
-                      <th style={{ width: "15%" }}>Size</th>
-                      <th style={{ width: "15%" }} className="text-end">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {listing.folders.map((f) => (
-                      <tr key={`dir:${f.path}`}>
-                        <td className="fw-6">
-                          <a
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              loadList(f.path).catch(() => {});
-                            }}
-                          >
-                            <i className="bi bi-folder2-open me-2" />
-                            {f.name}
-                          </a>
-                        </td>
-                        <td className="text-muted">Folder</td>
-                        <td className="text-muted">—</td>
-                        <td className="text-end">
-                          <button
-                            className="tf-btn btn-outline rounded-0"
-                            type="button"
-                            onClick={() => loadList(f.path).catch(() => {})}
-                          >
-                            Open
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+              <>
+                {/* Mobile-first: card list */}
+                <div className="vendor-portal__list d-md-none">
+                  {listing.folders.map((f) => (
+                    <div key={`dir:${f.path}`} className="vendor-portal__item">
+                      <div
+                        className="vendor-portal__itemIcon"
+                        aria-hidden="true"
+                      >
+                        <i className="bi bi-folder2-open" />
+                      </div>
+                      <div className="vendor-portal__itemBody">
+                        <div className="vendor-portal__itemTitle">{f.name}</div>
+                        <div className="vendor-portal__itemMeta">Folder</div>
+                      </div>
+                      <div className="vendor-portal__itemAction">
+                        <button
+                          className="tf-btn btn-outline vendor-portal__btn"
+                          type="button"
+                          onClick={() => loadList(f.path).catch(() => {})}
+                        >
+                          Open
+                        </button>
+                      </div>
+                    </div>
+                  ))}
 
-                    {listing.files.map((file) => (
-                      <tr key={`file:${file.key}`}>
-                        <td className="fw-6">
-                          <i className="bi bi-file-earmark me-2" />
+                  {listing.files.map((file) => (
+                    <div
+                      key={`file:${file.key}`}
+                      className="vendor-portal__item"
+                    >
+                      <div
+                        className="vendor-portal__itemIcon"
+                        aria-hidden="true"
+                      >
+                        <i className="bi bi-file-earmark" />
+                      </div>
+                      <div className="vendor-portal__itemBody">
+                        <div className="vendor-portal__itemTitle">
                           {file.name}
-                        </td>
-                        <td className="text-muted">File</td>
-                        <td className="text-muted">{formatBytes(file.size)}</td>
-                        <td className="text-end">
-                          <button
-                            className="tf-btn btn-fill rounded-0"
-                            type="button"
-                            onClick={() =>
-                              downloadFile(file.key).catch(() => {})
-                            }
-                          >
-                            Download
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                        </div>
+                        <div className="vendor-portal__itemMeta">
+                          File · {formatBytes(file.size)}
+                        </div>
+                      </div>
+                      <div className="vendor-portal__itemAction">
+                        <button
+                          className="tf-btn btn-fill vendor-portal__btn vendor-portal__btn--primary"
+                          type="button"
+                          onClick={() => downloadFile(file.key).catch(() => {})}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  ))}
 
-                    {listing.folders.length === 0 &&
-                    listing.files.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="text-center text-muted py-5">
-                          This folder is empty.
-                        </td>
-                      </tr>
-                    ) : null}
-                  </tbody>
-                </table>
-              </div>
+                  {listing.folders.length === 0 &&
+                  listing.files.length === 0 ? (
+                    <div className="vendor-portal__empty">
+                      This folder is empty.
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* Desktop: table */}
+                <div className="vendor-portal__tableWrap d-none d-md-block">
+                  <div className="table-responsive">
+                    <table className="table align-middle mb-0 vendor-portal__table">
+                      <thead>
+                        <tr>
+                          <th style={{ width: "55%" }}>Name</th>
+                          <th style={{ width: "15%" }}>Type</th>
+                          <th style={{ width: "15%" }}>Size</th>
+                          <th style={{ width: "15%" }} className="text-end">
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listing.folders.map((f) => (
+                          <tr key={`dir:${f.path}`}>
+                            <td className="fw-6">
+                              <a
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  loadList(f.path).catch(() => {});
+                                }}
+                              >
+                                <i className="bi bi-folder2-open me-2" />
+                                {f.name}
+                              </a>
+                            </td>
+                            <td className="text-muted">Folder</td>
+                            <td className="text-muted">—</td>
+                            <td className="text-end">
+                              <button
+                                className="tf-btn btn-outline vendor-portal__btn"
+                                type="button"
+                                onClick={() => loadList(f.path).catch(() => {})}
+                              >
+                                Open
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+
+                        {listing.files.map((file) => (
+                          <tr key={`file:${file.key}`}>
+                            <td className="fw-6">
+                              <i className="bi bi-file-earmark me-2" />
+                              {file.name}
+                            </td>
+                            <td className="text-muted">File</td>
+                            <td className="text-muted">
+                              {formatBytes(file.size)}
+                            </td>
+                            <td className="text-end">
+                              <button
+                                className="tf-btn btn-fill vendor-portal__btn vendor-portal__btn--primary"
+                                type="button"
+                                onClick={() =>
+                                  downloadFile(file.key).catch(() => {})
+                                }
+                              >
+                                Download
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+
+                        {listing.folders.length === 0 &&
+                        listing.files.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={4}
+                              className="text-center text-muted py-5"
+                            >
+                              This folder is empty.
+                            </td>
+                          </tr>
+                        ) : null}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}
