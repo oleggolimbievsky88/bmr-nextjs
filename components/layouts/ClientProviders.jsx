@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Context from "@/context/Context";
@@ -20,7 +20,6 @@ import { Analytics } from "@vercel/analytics/react";
 
 export default function ClientProviders({ children }) {
   const pathname = usePathname();
-  const [scrollDirection, setScrollDirection] = useState("up");
   const wowInstanceRef = useRef(null);
 
   useEffect(() => {
@@ -53,23 +52,6 @@ export default function ClientProviders({ children }) {
       header.style.visibility = "visible";
       header.style.opacity = "1";
     }
-    setScrollDirection("up");
-    const lastScrollY = { current: window.scrollY };
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 250) {
-        if (currentScrollY > lastScrollY.current) {
-          setScrollDirection("down");
-        } else {
-          setScrollDirection("up");
-        }
-      } else {
-        setScrollDirection("up");
-      }
-      lastScrollY.current = currentScrollY;
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
   // Close Bootstrap modals/offcanvas on route change before paint to reduce
@@ -88,28 +70,6 @@ export default function ClientProviders({ children }) {
       if (inst) inst.hide();
     });
   }, [pathname]);
-
-  useEffect(() => {
-    const header = document.querySelector("header");
-    if (header && typeof window !== "undefined") {
-      if (window.scrollY <= 250) {
-        header.style.top = "0px";
-        header.style.transform = "translateY(0)";
-        header.style.display = "block";
-        header.style.visibility = "visible";
-        header.style.opacity = "1";
-      } else if (scrollDirection === "up") {
-        header.style.top = "0px";
-        header.style.transform = "translateY(0)";
-        header.style.display = "block";
-        header.style.visibility = "visible";
-        header.style.opacity = "1";
-      } else {
-        header.style.top = "-185px";
-        header.style.transform = "translateY(-185px)";
-      }
-    }
-  }, [scrollDirection]);
 
   // WOW.js: only run on non-admin routes so we never hold refs to admin DOM.
   // Stop previous instance on route change to avoid "removeChild" errors when navigating.
