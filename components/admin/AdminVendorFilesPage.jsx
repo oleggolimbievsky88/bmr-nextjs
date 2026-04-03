@@ -43,6 +43,16 @@ export default function AdminVendorFilesPage() {
   const [uploadBusy, setUploadBusy] = useState(false);
   const [message, setMessage] = useState(null);
 
+  const [authForm, setAuthForm] = useState({
+    loading: false,
+    saving: false,
+    username: "",
+    password: "",
+    hasPassword: false,
+    updatedAt: null,
+    error: null,
+  });
+
   const [renameOpen, setRenameOpen] = useState(null);
   const [renameValue, setRenameValue] = useState("");
 
@@ -95,6 +105,39 @@ export default function AdminVendorFilesPage() {
   useEffect(() => {
     refresh().catch(() => {});
   }, [refresh]);
+
+  const refreshAuth = useCallback(async () => {
+    setAuthForm((s) => ({ ...s, loading: true, error: null }));
+    try {
+      const qs = new URLSearchParams({ brand });
+      const res = await fetch(`/api/admin/vendor-auth/credentials?${qs}`, {
+        cache: "no-store",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to load credentials");
+      }
+      setAuthForm((s) => ({
+        ...s,
+        loading: false,
+        username: data.username || "",
+        password: "",
+        hasPassword: Boolean(data.hasPassword),
+        updatedAt: data.updatedAt || null,
+        error: null,
+      }));
+    } catch (e) {
+      setAuthForm((s) => ({
+        ...s,
+        loading: false,
+        error: e.message || "Failed to load credentials",
+      }));
+    }
+  }, [brand]);
+
+  useEffect(() => {
+    refreshAuth().catch(() => {});
+  }, [refreshAuth]);
 
   async function apiJson(url, body) {
     const res = await fetch(url, {
@@ -203,6 +246,50 @@ export default function AdminVendorFilesPage() {
       return;
     }
     window.open(data.url, "_blank", "noopener,noreferrer");
+  }
+
+  async function saveAuth(e) {
+    e.preventDefault();
+    if (!authForm.username.trim()) {
+      setMessage({ type: "danger", text: "Vendor username is required." });
+      return;
+    }
+    if (!authForm.hasPassword && !authForm.password.trim()) {
+      setMessage({
+        type: "danger",
+        text: "Vendor password is required (first-time setup).",
+      });
+      return;
+    }
+    setAuthForm((s) => ({ ...s, saving: true, error: null }));
+    setMessage(null);
+    try {
+      const res = await fetch("/api/admin/vendor-auth/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brand,
+          username: authForm.username.trim(),
+          password: authForm.password,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to save credentials");
+      }
+      setMessage({ type: "success", text: "Vendor login updated." });
+      setAuthForm((s) => ({
+        ...s,
+        saving: false,
+        password: "",
+        hasPassword: true,
+        updatedAt: data.updatedAt || s.updatedAt,
+        error: null,
+      }));
+    } catch (err) {
+      setAuthForm((s) => ({ ...s, saving: false, error: err.message }));
+      setMessage({ type: "danger", text: err.message });
+    }
   }
 
   function openRenameFile(key) {
@@ -353,6 +440,95 @@ export default function AdminVendorFilesPage() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="admin-vendor-files__auth card shadow-sm border-0 mt-4">
+        <div className="card-body">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <div>
+              <h5 className="mb-0 fw-bold">Vendor login (per brand)</h5>
+              <div className="text-muted small">
+                Stored in <code>brand_core</code>. Applies to the selected
+                brand.
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => refreshAuth()}
+              disabled={authForm.loading || authForm.saving}
+            >
+              Refresh
+            </button>
+          </div>
+
+          {authForm.error ? (
+            <div className="alert alert-danger mb-3" role="alert">
+              {authForm.error}
+            </div>
+          ) : null}
+
+          <form onSubmit={saveAuth} className="row g-2 align-items-end">
+            <div className="col-12 col-md-5">
+              <label className="form-label" htmlFor="vendor-auth-username">
+                Username
+              </label>
+              <input
+                id="vendor-auth-username"
+                className="form-control"
+                value={authForm.username}
+                onChange={(e) =>
+                  setAuthForm((s) => ({ ...s, username: e.target.value }))
+                }
+                autoComplete="off"
+                spellCheck={false}
+                disabled={authForm.loading || authForm.saving}
+              />
+            </div>
+            <div className="col-12 col-md-5">
+              <label className="form-label" htmlFor="vendor-auth-password">
+                {authForm.hasPassword ? "New password (optional)" : "Password"}
+              </label>
+              <input
+                id="vendor-auth-password"
+                type="password"
+                className="form-control"
+                value={authForm.password}
+                onChange={(e) =>
+                  setAuthForm((s) => ({ ...s, password: e.target.value }))
+                }
+                autoComplete="new-password"
+                disabled={authForm.loading || authForm.saving}
+                placeholder={
+                  authForm.hasPassword ? "Leave blank to keep current" : ""
+                }
+              />
+            </div>
+            <div className="col-12 col-md-2 d-grid">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={authForm.loading || authForm.saving}
+              >
+                {authForm.saving ? "Saving…" : "Save"}
+              </button>
+            </div>
+            <div className="col-12">
+              <div className="text-muted small">
+                {authForm.updatedAt ? (
+                  <>
+                    Last updated:{" "}
+                    {new Date(authForm.updatedAt).toLocaleString()}
+                  </>
+                ) : authForm.hasPassword ? (
+                  <>Password is set.</>
+                ) : (
+                  <>Not configured yet.</>
+                )}
+              </div>
+            </div>
+          </form>
         </div>
       </div>
 

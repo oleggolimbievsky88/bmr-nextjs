@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { getColorBadgeStyle } from "@/lib/colorBadge";
 import { showToast } from "@/utlis/showToast";
@@ -24,6 +24,29 @@ export default function AdminOrdersPage() {
   const [filterDateTo, setFilterDateTo] = useState("");
   const [datePreset, setDatePreset] = useState("");
 
+  const searchParams = useSearchParams();
+  const initialUrlParamsApplied = useRef(false);
+
+  const urlStatus = useMemo(() => {
+    const raw = searchParams.get("status");
+    return raw ? String(raw).trim().toLowerCase() : "";
+  }, [searchParams]);
+
+  const urlPreset = useMemo(() => {
+    const raw = searchParams.get("preset");
+    return raw ? String(raw).trim().toLowerCase() : "";
+  }, [searchParams]);
+
+  const urlDateFrom = useMemo(() => {
+    const raw = searchParams.get("dateFrom");
+    return raw ? String(raw).trim() : "";
+  }, [searchParams]);
+
+  const urlDateTo = useMemo(() => {
+    const raw = searchParams.get("dateTo");
+    return raw ? String(raw).trim() : "";
+  }, [searchParams]);
+
   const setDateRangePreset = useCallback((preset) => {
     const today = new Date();
     const toStr = (d) => d.toISOString().slice(0, 10);
@@ -43,6 +66,11 @@ export default function AdminOrdersPage() {
       const weekAgo = new Date(today);
       weekAgo.setDate(weekAgo.getDate() - 6);
       from = toStr(weekAgo);
+      to = toStr(today);
+    } else if (preset === "last24h") {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      from = toStr(yesterday);
       to = toStr(today);
     } else if (preset === "month") {
       from = toStr(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -108,7 +136,40 @@ export default function AdminOrdersPage() {
     filterDateTo,
   ]);
 
-  const searchParams = useSearchParams();
+  useEffect(() => {
+    // Apply URL filters once on first load (and when navigating in from dashboard).
+    // We only do this once to avoid surprising resets when you change filters in-page.
+    if (initialUrlParamsApplied.current) return;
+
+    const hasAny =
+      Boolean(urlStatus) ||
+      Boolean(urlPreset) ||
+      Boolean(urlDateFrom) ||
+      Boolean(urlDateTo);
+    if (!hasAny) {
+      initialUrlParamsApplied.current = true;
+      return;
+    }
+
+    if (urlStatus) setStatusFilter(urlStatus);
+
+    if (urlDateFrom || urlDateTo) {
+      setFilterDateFrom(urlDateFrom);
+      setFilterDateTo(urlDateTo);
+      setDatePreset("");
+      setCurrentPage(1);
+      initialUrlParamsApplied.current = true;
+      return;
+    }
+
+    if (urlPreset) {
+      setDateRangePreset(urlPreset);
+      initialUrlParamsApplied.current = true;
+      return;
+    }
+
+    initialUrlParamsApplied.current = true;
+  }, [urlStatus, urlPreset, urlDateFrom, urlDateTo, setDateRangePreset]);
 
   useEffect(() => {
     fetchOrders();

@@ -120,6 +120,7 @@ async function getDashboardData() {
         subtext: "Placed in last 24 hours",
         icon: "🛒",
         border: "primary",
+        href: "/admin/orders?preset=last24h",
       },
       {
         title: "Pending Orders",
@@ -127,6 +128,7 @@ async function getDashboardData() {
         subtext: "Awaiting action",
         icon: "⏳",
         border: "warning",
+        href: "/admin/orders?status=pending",
       },
       {
         title: "Orders Today",
@@ -134,6 +136,7 @@ async function getDashboardData() {
         subtext: "Placed today",
         icon: "📦",
         border: "info",
+        href: "/admin/orders?preset=today",
       },
       {
         title: "Orders This Week",
@@ -141,6 +144,7 @@ async function getDashboardData() {
         subtext: "Last 7 days",
         icon: "📈",
         border: "success",
+        href: "/admin/orders?preset=week",
       },
       {
         title: "Total Products",
@@ -148,6 +152,7 @@ async function getDashboardData() {
         subtext: "Products in catalog",
         icon: "🏷️",
         border: "dark",
+        href: "/admin/products",
       },
       {
         title: "Product Attributes",
@@ -155,6 +160,7 @@ async function getDashboardData() {
         subtext: "Fields defined across attribute sets",
         icon: "🧩",
         border: "secondary",
+        href: "/admin/attribute-categories",
       },
     ];
 
@@ -195,6 +201,7 @@ async function getDashboardData() {
         subtext: "Placed in last 24 hours",
         icon: "🛒",
         border: "primary",
+        href: "/admin/orders?preset=last24h",
       },
       {
         title: "Pending Orders",
@@ -202,6 +209,7 @@ async function getDashboardData() {
         subtext: "Awaiting action",
         icon: "⏳",
         border: "warning",
+        href: "/admin/orders?status=pending",
       },
       {
         title: "Orders Today",
@@ -209,6 +217,7 @@ async function getDashboardData() {
         subtext: "Placed today",
         icon: "📦",
         border: "info",
+        href: "/admin/orders?preset=today",
       },
       {
         title: "Orders This Week",
@@ -216,6 +225,7 @@ async function getDashboardData() {
         subtext: "Last 7 days",
         icon: "📈",
         border: "success",
+        href: "/admin/orders?preset=week",
       },
       {
         title: "Total Products",
@@ -223,6 +233,7 @@ async function getDashboardData() {
         subtext: "Products in catalog",
         icon: "🏷️",
         border: "dark",
+        href: "/admin/products",
       },
       {
         title: "Product Attributes",
@@ -230,6 +241,7 @@ async function getDashboardData() {
         subtext: "Fields defined across attribute sets",
         icon: "🧩",
         border: "secondary",
+        href: "/admin/attribute-categories",
       },
     ];
     return {
@@ -257,30 +269,44 @@ function StatusBadge({ status }) {
   );
 }
 
-function StatCard({ title, value, subtext, icon, border }) {
+function StatCard({ title, value, subtext, icon, border, href }) {
+  const card = (
+    <div
+      className={`card h-100 shadow-sm border-0 border-start border-4 border-${border} admin-stat-card-clickable`}
+    >
+      <div className="card-body">
+        <div className="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <div className="text-muted small fw-semibold text-uppercase">
+              {title}
+            </div>
+            <div className="display-6 fw-bold lh-1 mt-2">{value}</div>
+          </div>
+          <div
+            className="rounded-circle d-flex align-items-center justify-content-center bg-light"
+            style={{ width: 48, height: 48, fontSize: 22 }}
+          >
+            {icon}
+          </div>
+        </div>
+        <div className="text-muted small">{subtext}</div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="col-12 col-sm-6 col-lg-4">
-      <div
-        className={`card h-100 shadow-sm border-0 border-start border-4 border-${border}`}
-      >
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-start mb-3">
-            <div>
-              <div className="text-muted small fw-semibold text-uppercase">
-                {title}
-              </div>
-              <div className="display-6 fw-bold lh-1 mt-2">{value}</div>
-            </div>
-            <div
-              className="rounded-circle d-flex align-items-center justify-content-center bg-light"
-              style={{ width: 48, height: 48, fontSize: 22 }}
-            >
-              {icon}
-            </div>
-          </div>
-          <div className="text-muted small">{subtext}</div>
-        </div>
-      </div>
+      {href ? (
+        <Link
+          href={href}
+          className="admin-stat-card-link text-reset text-decoration-none d-block h-100"
+          aria-label={`${title}: ${value}`}
+        >
+          {card}
+        </Link>
+      ) : (
+        card
+      )}
     </div>
   );
 }

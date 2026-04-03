@@ -319,6 +319,27 @@
 	border: 1px solid #dee2e6;
 	border-radius: 8px;
 }
+
+/* Clickable dashboard stat cards */
+.admin-page {
+	.admin-stat-card-link {
+		border-radius: 8px;
+	}
+
+	.admin-stat-card-clickable {
+		@include transition3;
+	}
+
+	.admin-stat-card-link:hover .admin-stat-card-clickable {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
+	}
+
+	.admin-stat-card-link:focus-visible .admin-stat-card-clickable {
+		outline: 2px solid var(--main, #1a1a1a);
+		outline-offset: 3px;
+	}
+}
 .admin-page .card-body {
 	color: #212529;
 }

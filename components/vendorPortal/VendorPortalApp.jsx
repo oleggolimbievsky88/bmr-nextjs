@@ -142,7 +142,6 @@ export default function VendorPortalApp({ brand }) {
   }
 
   const brandName = brand?.name || "Vendor Portal";
-  const brandLogoAlt = `${brandName} logo`;
 
   if (auth.loading) {
     return (
@@ -158,18 +157,9 @@ export default function VendorPortalApp({ brand }) {
       <div className="container vendor-portal__container">
         <div className="vendor-portal__topbar">
           <div className="vendor-portal__brand">
-            {brand?.logoPath ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={brand.logoPath}
-                alt={brandLogoAlt}
-                className="vendor-portal__brandLogo"
-              />
-            ) : (
-              <div className="vendor-portal__brandMark" aria-hidden="true">
-                <span />
-              </div>
-            )}
+            <div className="vendor-portal__brandMark" aria-hidden="true">
+              <span />
+            </div>
             <div className="vendor-portal__brandText">
               <div className="vendor-portal__title">Vendor Downloads</div>
               <div className="vendor-portal__subtitle">{brandName}</div>
