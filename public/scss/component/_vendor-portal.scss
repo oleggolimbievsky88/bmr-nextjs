@@ -267,6 +267,11 @@
   color: var(--vp-accent);
 }
 
+// Bootstrap `text-muted` is for light UIs; on dark tables Type/Size vanish.
+.vendor-portal__table tbody .text-muted {
+  color: rgba(255, 255, 255, 0.76) !important;
+}
+
 .vendor-portal {
   // Bootstrap/form bits that are too light by default.
   .form-label {
