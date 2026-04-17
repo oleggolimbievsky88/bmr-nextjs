@@ -3,6 +3,7 @@ import { getBrandConfig } from "@/lib/brandConfig";
 import { BrandProvider } from "@bmr/ui/brand";
 import ClientProviders from "@/components/layouts/ClientProviders";
 import JsonLd from "@/components/seo/JsonLd";
+import Script from "next/script";
 import "../public/scss/main.scss";
 import "../public/scss/brand-bmr.scss";
 import "../public/scss/brand-controlfreak.scss";
@@ -58,7 +59,6 @@ export async function generateMetadata() {
     icon: [{ url: faviconUrl, type: faviconType }],
   };
 
-
   return {
     metadataBase: new URL(siteUrl),
     title: {
@@ -96,30 +96,6 @@ export async function generateMetadata() {
     },
     alternates: { canonical: "/" },
   };
-}
-import Script from 'next/script';
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=AW-831122017"
-        strategy="afterInteractive"
-      />
-
-      <Script id="google-ads-gtag" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'AW-831122017');
-        `}
-      </Script>
-    </html>
-  );
 }
 
 export default async function RootLayout({ children }) {
@@ -161,6 +137,19 @@ export default async function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=AW-831122017"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-gtag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-831122017');
+          `}
+        </Script>
       </head>
       <body className="preload-wrapper popup-loader">
         <BrandProvider brand={config}>
