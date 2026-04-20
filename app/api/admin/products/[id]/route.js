@@ -310,6 +310,18 @@ export async function PUT(request, context) {
       }
     }
 
+    const vehicleFitmentRaw = formData.get("vehicleFitment");
+    if (vehicleFitmentRaw !== null && vehicleFitmentRaw !== undefined) {
+      try {
+        productData.vehicleFitment =
+          typeof vehicleFitmentRaw === "string"
+            ? JSON.parse(vehicleFitmentRaw)
+            : vehicleFitmentRaw;
+      } catch {
+        productData.vehicleFitment = {};
+      }
+    }
+
     // Attribute set and attribute values
     const attributeCategoryIdRaw = formData.get("attributeCategoryId");
     if (

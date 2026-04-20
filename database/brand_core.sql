@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `brands` (
   `nav_urls` json DEFAULT NULL,
   `nav_order` json DEFAULT NULL,
   `nav_platform_ids` json DEFAULT NULL,
+  `homepage_sections` json DEFAULT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -95,4 +96,37 @@ INSERT INTO `brands` (
   '{"ford":"Ford","gmLateModel":"GM Late Model Cars","gmMidMuscle":"GM Mid Muscle Cars","gmClassicMuscle":"GM Classic Muscle Cars","mopar":"Mopar","installation":"Installation","cart":"Cart"}',
   '{"ford":"/products/ford","gmLateModel":"/products/gm/late-model","gmMidMuscle":"/products/gm/mid-muscle","gmClassicMuscle":"/products/gm/classic-muscle","mopar":"/products/mopar","installation":"/installation","cart":"/view-cart"}',
   '["ford","gmLateModel","gmMidMuscle","gmClassicMuscle","mopar","installation","cart"]'
+) ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
+
+-- Seed Heidts (run `database/add_homepage_sections_column.sql` first on existing DBs created before homepage_sections)
+INSERT INTO `brands` (
+  `key`, `name`, `company_name`, `company_name_short`, `site_url`, `assets_base_url`,
+  `theme_color`, `button_badge_color`, `button_badge_text_color`, `primary_button_text_color`,
+  `assurance_bar_background_color`, `assurance_bar_text_color`,
+  `default_title`, `default_description`, `favicon_path`, `og_image_path`, `default_og_image_path`,
+  `copyright_name`, `is_active`,
+  `logo`, `contact`, `social`, `assurance_bar_items`, `about_brand`, `same_as`, `shop_by_make`, `shop_by_category`, `legal`,
+  `nav_labels`, `nav_urls`, `nav_order`, `nav_platform_ids`, `homepage_sections`
+) VALUES (
+  'heidts', 'Heidts Suspension', 'Heidts Suspension', 'Heidts', '', '',
+  '#b41818', '#b41818', '#ffffff', '#ffffff',
+  '#2a2a2a', '#f0f0f0',
+  'Heidts Suspension | Complete Suspension Kits & Performance Parts',
+  'Heidts designs and manufactures complete suspension kits, Mustang II systems, and performance parts for Ford, Mopar, and universal applications.',
+  '/brands/heidts/favicons/favicon.svg', '/brands/heidts/images/logo/HEIDTS_logo.png', '/brands/heidts/images/logo/HEIDTS_logo.png',
+  'Heidts Suspension', 1,
+  '{"headerPath":"/brands/heidts/images/logo/HEIDTS_logo.png","footerPath":"/brands/heidts/images/logo/HEIDTS_logo.png","headerMaxSize":{"maxWidth":"180px","maxHeight":"50px"},"footerMaxSize":{"maxWidth":"220px","maxHeight":"56px"},"alt":"Heidts Logo"}',
+  '{"addressLines":["641 Peterson Rd","Lake Zurich, IL 60047"],"email":"info@heidts.com","phoneDisplay":"(847) 548-1111","phoneTel":"8475481111"}',
+  '{"facebook":"https://www.facebook.com/Heidts/","instagram":"https://www.instagram.com/heidts_suspension/","youtube":"https://www.youtube.com/user/Heidts1"}',
+  '[{"iconClass":"icon-shipping","title":"Engineered Performance","description":"Race-proven suspension systems and components."},{"iconClass":"icon-payment fs-22","title":"Flexible Payment","description":"Pay with Credit, Debit, or PayPal"},{"iconClass":"icon-return fs-20","title":"Support","description":"Technical help for your build."},{"iconClass":"icon-suport","title":"Made in the USA","description":"Quality manufacturing you can trust."}]',
+  '{"heading":"About Heidts","paragraphs":["For decades, Heidts has been a leader in high-performance suspension systems and complete bolt-in kits for street rods, muscle cars, and restomods.","From Mustang II front ends to four-link rear kits, our products are engineered for fit, finish, and handling you can feel on the road or at the track."],"ctaLabel":"Contact Us","ctaHref":"/contact"}',
+  '[]',
+  '{"sectionTitle":"Shop by Kit Line","sectionSubtitle":"Ford, Mopar, and Universal suspension kits.","items":[{"imagePath":"/images/logo/Ford_Logo.png","title":"FORD KITS","link":"products/ford","shopNowLabel":"SHOP NOW"},{"imagePath":"/images/logo/dodge_logo.png","title":"MOPAR KITS","link":"products/mopar","shopNowLabel":"SHOP NOW"},{"imagePath":"/images/shop-categories/NewProductsGradient.jpg","title":"UNIVERSAL KITS","link":"products/universal","shopNowLabel":"SHOP NOW"}]}',
+  '{"sectionTitle":"Shop by Kit Line","sectionSubtitle":"Ford, Mopar, and Universal suspension kits.","items":[{"imagePath":"/images/logo/Ford_Logo.png","title":"FORD KITS","link":"products/ford","shopNowLabel":"SHOP NOW"},{"imagePath":"/images/logo/dodge_logo.png","title":"MOPAR KITS","link":"products/mopar","shopNowLabel":"SHOP NOW"},{"imagePath":"/images/shop-categories/NewProductsGradient.jpg","title":"UNIVERSAL KITS","link":"products/universal","shopNowLabel":"SHOP NOW"}]}',
+  NULL,
+  '{"ford":"FORD KITS","mopar":"MOPAR KITS","universal":"UNIVERSAL KITS","installation":"Installation","cart":"Cart"}',
+  '{"ford":"/products/ford","mopar":"/products/mopar","universal":"/products/universal","installation":"/installation","cart":"/view-cart"}',
+  '["ford","mopar","universal","installation","cart"]',
+  '["ford","mopar","universal"]',
+  '[{"type":"splitHero","headline":"COMPLETE SUSPENSION KITS","subheadline":"CUSTOMIZE A KIT FOR YOUR VEHICLE","body":"Build the perfect suspension kit for your vehicle. We have a wide selection of fitments, colors, and sizes.","ctaLabel":"CUSTOMIZE YOUR KIT","ctaHref":"/products/universal","imagePath":"/brands/heidts/banners/hero-suspension-kit.jpg","imageAlt":"Heidts complete suspension kit","textureImagePath":"/brands/heidts/banners/HomepageGraphicBG_SuspensionKits.webp"}]'
 ) ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);

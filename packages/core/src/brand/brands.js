@@ -278,6 +278,181 @@ export const defaultBrands = {
 
     sameAs: [],
   },
+
+  /**
+   * Heidts Suspension — file defaults; merged with brand_core DB when configured.
+   */
+  heidts: {
+    key: "heidts",
+    name: "Heidts Suspension",
+    companyName: "Heidts Suspension",
+    companyNameShort: "Heidts",
+    siteUrl: getSiteUrl(),
+    assetsBaseUrl: process.env.NEXT_PUBLIC_ASSETS_BASE_URL || "",
+
+    logo: {
+      headerPath:
+        process.env.NEXT_PUBLIC_HEADER_LOGO ||
+        "/brands/heidts/images/logo/HEIDTS_logo.png",
+      footerPath:
+        process.env.NEXT_PUBLIC_FOOTER_LOGO ||
+        "/brands/heidts/images/logo/HEIDTS_logo.png",
+      headerMaxSize: { maxWidth: "180px", maxHeight: "50px" },
+      footerMaxSize: { maxWidth: "220px", maxHeight: "56px" },
+      alt: "Heidts Logo",
+    },
+
+    contact: {
+      addressLines: ["641 Peterson Rd", "Lake Zurich, IL 60047"],
+      email: "info@heidts.com",
+      phoneDisplay: "(847) 548-1111",
+      phoneTel: "8475481111",
+    },
+
+    social: {
+      facebook: "https://www.facebook.com/Heidts/",
+      instagram: "https://www.instagram.com/heidts_suspension/",
+      youtube: "https://www.youtube.com/user/Heidts1",
+    },
+
+    copyrightName: "Heidts Suspension",
+
+    themeColor: "#b41818",
+    faviconPath: "/brands/heidts/favicons/favicon.svg",
+    ogImagePath: "/brands/heidts/images/logo/HEIDTS_logo.png",
+    defaultOgImagePath: "/brands/heidts/images/logo/HEIDTS_logo.png",
+    envOgImageUrlKey: "NEXT_PUBLIC_OG_IMAGE_URL",
+
+    buttonBadgeColor: "#b41818",
+    buttonBadgeTextColor: "#ffffff",
+    primaryButtonTextColor: "#ffffff",
+
+    assuranceBarBackgroundColor: "#2a2a2a",
+    assuranceBarTextColor: "#f0f0f0",
+
+    assuranceBarItems: [
+      {
+        iconClass: "icon-shipping",
+        title: "Engineered Performance",
+        description:
+          "Race-proven suspension systems and components for your build.",
+      },
+      {
+        iconClass: "icon-payment fs-22",
+        title: "Flexible Payment",
+        description: "Pay with Credit, Debit, or PayPal",
+      },
+      {
+        iconClass: "icon-return fs-20",
+        title: "Support",
+        description: "Technical help when you need it.",
+      },
+      {
+        iconClass: "icon-suport",
+        title: "Made in the USA",
+        description: "Quality manufacturing you can trust.",
+      },
+    ],
+
+    defaultTitle:
+      "Heidts Suspension | Complete Suspension Kits & Performance Parts",
+    defaultDescription:
+      "Heidts designs and manufactures complete suspension kits, Mustang II systems, and performance parts for Ford, Mopar, and universal applications.",
+
+    shopByCategory: {
+      sectionTitle: "Shop by Kit Line",
+      sectionSubtitle: "Ford, Mopar, and Universal suspension kits.",
+      items: [
+        {
+          href: "/products/ford",
+          title: "Ford Kits",
+          subtitle: "Mustang & Ford performance",
+          img: "/images/shop-categories/NewProductsGradient.jpg",
+        },
+        {
+          href: "/products/mopar",
+          title: "Mopar Kits",
+          subtitle: "Challenger, Charger & more",
+          img: "/images/shop-categories/MerchGradient.jpg",
+        },
+        {
+          href: "/products/universal",
+          title: "Universal Kits",
+          subtitle: "Build your kit",
+          img: "/images/shop-categories/GiftCardsGradient.jpg",
+        },
+      ],
+    },
+
+    shopByMake: {
+      sectionTitle: "Shop by Kit Line",
+      sectionSubtitle: "Ford, Mopar, and Universal suspension kits.",
+      items: [
+        {
+          imagePath: "/images/logo/Ford_Logo.png",
+          title: "FORD KITS",
+          link: "products/ford",
+          shopNowLabel: "SHOP NOW",
+        },
+        {
+          imagePath: "/images/logo/dodge_logo.png",
+          title: "MOPAR KITS",
+          link: "products/mopar",
+          shopNowLabel: "SHOP NOW",
+        },
+        {
+          imagePath: "/images/shop-categories/NewProductsGradient.jpg",
+          title: "UNIVERSAL KITS",
+          link: "products/universal",
+          shopNowLabel: "SHOP NOW",
+        },
+      ],
+    },
+
+    navLabels: {
+      ford: "FORD KITS",
+      mopar: "MOPAR KITS",
+      universal: "UNIVERSAL KITS",
+      installation: "Installation",
+      cart: "Cart",
+    },
+    navUrls: {
+      ford: "/products/ford",
+      mopar: "/products/mopar",
+      universal: "/products/universal",
+      installation: "/installation",
+      cart: "/view-cart",
+    },
+    navOrder: ["ford", "mopar", "universal", "installation", "cart"],
+    navPlatformIds: ["ford", "mopar", "universal"],
+
+    homepageSections: [
+      {
+        type: "splitHero",
+        headline: "COMPLETE SUSPENSION KITS",
+        subheadline: "CUSTOMIZE A KIT FOR YOUR VEHICLE",
+        body: "Build the perfect suspension kit for your vehicle. We have a wide selection of fitments, colors, and sizes.",
+        ctaLabel: "CUSTOMIZE YOUR KIT",
+        ctaHref: "/products/universal",
+        imagePath: "/brands/heidts/banners/hero-suspension-kit.jpg",
+        imageAlt: "Heidts complete suspension kit",
+        textureImagePath:
+          "/brands/heidts/banners/HomepageGraphicBG_SuspensionKits.webp",
+      },
+    ],
+
+    aboutBrand: {
+      heading: "About Heidts",
+      paragraphs: [
+        "For decades, Heidts has been a leader in high-performance suspension systems and complete bolt-in kits for street rods, muscle cars, and restomods.",
+        "From Mustang II front ends to four-link rear kits, our products are engineered for fit, finish, and handling you can feel on the road or at the track.",
+      ],
+      ctaLabel: "Contact Us",
+      ctaHref: "/contact",
+    },
+
+    sameAs: [],
+  },
 };
 
 /** @deprecated Use defaultBrands */

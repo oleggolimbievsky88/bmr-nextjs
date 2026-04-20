@@ -40,6 +40,10 @@ const remotePatterns = [
   { protocol: "https", hostname: "vendors.bmrsuspension.com" },
   { protocol: "https", hostname: "vendors.controlfreaksuspension.com" },
   { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
+  { protocol: "https", hostname: "*.heidts.vercel.app" },
+  { protocol: "https", hostname: "*.heidts.com" },
+  { protocol: "https", hostname: "*.controlfreaksuspension.com" },
+  { protocol: "https", hostname: "*.bmrsuspension.com" },
 ];
 if (assetsHostname) {
   remotePatterns.push({ protocol: "https", hostname: assetsHostname });

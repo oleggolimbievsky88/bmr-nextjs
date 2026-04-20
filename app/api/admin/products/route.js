@@ -325,6 +325,18 @@ export async function POST(request) {
       }
     }
 
+    const vehicleFitmentRaw = formData.get("vehicleFitment");
+    if (vehicleFitmentRaw !== null && vehicleFitmentRaw !== undefined) {
+      try {
+        productData.vehicleFitment =
+          typeof vehicleFitmentRaw === "string"
+            ? JSON.parse(vehicleFitmentRaw)
+            : vehicleFitmentRaw;
+      } catch {
+        productData.vehicleFitment = {};
+      }
+    }
+
     // Attribute set and attribute values
     const attributeCategoryIdRaw = formData.get("attributeCategoryId");
     if (

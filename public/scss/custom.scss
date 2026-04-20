@@ -7365,6 +7365,36 @@ $signin-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   }
 }
 
+/* Very small screens: 2-up tiles get too narrow (fixed media width),
+   so use a single column and slightly compact the tile. */
+@media (max-width: 575.98px){
+  .bm-catGridClean{
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .bm-catCardClean{
+    min-height: 88px;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .bm-catCardClean__media{
+    width: 74px;
+    height: 58px;
+    flex: 0 0 74px;
+    border-radius: 10px;
+  }
+
+  .bm-catCardClean__title{
+    font-size: 14px;
+  }
+
+  .bm-catCardClean__meta{
+    margin-top: 4px;
+  }
+}
+
 .bm-catCardClean{
   display:flex;
   align-items:center;

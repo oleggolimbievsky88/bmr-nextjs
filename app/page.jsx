@@ -17,6 +17,7 @@ const VideoPage = dynamic(() => import("@/components/common/Videos"), {
 import Topbar2 from "@/components/header/Topbar2";
 import VehicleSearch from "@/components/common/VehicleSearch";
 import AboutBrandSection from "@/components/homes/home/AboutBrandSection";
+import HomeMarketingSections from "@/components/home/HomeMarketingSections";
 import { getBannerImagesForPublic } from "@/lib/queries";
 
 // Revalidate so production picks up admin brand changes (e.g. Shop by Make logos) without redeploy
@@ -66,6 +67,9 @@ const DEFAULT_SHOP_BY_MAKE = {
 
 export default async function page() {
   const config = await getBrandConfig();
+  const hasHomeMarketingSections =
+    Array.isArray(config.homepageSections) &&
+    config.homepageSections.length > 0;
   const imageRows = await getBannerImagesForPublic();
   const initialBannerImages =
     imageRows?.length > 0
@@ -79,7 +83,10 @@ export default async function page() {
     <>
       <Topbar2 />
       <Header />
-      <Hero initialBannerImages={initialBannerImages} />
+      <HomeMarketingSections brand={config} />
+      {!hasHomeMarketingSections ? (
+        <Hero initialBannerImages={initialBannerImages} />
+      ) : null}
       <div className="container vehicle-search-mobile">
         <VehicleSearch />
       </div>

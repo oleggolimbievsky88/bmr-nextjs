@@ -97,6 +97,7 @@ export default function AdminProductsPage() {
   const [instructionsPdfFile, setInstructionsPdfFile] = useState(null);
   const [instructionsDelete, setInstructionsDelete] = useState(false);
   const [categoriesByPlatform, setCategoriesByPlatform] = useState({});
+  const [platformVehicles, setPlatformVehicles] = useState({});
   const [attributeCategories, setAttributeCategories] = useState([]);
   const [categoryAttributesForForm, setCategoryAttributesForForm] = useState(
     [],
@@ -151,6 +152,7 @@ export default function AdminProductsPage() {
     BlemProduct: 0,
     attributeCategoryId: "",
     attributeValues: {},
+    vehicleFitment: {},
   });
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
@@ -563,6 +565,62 @@ export default function AdminProductsPage() {
     };
   }, [formData.BodyIDs?.length ? formData.BodyIDs.join(",") : ""]);
 
+  // Load vehicles for selected platforms and merge vehicleFitment defaults (all included).
+  useEffect(() => {
+    const bodyIds = (formData.BodyIDs || []).map(String);
+    if (bodyIds.length === 0) {
+      setPlatformVehicles({});
+      return;
+    }
+    let cancelled = false;
+    const load = async () => {
+      const nextPv = {};
+      for (const bid of bodyIds) {
+        try {
+          const res = await fetch(`/api/admin/platforms/${bid}/vehicles`);
+          const data = await res.json();
+          if (cancelled) return;
+          nextPv[bid] = res.ok && Array.isArray(data.vehicles) ? data.vehicles : [];
+        } catch {
+          if (!cancelled) nextPv[bid] = [];
+        }
+      }
+      if (cancelled) return;
+      setPlatformVehicles(nextPv);
+      setFormData((prev) => {
+        const vf = { ...(prev.vehicleFitment || {}) };
+        const valid = new Set();
+        for (const bid of bodyIds) {
+          for (const v of nextPv[bid] || []) {
+            const vid = String(v.VehicleID);
+            valid.add(vid);
+            if (!(vid in vf)) {
+              vf[vid] = {
+                included: true,
+                fitStartYear:
+                  v.StartYear != null && v.StartYear !== ""
+                    ? String(v.StartYear)
+                    : "",
+                fitEndYear:
+                  v.EndYear != null && v.EndYear !== ""
+                    ? String(v.EndYear)
+                    : "",
+              };
+            }
+          }
+        }
+        for (const vid of Object.keys(vf)) {
+          if (!valid.has(vid)) delete vf[vid];
+        }
+        return { ...prev, vehicleFitment: vf };
+      });
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [formData.BodyIDs?.length ? formData.BodyIDs.join(",") : ""]);
+
   // When platform/vehicle filter changes: fetch scoped categories and clear category if invalid
   useEffect(() => {
     if (filterBodyId) {
@@ -855,6 +913,7 @@ export default function AdminProductsPage() {
       BlemProduct: 0,
       attributeCategoryId: "",
       attributeValues: {},
+      vehicleFitment: {},
     });
     setMainImage(null);
     setAdditionalImages([]);
@@ -863,6 +922,7 @@ export default function AdminProductsPage() {
     setInstructionsDelete(false);
     setEditingProduct(null);
     setAvailableCategories([]);
+    setPlatformVehicles({});
     setShowForm(false);
     setSummitPasteText("");
     setSummitPasteError("");
@@ -970,6 +1030,7 @@ export default function AdminProductsPage() {
             },
             {},
           ),
+          vehicleFitment: data.product.vehicleFitment || {},
         });
         setMainImage(null);
         setAdditionalImages([]);
@@ -1086,6 +1147,7 @@ export default function AdminProductsPage() {
             },
             {},
           ),
+          vehicleFitment: data.product.vehicleFitment || {},
         });
         setMainImage(null);
         setAdditionalImages([]);
@@ -1104,6 +1166,27 @@ export default function AdminProductsPage() {
       setError("Failed to copy product: " + err.message);
       showToast("Failed to copy product: " + err.message, "error");
     }
+  };
+
+  const updateVehicleFitmentField = (vehicleId, field, value) => {
+    const id = String(vehicleId);
+    setFormData((prev) => {
+      const vf = { ...(prev.vehicleFitment || {}) };
+      const cur = {
+        ...(vf[id] || {
+          included: true,
+          fitStartYear: "",
+          fitEndYear: "",
+        }),
+      };
+      if (field === "included") {
+        cur.included = Boolean(value);
+      } else {
+        cur[field] = value;
+      }
+      vf[id] = cur;
+      return { ...prev, vehicleFitment: vf };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -1160,7 +1243,8 @@ export default function AdminProductsPage() {
         if (
           key === "BodyIDs" ||
           key === "categoryByPlatform" ||
-          key === "attributeValues"
+          key === "attributeValues" ||
+          key === "vehicleFitment"
         )
           return;
         const val = formData[key];
@@ -1182,6 +1266,10 @@ export default function AdminProductsPage() {
       submitFormData.append(
         "attributeValues",
         JSON.stringify(formData.attributeValues || {}),
+      );
+      submitFormData.append(
+        "vehicleFitment",
+        JSON.stringify(formData.vehicleFitment || {}),
       );
 
       // Add main image if selected
@@ -2333,6 +2421,125 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
                 </div>
+                {(formData.BodyIDs || []).length > 0 ? (
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <hr className="my-3" />
+                      <h4 className="h6 fw-semibold mb-1">
+                        Vehicle application (per platform)
+                      </h4>
+                      <p className="small text-muted mb-3">
+                        All vehicles default to <strong>fits</strong> with years
+                        from the database. Uncheck or change years when this
+                        part does not apply to every vehicle on the platform.
+                      </p>
+                      {(formData.BodyIDs || []).map((bid) => {
+                        const body = bodies.find(
+                          (b) => String(b.BodyID) === String(bid),
+                        );
+                        const platformLabel = body
+                          ? `${body.StartYear}-${body.EndYear} ${body.Name}`
+                          : `Platform ${bid}`;
+                        const vehs = platformVehicles[bid] || [];
+                        if (!vehs.length) {
+                          return (
+                            <div key={bid} className="mb-3">
+                              <div className="fw-semibold small">
+                                {platformLabel}
+                              </div>
+                              <span className="text-muted small">
+                                Loading vehicles…
+                              </span>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div key={bid} className="mb-4">
+                            <div className="fw-semibold small mb-2">
+                              {platformLabel}
+                            </div>
+                            <div className="table-responsive">
+                              <table className="table table-sm table-bordered align-middle">
+                                <thead>
+                                  <tr>
+                                    <th style={{ width: "56px" }}>Fits</th>
+                                    <th>Vehicle</th>
+                                    <th style={{ width: "110px" }}>Start year</th>
+                                    <th style={{ width: "110px" }}>End year</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {vehs.map((v) => {
+                                    const vid = String(v.VehicleID);
+                                    const row =
+                                      formData.vehicleFitment?.[vid] || {
+                                        included: true,
+                                        fitStartYear: String(
+                                          v.StartYear ?? "",
+                                        ),
+                                        fitEndYear: String(v.EndYear ?? ""),
+                                      };
+                                    return (
+                                      <tr key={vid}>
+                                        <td>
+                                          <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            checked={row.included !== false}
+                                            onChange={(e) =>
+                                              updateVehicleFitmentField(
+                                                vid,
+                                                "included",
+                                                e.target.checked,
+                                              )
+                                            }
+                                            aria-label={`Fits ${v.Make} ${v.Model}`}
+                                          />
+                                        </td>
+                                        <td className="small">
+                                          {v.Make} {v.Model}
+                                          {v.SubModel ? ` ${v.SubModel}` : ""}
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            value={row.fitStartYear ?? ""}
+                                            onChange={(e) =>
+                                              updateVehicleFitmentField(
+                                                vid,
+                                                "fitStartYear",
+                                                e.target.value,
+                                              )
+                                            }
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            value={row.fitEndYear ?? ""}
+                                            onChange={(e) =>
+                                              updateVehicleFitmentField(
+                                                vid,
+                                                "fitEndYear",
+                                                e.target.value,
+                                              )
+                                            }
+                                          />
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               {/* Product Attributes */}
