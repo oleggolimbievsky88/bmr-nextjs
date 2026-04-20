@@ -170,8 +170,10 @@
     margin-bottom: 24px;
 
     img {
-      max-width: 240px;
+      max-width: var(--brand-footer-logo-max-width, 240px);
+      max-height: var(--brand-footer-logo-max-height, 80px);
       height: auto;
+      width: auto;
     }
   }
 

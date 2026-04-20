@@ -107,6 +107,10 @@ export default async function RootLayout({ children }) {
     config.assuranceBarBackgroundColor ?? config.themeColor ?? "#000000";
   const assuranceBarText = config.assuranceBarTextColor ?? "#1a1a1a";
   const brandKey = config.key || "bmr";
+  const headerLogoMaxWidth = config.logo?.headerMaxSize?.maxWidth || "";
+  const headerLogoMaxHeight = config.logo?.headerMaxSize?.maxHeight || "";
+  const footerLogoMaxWidth = config.logo?.footerMaxSize?.maxWidth || "";
+  const footerLogoMaxHeight = config.logo?.footerMaxSize?.maxHeight || "";
 
   const faviconHref =
     config.faviconPath &&
@@ -124,7 +128,7 @@ export default async function RootLayout({ children }) {
         <link rel="icon" href={faviconHref} type={faviconType} />
         <style
           dangerouslySetInnerHTML={{
-            __html: `[data-brand="${brandKey}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};}`,
+            __html: `[data-brand="${brandKey}"]{--brand-button-badge:${buttonBadge};--brand-button-badge-text:${buttonBadgeText};--brand-primary-button-text:${primaryButtonText};--brand-assurance-bar-bg:${assuranceBarBg};--brand-assurance-bar-text:${assuranceBarText};${headerLogoMaxWidth ? `--brand-header-logo-max-width:${headerLogoMaxWidth};` : ""}${headerLogoMaxHeight ? `--brand-header-logo-max-height:${headerLogoMaxHeight};` : ""}${footerLogoMaxWidth ? `--brand-footer-logo-max-width:${footerLogoMaxWidth};` : ""}${footerLogoMaxHeight ? `--brand-footer-logo-max-height:${footerLogoMaxHeight};` : ""}}`,
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

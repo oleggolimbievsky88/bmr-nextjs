@@ -11,12 +11,16 @@ import styles from "./SplitHeroBanner.module.css";
 export default function SplitHeroBanner({ section, brand }) {
   if (!section || section.type !== "splitHero") return null;
 
+  const brandKey = String(brand?.key || "").toLowerCase();
   const accent = brand?.buttonBadgeColor || brand?.themeColor || "#b41818";
   const onAccent = brand?.buttonBadgeTextColor || "#ffffff";
   const navLabels = brand?.navLabels || {};
   const navUrls = brand?.navUrls || {};
   const topLinks = [
-    { label: navLabels.ford || "FORD KITS", href: navUrls.ford || "/products/ford" },
+    {
+      label: navLabels.ford || "FORD KITS",
+      href: navUrls.ford || "/products/ford",
+    },
     {
       label: navLabels.mopar || "MOPAR KITS",
       href: navUrls.mopar || "/products/mopar",
@@ -30,6 +34,7 @@ export default function SplitHeroBanner({ section, brand }) {
   const texture = section.textureImagePath || "";
   const img = section.imagePath || "";
   const ctaHref = section.ctaHref || "/products/universal";
+  const showImage = Boolean(img) && brandKey !== "heidts";
 
   return (
     <section className={styles.wrap} aria-label={section.headline || "Hero"}>
@@ -40,7 +45,7 @@ export default function SplitHeroBanner({ section, brand }) {
         />
       ) : null}
 
-      <div className={styles.grid}>
+      <div className={`${styles.grid} ${showImage ? "" : styles.gridNoImage}`}>
         <div className={styles.darkPane}>
           <div className={styles.kicker}>
             {topLinks.map((l) => (
@@ -67,8 +72,8 @@ export default function SplitHeroBanner({ section, brand }) {
           ) : null}
         </div>
 
-        <div className={styles.imagePane}>
-          {img ? (
+        {showImage ? (
+          <div className={styles.imagePane}>
             <div className={styles.imageWrap}>
               <Image
                 src={img}
@@ -84,8 +89,8 @@ export default function SplitHeroBanner({ section, brand }) {
                 }}
               />
             </div>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
         <div className={styles.whiteBand} aria-hidden />
       </div>

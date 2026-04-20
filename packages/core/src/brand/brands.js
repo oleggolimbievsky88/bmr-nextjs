@@ -297,8 +297,8 @@ export const defaultBrands = {
       footerPath:
         process.env.NEXT_PUBLIC_FOOTER_LOGO ||
         "/brands/heidts/images/logo/HEIDTS_logo.png",
-      headerMaxSize: { maxWidth: "180px", maxHeight: "50px" },
-      footerMaxSize: { maxWidth: "220px", maxHeight: "56px" },
+      headerMaxSize: { maxWidth: "260px", maxHeight: "72px" },
+      footerMaxSize: { maxWidth: "300px", maxHeight: "84px" },
       alt: "Heidts Logo",
     },
 

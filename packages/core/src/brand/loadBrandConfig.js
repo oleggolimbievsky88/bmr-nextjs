@@ -68,6 +68,17 @@ export async function getBrandConfig() {
   const siteUrl = getSiteUrl();
   merged.siteUrl = siteUrl;
 
+  // Ensure critical brand presentation defaults can't be accidentally shrunk by stale DB config.
+  // Heidts specifically needs a larger logo across header/footer.
+  if (String(merged.key || key).toLowerCase() === "heidts") {
+    if (!merged.logo || typeof merged.logo !== "object") merged.logo = {};
+    const desiredHeader = { maxWidth: "260px", maxHeight: "72px" };
+    const desiredFooter = { maxWidth: "300px", maxHeight: "84px" };
+    // Force larger presentation regardless of DB values.
+    merged.logo.headerMaxSize = desiredHeader;
+    merged.logo.footerMaxSize = desiredFooter;
+  }
+
   // Env logo overrides must win even when the DB has stale absolute URLs
   // (e.g. dev subdomain saved in brand.logo.*).
   const envHeaderLogo =

@@ -19,6 +19,7 @@ import VehicleSearch from "@/components/common/VehicleSearch";
 import AboutBrandSection from "@/components/homes/home/AboutBrandSection";
 import HomeMarketingSections from "@/components/home/HomeMarketingSections";
 import { getBannerImagesForPublic } from "@/lib/queries";
+import HeidtsEngineeredPerformance from "@/components/home/HeidtsEngineeredPerformance";
 
 // Revalidate so production picks up admin brand changes (e.g. Shop by Make logos) without redeploy
 export const revalidate = 60;
@@ -70,6 +71,7 @@ export default async function page() {
   const hasHomeMarketingSections =
     Array.isArray(config.homepageSections) &&
     config.homepageSections.length > 0;
+  const brandKey = String(config.key || "").toLowerCase();
   const imageRows = await getBannerImagesForPublic();
   const initialBannerImages =
     imageRows?.length > 0
@@ -103,8 +105,9 @@ export default async function page() {
         <LazyNewProducts scratchDent="0" />
         <LazyNewProducts scratchDent="1" />
         {/* <SocialMedia /> */}
-        {config.key !== "controlfreak" && <VideoPage />}
+        {brandKey !== "controlfreak" && brandKey !== "heidts" && <VideoPage />}
       </div>
+      {brandKey === "heidts" ? <HeidtsEngineeredPerformance /> : null}
       <AboutBrandSection />
       <Features />
 

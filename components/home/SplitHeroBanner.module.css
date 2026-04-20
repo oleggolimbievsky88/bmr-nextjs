@@ -45,6 +45,19 @@
   }
 }
 
+/* If the banner has no image pane, let text span full width */
+@media (min-width: 992px) {
+  .gridNoImage {
+    grid-template-columns: 1fr !important;
+  }
+  .gridNoImage .darkPane {
+    grid-column: 1;
+  }
+  .gridNoImage .whiteBand {
+    grid-column: 1;
+  }
+}
+
 .darkPane {
   position: relative;
   padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.25rem, 3vw, 3rem)
@@ -164,11 +177,23 @@
   position: relative;
   width: min(100%, 520px);
   filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.35));
+  transform: none;
+}
+
+.imageWrap :global(img) {
+  transform: none;
 }
 
 @media (min-width: 992px) {
   .imageWrap {
-    width: min(100%, 640px);
-    transform: translateY(clamp(1.5rem, 8vw, 4.5rem));
+    width: min(100%, 520px);
+    transform: translateY(clamp(1rem, 6vw, 3.25rem));
+  }
+}
+
+@media (max-width: 575px) {
+  .imageWrap {
+    width: min(100%, 360px);
+    transform: translateY(0.5rem);
   }
 }

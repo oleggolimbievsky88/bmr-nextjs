@@ -296,25 +296,29 @@
     }
   }
   .logo-header .logo {
-    max-width: 225px !important;
+    max-width: var(--brand-header-logo-max-width, 225px);
+    max-height: var(--brand-header-logo-max-height, 80px);
   }
 
   @media (max-width: 1200px) {
     .logo-header .logo {
-      max-width: 200px !important;
+      max-width: min(var(--brand-header-logo-max-width, 200px), 200px);
+      max-height: min(var(--brand-header-logo-max-height, 70px), 70px);
     }
   }
 
   // Override for mobile - make logo smaller
   @media (max-width: 767px) {
     .logo-header .logo {
-      max-width: 100px !important;
+      max-width: min(var(--brand-header-logo-max-width, 140px), 140px);
+      max-height: min(var(--brand-header-logo-max-height, 52px), 52px);
     }
   }
 
   @media (max-width: 500px) {
     .logo-header .logo {
-      max-width: 75px !important;
+      max-width: min(var(--brand-header-logo-max-width, 120px), 120px);
+      max-height: min(var(--brand-header-logo-max-height, 44px), 44px);
     }
   }
   .canvas-mb {
