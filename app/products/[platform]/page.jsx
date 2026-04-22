@@ -12,6 +12,10 @@ export default function PlatformPage({ params }) {
   const { platform } = use(params);
   const searchParams = useSearchParams();
   const year = useMemo(() => searchParams.get("year") || null, [searchParams]);
+  const isUniversalPlatform =
+    String(platform || "")
+      .trim()
+      .toLowerCase() === "universal";
   const [platformInfo, setPlatformInfo] = useState(null);
   const [mainCategories, setMainCategories] = useState([]);
   const [initialProducts, setInitialProducts] = useState([]);
@@ -138,7 +142,9 @@ export default function PlatformPage({ params }) {
             {
               label: platformInfo
                 ? platformInfo.startYear && platformInfo.endYear
-                  ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                  ? isUniversalPlatform
+                    ? platformInfo.name || platform
+                    : `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
                   : platformInfo.name || platform
                 : platform,
               href: `/products/${platform}`,

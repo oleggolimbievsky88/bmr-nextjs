@@ -34,6 +34,10 @@ export default function CategoryPage({ params }) {
     () => searchParams.get("year") || null,
     [searchParams],
   );
+  const isUniversalPlatform =
+    String(platform || "")
+      .trim()
+      .toLowerCase() === "universal";
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -229,7 +233,9 @@ export default function CategoryPage({ params }) {
             { label: "Home", href: "/" },
             {
               label: platformInfo
-                ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                ? isUniversalPlatform
+                  ? platformInfo.name || platform
+                  : `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
                 : platform,
               href: `/products/${platform}`,
             },

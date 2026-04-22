@@ -25,6 +25,10 @@ const sanitizeSlug = (slug) => {
 
 export default function MainCategoryPage({ params }) {
   const { platform, mainCategory } = use(params);
+  const isUniversalPlatform =
+    String(platform || "")
+      .trim()
+      .toLowerCase() === "universal";
 
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
@@ -119,7 +123,9 @@ export default function MainCategoryPage({ params }) {
             { label: "Home", href: "/" },
             {
               label: platformInfo
-                ? `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
+                ? isUniversalPlatform
+                  ? platformInfo.name || platform
+                  : `${platformInfo.startYear}-${platformInfo.endYear} ${platformInfo.name}`
                 : platform,
               href: `/products/${platform}`,
             },

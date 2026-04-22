@@ -6,6 +6,20 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 const MAX_LOGIN_ATTEMPTS = 3;
 
+function mapAuthErrorParamToMessage(errorParam) {
+  if (!errorParam) return "";
+  // NextAuth commonly uses these values in `?error=...`
+  if (errorParam === "CredentialsSignin") return "Invalid email or password";
+  if (errorParam === "Configuration")
+    return "Login is temporarily unavailable due to a configuration issue. Please try again shortly.";
+  if (errorParam === "AccessDenied")
+    return "Access denied. Please contact support if you believe this is a mistake.";
+  if (errorParam === "Verification")
+    return "Your account needs verification before you can log in.";
+  // Fallback: show something readable without leaking internals
+  return "Unable to sign in. Please check your details and try again.";
+}
+
 export default function Login() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -29,6 +43,14 @@ export default function Login() {
   const [resendVerifyMessage, setResendVerifyMessage] = useState("");
   const [resendVerifyError, setResendVerifyError] = useState("");
   const [resendVerifyLoading, setResendVerifyLoading] = useState(false);
+
+  // If NextAuth redirects back to /auth/login?error=..., show that error.
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    const message = mapAuthErrorParamToMessage(errorParam);
+    if (message) setError(message);
+    // Intentionally depends on `searchParams` so it also reacts to URL changes.
+  }, [searchParams]);
 
   // Redirect already logged-in users to the correct dashboard
   useEffect(() => {

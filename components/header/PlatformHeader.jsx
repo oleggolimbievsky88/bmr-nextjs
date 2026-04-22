@@ -9,6 +9,14 @@ export default function PlatformHeader({
   mainCategoryName = null,
 }) {
   if (!platformData) return null;
+  const isUniversalPlatform =
+    String(platformData?.slug || "")
+      .trim()
+      .toLowerCase() === "universal" ||
+    String(platformData?.Name || "")
+      .trim()
+      .toLowerCase()
+      .includes("universal");
   // Format the year display - omit when StartYear is 0 or "0" to avoid "0-" prefix
   const startYear = platformData.StartYear;
   const endYear = platformData.EndYear;
@@ -17,11 +25,12 @@ export default function PlatformHeader({
     startYear !== "0" &&
     String(startYear).trim() !== "" &&
     parseInt(startYear, 10) > 0;
-  const yearDisplay = hasValidYear
-    ? startYear === endYear
-      ? startYear
-      : `${startYear}-${endYear || ""}`
-    : "";
+  const yearDisplay =
+    !isUniversalPlatform && hasValidYear
+      ? startYear === endYear
+        ? startYear
+        : `${startYear}-${endYear || ""}`
+      : "";
 
   // Prefer HeaderImage from DB, fall back to slug-based naming: platform-slug_Banner.jpg
   const imageUrl =
