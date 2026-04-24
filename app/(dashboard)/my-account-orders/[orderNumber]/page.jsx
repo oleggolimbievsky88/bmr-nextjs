@@ -4,11 +4,13 @@ import Footer1 from "@/components/footer/Footer";
 import Header2 from "@/components/header/Header";
 import DashboardNav from "@/components/othersPages/dashboard/DashboardNav";
 import OrderDetail from "@/components/othersPages/dashboard/OrderDetail";
-import React from "react";
+import React, { use } from "react";
 
 export default function OrderDetailPage({ params }) {
-  // `params` is passed directly into client components in App Router
-  const { orderNumber } = params || {};
+  // In Next.js App Router, `params` can be a Promise in client components.
+  // Safely unwrap it when needed.
+  const resolvedParams = params?.then ? use(params) : params;
+  const { orderNumber } = resolvedParams || {};
   return (
     <>
       <Header2 />
