@@ -16,6 +16,7 @@ export default function OwnerOrdersClient({ initialBrand = "bmr" }) {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [status, setStatus] = useState("");
   const [ccType, setCcType] = useState("");
+  const [ccSearchTerm, setCcSearchTerm] = useState("");
   const [passwordAOnly, setPasswordAOnly] = useState(false);
   const [limit, setLimit] = useState(50);
 
@@ -36,6 +37,7 @@ export default function OwnerOrdersClient({ initialBrand = "bmr" }) {
     if (paymentMethod) p.set("paymentMethod", paymentMethod);
     if (status) p.set("status", status);
     if (ccType.trim()) p.set("ccType", ccType.trim());
+    if (ccSearchTerm.trim()) p.set("ccSearchTerm", ccSearchTerm.trim());
     if (passwordAOnly) p.set("passwordAOnly", "1");
     p.set("limit", String(limit));
     return p;
@@ -48,6 +50,7 @@ export default function OwnerOrdersClient({ initialBrand = "bmr" }) {
     paymentMethod,
     status,
     ccType,
+    ccSearchTerm,
     passwordAOnly,
     limit,
   ]);
@@ -259,6 +262,18 @@ export default function OwnerOrdersClient({ initialBrand = "bmr" }) {
               </div>
 
               <div className="col-12 col-md-3">
+                <label className="form-label">CC search term</label>
+                <input
+                  type="text"
+                  className="form-control, order-form-control"
+                  placeholder="Search"
+                  value={ccSearchTerm}
+                  onChange={(e) => setCcSearchTerm(e.target.value)}
+                  suppressHydrationWarning
+                />
+              </div>
+
+              <div className="col-12 col-md-3">
                 <label className="form-label d-block">Customer filters</label>
                 <label className="form-check-label d-flex align-items-center gap-2">
                   <input
@@ -285,6 +300,7 @@ export default function OwnerOrdersClient({ initialBrand = "bmr" }) {
                     setPaymentMethod("");
                     setStatus("");
                     setCcType("");
+                    setCcSearchTerm("");
                     setPasswordAOnly(false);
                     setLimit(50);
                     setShowAllColumns(false);

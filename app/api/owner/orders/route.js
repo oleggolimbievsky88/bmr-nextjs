@@ -132,6 +132,7 @@ export async function GET(request) {
     const paymentMethod = searchParams.get("paymentMethod") || null;
     const status = searchParams.get("status") || null;
     const ccType = searchParams.get("ccType") || null;
+    const ccSearchTerm = searchParams.get("ccSearchTerm") || null;
     const passwordAOnly = searchParams.get("passwordAOnly") === "1";
     const limit = Math.min(
       200,
@@ -200,6 +201,10 @@ export async function GET(request) {
     if (ccType && has(orderCols, "cc_type")) {
       sql += ` AND o.\`cc_type\` LIKE ?`;
       params.push(`%${ccType}%`);
+    }
+    if (ccSearchTerm && has(orderCols, "cc_number")) {
+      sql += ` AND o.\`cc_number\` LIKE ?`;
+      params.push(`%${ccSearchTerm}%`);
     }
     if (email) {
       const like = `%${email}%`;
