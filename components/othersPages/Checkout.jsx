@@ -1970,9 +1970,8 @@ export default function Checkout() {
                             ) : (
                               <div className="text-center py-3">
                                 <p className="text-muted">
-                                  Free shipping on BMR products (lower 48 US
-                                  only) when eligible. Enter your address to see
-                                  rates.
+                                  Free shipping (lower 48 US only) when
+                                  eligible. Enter your address to see rates.
                                 </p>
                               </div>
                             )}

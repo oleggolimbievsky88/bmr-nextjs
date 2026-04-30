@@ -18,7 +18,7 @@ export async function POST(request) {
   } catch (parseErr) {
     return NextResponse.json(
       { error: "Invalid request body" },
-      { status: 400 }
+      { status: 400 },
     );
   }
   try {
@@ -61,7 +61,7 @@ export async function POST(request) {
       });
       return NextResponse.json(
         { error: "UPS API credentials not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -208,12 +208,12 @@ export async function POST(request) {
       : "https://onlinetools.ups.com";
 
     console.log(
-      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`
+      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`,
     );
 
     // Get OAuth token using Client Credentials flow
     const basicAuth = Buffer.from(`${upsClientId}:${upsClientSecret}`).toString(
-      "base64"
+      "base64",
     );
 
     console.log("Basic Auth header:", {
@@ -237,7 +237,7 @@ export async function POST(request) {
       const errorText = await tokenResponse.text();
       console.error("UPS OAuth error details:", errorText);
       throw new Error(
-        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`
+        `UPS OAuth error: ${tokenResponse.status} - ${errorText}`,
       );
     }
 
@@ -284,14 +284,14 @@ export async function POST(request) {
           const errorText = await rateResponse.text();
           console.log(
             `UPS Rate API error for service ${serviceInfo.code}:`,
-            errorText
+            errorText,
           );
           return null;
         }
       } catch (error) {
         console.log(
           `Error fetching rate for service ${serviceInfo.code}:`,
-          error
+          error,
         );
         return null;
       }
@@ -421,7 +421,7 @@ export async function POST(request) {
     // Sort by cost (cheapest first)
     shippingOptions.sort((a, b) => a.cost - b.cost);
 
-    // Free shipping for all BMR products (incl. scratch & dent, packages, low margin) to lower 48 US
+    // Free shipping for BMR + Control Freak products to lower 48 US
     const stateForShipping = (
       toAddress?.state ??
       toAddress?.stateProvince ??
@@ -441,8 +441,7 @@ export async function POST(request) {
         cost: 0,
         currency: "USD",
         deliveryDays: "1-5 business days",
-        description:
-          "Free shipping on all BMR products (lower 48 US)",
+        description: "Free shipping (lower 48 US)",
       });
     }
 
@@ -465,7 +464,7 @@ export async function POST(request) {
     console.error("UPS shipping rates error:", error);
 
     // Fallback shipping options when UPS API fails
-    // Free shipping when all BMR (incl. scratch & dent, packages, low margin) + lower 48 US
+    // Free shipping when all products eligible + lower 48 US
     let allowFreeShipping = false;
     const toCountryCode = getCountryCode(toAddress?.country) || "US";
     const stateForFallback = (
@@ -481,7 +480,7 @@ export async function POST(request) {
         toCountryCode === "US" &&
         isLower48UsState(stateForFallback) &&
         (await areAllProductsFreeShippingEligible(
-          Array.isArray(productIds) ? productIds : []
+          Array.isArray(productIds) ? productIds : [],
         ));
     } catch (e) {
       allowFreeShipping = false;
@@ -521,8 +520,7 @@ export async function POST(request) {
           cost: 0,
           currency: "USD",
           deliveryDays: "5-7 business days",
-          description:
-            "Free shipping on all BMR products (lower 48 US)",
+          description: "Free shipping (lower 48 US)",
         });
       }
     } else if (toCountryCode === "CA") {
