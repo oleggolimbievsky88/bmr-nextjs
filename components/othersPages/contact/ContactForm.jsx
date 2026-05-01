@@ -37,6 +37,12 @@ export default function ContactForm({ brand }) {
   const mapsHref = `https://www.google.com/maps?q=${mapsQuery}`;
   const formRef = useRef();
   const [sending, setSending] = useState(false);
+  const [departmentEmail, setDepartmentEmail] = useState(() => {
+    const first = Array.isArray(contact?.departments)
+      ? contact.departments.find((d) => d?.email)?.email
+      : null;
+    return first || "";
+  });
 
   const sendMail = async (e) => {
     e.preventDefault();
@@ -50,11 +56,19 @@ export default function ContactForm({ brand }) {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          departmentEmail: departmentEmail || null,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
         form.reset();
+        setDepartmentEmail(
+          departments.find((d) => d?.email)?.email || departmentEmail || "",
+        );
         showToast(
           "Thank you for reaching out! Your message has been sent to our team. We truly value every inquiry—your feedback and questions are very important to us. We'll get back to you as soon as possible.",
           "success",
@@ -207,6 +221,27 @@ export default function ContactForm({ brand }) {
                   />
                 </fieldset>
               </div>
+              {departments.length > 0 && (
+                <div className="mb_15">
+                  <select
+                    name="department"
+                    id="department"
+                    value={departmentEmail}
+                    onChange={(e) => setDepartmentEmail(e.target.value)}
+                    aria-label="Department"
+                    disabled={sending}
+                  >
+                    <option value="">General</option>
+                    {departments
+                      .filter((d) => d?.label && d?.email)
+                      .map((d) => (
+                        <option key={d.email} value={d.email}>
+                          {d.label}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
               <div className="mb_15">
                 <textarea
                   placeholder="Message"

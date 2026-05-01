@@ -21,7 +21,9 @@ import { mustUsePayPal, canUseCreditCard } from "@/lib/paymentRules";
 import { getAcPanelPowderCoatUnitPrice } from "@/lib/acPanelPowderCoat";
 import { buildOrderItemsFromCart } from "@/lib/checkoutOrderItems";
 
-export default function Checkout() {
+export default function Checkout({ brand }) {
+  const companyName =
+    brand?.companyName || brand?.name || brand?.companyNameShort || "BMR";
   const router = useRouter();
   const { data: session, status } = useSession();
   const {
@@ -2780,7 +2782,7 @@ export default function Checkout() {
                     required
                     suppressHydrationWarning
                   />
-                  I agree to BMR Suspension's{" "}
+                  I agree to {companyName}'s{" "}
                   <Link href="/terms-conditions">Terms & Conditions</Link>
                 </label>
               </div>
@@ -2793,7 +2795,7 @@ export default function Checkout() {
                     onChange={(e) => setEmailConsent(e.target.checked)}
                     suppressHydrationWarning
                   />
-                  I agree to receive texts and emails from BMR
+                  I agree to receive texts and emails from {companyName}
                 </label>
               </div>
 

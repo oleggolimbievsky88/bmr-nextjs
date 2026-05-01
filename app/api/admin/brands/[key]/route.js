@@ -78,8 +78,15 @@ export async function PATCH(request, { params }) {
       await updateBrandFaqSections(key, body.faqSections);
     }
 
-    // Invalidate homepage so Shop by Make and other brand-dependent content updates in production
+    // Invalidate brand-driven pages so updates show on the site.
+    // (FAQs, contact info, legal pages, etc. can be brand-specific.)
     revalidatePath("/");
+    revalidatePath("/faq");
+    revalidatePath("/contact");
+    revalidatePath("/terms-conditions");
+    revalidatePath("/privacy-policy");
+    revalidatePath("/delivery-return");
+    revalidatePath("/brands");
 
     return NextResponse.json({ success: true });
   } catch (error) {

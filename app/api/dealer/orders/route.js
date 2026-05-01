@@ -1,5 +1,5 @@
 // app/api/dealer/orders/route.js
-// GET: list past orders (invoices) for the dealer
+// GET: list past orders for the dealer
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -27,7 +27,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(
       100,
-      Math.max(1, parseInt(searchParams.get("limit") || "50", 10))
+      Math.max(1, parseInt(searchParams.get("limit") || "50", 10)),
     );
 
     const orders = await getOrdersByCustomerId(customerId, limit);
@@ -36,7 +36,7 @@ export async function GET(request) {
     console.error("Error fetching dealer orders:", error);
     return NextResponse.json(
       { error: "Failed to fetch orders" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

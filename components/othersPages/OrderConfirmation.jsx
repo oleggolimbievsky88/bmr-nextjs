@@ -109,11 +109,28 @@ function EmailReceiptForm({ order }) {
   );
 }
 
-export default function OrderConfirmation({ orderData }) {
+export default function OrderConfirmation({ orderData, brand }) {
   const { cartProducts, clearCart } = useContextElement();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const cartClearedForOrder = useRef(false);
+
+  const companyName =
+    brand?.companyName || brand?.name || brand?.companyNameShort || "BMR";
+  const logoPath =
+    brand?.logo?.headerPath ||
+    brand?.logo?.footerPath ||
+    "/images/logo/BMR-Logo.webp";
+  const logoAlt = companyName;
+  const contactEmail = brand?.contact?.email || "WebSales@bmrsuspension.com";
+  const phoneDisplay =
+    brand?.contact?.phoneDisplay ||
+    brand?.contact?.phoneTel ||
+    "(813) 986-9302";
+  const phoneTel = String(brand?.contact?.phoneTel || "8139869302").replace(
+    /\D/g,
+    "",
+  );
 
   // Clear cart when we successfully show an order (covers PayPal return and any checkout flow)
   useEffect(() => {
@@ -266,12 +283,12 @@ export default function OrderConfirmation({ orderData }) {
     <div className="container py-5 order-confirmation-page">
       <div className="row justify-content-center">
         <div className="col-lg-10">
-          {/* Receipt Header with BMR Logo */}
+          {/* Receipt Header with Brand Logo */}
           <div className="receipt-header">
             <div className="receipt-header-inner">
               <Image
-                src="/images/logo/BMR-Logo.webp"
-                alt="BMR Suspension"
+                src={logoPath}
+                alt={logoAlt}
                 width={320}
                 height={137}
                 className="receipt-logo"
@@ -711,14 +728,14 @@ export default function OrderConfirmation({ orderData }) {
                   If you have any questions or would like to change any part of
                   your order, simply send us an email at{" "}
                   <a
-                    href="mailto:WebSales@bmrsuspension.com"
+                    href={`mailto:${contactEmail}`}
                     className="text-decoration-none"
                   >
-                    WebSales@bmrsuspension.com
+                    {contactEmail}
                   </a>{" "}
                   or call us at{" "}
-                  <a href="tel:+18139869302" className="text-decoration-none">
-                    (813) 986-9302
+                  <a href={`tel:${phoneTel}`} className="text-decoration-none">
+                    {phoneDisplay}
                   </a>{" "}
                   between 8:30 - 5:00 pm Eastern time, Monday through Friday. We
                   thank you for continuing to support American manufacturing!

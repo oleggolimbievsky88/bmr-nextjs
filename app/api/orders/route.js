@@ -4,6 +4,7 @@ import {
   generateOrderConfirmationHTML,
   ORDER_CONFIRMATION_SUBJECT,
 } from "@/lib/order-confirmation-email";
+import { getBrandConfig } from "@/lib/brandConfig";
 import {
   getNextOrderNumber,
   ensureOrderTablesExist,
@@ -19,6 +20,14 @@ import {
   getGiftCardsForOrder,
 } from "@/lib/giftCards";
 import { getTaxAmount } from "@/lib/tax";
+
+function getOrderNumberPrefix(brandKey) {
+  const key = String(brandKey || "")
+    .trim()
+    .toLowerCase();
+  if (key === "controlfreak") return "CFS";
+  return "BMR";
+}
 
 export async function POST(request) {
   let orderData = null;
@@ -115,7 +124,9 @@ export async function POST(request) {
 
     // Generate order number (sequential starting from 660000)
     const orderNumberValue = await getNextOrderNumber();
-    const orderNumber = `BMR-${orderNumberValue}`;
+    const brand = await getBrandConfig();
+    const prefix = getOrderNumberPrefix(brand?.key);
+    const orderNumber = `${prefix}-${orderNumberValue}`;
     // Format date for MySQL datetime column (YYYY-MM-DD HH:MM:SS)
     const now = new Date();
     const orderDate = now.toISOString().slice(0, 19).replace("T", " ");

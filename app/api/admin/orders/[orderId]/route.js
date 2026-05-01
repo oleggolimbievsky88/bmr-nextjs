@@ -4,6 +4,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getBrandConfig } from "@/lib/brandConfig";
+import { getDbPoolForBrand } from "@/lib/dbByBrand";
 import {
   updateOrderStatus,
   getOrderWithItemsAdmin,
@@ -24,8 +26,12 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const brand = await getBrandConfig();
+    const brandKey = (brand?.key || "bmr").trim().toLowerCase();
+    const dbPool = getDbPoolForBrand(brandKey);
+
     const { orderId } = await params;
-    const order = await getOrderWithItemsAdmin(orderId);
+    const order = await getOrderWithItemsAdmin(orderId, dbPool);
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
@@ -33,10 +39,10 @@ export async function GET(request, { params }) {
 
     const [statusHistory, ccRevealLog, tracking_numbers, giftCards] =
       await Promise.all([
-        getOrderStatusHistory(order.new_order_id),
-        getOrderCcRevealLog(order.new_order_id),
-        getOrderTrackingNumbers(order.new_order_id),
-        getGiftCardsForOrder(order.new_order_id).catch(() => []),
+        getOrderStatusHistory(order.new_order_id, dbPool),
+        getOrderCcRevealLog(order.new_order_id, dbPool),
+        getOrderTrackingNumbers(order.new_order_id, dbPool),
+        getGiftCardsForOrder(order.new_order_id, dbPool).catch(() => []),
       ]);
     redactOrderCcToken(order, { forAdmin: true });
     return NextResponse.json({
@@ -66,6 +72,10 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const brand = await getBrandConfig();
+    const brandKey = (brand?.key || "bmr").trim().toLowerCase();
+    const dbPool = getDbPoolForBrand(brandKey);
+
     const { orderId } = await params;
     const body = await request.json();
     const { status, tracking_number } = body;
@@ -88,7 +98,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });
     }
 
-    const existingOrder = await getOrderById(orderId);
+    const existingOrder = await getOrderById(orderId, dbPool);
     if (!existingOrder) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
@@ -97,6 +107,7 @@ export async function PATCH(request, { params }) {
       orderId,
       status,
       tracking_number || null,
+      dbPool,
     );
 
     if (!updated) {
@@ -111,6 +122,7 @@ export async function PATCH(request, { params }) {
       existingOrder.status ?? null,
       status,
       tracking_number || null,
+      dbPool,
     );
 
     return NextResponse.json({

@@ -3,6 +3,7 @@ import Header from "@/components/header/Header";
 import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
 import Checkout from "@/components/othersPages/Checkout";
+import { getBrandConfig } from "@/lib/brandConfig";
 import React, { Suspense } from "react";
 
 // Force dynamic rendering to prevent build-time issues
@@ -13,7 +14,8 @@ export const metadata = {
     "Checkout | BMR Suspension - Performance Racing Suspension & Chassis Parts",
   description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
 };
-export default function page() {
+export default async function page() {
+  const brand = await getBrandConfig();
   return (
     <>
       <Topbar4 />
@@ -22,7 +24,7 @@ export default function page() {
       <Suspense
         fallback={<div className="text-center py-5">Loading checkout...</div>}
       >
-        <Checkout />
+        <Checkout brand={brand} />
       </Suspense>
       <Footer1 />
     </>

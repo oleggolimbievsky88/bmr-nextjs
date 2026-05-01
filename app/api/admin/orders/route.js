@@ -4,6 +4,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getBrandConfig } from "@/lib/brandConfig";
+import { getDbPoolForBrand } from "@/lib/dbByBrand";
 import {
   getAllOrdersAdmin,
   getOrderWithItemsAdmin,
@@ -22,6 +24,10 @@ export async function GET(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const brand = await getBrandConfig();
+    const brandKey = (brand?.key || "bmr").trim().toLowerCase();
+    const dbPool = getDbPoolForBrand(brandKey);
+
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "25");
     const offset = parseInt(searchParams.get("offset") || "0");
@@ -38,14 +44,14 @@ export async function GET(request) {
 
     if (orderId) {
       // Get single order with items
-      const order = await getOrderWithItemsAdmin(orderId);
+      const order = await getOrderWithItemsAdmin(orderId, dbPool);
       if (!order) {
         return NextResponse.json({ error: "Order not found" }, { status: 404 });
       }
       const [statusHistory, ccRevealLog, giftCards] = await Promise.all([
-        getOrderStatusHistory(order.new_order_id),
-        getOrderCcRevealLog(order.new_order_id),
-        getGiftCardsForOrder(order.new_order_id).catch(() => []),
+        getOrderStatusHistory(order.new_order_id, dbPool),
+        getOrderCcRevealLog(order.new_order_id, dbPool),
+        getGiftCardsForOrder(order.new_order_id, dbPool).catch(() => []),
       ]);
       redactOrderCcToken(order, { forAdmin: true });
       return NextResponse.json({
@@ -71,8 +77,9 @@ export async function GET(request) {
         name,
         dateFrom,
         dateTo,
+        dbPool,
       ),
-      getOrdersCountAdmin(status, orderNumber, name, dateFrom, dateTo),
+      getOrdersCountAdmin(status, orderNumber, name, dateFrom, dateTo, dbPool),
     ]);
     orders.forEach((o) => redactOrderCcToken(o, { forAdmin: true }));
 

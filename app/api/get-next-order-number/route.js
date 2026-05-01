@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { getBrandConfig } from "@/lib/brandConfig";
+
+function getOrderNumberPrefix(brandKey) {
+  const key = String(brandKey || "")
+    .trim()
+    .toLowerCase();
+  if (key === "controlfreak") return "CFS";
+  return "BMR";
+}
 
 export async function GET() {
   try {
@@ -43,17 +52,22 @@ export async function GET() {
       }
     }
 
+    const brand = await getBrandConfig();
+    const prefix = getOrderNumberPrefix(brand?.key);
+
     return NextResponse.json({
       orderNumber: nextOrderNumber,
-      orderId: `BMR-${nextOrderNumber}`,
+      orderId: `${prefix}-${nextOrderNumber}`,
     });
   } catch (error) {
     console.error("Error getting next order number:", error);
 
     // Default fallback
+    const brand = await getBrandConfig().catch(() => null);
+    const prefix = getOrderNumberPrefix(brand?.key);
     return NextResponse.json({
       orderNumber: 660000,
-      orderId: "BMR-660000",
+      orderId: `${prefix}-660000`,
     });
   }
 }

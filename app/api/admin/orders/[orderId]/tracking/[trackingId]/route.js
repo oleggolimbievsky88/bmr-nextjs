@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getBrandConfig } from "@/lib/brandConfig";
+import { getDbPoolForBrand } from "@/lib/dbByBrand";
 import { getOrderById, deleteOrderTrackingNumber } from "@/lib/queries";
 
 export async function DELETE(request, { params }) {
@@ -10,8 +12,12 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const brand = await getBrandConfig();
+    const brandKey = (brand?.key || "bmr").trim().toLowerCase();
+    const dbPool = getDbPoolForBrand(brandKey);
+
     const { orderId, trackingId } = await params;
-    const order = await getOrderById(orderId);
+    const order = await getOrderById(orderId, dbPool);
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
@@ -24,7 +30,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    const deleted = await deleteOrderTrackingNumber(id);
+    const deleted = await deleteOrderTrackingNumber(id, dbPool);
     if (!deleted) {
       return NextResponse.json(
         { error: "Tracking number not found" },

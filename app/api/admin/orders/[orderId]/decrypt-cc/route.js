@@ -5,6 +5,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getBrandConfig } from "@/lib/brandConfig";
+import { getDbPoolForBrand } from "@/lib/dbByBrand";
 import { getOrderById, insertOrderCcRevealLog } from "@/lib/queries";
 import { decrypt } from "@/lib/ccEncryption";
 
@@ -16,8 +18,12 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const brand = await getBrandConfig();
+    const brandKey = (brand?.key || "bmr").trim().toLowerCase();
+    const dbPool = getDbPoolForBrand(brandKey);
+
     const { orderId } = await params;
-    const order = await getOrderById(orderId);
+    const order = await getOrderById(orderId, dbPool);
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
@@ -33,6 +39,7 @@ export async function GET(request, { params }) {
       session.user?.id ?? null,
       session.user?.email ?? "unknown",
       session.user?.name ?? null,
+      dbPool,
     );
 
     const ccNumber = decrypt(encrypted);

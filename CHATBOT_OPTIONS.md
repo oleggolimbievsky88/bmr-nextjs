@@ -49,7 +49,7 @@ It depends on the type:
 | Piece | Description |
 |-------|-------------|
 | **Chat UI** | A small widget (e.g. bottom-right bubble) that opens a panel with message history and an input. |
-| **API: tracking** | Route that takes order number + email, checks `invoice`/`new_orders` (or your order table), returns status and tracking number. |
+| **API: tracking** | Route that takes order number + email, checks `new_orders` (your orders table), returns status and tracking number. |
 | **API: product info** | Route that takes part number or product ID, returns product name, Hardware (Y/N or details), Grease, AngleFinder, and a short “Fits: [platforms/vehicles]” from `bodies`/`vehicles`. |
 | **Router** | Optional: detect “track”, “tracking”, “order” → tracking flow; “vehicle”, “fit”, “fits” → vehicle fit; “hardware” → product hardware; else show a short menu or “Contact us”. |
 

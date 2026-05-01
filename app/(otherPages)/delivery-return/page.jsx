@@ -4,6 +4,7 @@ import PageHeader from "@/components/header/PageHeader";
 import Topbar4 from "@/components/header/Topbar4";
 import Link from "next/link";
 import React from "react";
+import { getBrandConfig } from "@/lib/brandConfig";
 
 export const metadata = {
   title: "Delivery & Returns | BMR Suspension | Shipping & Return Policy",
@@ -11,7 +12,20 @@ export const metadata = {
     "BMR Suspension shipping options, delivery information, and return policy. Free shipping on qualifying orders. Contact us for support.",
 };
 
-export default function DeliveryReturnPage() {
+export default async function DeliveryReturnPage() {
+  const brand = await getBrandConfig();
+  const companyName =
+    brand?.companyName || brand?.name || brand?.companyNameShort || "BMR";
+  const companyShort = brand?.companyNameShort || companyName;
+  const contactEmail = brand?.contact?.email || "sales@bmrsuspension.com";
+  const phoneTel = String(brand?.contact?.phoneTel || "8139869302").replace(
+    /\D/g,
+    "",
+  );
+  const phoneDisplay =
+    brand?.contact?.phoneDisplay ||
+    brand?.contact?.phoneTel ||
+    "(813) 986-9302";
   return (
     <>
       <Topbar4 />
@@ -40,21 +54,22 @@ export default function DeliveryReturnPage() {
                 <p>
                   All non-warranty returns must be made within 90 days from the
                   date of shipment and are subject to a 15% restocking fee,
-                  excluding all shipping cost. BMR Suspension will not accept
+                  excluding all shipping cost. {companyName} will not accept
                   returns on items that have been installed, used, modified or
                   damaged. All items must be received in the original packing
                   material and in the original condition as it was shipped. All
                   items damaged from shipping will be refused.
-                  <br /> <br /> BMR will issue a Returned Material Authorization
-                  number for every return. Returned goods will not be accepted
-                  without an RMA Number. There are no refunds on shipping and
-                  handling charges and all items must be sent prepaid. All
-                  returned goods sent freight collect will be refused. If item
-                  is returned scratched, nicked or damaged in any way, the cost
-                  to repair or re-powder coat the item will be deducted from the
-                  amount of the refund. If item is missing any components, the
-                  cost to replace these components will be deducted from the
-                  amount of the refund. Special order items cannot be returned.
+                  <br /> <br /> {companyShort} will issue a Returned Material
+                  Authorization number for every return. Returned goods will not
+                  be accepted without an RMA Number. There are no refunds on
+                  shipping and handling charges and all items must be sent
+                  prepaid. All returned goods sent freight collect will be
+                  refused. If item is returned scratched, nicked or damaged in
+                  any way, the cost to repair or re-powder coat the item will be
+                  deducted from the amount of the refund. If item is missing any
+                  components, the cost to replace these components will be
+                  deducted from the amount of the refund. Special order items
+                  cannot be returned.
                 </p>
               </ul>
             </div>
@@ -62,14 +77,14 @@ export default function DeliveryReturnPage() {
             <div className="delivery-return-page__card">
               <h2 className="delivery-return-page__title">Warranty</h2>
               <p className="delivery-return-page__text">
-                BMR products are warranted to the original purchaser against
-                defects in materials and workmanship under normal use for two
-                (2) years from the date of sale. Our obligation under this
-                warranty is limited to replacement of the product; we do not
-                cover reinstallation or other incidental costs. This warranty
-                does not apply to products that have been misused, neglected,
-                altered, damaged, or improperly installed, and normal wear is
-                not considered a defect. Warranty claims are limited to
+                {companyShort} products are warranted to the original purchaser
+                against defects in materials and workmanship under normal use
+                for two (2) years from the date of sale. Our obligation under
+                this warranty is limited to replacement of the product; we do
+                not cover reinstallation or other incidental costs. This
+                warranty does not apply to products that have been misused,
+                neglected, altered, damaged, or improperly installed, and normal
+                wear is not considered a defect. Warranty claims are limited to
                 replacement or credit for returned merchandise. Impact damage
                 and damage to powder coat are specifically excluded.
               </p>
@@ -79,25 +94,29 @@ export default function DeliveryReturnPage() {
                 available at the customer’s expense for the difference in cost.
               </p>
               <p className="delivery-return-page__text">
-                BMR products are designed for use with OEM and other BMR
+                {companyShort} products are designed for use with OEM and other{" "}
+                {companyShort}
                 products. We do not warrant fitment with aftermarket products
                 from other manufacturers, including suspension, exhaust,
                 drivetrain, or other aftermarket components. Returns due to
-                fitment issues with OEM or BMR products receive a full refund;
-                returns due to fitment issues with other manufacturers’
-                aftermarket products are subject to a 15% restocking fee.
+                fitment issues with OEM or {companyShort} products receive a
+                full refund; returns due to fitment issues with other
+                manufacturers’ aftermarket products are subject to a 15%
+                restocking fee.
               </p>
               <p className="delivery-return-page__text delivery-return-page__text--legal">
                 Purchaser acknowledges that racing parts, equipment, and
-                services manufactured and/or sold by BMR are used under varied
-                conditions and that the suitability of any part for a particular
-                application is solely the purchaser’s decision. BMR makes no
-                warranties, express, implied, or written; there is no warranty
-                of merchantability. BMR reserves the right to change designs or
-                improve products without obligation to modify previously
-                manufactured units. Buyer agrees to indemnify and hold BMR
+                services manufactured and/or sold by {companyShort} are used
+                under varied conditions and that the suitability of any part for
+                a particular application is solely the purchaser’s decision.{" "}
+                {companyShort} makes no warranties, express, implied, or
+                written; there is no warranty of merchantability. {companyShort}{" "}
+                reserves the right to change designs or improve products without
+                obligation to modify previously manufactured units. Buyer agrees
+                to indemnify and hold {companyShort}
                 harmless from any claim, action, or demand arising from the
-                buyer’s installation or use of products purchased from BMR.
+                buyer’s installation or use of products purchased from{" "}
+                {companyShort}.
               </p>
             </div>
 
@@ -105,13 +124,11 @@ export default function DeliveryReturnPage() {
               <h2 className="delivery-return-page__title">Need Help?</h2>
               <p className="delivery-return-page__text">
                 Questions about your order, shipping, or returns? Get in touch
-                with the BMR team.
+                with the {companyName} team.
               </p>
               <div className="delivery-return-page__contact">
-                <Link href="mailto:sales@bmrsuspension.com">
-                  sales@bmrsuspension.com
-                </Link>
-                <a href="tel:8139869302">(813) 986-9302</a>
+                <Link href={`mailto:${contactEmail}`}>{contactEmail}</Link>
+                <a href={`tel:${phoneTel}`}>{phoneDisplay}</a>
                 <Link href="/contact">Contact us</Link>
               </div>
             </div>

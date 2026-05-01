@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getBrandConfig } from "@/lib/brandConfig";
+import { getDbPoolForBrand } from "@/lib/dbByBrand";
 import { getOrderById, addOrderTrackingNumber } from "@/lib/queries";
 
 export async function POST(request, { params }) {
@@ -10,8 +12,12 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const brand = await getBrandConfig();
+    const brandKey = (brand?.key || "bmr").trim().toLowerCase();
+    const dbPool = getDbPoolForBrand(brandKey);
+
     const { orderId } = await params;
-    const order = await getOrderById(orderId);
+    const order = await getOrderById(orderId, dbPool);
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
@@ -31,6 +37,7 @@ export async function POST(request, { params }) {
       order.new_order_id,
       String(trackingNumber).trim(),
       carrier,
+      dbPool,
     );
     return NextResponse.json({ success: true, id });
   } catch (error) {
