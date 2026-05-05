@@ -117,10 +117,13 @@ export default function OrderConfirmation({ orderData, brand }) {
 
   const companyName =
     brand?.companyName || brand?.name || brand?.companyNameShort || "BMR";
-  const logoPath =
-    brand?.logo?.headerPath ||
-    brand?.logo?.footerPath ||
-    "/images/logo/BMR-Logo.webp";
+  const isControlFreak =
+    String(brand?.key || brand?.name || "").toLowerCase() === "controlfreak";
+  const logoPath = isControlFreak
+    ? "/brands/controlfreak/images/logo/ControlFreakSuspensionLogo-Alt.png"
+    : brand?.logo?.headerPath ||
+      brand?.logo?.footerPath ||
+      "/images/logo/BMR-Logo.webp";
   const logoAlt = companyName;
   const contactEmail = brand?.contact?.email || "WebSales@bmrsuspension.com";
   const phoneDisplay =
