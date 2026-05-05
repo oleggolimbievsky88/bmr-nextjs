@@ -1,4 +1,4 @@
--- Improved Migration Script: Move data from coupons to coupons_new
+image.png-- Improved Migration Script: Move data from coupons to coupons_new
 -- This script safely migrates all data from the old coupons table to the new coupons_new table
 -- Run this AFTER creating the coupons_new table structure
 
