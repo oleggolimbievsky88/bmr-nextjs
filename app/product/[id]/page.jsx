@@ -26,15 +26,65 @@ import GiftCertificateHero from "@/components/header/GiftCertificateHero";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { notFound } from "next/navigation";
 import { withComputedBadges } from "@/lib/productBadges";
+import { getBrandConfig } from "@/lib/brandConfig";
+import { getSiteUrl } from "@bmr/core/url";
+import {
+  buildProductSeoTitle,
+  buildProductSeoDescription,
+  buildProductJsonLd,
+} from "@/lib/seoProduct";
 
 // Force dynamic rendering to prevent build-time database access
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title:
-    "Shop Details | BMR Suspension - Performance Racing Suspension & Chassis Parts",
-  description: "BMR Suspension - Performance Racing Suspension & Chassis Parts",
-};
+function getCanonicalPath(productId) {
+  return `/product/${productId}`;
+}
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  if (!id) return {};
+
+  try {
+    const product = await getProductById(id);
+    const [vehicles, brand] = await Promise.all([
+      getVehiclesForProduct(product).catch(() => []),
+      getBrandConfig(),
+    ]);
+
+    const siteUrl = getSiteUrl().replace(/\/$/, "");
+    const canonicalPath = getCanonicalPath(id);
+    const brandName = brand?.companyName || brand?.name || "BMR Suspension";
+    const title = buildProductSeoTitle(product, { vehicles, brandName });
+    const description = buildProductSeoDescription(product, {
+      vehicles,
+      brandName,
+    });
+    const firstImage =
+      product?.images?.[0]?.imgSrc || product?.images?.[0]?.smallImgSrc;
+
+    return {
+      title,
+      description,
+      alternates: { canonical: canonicalPath },
+      openGraph: {
+        type: "website",
+        url: `${siteUrl}${canonicalPath}`,
+        title,
+        description,
+        images: firstImage ? [{ url: firstImage, alt: title }] : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: title.slice(0, 70),
+        description: description.slice(0, 200),
+        images: firstImage ? [firstImage] : [],
+      },
+    };
+  } catch {
+    return {};
+  }
+}
 
 export default async function ProductPage({ params, searchParams }) {
   // Await params and searchParams
@@ -97,6 +147,17 @@ export default async function ProductPage({ params, searchParams }) {
 
   // Fetch vehicle fitment data (filtered by product application years)
   const vehicles = await getVehiclesForProduct(product);
+  const brand = await getBrandConfig();
+  const siteUrl = getSiteUrl().replace(/\/$/, "");
+  const canonicalPath = getCanonicalPath(id);
+  const brandName = brand?.companyName || brand?.name || "BMR Suspension";
+  const productJsonLd = buildProductJsonLd({
+    product,
+    siteUrl,
+    canonicalPath,
+    brandName,
+    vehicles,
+  });
 
   // Debug logging
   console.log("Product:", product);
@@ -225,6 +286,10 @@ export default async function ProductPage({ params, searchParams }) {
       )}
 
       <div className="container" style={{ paddingTop: "10px" }}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        />
         {console.log("product.attributes", product.attributes)}
         <Breadcrumbs items={breadcrumbItems} />
         <TrackView productId={product?.ProductID} />

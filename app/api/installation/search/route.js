@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { expandPartNumberAliases } from "@/lib/partNumberSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,11 @@ export async function GET(request) {
         { status: 400 },
       );
     }
+
+    const aliases = expandPartNumberAliases(partNumber);
+    const likeParams = aliases.length
+      ? aliases.map((a) => `%${a}%`)
+      : [`%${partNumber}%`];
 
     const query = `
 			SELECT DISTINCT
@@ -33,7 +39,7 @@ export async function GET(request) {
 			LEFT JOIN categories c ON FIND_IN_SET(c.CatID, p.CatID) > 0
 			LEFT JOIN maincategories m ON c.MainCatID = m.MainCatID
 			LEFT JOIN bodies b ON p.BodyID = b.BodyID
-			WHERE p.PartNumber LIKE ?
+			WHERE (${likeParams.map(() => "p.PartNumber LIKE ?").join(" OR ")})
 				AND p.Display = 1
 				AND p.Instructions IS NOT NULL
 				AND p.Instructions != ''
@@ -42,7 +48,7 @@ export async function GET(request) {
 			ORDER BY p.PartNumber
 		`;
 
-    const [rows] = await pool.query(query, [`%${partNumber}%`]);
+    const [rows] = await pool.query(query, likeParams);
 
     // Format platform name with years
     const products = rows.map((product) => ({

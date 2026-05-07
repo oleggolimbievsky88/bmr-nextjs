@@ -35,7 +35,7 @@ export default function Compare() {
                     </div>
                     <Link
                       className="tf-compare-image"
-                      href={`/product-detail/${elm.id}`}
+                      href={`/product/${elm.id}`}
                     >
                       <Image
                         className="lazyload"
@@ -48,7 +48,7 @@ export default function Compare() {
                     </Link>
                     <Link
                       className="tf-compare-title"
-                      href={`/product-detail/${elm.id}`}
+                      href={`/product/${elm.id}`}
                     >
                       {elm.title}
                     </Link>
