@@ -61,7 +61,6 @@ export default function Context({ children }) {
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [freeShipping, setFreeShipping] = useState(false);
   useEffect(() => {
-    console.log("Cart products changed:", cartProducts);
     const subtotal = cartProducts.reduce((accumulator, product) => {
       const basePrice = parseFloat(product.Price || 0);
       const quantity = parseInt(product.quantity || 1);
@@ -105,13 +104,8 @@ export default function Context({ children }) {
 
       const totalItemPrice = (basePrice + addOnPrice) * quantity;
 
-      console.log(
-        `Product ${product.ProductID}: basePrice=${basePrice}, addOnPrice=${addOnPrice}, quantity=${quantity}, totalItemPrice=${totalItemPrice}`,
-      );
-
       return accumulator + totalItemPrice;
     }, 0);
-    console.log("Calculated subtotal:", subtotal);
     setTotalPrice(subtotal);
   }, [cartProducts]);
 
@@ -121,14 +115,12 @@ export default function Context({ children }) {
       MAX_CART_QTY,
       Math.max(1, parseInt(qty, 10) || 1),
     );
-    console.log("addProductToCart called with:", { productId, qty, options });
 
     try {
       // Fetch product data from API
       const response = await fetch(`/api/product-by-id?id=${productId}`);
       if (response.ok) {
         const productData = await response.json();
-        console.log("Product data from API:", productData);
 
         // Single-color product: use full default color row when available (ColorPrice for FP panels)
         const selectedColor =
@@ -187,7 +179,6 @@ export default function Context({ children }) {
             updatedCart[existingItemIndex].quantity + cappedQty,
           );
           setCartProducts(updatedCart);
-          console.log("Increased quantity of existing item");
           showToast(
             `${productData.product.ProductName} quantity updated in cart`,
             "success",
@@ -195,7 +186,6 @@ export default function Context({ children }) {
         } else {
           // Different product or different options - add as new item
           setCartProducts((pre) => [...pre, newItem]);
-          console.log("Added new item to cart");
           showToast(
             `${productData.product.ProductName} added to cart`,
             "success",
@@ -270,15 +260,8 @@ export default function Context({ children }) {
 
       const result = await response.json();
 
-      console.log("Coupon validation result:", result);
-      console.log("Discount amount:", result.coupon?.discountAmount);
-      console.log("Discount value:", result.coupon?.discountValue);
-      console.log("Discount type:", result.coupon?.discountType);
-
       if (result.valid) {
         const discountAmount = result.coupon.discountAmount || 0;
-        console.log("Setting coupon discount to:", discountAmount);
-        console.log("Full coupon result:", result.coupon);
 
         setAppliedCoupon(result.coupon);
         setCouponDiscount(discountAmount);
@@ -292,7 +275,6 @@ export default function Context({ children }) {
             "freeShipping",
             result.coupon.freeShipping.toString(),
           );
-          console.log("Coupon saved to localStorage");
         } catch (error) {
           console.error("Error saving coupon to localStorage:", error);
         }
@@ -385,7 +367,6 @@ export default function Context({ children }) {
   };
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartList"));
-    console.log("Loading cart from localStorage:", items);
     if (items?.length) {
       // Keep items that have ProductID and ProductName (allow missing Price so we can re-hydrate after login)
       const validItems = items
@@ -397,7 +378,6 @@ export default function Context({ children }) {
             Math.max(1, parseInt(item.quantity, 10) || 1),
           ),
         }));
-      console.log("Valid items from localStorage:", validItems);
       setCartProducts(validItems);
     }
 
@@ -411,9 +391,6 @@ export default function Context({ children }) {
         const coupon = JSON.parse(savedCoupon);
         const discount = parseFloat(savedDiscount || 0);
         const freeShip = savedFreeShipping === "true";
-
-        console.log("Restoring coupon from localStorage:", coupon);
-        console.log("Restored discount amount:", discount);
 
         // Set the coupon - it will be re-validated when cartProducts loads
         setAppliedCoupon(coupon);
@@ -506,7 +483,6 @@ export default function Context({ children }) {
   }, [cartLoading, cartProducts.length]);
 
   useEffect(() => {
-    console.log("Saving cart to localStorage:", cartProducts);
     localStorage.setItem("cartList", JSON.stringify(cartProducts));
 
     // Also save to cookies for server-side access
@@ -578,22 +554,10 @@ export default function Context({ children }) {
     }
 
     const revalidateCoupon = async () => {
-      console.log(
-        "Re-validating coupon after cart change:",
-        appliedCoupon.code,
-      );
-      console.log("Current cart products:", cartProducts);
       try {
         const result = await applyCoupon(appliedCoupon.code);
-        console.log("Re-validation result:", result);
         if (!result.success) {
-          console.log("Coupon no longer valid, removing:", result.message);
           removeCoupon();
-        } else {
-          console.log(
-            "Coupon re-validated, new discount amount:",
-            result.coupon.discountAmount,
-          );
         }
       } catch (error) {
         console.error("Error re-validating coupon:", error);

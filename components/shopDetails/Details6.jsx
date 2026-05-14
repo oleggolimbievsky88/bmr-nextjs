@@ -90,25 +90,16 @@ export default function Details({
 
   // Helper function to find color by slug
   const findColorBySlug = (colors, slug) => {
-    console.log("Finding color by slug:", { colors, slug });
     const foundColor = colors.find((color) => {
       const colorSlug = slugifyColor(color.ColorName);
-      console.log(`Comparing: ${colorSlug} === ${slug}`);
       return colorSlug === slug;
     });
-    console.log("Found color:", foundColor);
     return foundColor;
   };
 
   // Helper function to filter colors based on product's available colors
   const filterColorsByProduct = (allColors, productColorField) => {
-    console.log("filterColorsByProduct called with:", {
-      allColors,
-      productColorField,
-    });
-
     if (!productColorField || productColorField === "0") {
-      console.log("No color field or color field is 0, returning empty array");
       return [];
     }
 
@@ -118,15 +109,10 @@ export default function Details({
       .map((id) => id.trim())
       .filter((id) => id !== "0");
 
-    console.log("Parsed available Color IDs:", availableColorIds);
-
     // Filter colors based on available ColorIDs and add CSS classes
     const filteredColors = allColors
       .filter((color) => {
         const isIncluded = availableColorIds.includes(color.ColorID.toString());
-        console.log(
-          `Color ${color.ColorName} (ID: ${color.ColorID}) included: ${isIncluded}`,
-        );
         return isIncluded;
       })
       .map((color) => {
@@ -160,26 +146,18 @@ export default function Details({
           cssClass = "bg-color-light-green";
         }
 
-        console.log(`Color: ${color.ColorName}, CSS Class: ${cssClass}`);
-
         return {
           ...color,
           cssClass,
         };
       });
 
-    console.log("Product Color field:", productColorField);
-    console.log("Available Color IDs:", availableColorIds);
-    console.log("Filtered colors with CSS classes:", filteredColors);
-
     return filteredColors;
   };
 
   // Function to update URL with color parameter
   const updateColorInURL = (color) => {
-    console.log("updateColorInURL called with:", color);
     if (!color) {
-      console.log("No color provided, removing color param");
       // Remove color parameter while preserving other query params
       const currentParams = new URLSearchParams(window.location.search);
       currentParams.delete("color");
@@ -191,14 +169,12 @@ export default function Details({
     }
 
     const colorSlug = slugifyColor(color.ColorName);
-    console.log("Color slug:", colorSlug);
 
     // Preserve existing query parameters
     const currentParams = new URLSearchParams(window.location.search);
     currentParams.set("color", colorSlug);
 
     const newURL = `${window.location.pathname}?${currentParams.toString()}`;
-    console.log("New URL:", newURL);
 
     // Use router.replace to update URL without page reload
     router.replace(newURL, { scroll: false });
@@ -208,7 +184,6 @@ export default function Details({
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        console.log("Fetching options from API...");
         const [colorsRes, greaseRes, anglefinderRes] = await Promise.all([
           fetch("/api/colors"),
           fetch("/api/grease"),
@@ -223,12 +198,6 @@ export default function Details({
         const greaseData = await greaseRes.json();
         const anglefinderData = await anglefinderRes.json();
 
-        console.log("API responses:", {
-          colors: colorsData,
-          grease: greaseData,
-          anglefinder: anglefinderData,
-        });
-
         // Filter colors based on product's available colors
         if (
           colorsData.success &&
@@ -239,48 +208,33 @@ export default function Details({
             colorsData.colors,
             product.Color,
           );
-          console.log("Using filtered database colors:", filteredColors);
           setColorOptions(filteredColors);
 
           // Check if initial color from URL matches any filtered colors
           const urlColorSlug = new URLSearchParams(
             typeof window !== "undefined" ? window.location.search : "",
           ).get("color");
-          console.log("URL Color Slug:", urlColorSlug);
 
           if (urlColorSlug) {
             const colorFromUrl = findColorBySlug(filteredColors, urlColorSlug);
             if (colorFromUrl) {
-              console.log("Setting currentColor from URL:", colorFromUrl);
               setCurrentColor(colorFromUrl);
             } else {
-              console.log("Color from URL not found in available colors");
               setCurrentColor(null);
             }
           } else {
             // Auto-select if there's only one color option
             if (filteredColors.length === 1) {
               const singleColor = filteredColors[0];
-              console.log(
-                "Only one color option available, auto-selecting:",
-                singleColor,
-              );
               setCurrentColor(singleColor);
               // Update URL with the auto-selected color
               updateColorInURL(singleColor);
             } else {
               // No color in URL and multiple options - require selection
-              console.log(
-                "No color in URL - requiring selection for all color options",
-              );
               setCurrentColor(null);
             }
           }
         } else {
-          console.log(
-            "No database colors available, using static data with no defaults",
-          );
-          console.log("Colors API response:", colorsData);
           setColorOptions(removeDefaultSelections(colors));
           setCurrentColor(null);
         }
@@ -293,7 +247,6 @@ export default function Details({
           product.Grease &&
           product.Grease !== "0"
         ) {
-          console.log("Using database grease:", greaseData.grease);
           // Remove any default selections
           const processedGreaseOptions = greaseData.grease.map((grease) => ({
             ...grease,
@@ -304,11 +257,6 @@ export default function Details({
           // Always start with undefined - no pre-selection
           setCurrentGrease(undefined);
         } else {
-          console.log(
-            "No database grease available or product doesn't support grease, hiding grease options",
-          );
-          console.log("Grease API response:", greaseData);
-          console.log("Product Grease field:", product.Grease);
           setGreaseOptions([]);
           setCurrentGrease(undefined);
         }
@@ -320,18 +268,10 @@ export default function Details({
           product.AngleFinder &&
           product.AngleFinder !== "0"
         ) {
-          console.log(
-            "Using database anglefinder:",
-            anglefinderData.anglefinder,
-          );
           setAnglefinderOptions(anglefinderData.anglefinder);
           // Always start with undefined - no pre-selection
           setCurrentAnglefinder(undefined);
         } else {
-          console.log(
-            "No database anglefinder options or product doesn't support angle finder, hiding angle finder options",
-          );
-          console.log("Product AngleFinder field:", product.AngleFinder);
           setAnglefinderOptions([]);
           setCurrentAnglefinder(undefined);
         }
@@ -404,13 +344,6 @@ export default function Details({
     if (!validateForm()) {
       return;
     }
-
-    console.log("Adding to cart with options:", {
-      color: currentColor,
-      grease: currentGrease,
-      anglefinder: currentAnglefinder,
-      selectedHardwarePacks: selectedHardwarePacks,
-    });
 
     const productToAdd = displayProduct || product;
     addProductToCart(productToAdd.ProductID, quantity, {
@@ -608,16 +541,10 @@ export default function Details({
                               style={{ display: "none" }}
                             />
                             {colorOptions.map((color) => {
-                              console.log("Rendering color option:", color);
-                              console.log("Current color state:", currentColor);
                               const isSelected =
                                 currentColor &&
                                 (currentColor.ColorID === color.ColorID ||
                                   currentColor.id === color.id);
-                              console.log(
-                                "Is this color selected?",
-                                isSelected,
-                              );
                               const fpColorPriceSuffix =
                                 formatFpColorPriceSuffix(
                                   color,
@@ -639,16 +566,6 @@ export default function Details({
                                     id={`color-${color.ColorID || color.id}`}
                                     checked={isSelected || false}
                                     onChange={() => {
-                                      console.log(
-                                        "=== COLOR SELECTION DEBUG ===",
-                                      );
-                                      console.log("Color selected:", color);
-                                      console.log("Color ID:", color.ColorID);
-                                      console.log(
-                                        "Color Name:",
-                                        color.ColorName,
-                                      );
-
                                       // Set the current color
                                       setCurrentColor(color);
 
@@ -657,10 +574,6 @@ export default function Details({
 
                                       // Update the URL with the selected color
                                       updateColorInURL(color);
-
-                                      console.log(
-                                        "=== END COLOR SELECTION DEBUG ===",
-                                      );
                                     }}
                                   />
                                   <label
@@ -670,10 +583,6 @@ export default function Details({
                                     htmlFor={`color-${color.ColorID || color.id}`}
                                     data-value={color.ColorName || color.value}
                                     onClick={() => {
-                                      console.log(
-                                        "Label clicked for color:",
-                                        color.ColorName,
-                                      );
                                       // Force the radio button to be selected
                                       const radioButton =
                                         document.getElementById(
@@ -683,10 +592,6 @@ export default function Details({
                                         radioButton.checked = true;
                                         // Set the current color to the full color object
                                         setCurrentColor(color);
-                                        console.log(
-                                          "Radio button checked:",
-                                          radioButton,
-                                        );
                                       }
                                     }}
                                   >

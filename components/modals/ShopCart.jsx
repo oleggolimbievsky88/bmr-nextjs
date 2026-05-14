@@ -24,10 +24,6 @@ export default function ShopCart() {
   const [editModalIndex, setEditModalIndex] = useState(null);
   const router = useRouter();
 
-  // Debug logging
-  console.log("ShopCart rendered with cartProducts:", cartProducts);
-  console.log("Total price:", totalPrice);
-
   const setQuantity = (item, quantity) => {
     if (quantity >= 1 && quantity <= 10) {
       const items = [...cartProducts];

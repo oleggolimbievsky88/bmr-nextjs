@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
     if (!platform) {
       return NextResponse.json(
         { error: "Platform slug or bodyid is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -27,7 +27,6 @@ export async function GET(request, { params }) {
     const isBodyId = /^\d+$/.test(platform);
 
     let platformInfo, mainCategories, featuredProducts;
-    console.log("platform", platform);
 
     if (isBodyId) {
       // Platform is a BodyID (numeric)
@@ -49,7 +48,7 @@ export async function GET(request, { params }) {
     if (!platformInfo) {
       return NextResponse.json(
         { error: "Platform not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -62,7 +61,7 @@ export async function GET(request, { params }) {
     console.error("Error fetching platform data:", error);
     return NextResponse.json(
       { error: "Failed to fetch platform data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

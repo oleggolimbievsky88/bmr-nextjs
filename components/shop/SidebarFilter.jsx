@@ -29,8 +29,6 @@ export default function SidebarFilter({
           params.append("subCategoryId", selectedSubCategory.CatID);
         }
 
-        console.log("params", params.toString());
-
         const response = await fetch(`/api/products?${params.toString()}`);
         if (!response.ok) {
           throw new Error("Failed to fetch products");
@@ -44,20 +42,20 @@ export default function SidebarFilter({
         filteredProducts = filteredProducts.filter(
           (product) =>
             parseFloat(product.Price) >= price[0] &&
-            parseFloat(product.Price) <= price[1]
+            parseFloat(product.Price) <= price[1],
         );
 
         // Color filter (if implemented)
         if (selectedColors.length > 0) {
           filteredProducts = filteredProducts.filter((product) =>
-            selectedColors.includes(product.Color)
+            selectedColors.includes(product.Color),
           );
         }
 
         // Brand filter
         if (selectedBrands.length > 0) {
           filteredProducts = filteredProducts.filter((product) =>
-            selectedBrands.includes(product.ManName)
+            selectedBrands.includes(product.ManName),
           );
         }
 
@@ -83,13 +81,13 @@ export default function SidebarFilter({
 
   const handleSelectColor = (color) => {
     setSelectedColors((prev) =>
-      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
+      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color],
     );
   };
 
   const handleSelectBrand = (brand) => {
     setSelectedBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand],
     );
   };
 

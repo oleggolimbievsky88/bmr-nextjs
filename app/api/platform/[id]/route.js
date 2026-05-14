@@ -18,10 +18,8 @@ export const dynamic = "force-dynamic";
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    console.log("🔍 API called with id:", id);
 
     if (!id) {
-      console.log("❌ No ID provided");
       return NextResponse.json(
         { error: "Platform ID or slug is required" },
         { status: 400 },
@@ -30,37 +28,27 @@ export async function GET(request, { params }) {
 
     // Check if id is a numeric ID or a slug
     const isBodyId = /^\d+$/.test(id);
-    console.log("🔍 Is numeric ID:", isBodyId);
 
     let platform;
     let mainCategories = [];
 
     if (isBodyId) {
       // ID is numeric (BodyID)
-      console.log("🔍 Fetching platform by ID:", parseInt(id));
       platform = await getPlatformById(parseInt(id));
-      console.log("🔍 Platform result:", platform);
       if (platform) {
-        console.log("🔍 Fetching main categories by BodyID");
         mainCategories = await getMainCategoriesWithProductCountByBodyId(
           parseInt(id),
         );
-        console.log("🔍 Main categories result:", mainCategories);
       }
     } else {
       // ID is a slug (string)
-      console.log("🔍 Fetching platform by slug:", id);
       platform = await getPlatformBySlug(id);
-      console.log("🔍 Platform result:", platform);
       if (platform) {
-        console.log("🔍 Fetching main categories by slug");
         mainCategories = await getMainCategoriesWithProductCount(id);
-        console.log("🔍 Main categories result:", mainCategories);
       }
     }
 
     if (!platform) {
-      console.log("❌ Platform not found");
       return NextResponse.json(
         { error: "Platform not found" },
         { status: 404 },
@@ -77,11 +65,6 @@ export async function GET(request, { params }) {
       heroImage: cat.heroImage ?? null,
       link: `/products/${id}/${cat.slug}`,
     }));
-
-    console.log("✅ Returning data:", {
-      platformInfo: platform,
-      mainCategories: transformedMainCategories,
-    });
 
     return NextResponse.json(
       {

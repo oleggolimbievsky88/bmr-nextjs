@@ -15,11 +15,9 @@ export async function GET(request) {
     if (!bodyId) {
       return NextResponse.json(
         { error: "Missing bodyId parameter" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
-    console.log("🔍 Debug API called with bodyId:", bodyId);
 
     // Test all three functions
     const [platformResult, categoriesResult, vehiclesResult] =
@@ -39,14 +37,12 @@ export async function GET(request) {
       timestamp: new Date().toISOString(),
     };
 
-    console.log("🔍 Debug API result:", result);
-
     return NextResponse.json(result);
   } catch (error) {
     console.error("❌ Debug API error:", error);
     return NextResponse.json(
       { error: "Debug API failed", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

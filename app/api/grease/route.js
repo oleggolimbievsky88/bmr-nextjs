@@ -2,11 +2,7 @@ import { getAllGreaseOptions } from "@/lib/queries";
 
 export async function GET() {
   try {
-    console.log("Grease API - starting database query...");
     const grease = await getAllGreaseOptions();
-
-    console.log("Grease API - fetched grease:", grease);
-    console.log("Grease API - grease length:", grease ? grease.length : 0);
 
     return Response.json({
       success: true,
@@ -20,7 +16,7 @@ export async function GET() {
         error: "Failed to fetch grease options",
         grease: [],
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

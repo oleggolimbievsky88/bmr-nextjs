@@ -131,7 +131,6 @@ function NewProductsLoader({
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        console.log(`Lazy loading ${title} products...`);
         const response = await fetch(
           `/api/products/new-products?scratchDent=${scratchDent}&limit=12`,
         );

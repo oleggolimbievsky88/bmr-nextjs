@@ -3,12 +3,9 @@ import pool from "@/lib/db";
 
 export async function GET() {
   try {
-    console.log("Colors API - starting database query...");
-
     // Test database connection first
     try {
       const connection = await pool.getConnection();
-      console.log("Colors API - database connection successful");
       connection.release();
     } catch (dbError) {
       console.error("Colors API - database connection failed:", dbError);

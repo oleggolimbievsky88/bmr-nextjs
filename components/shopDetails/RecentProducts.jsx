@@ -14,7 +14,6 @@ export default function RecentProducts() {
     fetch("/api/products/recently-viewed")
       .then((r) => r.json())
       .then(async ({ items }) => {
-        console.log("recently-viewed ids", items);
         if (!mounted || !items?.length) return setRecent([]);
         // Resolve product cards via existing API route for product-by-id
         const resolved = await Promise.all(
@@ -27,9 +26,8 @@ export default function RecentProducts() {
             } catch (e) {
               return null;
             }
-          })
+          }),
         );
-        console.log("recently-viewed products", resolved);
         setRecent(resolved.filter(Boolean));
       })
       .catch(() => setRecent([]));
@@ -37,8 +35,6 @@ export default function RecentProducts() {
       mounted = false;
     };
   }, []);
-
-  console.log(recent);
 
   if (!recent.length) return null;
 

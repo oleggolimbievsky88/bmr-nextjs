@@ -149,17 +149,6 @@ export async function POST(request) {
       tax -
       parseFloat(orderData.discount || 0);
 
-    console.log("Creating order:", {
-      orderNumber,
-      subtotal,
-      total,
-      itemsCount: orderData.items.length,
-      hasBilling: !!orderData.billing,
-      hasShipping: !!orderData.shipping,
-      billingEmail: orderData.billing?.email,
-      customerId: orderData.customerId,
-    });
-
     // Create order record
     let orderId;
     try {
@@ -181,8 +170,6 @@ export async function POST(request) {
       });
       throw createError; // Re-throw to be caught by outer catch
     }
-
-    console.log("Order created with ID:", orderId);
 
     // Seed audit history so every order has a timeline entry
     try {
@@ -217,15 +204,10 @@ export async function POST(request) {
         orderData.items,
         orderItemIds,
       );
-      if (giftCards.length > 0) {
-        console.log("Gift cards generated:", giftCards.length, giftCards);
-      }
     } catch (gcError) {
       console.error("Error generating gift cards:", gcError);
       // Don't fail the order - gift cards can be created manually if needed
     }
-
-    console.log("Order items created successfully");
 
     // Record coupon usage if a coupon was applied
     if (orderData.couponId && orderData.discount > 0) {
@@ -237,10 +219,6 @@ export async function POST(request) {
           orderData.discount,
           orderData.subtotal,
         );
-        console.log("Coupon usage recorded successfully:", {
-          couponId: orderData.couponId,
-          discount: orderData.discount,
-        });
       } catch (couponError) {
         // Log error but don't fail the order if coupon recording fails
         console.error("Error recording coupon usage:", couponError);
@@ -355,7 +333,6 @@ async function sendOrderConfirmationEmail(to, orderNumber, orderData) {
       !process.env.SMTP_PASS
     ) {
       console.warn("SMTP not configured - skipping email send");
-      console.log("Email would be sent to:", to);
       return;
     }
 
@@ -380,12 +357,7 @@ async function sendOrderConfirmationEmail(to, orderNumber, orderData) {
       html: htmlContent,
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Order confirmation email sent:", {
-      messageId: info.messageId,
-      to,
-      orderNumber,
-    });
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error("Error sending order confirmation email:", error);
   }

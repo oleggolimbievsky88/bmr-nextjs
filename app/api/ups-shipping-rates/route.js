@@ -65,13 +65,6 @@ export async function POST(request) {
       );
     }
 
-    console.log("UPS OAuth request with credentials:", {
-      clientId: upsClientId,
-      clientSecretLength: upsClientSecret?.length,
-      clientIdPreview: upsClientId?.substring(0, 10) + "...",
-      clientSecretPreview: upsClientSecret?.substring(0, 10) + "...",
-    });
-
     // Each product is preboxed; we ship N boxes and charge N × (rate for one box).
     const packageCount = Math.max(1, packages.length);
     const singlePkg =
@@ -93,13 +86,6 @@ export async function POST(request) {
     // Get country codes - convert country names to ISO codes
     const toCountryCode = getCountryCode(toAddress.country) || "US";
     const fromCountryCode = getCountryCode(fromAddress.country) || "US";
-
-    console.log("Country code conversion:", {
-      originalTo: toAddress.country,
-      convertedTo: toCountryCode,
-      originalFrom: fromAddress.country,
-      convertedFrom: fromCountryCode,
-    });
 
     // Build ShipTo address - handle international addresses
     const shipToAddress = {
@@ -207,20 +193,10 @@ export async function POST(request) {
       ? "https://wwwcie.ups.com"
       : "https://onlinetools.ups.com";
 
-    console.log(
-      `Using UPS ${isTestMode ? "TEST" : "PRODUCTION"} environment: ${baseUrl}`,
-    );
-
     // Get OAuth token using Client Credentials flow
     const basicAuth = Buffer.from(`${upsClientId}:${upsClientSecret}`).toString(
       "base64",
     );
-
-    console.log("Basic Auth header:", {
-      credentials: `${upsClientId}:${upsClientSecret}`,
-      basicAuth: basicAuth,
-      basicAuthPreview: basicAuth.substring(0, 20) + "...",
-    });
 
     const tokenResponse = await fetch(`${baseUrl}/security/v1/oauth/token`, {
       method: "POST",
@@ -281,18 +257,10 @@ export async function POST(request) {
           return rateData;
         } else {
           // Log but don't fail - some services may not be available
-          const errorText = await rateResponse.text();
-          console.log(
-            `UPS Rate API error for service ${serviceInfo.code}:`,
-            errorText,
-          );
+          await rateResponse.text();
           return null;
         }
       } catch (error) {
-        console.log(
-          `Error fetching rate for service ${serviceInfo.code}:`,
-          error,
-        );
         return null;
       }
     });

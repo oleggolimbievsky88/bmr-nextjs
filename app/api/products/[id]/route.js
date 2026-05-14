@@ -36,7 +36,6 @@ export async function GET(_, context) {
 
       const product = rows[0];
 
-      console.log("Product:", product);
       if (!product) {
         return NextResponse.json(
           { error: "Product not found" },

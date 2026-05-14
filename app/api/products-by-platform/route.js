@@ -11,11 +11,9 @@ export async function GET(request) {
     if (!id) {
       return NextResponse.json(
         { error: "Platform ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
-    console.log("🔍 Platform ID:", id);
 
     const products = await getProductsByPlatformId(id);
     return NextResponse.json(products);
@@ -23,7 +21,7 @@ export async function GET(request) {
     console.error(`Failed to fetch products for platform ${id}:`, error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

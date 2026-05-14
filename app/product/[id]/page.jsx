@@ -94,9 +94,6 @@ export default async function ProductPage({ params, searchParams }) {
     ? String(awaitedSearchParams.color)
     : null;
 
-  console.log("ProductDetailid", id);
-  console.log("Color query param:", color);
-
   // Fetch product details — show 404 page for deleted or invalid product IDs
   let product;
   try {
@@ -113,13 +110,6 @@ export default async function ProductPage({ params, searchParams }) {
 
   // Fetch related products
   const relatedProducts = await getRelatedProducts(id);
-
-  // Debug logging for related products
-  console.log("Related Products:", relatedProducts);
-  if (relatedProducts.length > 0) {
-    console.log("First related product:", relatedProducts[0]);
-    console.log("PartNumber field:", relatedProducts[0].PartNumber);
-  }
 
   // Fetch platform info based on product's BodyID
   const platformInfo = product?.BodyID
@@ -158,13 +148,6 @@ export default async function ProductPage({ params, searchParams }) {
     brandName,
     vehicles,
   });
-
-  // Debug logging
-  console.log("Product:", product);
-  console.log("Platform Info:", platformInfo);
-  console.log("Current Category:", currentCategory);
-  console.log("Main Category:", mainCategory);
-  console.log("Vehicles:", vehicles);
 
   // Fetch size variants for merchandise (hats, t-shirts, etc.)
   const isMerchandise =
@@ -290,7 +273,6 @@ export default async function ProductPage({ params, searchParams }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
         />
-        {console.log("product.attributes", product.attributes)}
         <Breadcrumbs items={breadcrumbItems} />
         <TrackView productId={product?.ProductID} />
         <ProductDetails

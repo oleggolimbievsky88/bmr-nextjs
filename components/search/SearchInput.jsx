@@ -192,7 +192,6 @@ export default function SearchInput({ initialQuery = "" }) {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Form submitted with query:", query);
     if (query.trim()) {
       handleSearch();
     }

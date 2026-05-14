@@ -20,16 +20,12 @@ export async function POST(request) {
       });
     }
 
-    console.log("API: Validating coupon:", couponCode);
-
     const validation = await validateCouponForCart(
       couponCode,
       cartItems,
       customerId,
       shippingAddress || null,
     );
-
-    console.log("API: Validation result:", validation);
 
     // Ensure we always return a valid response format
     if (!validation || typeof validation.valid === "undefined") {

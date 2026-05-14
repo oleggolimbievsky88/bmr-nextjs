@@ -375,21 +375,6 @@ export default function Checkout({ brand }) {
     cleanValue,
   ]);
 
-  // Debug logging (remove in production)
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      const hasSession = session && session.user && session.user.email;
-      console.log("Checkout Debug:", {
-        status,
-        session: session ? "exists" : "null",
-        hasSession,
-        accountStepCompleted,
-        showAccountStep,
-        activeStep,
-      });
-    }
-  }, [status, session, accountStepCompleted, showAccountStep, activeStep]);
-
   const handleAuthSuccess = useCallback(async () => {
     setAccountStepCompleted(true);
     setBillingAddressValid(false);
@@ -895,19 +880,6 @@ export default function Checkout({ brand }) {
           ccCvv: paymentData.cvv || null,
         };
 
-        if (process.env.NODE_ENV === "development") {
-          const { ccNumber, ...safePayload } = orderPayload;
-          console.log("Submitting order with payload:", {
-            ...safePayload,
-            items: safePayload.items.map((item) => ({
-              productId: item.productId,
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-          });
-        }
-
         let orderResponse;
         try {
           orderResponse = await fetch("/api/orders", {
@@ -1055,7 +1027,7 @@ export default function Checkout({ brand }) {
             });
 
             if (profileResponse.ok) {
-              console.log("Customer profile updated with address and phone");
+              // profile updated
             } else {
               const profileError = await profileResponse.json();
               console.warn("Failed to update customer profile:", profileError);

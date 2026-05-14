@@ -5,7 +5,6 @@ import { getProductsByPlatformId } from "@/lib/queries";
 
 export async function GET(request, { params }) {
   const { id } = await params; // Get platform ID from the route parameters
-  console.log("🔍 Platform ID:", id);
 
   try {
     const products = await getProductsByPlatformId(id);
@@ -14,7 +13,7 @@ export async function GET(request, { params }) {
     console.error(`Failed to fetch products for platform ${id}:`, error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -13,18 +13,6 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
   // Store each slide's lightbox open function so Swiper's onClick (reliable on mobile) can open the modal
   const openLightboxRefs = useRef([]);
 
-  console.log("Slider3BottomThumbs rendered with:", {
-    productId,
-    selectedColor: selectedColor
-      ? {
-          ColorID: selectedColor.ColorID,
-          ColorName: selectedColor.ColorName,
-        }
-      : null,
-    mainSwiper: !!mainSwiper,
-    product: !!product,
-  });
-
   // Reset swiper refs when product changes (e.g. size variant) to avoid using destroyed instances
   useEffect(() => {
     setThumbsSwiper(null);
@@ -42,7 +30,6 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
 
         const data = await response.json();
         if (!cancelled) {
-          console.log("Product data fetched:", data.product);
           setProduct(data.product);
         }
       } catch (error) {
@@ -60,53 +47,22 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
 
   // Effect to handle image switching when color changes
   useEffect(() => {
-    console.log("Image switching effect triggered:", {
-      selectedColor: selectedColor
-        ? {
-            ColorID: selectedColor.ColorID,
-            ColorName: selectedColor.ColorName,
-          }
-        : null,
-      productImages: product?.images?.length,
-      mainSwiper: !!mainSwiper,
-      productExists: !!product,
-    });
-
     if (product?.images?.length > 0 && mainSwiper) {
       // Default to first image
       let imageIndex = 0;
 
       // If a color is provided, try to match it
       if (selectedColor) {
-        console.log("Selected color details:", {
-          ColorID: selectedColor.ColorID,
-          ColorName: selectedColor.ColorName,
-        });
-
-        console.log("Product images:", product.images);
-
         if (selectedColor.ColorID === 1) {
           // Black Hammertone - show second image if available
           imageIndex = Math.min(1, product.images.length - 1);
-          console.log(
-            "Black Hammertone selected, switching to image index:",
-            imageIndex,
-          );
         } else if (selectedColor.ColorID === 2) {
           // Red - show first image
           imageIndex = 0;
-          console.log("Red selected, switching to image index:", imageIndex);
         }
 
-        console.log(
-          `Switching to image ${imageIndex} for color: ${selectedColor.ColorName} (ColorID: ${selectedColor.ColorID})`,
-        );
-
         try {
-          console.log("Attempting to slide to image index:", imageIndex);
-          console.log("Main swiper object:", mainSwiper);
           mainSwiper.slideTo(imageIndex);
-          console.log("Image switch successful");
         } catch (error) {
           console.error("Error in image switch:", error);
         }
@@ -119,14 +75,6 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
     const imageZoom = () => {
       const driftAll = document.querySelectorAll(".tf-image-zoom");
       const pane = document.querySelector(".tf-zoom-main");
-
-      console.log("Drift initialization:", {
-        driftElements: driftAll.length,
-        paneFound: !!pane,
-        paneElement: pane,
-        paneDisplay: pane ? pane.style.display : "N/A",
-        paneVisibility: pane ? pane.style.visibility : "N/A",
-      });
 
       // Check if both elements exist before initializing Drift
       if (driftAll.length > 0 && pane) {
@@ -143,11 +91,9 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
               touchDelay: 500,
               boundingBoxContainer: document.body,
               onShow: function () {
-                console.log("Drift zoom pane shown");
                 pane.style.display = "block";
               },
               onHide: function () {
-                console.log("Drift zoom pane hidden");
                 pane.style.display = "none";
               },
             });
@@ -304,7 +250,6 @@ export default function Slider3BottomThumbs({ productId, selectedColor }) {
           }}
           modules={[Thumbs, Navigation]}
           onSwiper={(swiper) => {
-            console.log("Main swiper initialized:", swiper);
             setMainSwiper(swiper);
           }}
           onClick={(swiper) => {

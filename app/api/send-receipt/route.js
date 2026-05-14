@@ -104,11 +104,6 @@ export async function POST(request) {
 
     // Send email
     const info = await transporter.sendMail(mailOptions);
-    console.log("Receipt email sent successfully:", {
-      messageId: info.messageId,
-      to: email,
-      orderId: orderId,
-    });
 
     return NextResponse.json({
       message: "Receipt sent successfully",
